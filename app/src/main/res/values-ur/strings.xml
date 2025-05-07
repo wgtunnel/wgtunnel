@@ -248,4 +248,8 @@
     <string name="security_template">سیکیورٹی: %1$s</string>
     <string name="update_check_unsupported">اپ ڈیٹ چیک اس قسم کی تعمیر کی حمایت نہیں کرتا ہے۔</string>
     <string name="flavor_template">ذائقہ: %1$s</string>
+    <string name="show_qr">کیو آر دکھائیں</string>
+    <string name="amnezia">ایمنیزیا</string>
+    <string name="wireguard">وائرگارڈ</string>
+    <string name="done">ہو گیا</string>
 </resources>
