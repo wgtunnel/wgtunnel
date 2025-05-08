@@ -214,7 +214,7 @@
     <string name="status">Stav</string>
     <string name="launch_app_settings">Spustit nastavení aplikace</string>
     <string name="tunnel_running">Tunel je v provozu</string>
-    <string name="wildcards_active">Wildcards aktivní</string>
+    <string name="wildcards_active">Zástupné znaky(wildcards) aktivní</string>
     <string name="root_accepted">Root shell přijata</string>
     <string name="background_location_message">Autorizace povolit vždy polohu a/nebo přesná poloha je vyžadováno pro tuto funkci. Viz</string>
     <string name="update_check_unsupported">Kontrola aktualizací není u tohoto typu sestavení podporována.</string>
@@ -233,4 +233,22 @@
     <string name="wireguard">WireGuard</string>
     <string name="amnezia">Amnezia</string>
     <string name="show_qr">Zobrazit QR kód</string>
+    <string name="always_on_message2">ujistěte se, že je pro všechny ostatní aplikace vypnutá funkce trvalé připojení VPN, a zkuste to znovu</string>
+    <string name="use_wildcards">Použít zástupné znaky(wildcards) pro názvy</string>
+    <string name="multiple">Několik</string>
+    <string name="enter_config_url">Zadejte adresu URL konfigurace</string>
+    <string name="search">Hledat</string>
+    <string name="join_matrix">Připojte se k Matrix komunitě</string>
+    <string name="join_telegram">Připojte se k Telegram komunitě</string>
+    <string name="post_down">Po deaktivaci</string>
+    <string name="invalid_config_error">chyba_neplatné_konfigurace</string>
+    <string name="error_download_failed">Nepodařilo se stáhnout konfiguraci</string>
+    <string name="select">Vybrat</string>
+    <string name="save">Uložit</string>
+    <string name="dns_resolve_error">Chyba překladu dns</string>
+    <string name="bio_update_required">Vyžadována aktualizace biometrického zabezpečení</string>
+    <string name="export_logs">Exportovat uložené protokoly</string>
+    <string name="add_tunnel">Přidat tunel</string>
+    <string name="delete_logs">Odstranit a vymazat protokoly</string>
+    <string name="dropdown">Rozbalovací nabídka</string>
 </resources>
