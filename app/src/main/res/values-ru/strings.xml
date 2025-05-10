@@ -179,7 +179,7 @@
     <string name="advanced_settings">Дополнительные настройки</string>
     <string name="enable_amnezia_compatibility">Включить совместимость с Amnezia</string>
     <string name="include_lan">Включить LAN</string>
-    <string name="auto_tunnel">Авто-туннелирование</string>
+    <string name="auto_tunnel">Автотуннелирование</string>
     <string name="tunnel_control">Управление туннелями</string>
     <string name="kill_switch_off">Без экстренного отключения в доверенных</string>
     <string name="prefer_ipv4">Предпочитать соединение IPv4</string>
