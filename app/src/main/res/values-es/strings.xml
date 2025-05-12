@@ -103,7 +103,7 @@
     <string name="always_on_message">Se ha denegado el permiso de conexión VPN. Por favor, compruebe el</string>
     <string name="always_on_message2">para asegurarse de que el VPN Siempre encendido esté desactivada para todas las demás aplicaciones e inténtelo de nuevo</string>
     <string name="response_packet_magic_header">Encabezado del paquete de respuesta</string>
-    <string name="junk_packet_maximum_size">Tamaño máximo del paquete basura</string>
+    <string name="junk_packet_maximum_size">Tamaño máximo del paquete innecesario</string>
     <string name="init_packet_junk_size">Tamaño basura del paquete de inicialización</string>
     <string name="unsure_how">Si no estás seguro de cómo proceder</string>
     <string name="see_the">Ver la</string>
