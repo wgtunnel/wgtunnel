@@ -249,6 +249,6 @@
     <string name="bio_update_required">Vyžadována aktualizace biometrického zabezpečení</string>
     <string name="export_logs">Exportovat uložené protokoly</string>
     <string name="add_tunnel">Přidat tunel</string>
-    <string name="delete_logs">Odstranit a vymazat protokoly</string>
+    <string name="delete_logs">Smazat a vyčistit protokoly</string>
     <string name="dropdown">Rozbalovací nabídka</string>
 </resources>
