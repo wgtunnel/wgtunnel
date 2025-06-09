@@ -188,4 +188,6 @@
     <string name="info">Informations</string>
     <string name="prefer_ipv4">Préférer une connexion IPv4</string>
     <string name="allow">Autoriser</string>
+    <string name="app_permission_title">Pont de contrôle du tunnel WG</string>
+    <string name="app_permission_description">Contrôler les tunnels et les fonctions automatiques des tunnels.</string>
 </resources>
