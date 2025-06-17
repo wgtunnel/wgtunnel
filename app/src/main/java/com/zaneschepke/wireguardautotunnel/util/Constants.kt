@@ -38,4 +38,6 @@ object Constants {
     const val GOOGLE_PLAY_FLAVOR = "google"
     const val STANDALONE_FLAVOR = "standalone"
     const val RELEASE = "release"
+
+    const val BASE_RELEASE_URL = "https://github.com/wgtunnel/wgtunnel/releases/tag/"
 }

@@ -279,4 +279,5 @@
     <string name="use_android_recommended">Use Android\'s recommended method for getting Wi-Fi information, based on
         Android version
     </string>
+    <string name="release_notes">Release notes</string>
 </resources>

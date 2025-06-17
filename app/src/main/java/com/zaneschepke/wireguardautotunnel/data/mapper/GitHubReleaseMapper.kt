@@ -5,11 +5,11 @@ import com.zaneschepke.wireguardautotunnel.domain.model.AppUpdate
 import kotlin.collections.firstOrNull
 
 object GitHubReleaseMapper {
-    fun toAppUpdate(gitHubRelease: GitHubRelease): AppUpdate {
+    fun toAppUpdate(gitHubRelease: GitHubRelease, newVersion: String): AppUpdate {
         with(gitHubRelease) {
             val apkAsset = assets.firstOrNull { it.name.endsWith(".apk") }
             return AppUpdate(
-                version = tagName.removePrefix("v"),
+                version = newVersion,
                 title = name ?: "Update $tagName",
                 releaseNotes = body ?: "No release notes provided",
                 apkUrl = apkAsset?.browserDownloadUrl,

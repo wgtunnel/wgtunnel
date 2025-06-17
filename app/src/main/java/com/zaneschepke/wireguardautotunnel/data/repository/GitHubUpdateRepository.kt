@@ -53,9 +53,9 @@ class GitHubUpdateRepository(
 
                 Timber.i("Latest version: $newVersion, current version: $currentVersion")
                 if (isNightly && newVersion != currentVersion)
-                    return@map GitHubReleaseMapper.toAppUpdate(release)
+                    return@map GitHubReleaseMapper.toAppUpdate(release, newVersion)
                 if (NumberUtils.compareVersions(newVersion, currentVersion) > 0) {
-                    GitHubReleaseMapper.toAppUpdate(release)
+                    GitHubReleaseMapper.toAppUpdate(release, newVersion)
                 } else {
                     null
                 }

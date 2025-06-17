@@ -123,7 +123,7 @@ android {
 
     licensee {
         Constants.allowedLicenses.forEach { allow(it) }
-        allowUrl(Constants.XZING_LICENSE_URL)
+        Constants.allowedLicenseUrls.forEach { allowUrl(it) }
     }
 
     applicationVariants.all {
