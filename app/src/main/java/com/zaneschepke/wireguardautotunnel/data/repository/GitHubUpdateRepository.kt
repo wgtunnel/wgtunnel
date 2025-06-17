@@ -7,6 +7,7 @@ import com.zaneschepke.wireguardautotunnel.data.network.GitHubApi
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.model.AppUpdate
 import com.zaneschepke.wireguardautotunnel.domain.repository.UpdateRepository
+import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.NumberUtils
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -34,18 +35,21 @@ class GitHubUpdateRepository(
             val isNightly = BuildConfig.VERSION_NAME.contains("nightly")
             val release =
                 if (isNightly) {
-                    gitHubApi.getNightlyRelease(githubOwner, githubRepo)
+                    gitHubApi.getNightlyRelease(githubOwner, githubRepo).onFailure(Timber::e)
                 } else {
-                    gitHubApi.getLatestRelease(githubOwner, githubRepo)
+                    gitHubApi.getLatestRelease(githubOwner, githubRepo).onFailure(Timber::e)
                 }
             release.map { release ->
                 val apkAsset =
                     release.assets.find { asset ->
-                        asset.name.startsWith("wgtunnel-full-v") && asset.name.endsWith(".apk")
+                        asset.name.startsWith("wgtunnel-${Constants.STANDALONE_FLAVOR}-v") &&
+                            asset.name.endsWith(".apk")
                     }
                 val newVersion =
-                    apkAsset?.name?.removePrefix("wgtunnel-full-v")?.removeSuffix(".apk")
-                        ?: return@map null
+                    apkAsset
+                        ?.name
+                        ?.removePrefix("wgtunnel-${Constants.STANDALONE_FLAVOR}-v")
+                        ?.removeSuffix(".apk") ?: return@map null
 
                 Timber.i("Latest version: $newVersion, current version: $currentVersion")
                 if (isNightly && newVersion != currentVersion)
