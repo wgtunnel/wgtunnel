@@ -33,7 +33,7 @@ icons = "1.7.8"
 workRuntimeKtxVersion = "2.10.1"
 zxingAndroidEmbedded = "4.3.0"
 coreSplashscreen = "1.0.1"
-gradlePlugins-grgit = "5.3.0"
+gradlePlugins-grgit = "5.3.2"
 
 #plugins
 material = "1.12.0"
