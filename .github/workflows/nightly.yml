@@ -20,7 +20,7 @@ jobs:
       - name: Check for new commits
         id: check
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           NEW_COMMITS=$(git rev-list --count --after="$(date -Iseconds -d '23 hours ago')" ${{ github.sha }})
           echo "new_commits=$NEW_COMMITS" >> $GITHUB_OUTPUT
