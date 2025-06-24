@@ -167,7 +167,7 @@
     <string name="share">Sdílet</string>
     <string name="trusted_ssid_value_description">Odeslat SSID</string>
     <string name="app_settings">nastavení aplikace</string>
-    <string name="debounce_delay">Debounce zpoždění</string>
+    <string name="debounce_delay">Zpoždění odezvy</string>
     <string name="always_on_message">Autorizace připojení VPN byla zamítnuta. Zkontrolujte prosím</string>
     <string name="bio_not_created">Biometrické údaje nebyly vytvořeny</string>
     <string name="bio_not_supported">Biometrie není podporována</string>
