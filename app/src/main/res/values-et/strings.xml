@@ -1,3 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">WG Tunnel</string>
+    <string name="error_file_extension">See pole .conf või .zip fail</string>
+    <string name="vpn_channel_name">VPN-i teavituskanal</string>
+    <string name="turn_off_tunnel">See toiming eeldab, et tunnel pole töös</string>
 </resources>
