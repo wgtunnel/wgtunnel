@@ -153,5 +153,5 @@
     <string name="error_ssid_exists">SSID on juba olemas</string>
     <string name="error_root_denied">Juurkasutaja õigustes kest on keelatud</string>
     <string name="error_no_file_explorer">Failihaldurit pole paigaldatud</string>
-    <string name="set_primary_tunnel">Määra primaarseks tunneliks</string>
+    <string name="set_primary_tunnel">Määra põhilisekstunneliks</string>
 </resources>
