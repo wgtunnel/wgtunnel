@@ -190,4 +190,15 @@
     <string name="monitoring_state_changes">Jälgin oleku muudatusi</string>
     <string name="tunnel_running">Tunnel töötab</string>
     <string name="tunnel_specific_settings">Tunnelikohased seadistused</string>
+    <string name="kernel_not_supported">Kernel pole toetatud</string>
+    <string name="start_auto">Käivita automaatne tunneldus</string>
+    <string name="stop_auto">Lõpeta automaatne tunneldus</string>
+    <string name="quick_actions">Kiirtoimingud</string>
+    <string name="tunnel_control">Tunneli juhtimine</string>
+    <string name="auto_tunnel">Automaatne tunneldus</string>
+    <string name="delete">Kustuta</string>
+    <string name="camera_permission_required">Vajalik on õigus kasutada kaamerat</string>
+    <string name="dropdown">Rippmenüü</string>
+    <string name="splt_tunneling">Jagatud tunneldus</string>
+    <string name="stop">peata</string>
 </resources>
