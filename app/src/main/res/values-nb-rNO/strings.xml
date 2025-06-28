@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">WG Tunnel</string>
+    <string name="app_permission_description">Kontroller tunneler og auto-tunnel egenskaper.</string>
+    <string name="vpn_channel_name">VPN varslingskanal</string>
+</resources>
