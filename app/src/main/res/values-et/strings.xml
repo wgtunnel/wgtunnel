@@ -192,7 +192,7 @@
     <string name="tunnel_specific_settings">Tunnelikohased seadistused</string>
     <string name="kernel_not_supported">Kernel pole toetatud</string>
     <string name="start_auto">Käivita automaatne tunneldus</string>
-    <string name="stop_auto">Lõpeta automaatne tunneldus</string>
+    <string name="stop_auto">Peata automaatne tunneldus</string>
     <string name="quick_actions">Kiirtoimingud</string>
     <string name="tunnel_control">Tunneli juhtimine</string>
     <string name="auto_tunnel">Automaatne tunneldus</string>
@@ -201,4 +201,6 @@
     <string name="dropdown">Rippmenüü</string>
     <string name="splt_tunneling">Jagatud tunneldus</string>
     <string name="stop">peata</string>
+    <string name="stop_on_no_internet">Peata internetiühenduse puudumisel</string>
+    <string name="stop_on_internet_loss">Peata tunnel internetiühenduse kadumisel</string>
 </resources>
