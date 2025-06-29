@@ -115,4 +115,6 @@
     <string name="sec">sek</string>
     <string name="read_logs">Lue lokitiedot</string>
     <string name="mobile_tunnel">Mobiilidatatunneli</string>
+    <string name="restart_at_boot">Käynnistä laitteen käynnistyksen yhteydessä</string>
+    <string name="always_on_message2">varmistaaksesi, että Aina päällä oleva VPN on kytketty pois päältä kaikkien muiden sovellusten osalta ja yritä uudelleen.</string>
 </resources>
