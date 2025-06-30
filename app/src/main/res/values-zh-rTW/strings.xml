@@ -215,4 +215,9 @@
     <string name="wireguard">WireGuard</string>
     <string name="done">完成</string>
     <string name="show_qr">顯示 QR code</string>
+    <string name="optional_default">"可選，預設： "</string>
+    <string name="pre_up">啟動前</string>
+    <string name="post_up">啟動後</string>
+    <string name="pre_down">關閉前</string>
+    <string name="post_down">關閉後</string>
 </resources>
