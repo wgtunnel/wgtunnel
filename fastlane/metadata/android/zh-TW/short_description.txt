@@ -1,1 +1,1 @@
-一款具備進階功能的 WireGuard VPN 客戶端應用程式
+一款具備進階功能的 WireGuard VPN 用戶端應用程式
