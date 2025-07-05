@@ -75,7 +75,6 @@ import javax.inject.Inject
 import javax.inject.Provider
 import kotlin.system.exitProcess
 import org.amnezia.awg.backend.GoBackend.VpnService
-import rikka.shizuku.Shizuku
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -91,11 +90,6 @@ class MainActivity : AppCompatActivity() {
 
     val REQUEST_CODE = 123
 
-    private val requestPermissionResultListener =
-        Shizuku.OnRequestPermissionResultListener { requestCode: Int, grantResult: Int ->
-            onRequestPermissionsResult(requestCode, emptyArray(), intArrayOf(grantResult))
-        }
-
     @SuppressLint("BatteryLife")
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
@@ -106,13 +100,6 @@ class MainActivity : AppCompatActivity() {
             window.isNavigationBarContrastEnforced = false
         }
         super.onCreate(savedInstanceState)
-
-        Shizuku.addRequestPermissionResultListener(requestPermissionResultListener)
-        try {
-            if (!checkPermission()) Shizuku.requestPermission(REQUEST_CODE)
-        } catch (e: Exception) {
-            Timber.e(e)
-        }
 
         val viewModel by viewModels<AppViewModel>()
 
@@ -153,11 +140,6 @@ class MainActivity : AppCompatActivity() {
                         }
                     },
                 )
-
-            val shizukuActivity =
-                rememberLauncherForActivityResult(
-                    ActivityResultContracts.StartActivityForResult()
-                ) {}
 
             LaunchedEffect(appUiState.tunnels) {
                 if (!appViewState.isAppReady) {
@@ -365,22 +347,6 @@ class MainActivity : AppCompatActivity() {
                 networkMonitor.get().sendLocationPermissionsGrantedBroadcast()
             }
             lastLocationPermissionState = hasLocation
-        }
-    }
-
-    private fun checkPermission(): Boolean {
-        if (Shizuku.isPreV11()) {
-            // Pre-v11 is unsupported
-            return false
-        }
-        return if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
-            // Granted
-            true
-        } else if (Shizuku.shouldShowRequestPermissionRationale()) {
-            // Users choose "Deny and don't ask again"
-            false
-        } else {
-            false
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
 import android.os.Build
 import androidx.lifecycle.ViewModel
@@ -46,6 +47,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.amnezia.awg.config.BadConfigException
 import org.amnezia.awg.config.Config
+import rikka.shizuku.Shizuku
 import timber.log.Timber
 import xyz.teamgravity.pin_lock_compose.PinManager
 
@@ -224,15 +226,30 @@ constructor(
         if (detectionMethod == appSettings.wifiDetectionMethod) return
         when (detectionMethod) {
             AndroidNetworkMonitor.WifiDetectionMethod.ROOT -> {
-                val allowed = requestRoot()
-                if (!allowed) return
+                if (!requestRoot()) return
+                saveSettings(appSettings.copy(wifiDetectionMethod = detectionMethod))
             }
-            // TODO check if shizuku available
-            AndroidNetworkMonitor.WifiDetectionMethod.SHIZUKU -> Unit
-            else -> Unit
+            AndroidNetworkMonitor.WifiDetectionMethod.SHIZUKU -> {
+                Shizuku.addRequestPermissionResultListener(
+                    Shizuku.OnRequestPermissionResultListener { requestCode: Int, grantResult: Int
+                        ->
+                        if (grantResult != PERMISSION_GRANTED)
+                            return@OnRequestPermissionResultListener
+                        viewModelScope.launch {
+                            saveSettings(appSettings.copy(wifiDetectionMethod = detectionMethod))
+                        }
+                    }
+                )
+                try {
+                    if (Shizuku.checkSelfPermission() != PERMISSION_GRANTED)
+                        Shizuku.requestPermission(123)
+                } catch (e: Exception) {
+                    Timber.e(e)
+                    handleShowMessage(StringValue.StringResource(R.string.shizuku_not_detected))
+                }
+            }
+            else -> saveSettings(appSettings.copy(wifiDetectionMethod = detectionMethod))
         }
-        saveSettings(appSettings.copy(wifiDetectionMethod = detectionMethod))
-        handleShowMessage(StringValue.StringResource(R.string.app_restart_required))
     }
 
     private fun handleToggleSelectAllTunnels(tunnels: List<TunnelConf>) =
