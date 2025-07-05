@@ -203,4 +203,15 @@
     <string name="stop">peata</string>
     <string name="stop_on_no_internet">Peata internetiühenduse puudumisel</string>
     <string name="stop_on_internet_loss">Peata tunnel internetiühenduse kadumisel</string>
+    <string name="enable_app_lock">Kasuta rakenduse lukustust</string>
+    <string name="restart_on_ping">Pingimise mittetoimimisel käivita uuesti (beeta)</string>
+    <string name="mobile_data_tunnel">Määra mobiilse andmeside tunneliks</string>
+    <string name="use_tunnel_on_wifi_name">Kasuta tunnelit WiFi nime puhul</string>
+    <string name="kernel">Tuum/Kernel</string>
+    <string name="error_file_format">Vigane tunneli seadistuste vorming</string>
+    <string name="mobile_tunnel">Mobiilside andmetunnel</string>
+    <string name="launch_app_settings">Käivita rakenduse seadistused</string>
+    <string name="use_wildcards">Kasuta nimedes metamärke</string>
+    <string name="wildcards_active">Metamärgid on kasutusel</string>
+    <string name="prefer_ipv4">Eelista</string>
 </resources>
