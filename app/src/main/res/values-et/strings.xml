@@ -213,5 +213,12 @@
     <string name="launch_app_settings">Käivita rakenduse seadistused</string>
     <string name="use_wildcards">Kasuta nimedes metamärke</string>
     <string name="wildcards_active">Metamärgid on kasutusel</string>
-    <string name="prefer_ipv4">Eelista</string>
+    <string name="prefer_ipv4">Eelista IPv4 ühendust</string>
+    <string name="server_ipv4">IPv4 hostinime nimelahendus</string>
+    <string name="junk_packet_count">Rämpspakettide arv</string>
+    <string name="junk_packet_minimum_size">Rämpspaketi miinimumsuurus</string>
+    <string name="junk_packet_maximum_size">Rämpspaketi maksimumsuurus</string>
+    <string name="init_packet_junk_size">Alustava paketi rämpsuosa suurus</string>
+    <string name="response_packet_junk_size">Vastuspaketi rämpsuosa suurus</string>
+    <string name="init_packet_magic_header">Alustava paketi päise rämpsuosa suurus</string>
 </resources>
