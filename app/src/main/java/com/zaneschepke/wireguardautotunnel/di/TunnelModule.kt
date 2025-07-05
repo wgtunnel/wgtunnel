@@ -21,7 +21,9 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.map
 import org.amnezia.awg.backend.Backend
 import org.amnezia.awg.backend.GoBackend
 import org.amnezia.awg.backend.RootTunnelActionHandler
@@ -112,11 +114,22 @@ class TunnelModule {
     fun provideNetworkMonitor(
         @ApplicationContext context: Context,
         settingsRepository: AppSettingRepository,
+        @ApplicationScope applicationScope: CoroutineScope,
+        @AppShell appShell: RootShell,
     ): NetworkMonitor {
-        val method = runBlocking { settingsRepository.get().wifiDetectionMethod }
         return AndroidNetworkMonitor(
             context,
-            AndroidNetworkMonitor.WifiDetectionMethod.fromValue(method.value),
+            object : AndroidNetworkMonitor.ConfigurationListener {
+                override val detectionMethod: Flow<AndroidNetworkMonitor.WifiDetectionMethod>
+                    get() =
+                        settingsRepository.flow
+                            .distinctUntilChangedBy { it.wifiDetectionMethod }
+                            .map { it.wifiDetectionMethod }
+
+                override val rootShell: RootShell
+                    get() = appShell
+            },
+            applicationScope,
         )
     }
 

@@ -12,25 +12,29 @@ import android.net.NetworkRequest
 import android.net.wifi.WifiManager
 import android.os.Build
 import com.wireguard.android.util.RootShell
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
+import com.zaneschepke.networkmonitor.shizuku.ShizukuShell
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-class AndroidNetworkMonitor(context: Context, val wifiDetectionMethod: WifiDetectionMethod) :
-    NetworkMonitor {
+class AndroidNetworkMonitor(
+    private val appContext: Context,
+    private val configurationListener: ConfigurationListener,
+    private val applicationScope: CoroutineScope,
+) : NetworkMonitor {
+
+    interface ConfigurationListener {
+        val detectionMethod: Flow<WifiDetectionMethod>
+        val rootShell: RootShell
+    }
 
     companion object {
         const val LOCATION_GRANTED = "LOCATION_PERMISSIONS_GRANTED"
         const val LOCATION_SERVICES_FILTER = "android.location.PROVIDERS_CHANGED"
+        const val ANDROID_UNKNOWN_SSID = "<unknown ssid>"
     }
 
     enum class WifiDetectionMethod(val value: Int) {
@@ -45,14 +49,12 @@ class AndroidNetworkMonitor(context: Context, val wifiDetectionMethod: WifiDetec
         }
     }
 
-    private val appContext = context.applicationContext
     private val packageName = appContext.packageName
     private val connectivityManager =
         appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     private val wifiManager = appContext.getSystemService(Context.WIFI_SERVICE) as WifiManager?
     private val locationManager =
         appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    private val rootShell = RootShell(context)
 
     private val wifiMutex = Mutex()
 
@@ -74,16 +76,26 @@ class AndroidNetworkMonitor(context: Context, val wifiDetectionMethod: WifiDetec
 
     data class TransportState(val connected: Boolean = false)
 
-    private val wifiFlow: Flow<WifiState> = callbackFlow {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val wifiFlow: Flow<WifiState> =
+        configurationListener.detectionMethod.flatMapLatest { detectionMethod
+            -> // cancels previous flow
+            createWifiNetworkCallbackFlow(detectionMethod) // Create a new flow for each new method
+        }
+
+    private fun createWifiNetworkCallbackFlow(
+        detectionMethod: WifiDetectionMethod
+    ): Flow<WifiState> = callbackFlow {
         @Suppress("DEPRECATION")
-        suspend fun getWifiSsid(): String? {
+        suspend fun getWifiSsid(): String {
             return withContext(ioDispatcher) {
-                if (wifiManager == null) return@withContext null
+                if (wifiManager == null) return@withContext ANDROID_UNKNOWN_SSID
                 try {
                     wifiManager.connectionInfo?.ssid?.trim('"')?.takeIf { it.isNotEmpty() }
+                        ?: ANDROID_UNKNOWN_SSID
                 } catch (e: Exception) {
                     Timber.e(e)
-                    null
+                    ANDROID_UNKNOWN_SSID
                 }
             }
         }
@@ -93,7 +105,7 @@ class AndroidNetworkMonitor(context: Context, val wifiDetectionMethod: WifiDetec
                 val newSsid = getWifiSsid()
                 val securityType = wifiManager?.getCurrentSecurityType()
                 // Only update if new SSID is valid; preserve existing valid SSID otherwise
-                if (newSsid != null && newSsid != WifiManager.UNKNOWN_SSID) {
+                if (newSsid != WifiManager.UNKNOWN_SSID) {
                     currentSsid = newSsid
                     trySend(WifiState(wifiConnected, currentSsid, securityType))
                 } else if (currentSsid == null || currentSsid == WifiManager.UNKNOWN_SSID) {
@@ -113,7 +125,7 @@ class AndroidNetworkMonitor(context: Context, val wifiDetectionMethod: WifiDetec
                         Timber.d(
                             "Received update: Precise and all-the-time location permissions are enabled"
                         )
-                        launch { handleUnknownWifi() }
+                        applicationScope.launch { handleUnknownWifi() }
                     }
                 }
             }
@@ -130,7 +142,8 @@ class AndroidNetworkMonitor(context: Context, val wifiDetectionMethod: WifiDetec
                         Timber.d(
                             "Location Services state changed. Enabled: $isLocationServicesEnabled, GPS: $isGpsEnabled, Network: $isNetworkEnabled"
                         )
-                        if (isLocationServicesEnabled) launch { handleUnknownWifi() }
+                        if (isLocationServicesEnabled)
+                            applicationScope.launch { handleUnknownWifi() }
                     }
                 }
             }
@@ -180,22 +193,24 @@ class AndroidNetworkMonitor(context: Context, val wifiDetectionMethod: WifiDetec
                 Timber.d("Wi-Fi onAvailable: network=$network")
                 activeWifiNetworks.add(network.toString())
                 currentSsid =
-                    when (wifiDetectionMethod) {
-                        WifiDetectionMethod.DEFAULT -> {
-                            if (networkCapabilities == null) {
-                                Timber.d("Capabilities not available, getting SSID via legacy API")
-                                getWifiSsid()
-                            } else
-                                networkCapabilities.getWifiSsid().also {
-                                    Timber.d("Got SSID from capabilities")
+                    try {
+                            when (detectionMethod) {
+                                    WifiDetectionMethod.DEFAULT ->
+                                        networkCapabilities?.getWifiSsid() ?: getWifiSsid()
+                                    WifiDetectionMethod.LEGACY -> getWifiSsid()
+                                    WifiDetectionMethod.ROOT ->
+                                        configurationListener.rootShell.getCurrentWifiName()
+                                    WifiDetectionMethod.SHIZUKU ->
+                                        ShizukuShell(applicationScope)
+                                            .singleResponseCommand(WIFI_SSID_SHELL_COMMAND)
                                 }
+                                .trim()
+                                .replace(Regex("[\n\r]"), "")
+                        } catch (e: Exception) {
+                            Timber.e(e)
+                            ANDROID_UNKNOWN_SSID
                         }
-
-                        WifiDetectionMethod.LEGACY -> getWifiSsid()
-                        WifiDetectionMethod.ROOT -> rootShell.getCurrentWifiName()
-                        // TODO implement Shizuku
-                        else -> networkCapabilities?.getWifiSsid() ?: getWifiSsid()
-                    }
+                        .also { Timber.d("Current SSID via ${detectionMethod.name}: $it") }
                 securityType = wifiManager?.getCurrentSecurityType()
                 wifiConnected = true
                 trySend(
@@ -206,30 +221,37 @@ class AndroidNetworkMonitor(context: Context, val wifiDetectionMethod: WifiDetec
 
         val callback =
             when {
-                wifiDetectionMethod == WifiDetectionMethod.LEGACY ||
+                detectionMethod == WifiDetectionMethod.LEGACY ||
                     Build.VERSION.SDK_INT < Build.VERSION_CODES.S ->
                     object : ConnectivityManager.NetworkCallback() {
                         override fun onAvailable(network: Network) {
-                            Timber.i("Wi-Fi change detected using old API")
-                            launch { handleOnWifiAvailable(network, null) }
+                            applicationScope.launch { handleOnWifiAvailable(network, null) }
                         }
 
                         override fun onLost(network: Network) {
-                            launch { handleOnWifiLost(network) }
+                            applicationScope.launch { handleOnWifiLost(network) }
                         }
                     }
                 else ->
                     object : ConnectivityManager.NetworkCallback(FLAG_INCLUDE_LOCATION_INFO) {
 
+                        override fun onAvailable(network: Network) {
+                            if (detectionMethod != WifiDetectionMethod.DEFAULT)
+                                applicationScope.launch { handleOnWifiAvailable(network, null) }
+                        }
+
                         override fun onCapabilitiesChanged(
                             network: Network,
                             networkCapabilities: NetworkCapabilities,
                         ) {
-                            launch { handleOnWifiAvailable(network, networkCapabilities) }
+                            if (detectionMethod == WifiDetectionMethod.DEFAULT)
+                                applicationScope.launch {
+                                    handleOnWifiAvailable(network, networkCapabilities)
+                                }
                         }
 
                         override fun onLost(network: Network) {
-                            launch { handleOnWifiLost(network) }
+                            applicationScope.launch { handleOnWifiLost(network) }
                         }
                     }
             }
@@ -244,6 +266,7 @@ class AndroidNetworkMonitor(context: Context, val wifiDetectionMethod: WifiDetec
         trySend(WifiState())
 
         awaitClose {
+            Timber.d("Closing WifiNetworkCallbackFlow for method: ${detectionMethod.name}")
             connectivityManager.unregisterNetworkCallback(callback)
             appContext.unregisterReceiver(locationPermissionReceiver)
             appContext.unregisterReceiver(locationServicesReceiver)

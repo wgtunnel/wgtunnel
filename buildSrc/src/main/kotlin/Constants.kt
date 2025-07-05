@@ -13,5 +13,5 @@ object Constants {
 	const val PRERELEASE = "prerelease"
 
     val allowedLicenses = listOf("MIT", "Apache-2.0", "BSD-3-Clause")
-    val allowedLicenseUrls = listOf("https://github.com/journeyapps/zxing-android-embedded/blob/master/COPYING")
+    val allowedLicenseUrls = listOf("https://github.com/journeyapps/zxing-android-embedded/blob/master/COPYING", "https://github.com/RikkaApps/Shizuku-API/blob/master/LICENSE")
 }
