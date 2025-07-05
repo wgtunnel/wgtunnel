@@ -225,10 +225,7 @@ constructor(
     ) {
         if (detectionMethod == appSettings.wifiDetectionMethod) return
         when (detectionMethod) {
-            AndroidNetworkMonitor.WifiDetectionMethod.ROOT -> {
-                if (!requestRoot()) return
-                saveSettings(appSettings.copy(wifiDetectionMethod = detectionMethod))
-            }
+            AndroidNetworkMonitor.WifiDetectionMethod.ROOT -> if (!requestRoot()) return
             AndroidNetworkMonitor.WifiDetectionMethod.SHIZUKU -> {
                 Shizuku.addRequestPermissionResultListener(
                     Shizuku.OnRequestPermissionResultListener { requestCode: Int, grantResult: Int
@@ -242,14 +239,17 @@ constructor(
                 )
                 try {
                     if (Shizuku.checkSelfPermission() != PERMISSION_GRANTED)
-                        Shizuku.requestPermission(123)
+                        return Shizuku.requestPermission(123)
                 } catch (e: Exception) {
                     Timber.e(e)
-                    handleShowMessage(StringValue.StringResource(R.string.shizuku_not_detected))
+                    return handleShowMessage(
+                        StringValue.StringResource(R.string.shizuku_not_detected)
+                    )
                 }
             }
-            else -> saveSettings(appSettings.copy(wifiDetectionMethod = detectionMethod))
+            else -> Unit
         }
+        saveSettings(appSettings.copy(wifiDetectionMethod = detectionMethod))
     }
 
     private fun handleToggleSelectAllTunnels(tunnels: List<TunnelConf>) =

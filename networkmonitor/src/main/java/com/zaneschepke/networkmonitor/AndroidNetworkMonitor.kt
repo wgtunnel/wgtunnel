@@ -266,8 +266,14 @@ class AndroidNetworkMonitor(
         trySend(WifiState())
 
         awaitClose {
-            Timber.d("Closing WifiNetworkCallbackFlow for method: ${detectionMethod.name}")
-            connectivityManager.unregisterNetworkCallback(callback)
+            try {
+                connectivityManager.unregisterNetworkCallback(callback)
+            } catch (e: IllegalArgumentException) {
+                Timber.e(
+                    e,
+                    "Flow failed to unregister NetworkCallback, was already unregistered or not registered correctly.",
+                )
+            }
             appContext.unregisterReceiver(locationPermissionReceiver)
             appContext.unregisterReceiver(locationServicesReceiver)
         }
@@ -342,6 +348,7 @@ class AndroidNetworkMonitor(
                     .also { Timber.d("NetworkStatus: $it") }
             }
             .distinctUntilChanged()
+            .shareIn(applicationScope, SharingStarted.WhileSubscribed(5000), replay = 1)
 
     override fun sendLocationPermissionsGrantedBroadcast() {
         val action = "$packageName.$LOCATION_GRANTED"
