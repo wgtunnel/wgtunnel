@@ -72,7 +72,6 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import javax.inject.Provider
 import kotlin.system.exitProcess
 import org.amnezia.awg.backend.GoBackend.VpnService
 import timber.log.Timber
@@ -84,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var tunnelManager: TunnelManager
 
-    @Inject lateinit var networkMonitor: Provider<NetworkMonitor>
+    @Inject lateinit var networkMonitor: NetworkMonitor
 
     private var lastLocationPermissionState: Boolean? = null
 
@@ -344,7 +343,7 @@ class MainActivity : AppCompatActivity() {
         if (lastLocationPermissionState != hasLocation) {
             Timber.d("Location permission changed to: $hasLocation")
             if (hasLocation) {
-                networkMonitor.get().sendLocationPermissionsGrantedBroadcast()
+                networkMonitor.sendLocationPermissionsGrantedBroadcast()
             }
             lastLocationPermissionState = hasLocation
         }
