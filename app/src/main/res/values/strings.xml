@@ -280,4 +280,5 @@
         Android version
     </string>
     <string name="release_notes">Release notes</string>
+    <string name="shizuku_not_detected">Shizuku not detected</string>
 </resources>

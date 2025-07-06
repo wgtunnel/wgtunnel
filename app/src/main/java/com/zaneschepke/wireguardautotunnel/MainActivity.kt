@@ -87,6 +87,8 @@ class MainActivity : AppCompatActivity() {
 
     private var lastLocationPermissionState: Boolean? = null
 
+    val REQUEST_CODE = 123
+
     @SuppressLint("BatteryLife")
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(

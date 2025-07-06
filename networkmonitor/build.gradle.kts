@@ -43,5 +43,9 @@ dependencies {
 
     implementation(libs.tunnel)
 
+    // shizuku
+    implementation(libs.shizuku.api)
+    implementation(libs.shizuku.provider)
+
     implementation(libs.timber)
 }

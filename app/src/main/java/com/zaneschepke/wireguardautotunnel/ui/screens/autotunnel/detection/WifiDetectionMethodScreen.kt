@@ -28,8 +28,6 @@ fun WifiDetectionMethodScreen(uiState: AppUiState, viewModel: AppViewModel) {
         enumValues<AndroidNetworkMonitor.WifiDetectionMethod>().forEach {
             val title = it.asString(context)
             val description = it.asDescriptionString(context)
-            // TODO skip shizuku for now
-            if (it == AndroidNetworkMonitor.WifiDetectionMethod.SHIZUKU) return@forEach
             IconSurfaceButton(
                 title = title,
                 onClick = { viewModel.handleEvent(AppEvent.SetDetectionMethod(it)) },

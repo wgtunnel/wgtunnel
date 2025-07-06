@@ -219,6 +219,10 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.slf4j.android)
+
+    // shizuku
+    implementation(libs.shizuku.api)
+    implementation(libs.shizuku.provider)
 }
 
 tasks.register<Copy>("copyLicenseeJsonToAssets") {

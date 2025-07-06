@@ -204,6 +204,8 @@ fun WifiTunnelingItems(
                                 if (
                                     uiState.appSettings.wifiDetectionMethod ==
                                         AndroidNetworkMonitor.WifiDetectionMethod.ROOT ||
+                                        uiState.appSettings.wifiDetectionMethod ==
+                                            AndroidNetworkMonitor.WifiDetectionMethod.SHIZUKU ||
                                         isWifiNameReadable()
                                 ) {
                                     viewModel.handleEvent(AppEvent.SaveTrustedSSID(ssid))
