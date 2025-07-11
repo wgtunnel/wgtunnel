@@ -75,7 +75,6 @@ fun TunnelList(
             val selected = remember(selectedTunnels) { selectedTunnels.any { it.id == tunnel.id } }
             TunnelRowItem(
                 state = tunnelState,
-                expanded = appUiState.appState.expandedTunnelIds.contains(tunnel.id),
                 isSelected = selected,
                 tunnel = tunnel,
                 tunnelState = tunnelState,
@@ -86,9 +85,6 @@ fun TunnelList(
                         navController.navigate(Route.TunnelOptions(tunnel.id))
                         viewModel.handleEvent(AppEvent.ClearSelectedTunnels)
                     }
-                },
-                onDoubleClick = {
-                    viewModel.handleEvent(AppEvent.ToggleTunnelStatsExpanded(tunnel.id))
                 },
                 onToggleSelectedTunnel = {
                     viewModel.handleEvent(AppEvent.ToggleSelectedTunnel(it))

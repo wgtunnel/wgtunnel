@@ -30,10 +30,9 @@ fun ExpandingRowListItem(
     text: String,
     onHold: () -> Unit,
     onClick: () -> Unit,
-    onDoubleClick: () -> Unit,
     trailing: @Composable () -> Unit,
     isSelected: Boolean,
-    expanded: (@Composable () -> Unit)?,
+    expanded: @Composable () -> Unit,
 ) {
     val isTv = LocalIsAndroidTV.current
     val haptic = LocalHapticFeedback.current
@@ -57,7 +56,6 @@ fun ExpandingRowListItem(
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onHold()
                             },
-                            onDoubleClick = onDoubleClick,
                         )
                     } else Modifier
                 )
@@ -84,7 +82,7 @@ fun ExpandingRowListItem(
                 }
                 trailing()
             }
-            expanded?.invoke()
+            expanded()
         }
     }
 }
