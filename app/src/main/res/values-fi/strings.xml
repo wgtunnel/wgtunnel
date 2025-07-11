@@ -115,4 +115,16 @@
     <string name="sec">sek</string>
     <string name="read_logs">Lue lokitiedot</string>
     <string name="mobile_tunnel">Mobiilidatatunneli</string>
+    <string name="restart_at_boot">Käynnistä laitteen käynnistyksen yhteydessä</string>
+    <string name="always_on_message2">varmistaaksesi, että Aina päällä oleva VPN on kytketty pois päältä kaikkien muiden sovellusten osalta ja yritä uudelleen</string>
+    <string name="background_location_message">Tätä toimintoa varten tulee sijainnin käyttölupa olla aina sallittuna ja/tai tarkka sijainti käytössä. Katso</string>
+    <string name="app_settings">sovelluksen asetukset</string>
+    <string name="root_accepted">Root hyväksytty</string>
+    <string name="set_custom_ping_ip">Määrittele pingin ip-osoite</string>
+    <string name="set_custom_ping_internal">Pingin aikaväli (sek)</string>
+    <string name="show_amnezia_properties">Näytä Amnezia-asetukset</string>
+    <string name="launch_app_settings">Käynnistä sovelluksen asetukset</string>
+    <string name="use_wildcards">Käytä jokerimerkkiä nimissä</string>
+    <string name="wildcards_active">Jokerimerkit aktivoitu</string>
+    <string name="tunnel_running">Tunneli käytössä</string>
 </resources>

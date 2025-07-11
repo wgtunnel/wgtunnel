@@ -1,0 +1,14 @@
+Funktsionaalsused:
+
+- Tunneli lisamine .conf faili, .zip faili, käsitsi sisestuse või QR-koodi alusel
+- VPN-i automaatne ühendamine konkreetse WiFi SSID, traadiga võrgu või mobiilse andmeside alusel
+- Jagatud tunneldus koos otsinguga
+- WireGuardi tugi nii kerneli, kui kasutajarežiimis
+- Amnezia tugi kasutajarežiimis nii pakettide süvakontrolli kui tsenseerimise vastu
+- Alati toimiva VPN-i tugi
+- Amnezia ja WireGuardi tunnelite eksport zip-faili
+- Androidi kiirvalikute tugi VPN-i sisselülitamiseks või katkestamiseks
+- Põhitunneli staatiliste linkide tugi automaatseks lõimimiseks
+- Sinu määratud eelistuste automatiseerimise tugi kõikide tunnelite puhul
+- Teenuse käivitamine koos nutiseadme käivitamisega
+- Säästlik akukasutus
