@@ -2,3 +2,8 @@
 <resources>
     <string name="app_name">WG Tunnel</string>
 </resources>
+
+<resources>
+    <string name="app_name">WG Tunnel</string>
+    <string name="app_permission_description">Alagutak és automatikus alagút funkciók vezérlése.</string>
+</resources>

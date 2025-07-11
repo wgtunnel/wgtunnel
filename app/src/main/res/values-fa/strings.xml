@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_permission_title">پل کنترل تونل وایرگارد</string>
+    <string name="privacy_policy">مشاهده سیاست حفظ حریم خصوصی</string>
+    <string name="vpn_channel_name">کانال اطلاع رسانی VPN</string>
+    <string name="error_file_extension">فایل .conf یا .zip نیست.</string>
+    <string name="turn_off_tunnel">اقدام نیاز به تونل زنی دارد</string>
+    <string name="no_tunnels">هنوز تونلی اضافه نشده!</string>
+    <string name="tunnels">تونل‌ها</string>
+    <string name="tunnel_mobile_data">تونل روی داده تلفن همراه</string>
+    <string name="okay">باشه</string>
+    <string name="prominent_background_location_title">افشای موقعیت مکانی پس‌زمینه</string>
+    <string name="thank_you">از استفاده شما از تونل WG متشکریم!</string>
+    <string name="trusted_ssid_value_description">ارسال SSID</string>
+    <string name="add_tunnels_text">از فایل یا زیپ اضافه کنید</string>
+    <string name="app_permission_description">تونل‌های کنترل و ویژگی‌های تونل خودکار.</string>
+    <string name="tunnel_on_ethernet">تونل روی اترنت</string>
+    <string name="prominent_background_location_message">این ویژگی برای فعال کردن نظارت بر SSID وای‌فای، حتی در زمان بسته بودن برنامه، به مجوز موقعیت مکانی در پس‌زمینه نیاز دارد. برای جزئیات بیشتر، لطفاً به سیاست حفظ حریم خصوصی که در صفحه پشتیبانی لینک شده است، مراجعه کنید.</string>
+    <string name="app_name">WG Tunnel</string>
+</resources>

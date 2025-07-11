@@ -1,0 +1,8 @@
+Nouveautés :
+- Mise à jour de l'interface utilisateur
+- Ajouter un tunnel via l'URL
+- Correction des bugs du VPN kill switch
+- Correction des crashs du service tunnel
+- Correction du ping et du redémarrage en cas de changement de configuration
+- Informations sur le réseau dans l'interface utilisateur
+- Diverses autres corrections et améliorations
