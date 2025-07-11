@@ -190,20 +190,4 @@
     <string name="allow">Autoriser</string>
     <string name="app_permission_title">Pont de contrôle du tunnel WG</string>
     <string name="app_permission_description">Contrôler les tunnels et les fonctions automatiques des tunnels.</string>
-    <string name="select">Sélectionner</string>
-    <string name="join_telegram">Rejoindre la communauté Telegram</string>
-    <string name="join_matrix">Rejoindre la communauté Matrix</string>
-    <string name="auto_tunnel_channel_description">Un canal pour les notifications de l\'état du tunnel automatique</string>
-    <string name="tunnel_control">Contrôle du tunnel</string>
-    <string name="auto_tunnel">Tunnel automatique</string>
-    <string name="add_tunnel">Ajouter un tunnel</string>
-    <string name="error_download_failed">Le téléchargement de la configuration a échouée</string>
-    <string name="multiple">Multiple</string>
-    <string name="add_from_url">Ajouter depuis un URL</string>
-    <string name="enter_config_url">Saisissez l\'URL de configuration</string>
-    <string name="search">Rechercher</string>
-    <string name="save">Sauvegarder</string>
-    <string name="copy">Copier</string>
-    <string name="info">Informations</string>
-    <string name="prefer_ipv4">Préférer une connexion IPv4</string>
 </resources>
