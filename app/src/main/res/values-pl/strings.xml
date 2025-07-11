@@ -135,7 +135,7 @@
     <string name="launch_app_settings">Uruchom ustawienia aplikacji</string>
     <string name="learn_more">Dowiedz się więcej</string>
     <string name="wifi_name_via_shell">Nazwa sieci Wi-Fi poprzez powłokę</string>
-    <string name="use_root_shell_for_wifi">Użyj powłoki użytkownika root, aby uzyskać nazwę sieci Wi-Fi</string>
+    <string name="use_root_shell_for_wifi">Użyj powłoki użytkownika root, aby uzyskać informacje o sieci Wi-Fi, dzięki czemu nie będzie potrzeby uzyskiwania uprawnień do lokalizacji</string>
     <string name="kernel_not_supported">Jądro nie jest obsługiwane</string>
     <string name="stop_auto">Zatrzymaj autotunel</string>
     <string name="tunnel_running">Tunel jest uruchomiony</string>
@@ -244,7 +244,7 @@
     <string name="allow">Zezwól</string>
     <string name="export_success">Eksport zakończony powodzeniem</string>
     <string name="licenses">Licencje</string>
-    <string name="update_check_unsupported">Sprawdzanie aktualizacji nie jest obsługiwane w tym typie kompilacji.</string>
+    <string name="update_check_unsupported">Sprawdzanie aktualizacji nie jest obsługiwane dla tego typu kompilacji.</string>
     <string name="flavor_template">Wariant: %1$s</string>
     <string name="darker">Ciemniejszy</string>
     <string name="amoled">AMOLED</string>
@@ -253,4 +253,17 @@
     <string name="amnezia">Amnezia</string>
     <string name="wireguard">WireGuard</string>
     <string name="done">Gotowe</string>
+    <string name="current_template">Bieżące: %1$s</string>
+    <string name="use_deprecated_wifi_api">Użyj przestarzałego interfejsu API Wi-Fi</string>
+    <string name="app_restart_required">Wymagane ponowne uruchomienie aplikacji</string>
+    <string name="wifi_detection_method">Metoda wykrywania Wi-Fi</string>
+    <string name="_default">Domyślna</string>
+    <string name="legacy">Przestarzała</string>
+    <string name="root">Root</string>
+    <string name="shizuku">Shizuku</string>
+    <string name="legacy_api_description">Użyj przestarzałej metody pobierania informacji o sieci Wi-Fi z systemu Android 12, która ogranicza zapytania o lokalizację, ale może nie działać niezawodnie na nowszych urządzeniach</string>
+    <string name="use_shell_via_shizuku">Użyj powłoki za pośrednictwem Shizuku, aby uzyskać informacje o sieci Wi-Fi, dzięki czemu unikniesz konieczności uzyskania uprawnień do lokalizacji na urządzeniach bez uprawnień użytkownika root</string>
+    <string name="use_android_recommended">Użyj zalecanej przez system Android metody uzyskiwania informacji o sieci Wi-Fi w zależności od wersji systemu</string>
+    <string name="release_notes">Informacje o wydaniu</string>
+    <string name="shizuku_not_detected">Nie wykryto Shizuku</string>
 </resources>
