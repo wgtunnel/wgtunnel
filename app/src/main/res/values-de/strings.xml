@@ -252,4 +252,6 @@
     <string name="done">Erledigt</string>
     <string name="show_qr">QR anzeigen</string>
     <string name="amnezia">Amnezia</string>
+    <string name="shizuku">Shizuku</string>
+    <string name="legacy_api_description">Eine unter Android 12 veraltete Methode zum Abrufen von Wi-Fi-Informationen verwenden, die Standortabfragen einschränkt, aber auf neueren Geräten möglicherweise nicht zuverlässig funktioniert.</string>
 </resources>
