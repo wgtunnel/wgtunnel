@@ -123,7 +123,7 @@
     <string name="logs">Logeinträge</string>
     <string name="kernel_not_supported">Kernel nicht unterstützt</string>
     <string name="trusted_wifi_names">Vertrauenswürdige WLAN Namen</string>
-    <string name="use_root_shell_for_wifi">Root-Shell verwenden, um WLAN-Namen zu ermitteln</string>
+    <string name="use_root_shell_for_wifi">Root-Shell zum Abrufen von Wi-Fi-Informationen verwenden, so dass keine Standortberechtigungen erforderlich sind</string>
     <string name="light">Hell</string>
     <string name="add_wifi_name">WLAN Namen hinzufügen</string>
     <string name="dark">Dunkel</string>
@@ -253,5 +253,16 @@
     <string name="show_qr">QR anzeigen</string>
     <string name="amnezia">Amnezia</string>
     <string name="shizuku">Shizuku</string>
-    <string name="legacy_api_description">Eine unter Android 12 veraltete Methode zum Abrufen von Wi-Fi-Informationen verwenden, die Standortabfragen einschränkt, aber auf neueren Geräten möglicherweise nicht zuverlässig funktioniert.</string>
+    <string name="legacy_api_description">Eine unter Android 12 veraltete Methode zum Abrufen von Wi-Fi-Informationen verwenden, die Standortabfragen einschränkt, aber auf neueren Geräten möglicherweise nicht zuverlässig funktioniert</string>
+    <string name="use_shell_via_shizuku">Shell über Shizuku zum Abrufen von Wi-Fi-Informationen verwenden, wodurch die Notwendigkeit einer Standortgenehmigung auf nichtgerooteten Geräten vermieden wird</string>
+    <string name="use_android_recommended">Von Android empfohlene Methode zum Abrufen von Wi-Fi-Informationen verwenden, je nach Android-Version</string>
+    <string name="release_notes">Release Notes</string>
+    <string name="shizuku_not_detected">Shizuku nicht entdeckt</string>
+    <string name="current_template">Aktuell: %1$s</string>
+    <string name="use_deprecated_wifi_api">Veraltete Wi-Fi-API verwenden</string>
+    <string name="app_restart_required">Neustart der App erforderlich</string>
+    <string name="wifi_detection_method">Wi-Fi-Erkennungsmethode</string>
+    <string name="_default">Standard</string>
+    <string name="legacy">Veraltet</string>
+    <string name="root">Root</string>
 </resources>
