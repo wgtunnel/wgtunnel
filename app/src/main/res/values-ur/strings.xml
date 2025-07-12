@@ -150,7 +150,7 @@
     <string name="unsure_how">اگر آپ کو یقین نہیں کہ کیسے آگے بڑھیں</string>
     <string name="use_tunnel_on_wifi_name">وائی فائی نام پر ٹنل استعمال کریں</string>
     <string name="optional_default">"اختیاری، طہ شدہ: "</string>
-    <string name="use_root_shell_for_wifi">وائی فائی کا نام حاصل کرنے کے لیے روٹ شیل کا استعمال کریں</string>
+    <string name="use_root_shell_for_wifi">وائی فائی کی معلومات حاصل کرنے کے لیے روٹ شیل کا استعمال کریں، مقام کی اجازت کی ضرورت کو روکتے ہوئے</string>
     <string name="response_packet_junk_size">رسپانس پیکٹ جنک سائز</string>
     <string name="junk_packet_minimum_size">جنک پیکٹ کا کم از کم سائز</string>
     <string name="mobile_data_tunnel">موبائل ڈیٹا ٹنل کے طور پر سیٹ کریں</string>
@@ -246,10 +246,23 @@
     <string name="darker">بہت گہرا</string>
     <string name="amoled">ایمولیڈ</string>
     <string name="security_template">سیکیورٹی: %1$s</string>
-    <string name="update_check_unsupported">تازہ کاری معائنہ اس قسم کی تعمیر کی حمایت نہیں کرتا ہے۔</string>
+    <string name="update_check_unsupported">اس قسم کی تعمیر کے لیے تازہ کاری معائنہ تعاون یافتہ نہیں ہے۔</string>
     <string name="flavor_template">ذائقہ: %1$s</string>
     <string name="show_qr">کیو آر دکھائیں</string>
     <string name="amnezia">ایمنیزیا</string>
     <string name="wireguard">وائرگارڈ</string>
     <string name="done">ہوگیا</string>
+    <string name="current_template">موجودہ: %1$s</string>
+    <string name="use_deprecated_wifi_api">فرسودہ وائی فائی سے پی آئی استعمال کریں</string>
+    <string name="app_restart_required">ایپ کو دوبارہ شروع کرنے کی ضرورت ہے</string>
+    <string name="wifi_detection_method">وائی فائی کا پتہ لگانے کا طریقہ</string>
+    <string name="_default">طے شدہ</string>
+    <string name="legacy">میراث</string>
+    <string name="root">رووٹ</string>
+    <string name="shizuku">شیزوکو</string>
+    <string name="legacy_api_description">وائی فائی کی معلومات حاصل کرنے کے لیے ایک اینڈرائڈ 12 فرسودہ طریقہ استعمال کریں جو مقام کے استفسارات کو محدود کرتا ہے، لیکن ہو سکتا ہے کہ نئے آلات پر قابل اعتماد طریقے سے کام نہ کرے</string>
+    <string name="use_shell_via_shizuku">وائی فائی کی معلومات حاصل کرنے کے لیے شیزوکو کے ذریعے شیل کا استعمال کریں، غیر رووٹ والے آلات پر مقام کی اجازت کی ضرورت کو روکتے ہوئے</string>
+    <string name="use_android_recommended">اینڈرائیڈ ورژن کی بنیاد پر وائی فائی کی معلومات حاصل کرنے کے لیے اینڈرائیڈ کا تجویز کردہ طریقہ استعمال کریں</string>
+    <string name="release_notes">ریلیز نوٹس</string>
+    <string name="shizuku_not_detected">شیزوکو کا پتہ نہیں چلا</string>
 </resources>
