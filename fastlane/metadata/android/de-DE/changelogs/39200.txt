@@ -1,0 +1,4 @@
+Was ist neu: 
+- Behebt einen Fehler im QR-Scanner 
+- Behebt einen Fehler bei der Verfolgung eines aktiven Wi-Fi-Netzwerks
+- Behebt die Reproduzierbarkeit von Fdroid
