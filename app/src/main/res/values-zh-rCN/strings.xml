@@ -141,7 +141,7 @@
     <string name="use_wildcards">使用 SSID 通配符</string>
     <string name="wildcards_active">启用通配符</string>
     <string name="wifi_name_via_shell">通过 shell 获取 WiFi 名称</string>
-    <string name="use_root_shell_for_wifi">使用 root 权限的 shell 来获取 WiFi 名称</string>
+    <string name="use_root_shell_for_wifi">使用 root 权限的 shell 来获取 WiFi 信息，以防需要位置权限</string>
     <string name="kernel_not_supported">内核不支持</string>
     <string name="start_auto">开启自动隧道</string>
     <string name="monitoring_state_changes">监控状态变化</string>
@@ -252,4 +252,17 @@
     <string name="amnezia">Amnezia</string>
     <string name="wireguard">WireGuard</string>
     <string name="done">完成</string>
+    <string name="current_template">当前：%1$s</string>
+    <string name="use_deprecated_wifi_api">使用废弃的 Wi-Fi API</string>
+    <string name="app_restart_required">需要重启应用</string>
+    <string name="wifi_detection_method">Wi-Fi 检测方式</string>
+    <string name="_default">默认</string>
+    <string name="legacy">旧式</string>
+    <string name="root">Root</string>
+    <string name="shizuku">Shizuku</string>
+    <string name="legacy_api_description">用 Android 12 废弃的 Wi-Fi 信息获取方法，此方法限制位置查询，但可能不会在新设备上可靠工作</string>
+    <string name="use_shell_via_shizuku">通过 Shizuku 使用 Shell 来获得 Wi-Fi 信息，防止在非 root 设备上需要获得位置权限</string>
+    <string name="use_android_recommended">基于 Android 版本，使用系统推荐的获取 Wi-Fi 信息的方法</string>
+    <string name="release_notes">发行日志</string>
+    <string name="shizuku_not_detected">未检测到 Shizuku</string>
 </resources>
