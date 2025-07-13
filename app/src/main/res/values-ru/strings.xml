@@ -259,5 +259,10 @@
     <string name="legacy">Устаревший</string>
     <string name="root">Root</string>
     <string name="shizuku">Shizuku</string>
-    <string name="legacy_api_description">Использовать устаревший метод Android 12 для получения информации о Wi-Fi, который ограничивает запросы местоположения, но может работать нестабильно на новых устройствах</string>
+    <string name="legacy_api_description">Получать информацию о Wi-Fi устаревшим методом Android 12, который ограничивает запросы определения местоположения, но может работать нестабильно на новых устройствах</string>
+    <string name="use_shell_via_shizuku">Получать информацию о Wi-Fi через Shizuku без необходимости разрешения определения местоположения на устройствах без root-доступа</string>
+    <string name="use_android_recommended">Получать информацию о Wi-Fi рекомендуемым методом на основе версии Android</string>
+    <string name="release_notes">Примечания к выпуску</string>
+    <string name="shizuku_not_detected">Shizuku не найден</string>
+    <string name="current_template">Текущий: %1$s</string>
 </resources>
