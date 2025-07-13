@@ -143,7 +143,7 @@
     <string name="display_theme">Тема</string>
     <string name="add_wifi_name">Добавить сеть Wi-Fi</string>
     <string name="launch_app_settings">Настройки запуска приложения</string>
-    <string name="use_root_shell_for_wifi">Использовать root-доступ для получения имени сети Wi-Fi</string>
+    <string name="use_root_shell_for_wifi">Использовать root-доступ для получения информации о Wi-Fi без необходимости разрешения на определение местоположения</string>
     <string name="wifi_name_via_shell">Имя Wi-Fi через root</string>
     <string name="start_auto">Запустить автотуннель</string>
     <string name="tunnel_running">Работающий туннель</string>
@@ -252,4 +252,12 @@
     <string name="done">Готово</string>
     <string name="amnezia">Amnezia</string>
     <string name="show_qr">Показать QR-код</string>
+    <string name="use_deprecated_wifi_api">Использовать устаревший API Wi-Fi</string>
+    <string name="app_restart_required">Требуется перезапуск приложения</string>
+    <string name="wifi_detection_method">Метод обнаружения Wi-Fi</string>
+    <string name="_default">По умолчанию</string>
+    <string name="legacy">Устаревший</string>
+    <string name="root">Root</string>
+    <string name="shizuku">Shizuku</string>
+    <string name="legacy_api_description">Использовать устаревший метод Android 12 для получения информации о Wi-Fi, который ограничивает запросы местоположения, но может работать нестабильно на новых устройствах</string>
 </resources>
