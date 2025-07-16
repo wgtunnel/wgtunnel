@@ -154,7 +154,7 @@
     <string name="export_logs">匯出已儲存的日誌</string>
     <string name="delete_logs">刪除並清理日誌</string>
     <string name="monitoring_state_changes">監控狀態變化</string>
-    <string name="use_root_shell_for_wifi">透過 root 權限取得 WiFi 資訊，避免了定位權限的要求</string>
+    <string name="use_root_shell_for_wifi">透過 root 權限取得 WiFi 資訊，避免需要位置存取權</string>
     <string name="splt_tunneling">隧道拆分</string>
     <string name="tunnel_specific_settings">隧道個別設定</string>
     <string name="use_wildcards">SSID 使用萬用字元</string>
@@ -191,7 +191,7 @@
     <string name="init_packet_junk_size">初始封包垃圾大小</string>
     <string name="response_packet_junk_size">回應封包垃圾大小</string>
     <string name="auto_tunnel_channel_description">自動隧道管理服務狀態 通知頻道</string>
-    <string name="prominent_background_location_message">此功能需要背景位置權限以啟用即使應用程式關閉也會持續執行的 Wi-Fi SSID 自動掃描。如果想知道更多資訊，請參閱支援頁面的隱私政策。</string>
+    <string name="prominent_background_location_message">此功能需要背景位置存取權以啟用即使應用程式關閉也會持續執行的 Wi-Fi SSID 自動掃描。如果想知道更多資訊，請參閱支援頁面的隱私政策。</string>
     <string name="tunnel_starting">隧道正在啟動</string>
     <string name="error_authorization_failed">授權失敗</string>
     <string name="vpn_channel_name">VPN 通知頻道</string>
@@ -222,13 +222,14 @@
     <string name="post_down">關閉後</string>
     <string name="app_restart_required">需要重啟應用程式</string>
     <string name="use_deprecated_wifi_api">使用已棄用的 Wi-Fi API</string>
-    <string name="wifi_detection_method">Wi-Fi 偵測方式</string>
+    <string name="wifi_detection_method">Wi-Fi 檢測方法</string>
     <string name="release_notes">發行說明</string>
     <string name="shizuku">Shizuku</string>
     <string name="root">Root</string>
     <string name="_default">預設</string>
-    <string name="shizuku_not_detected">沒有偵測到 Shizuku</string>
+    <string name="shizuku_not_detected">偵測不到 Shizuku</string>
     <string name="legacy">舊版</string>
     <string name="use_android_recommended">使用基於 Android 版本而不同的推薦方法取得 Wi-Fi 資訊</string>
-    <string name="legacy_api_description">使用一種 Android 12 已棄用的方法取得 Wi-Fi 資訊，此方法會限制位置查詢，但可能不會在新裝置上起作用。</string>
+    <string name="legacy_api_description">使用一種 Android 12 已棄用的方法取得 Wi-Fi 資訊，此方法會限制位置查詢，但可能不會在新裝置上起作用</string>
+    <string name="use_shell_via_shizuku">透過 Shizuku 使用 shell 取得 Wi-Fi 資訊，避免在沒有 root 的裝置上需要位置存取權</string>
 </resources>
