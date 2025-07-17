@@ -34,10 +34,11 @@ fun TunnelRowItem(
     isSelected: Boolean,
     tunnel: TunnelConf,
     tunnelState: TunnelState,
-    onClick: () -> Unit,
+    onTvClick: () -> Unit,
     onToggleSelectedTunnel: (TunnelConf) -> Unit,
     onSwitchClick: (Boolean) -> Unit,
     isTv: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     val leadingIconColor =
         remember(state) {
@@ -76,8 +77,6 @@ fun TunnelRowItem(
             }
         },
         text = tunnel.tunName,
-        onHold = { if (!isTv) onToggleSelectedTunnel(tunnel) },
-        onClick = { if (!isTv) onClick() },
         expanded = {
             if (tunnelState.status != TunnelStatus.Down) {
                 TunnelStatisticsRow(tunnelState.statistics, tunnel)
@@ -89,7 +88,7 @@ fun TunnelRowItem(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
             ) {
                 if (isTv) {
-                    IconButton(onClick = onClick) {
+                    IconButton(onClick = onTvClick) {
                         Icon(
                             Icons.Rounded.Settings,
                             contentDescription = stringResource(R.string.settings),
@@ -100,5 +99,6 @@ fun TunnelRowItem(
             }
         },
         isSelected = isSelected,
+        modifier = modifier,
     )
 }

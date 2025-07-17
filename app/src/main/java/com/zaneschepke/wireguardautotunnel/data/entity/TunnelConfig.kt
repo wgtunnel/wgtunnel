@@ -24,9 +24,10 @@ data class TunnelConfig(
     @ColumnInfo(name = "ping_cooldown", defaultValue = "null") val pingCooldown: Long? = null,
     @ColumnInfo(name = "ping_ip", defaultValue = "null") var pingIp: String? = null,
     @ColumnInfo(name = "is_ethernet_tunnel", defaultValue = "false")
-    var isEthernetTunnel: Boolean = false,
+    val isEthernetTunnel: Boolean = false,
     @ColumnInfo(name = "is_ipv4_preferred", defaultValue = "true")
-    var isIpv4Preferred: Boolean = true,
+    val isIpv4Preferred: Boolean = true,
+    @ColumnInfo(name = "position", defaultValue = "0") val position: Int = 0,
 ) {
 
     companion object {

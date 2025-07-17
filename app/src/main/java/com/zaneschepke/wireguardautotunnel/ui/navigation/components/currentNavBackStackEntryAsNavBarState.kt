@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -11,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -28,6 +30,7 @@ import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
 import com.zaneschepke.wireguardautotunnel.ui.theme.iconSize
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
+import com.zaneschepke.wireguardautotunnel.viewmodel.event.UiEvent
 
 @Composable
 fun currentNavBackStackEntryAsNavBarState(
@@ -60,35 +63,40 @@ fun currentNavBackStackEntryAsNavBarState(
 
         Row {
             if (selectedCount == 0) {
+                val showSort = remember(uiState.tunnels) { uiState.tunnels.size > 1 }
+                if (showSort)
+                    ActionIconButton(Icons.AutoMirrored.Rounded.Sort, R.string.sort) {
+                        navController.navigate(Route.Sort)
+                    }
                 ActionIconButton(Icons.Rounded.Add, R.string.add_tunnel) {
                     viewModel.handleEvent(
                         AppEvent.SetBottomSheet(AppViewState.BottomSheet.IMPORT_TUNNELS)
                     )
                 }
-            } else {
-                ActionIconButton(Icons.Rounded.SelectAll, R.string.select_all) {
-                    viewModel.handleEvent(AppEvent.ToggleSelectAllTunnels)
+                return@Row
+            }
+            ActionIconButton(Icons.Rounded.SelectAll, R.string.select_all) {
+                viewModel.handleEvent(AppEvent.ToggleSelectAllTunnels)
+            }
+            // due to permissions, and SAF issues on TV, not support less than Android 10 on
+            // Android TV for file exports
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ActionIconButton(Icons.Rounded.Download, R.string.download) {
+                    viewModel.handleEvent(
+                        AppEvent.SetBottomSheet(AppViewState.BottomSheet.EXPORT_TUNNELS)
+                    )
                 }
-                // due to permissions, and SAF issues on TV, not support less than Android 10 on
-                // Android TV for file exports
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    ActionIconButton(Icons.Rounded.Download, R.string.download) {
-                        viewModel.handleEvent(
-                            AppEvent.SetBottomSheet(AppViewState.BottomSheet.EXPORT_TUNNELS)
-                        )
-                    }
-                }
+            }
 
-                if (selectedCount == 1) {
-                    ActionIconButton(Icons.Rounded.CopyAll, R.string.copy) {
-                        viewModel.handleEvent(AppEvent.CopySelectedTunnel)
-                    }
+            if (selectedCount == 1) {
+                ActionIconButton(Icons.Rounded.CopyAll, R.string.copy) {
+                    viewModel.handleEvent(AppEvent.CopySelectedTunnel)
                 }
+            }
 
-                if (showDelete) {
-                    ActionIconButton(Icons.Rounded.Delete, R.string.delete_tunnel) {
-                        viewModel.handleEvent(AppEvent.SetShowModal(AppViewState.ModalType.DELETE))
-                    }
+            if (showDelete) {
+                ActionIconButton(Icons.Rounded.Delete, R.string.delete_tunnel) {
+                    viewModel.handleEvent(AppEvent.SetShowModal(AppViewState.ModalType.DELETE))
                 }
             }
         }
@@ -211,6 +219,25 @@ fun currentNavBackStackEntryAsNavBarState(
                         topTitle = { Text(stringResource(R.string.support)) },
                         route = Route.Support,
                     )
+
+                backStackEntry.isCurrentRoute(Route.Sort::class) -> {
+                    NavBarState(
+                        showTop = true,
+                        showBottom = true,
+                        topTitle = { Text(stringResource(R.string.sort)) },
+                        topTrailing = {
+                            Row {
+                                ActionIconButton(Icons.Rounded.SortByAlpha, R.string.sort) {
+                                    viewModel.handleUiEvent(UiEvent.SortTunnels)
+                                }
+                                ActionIconButton(Icons.Rounded.Save, R.string.save) {
+                                    viewModel.handleEvent(AppEvent.InvokeScreenAction)
+                                }
+                            }
+                        },
+                        route = Route.Sort,
+                    )
+                }
 
                 backStackEntry.isCurrentRoute(Route.License::class) -> {
                     NavBarState(

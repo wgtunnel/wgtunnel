@@ -45,4 +45,6 @@ sealed class Route {
     @Serializable data class TunnelAutoTunnel(val id: Int) : Route()
 
     @Serializable data object Logs : Route()
+
+    @Serializable data object Sort : Route()
 }

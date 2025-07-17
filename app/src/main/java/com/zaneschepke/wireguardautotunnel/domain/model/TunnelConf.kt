@@ -26,6 +26,7 @@ data class TunnelConf(
     val pingIp: String? = null,
     val isEthernetTunnel: Boolean = false,
     val isIpv4Preferred: Boolean = true,
+    val position: Int = 0,
     @Transient private var stateChangeCallback: ((Any) -> Unit)? = null,
 ) : Tunnel, org.amnezia.awg.backend.Tunnel {
 

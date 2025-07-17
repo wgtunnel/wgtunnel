@@ -46,5 +46,6 @@ interface TunnelConfigDao {
     @Query("SELECT * FROM TUNNELCONFIG WHERE is_mobile_data_tunnel=1")
     suspend fun findByMobileDataTunnel(): TunnelConfigs
 
-    @Query("SELECT * FROM tunnelconfig") fun getAllFlow(): Flow<MutableList<TunnelConfig>>
+    @Query("SELECT * FROM tunnelconfig ORDER BY position ASC")
+    fun getAllFlow(): Flow<MutableList<TunnelConfig>>
 }

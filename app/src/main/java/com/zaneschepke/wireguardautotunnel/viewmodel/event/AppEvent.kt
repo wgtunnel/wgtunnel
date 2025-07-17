@@ -125,4 +125,6 @@ sealed class AppEvent {
     data class SetShowModal(val modalType: AppViewState.ModalType) : AppEvent()
 
     data object ToggleSelectAllTunnels : AppEvent()
+
+    data class SaveAllConfigs(val tunnels: List<TunnelConf>) : AppEvent()
 }

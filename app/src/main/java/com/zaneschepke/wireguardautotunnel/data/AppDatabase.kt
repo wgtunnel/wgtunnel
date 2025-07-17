@@ -13,7 +13,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
 
 @Database(
     entities = [Settings::class, TunnelConfig::class],
-    version = 17,
+    version = 18,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -32,6 +32,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
             AutoMigration(from = 14, to = 15),
             AutoMigration(from = 15, to = 16),
             AutoMigration(from = 16, to = 17, spec = WifiDetectionMigration::class),
+            AutoMigration(from = 17, to = 18),
         ],
     exportSchema = true,
 )

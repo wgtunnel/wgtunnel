@@ -24,3 +24,7 @@ typealias Packages = List<PackageInfo>
 fun <T> MutableList<T>.addAllUnique(elements: Collection<T>, comparator: (T, T) -> Boolean) {
     addAll(elements.filterNot { new -> this.any { existing -> comparator(existing, new) } })
 }
+
+fun <T, R : Comparable<R>> List<T>.isSortedBy(selector: (T) -> R): Boolean {
+    return zipWithNext().all { (a, b) -> selector(a) <= selector(b) }
+}

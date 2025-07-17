@@ -21,6 +21,7 @@ object TunnelConfigMapper {
                 pingIp,
                 isEthernetTunnel,
                 isIpv4Preferred,
+                position,
             )
         }
     }
@@ -42,6 +43,7 @@ object TunnelConfigMapper {
                 pingIp,
                 isEthernetTunnel,
                 isIpv4Preferred,
+                position,
             )
         }
     }

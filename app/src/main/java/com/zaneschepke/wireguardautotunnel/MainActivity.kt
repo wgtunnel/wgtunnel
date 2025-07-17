@@ -54,6 +54,7 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.Loca
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.MainScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.autotunnel.TunnelAutoTunnelScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.config.ConfigScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.main.sort.SortScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.splittunnel.SplitTunnelScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.tunneloptions.TunnelOptionsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.pin.PinLockScreen
@@ -322,6 +323,7 @@ class MainActivity : AppCompatActivity() {
                                                 )
                                             }
                                     }
+                                    composable<Route.Sort> { SortScreen(appUiState, viewModel) }
                                 }
                             }
                         }

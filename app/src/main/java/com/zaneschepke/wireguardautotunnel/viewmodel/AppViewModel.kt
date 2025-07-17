@@ -34,6 +34,7 @@ import com.zaneschepke.wireguardautotunnel.util.*
 import com.zaneschepke.wireguardautotunnel.util.extensions.addAllUnique
 import com.zaneschepke.wireguardautotunnel.util.extensions.withFirstState
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
+import com.zaneschepke.wireguardautotunnel.viewmodel.event.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.IOException
 import java.net.URL
@@ -78,6 +79,9 @@ constructor(
 
     private val _appViewState = MutableStateFlow(AppViewState())
     val appViewState = _appViewState.asStateFlow()
+
+    private val _uiEvent = MutableSharedFlow<UiEvent>()
+    val uiEvent: SharedFlow<UiEvent> = _uiEvent.asSharedFlow()
 
     private val _logs = MutableStateFlow<List<LogMessage>>(emptyList())
     val logs: StateFlow<List<LogMessage>> = _logs.asStateFlow()
@@ -125,6 +129,9 @@ constructor(
             }
         }
     }
+
+    fun handleUiEvent(event: UiEvent) =
+        viewModelScope.launch(mainDispatcher) { _uiEvent.emit(event) }
 
     fun handleEvent(event: AppEvent) =
         viewModelScope.launch(ioDispatcher) {
@@ -215,9 +222,14 @@ constructor(
 
                     is AppEvent.SetDetectionMethod ->
                         handleSetDetectionMethod(event.detectionMethod, state.appSettings)
+                    is AppEvent.SaveAllConfigs -> saveAllTunnels(event.tunnels)
                 }
             }
         }
+
+    private suspend fun saveAllTunnels(tunnels: List<TunnelConf>) {
+        appDataRepository.tunnels.saveAll(tunnels)
+    }
 
     private suspend fun handleSetDetectionMethod(
         detectionMethod: AndroidNetworkMonitor.WifiDetectionMethod,

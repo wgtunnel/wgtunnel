@@ -223,6 +223,8 @@ dependencies {
     // shizuku
     implementation(libs.shizuku.api)
     implementation(libs.shizuku.provider)
+
+    implementation(libs.reorderable)
 }
 
 tasks.register<Copy>("copyLicenseeJsonToAssets") {
