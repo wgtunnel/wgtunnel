@@ -266,4 +266,8 @@
     <string name="use_android_recommended">Użyj zalecanej przez system Android metody uzyskiwania informacji o sieci Wi-Fi w zależności od wersji systemu</string>
     <string name="release_notes">Informacje o wydaniu</string>
     <string name="shizuku_not_detected">Nie wykryto Shizuku</string>
+    <string name="sort">Sortuj</string>
+    <string name="move_up">Przesuń w górę</string>
+    <string name="move_down">Przesuń w dół</string>
+    <string name="drag_handle">Uchwyt do przeciągania</string>
 </resources>
