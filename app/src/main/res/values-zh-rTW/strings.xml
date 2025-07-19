@@ -235,4 +235,10 @@
     <string name="wifi_name_via_shell">透過 shell 取得 Wi-Fi 名稱</string>
     <string name="current_template">目前: %1$s</string>
     <string name="service_running_error">服務執行錯誤</string>
+    <string name="sort">排序</string>
+    <string name="bio_auth_title">生物辨識驗證</string>
+    <string name="bio_subtitle">使用您的生物辨識憑證登入</string>
+    <string name="bio_not_supported">不支援生物辨識</string>
+    <string name="bio_not_created">生物辨識未建立</string>
+    <string name="bio_update_required">需要生物辨識安全更新</string>
 </resources>
