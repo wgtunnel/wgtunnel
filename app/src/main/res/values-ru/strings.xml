@@ -265,4 +265,8 @@
     <string name="release_notes">Примечания к выпуску</string>
     <string name="shizuku_not_detected">Shizuku не найден</string>
     <string name="current_template">Текущий: %1$s</string>
+    <string name="sort">Сортировка</string>
+    <string name="drag_handle">Перетаскивание</string>
+    <string name="move_up">Переместить вверх</string>
+    <string name="move_down">Переместить вниз</string>
 </resources>
