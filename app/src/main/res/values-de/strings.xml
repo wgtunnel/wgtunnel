@@ -265,4 +265,7 @@
     <string name="_default">Standard</string>
     <string name="legacy">Veraltet</string>
     <string name="root">Root</string>
+    <string name="sort">Sortierung</string>
+    <string name="move_up">Nach oben verschieben</string>
+    <string name="move_down">Nach unten verschieben</string>
 </resources>
