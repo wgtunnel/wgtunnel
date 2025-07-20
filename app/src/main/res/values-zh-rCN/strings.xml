@@ -265,4 +265,8 @@
     <string name="use_android_recommended">基于 Android 版本，使用系统推荐的获取 Wi-Fi 信息的方法</string>
     <string name="release_notes">发行日志</string>
     <string name="shizuku_not_detected">未检测到 Shizuku</string>
+    <string name="sort">排序</string>
+    <string name="drag_handle">拖动手柄</string>
+    <string name="move_up">上移</string>
+    <string name="move_down">下移</string>
 </resources>
