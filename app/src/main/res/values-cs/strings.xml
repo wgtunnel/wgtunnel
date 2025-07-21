@@ -105,7 +105,7 @@
     <string name="notifications">Oznámení</string>
     <string name="kill_switch">Vypínač</string>
     <string name="wifi_name_via_shell">Název WiFi přes shell</string>
-    <string name="use_root_shell_for_wifi">Použít root shell pro získání názvu WiFi</string>
+    <string name="use_root_shell_for_wifi">Použít root shell pro získání Wi-Fi informací, zabrání potřebě oprávnění k poloze.</string>
     <string name="add_from_clipboard">Přidat ze schránky</string>
     <string name="set_ethernet_tunnel">Nastavit jako tunel pro ethernet</string>
     <string name="allow_lan_traffic">Povolit LAN provoz</string>
@@ -251,4 +251,17 @@
     <string name="wireguard">WireGuard</string>
     <string name="amnezia">Amnezia</string>
     <string name="show_qr">Zobrazit QR kód</string>
+    <string name="current_template">Aktuální: %1$s</string>
+    <string name="use_deprecated_wifi_api">Použít zastaralé rozhraní Wi-Fi API</string>
+    <string name="app_restart_required">Je vyžadován restart aplikace</string>
+    <string name="wifi_detection_method">Metoda detekce Wi-Fi</string>
+    <string name="_default">Výchozí</string>
+    <string name="legacy">Legacy</string>
+    <string name="root">Root</string>
+    <string name="shizuku">Shizuku</string>
+    <string name="release_notes">Poznámky k vydání</string>
+    <string name="shizuku_not_detected">Shizuku nebyl detekován</string>
+    <string name="sort">Třídit</string>
+    <string name="move_up">Posunout nahoru</string>
+    <string name="move_down">Přesunout dolů</string>
 </resources>
