@@ -1,9 +1,7 @@
 package com.zaneschepke.wireguardautotunnel
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -27,7 +25,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -75,7 +72,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.system.exitProcess
 import org.amnezia.awg.backend.GoBackend.VpnService
-import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -330,24 +326,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        checkPermissionAndNotify()
-    }
-
-    private fun checkPermissionAndNotify() {
-        val hasLocation =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED
-        if (lastLocationPermissionState != hasLocation) {
-            Timber.d("Location permission changed to: $hasLocation")
-            if (hasLocation) {
-                networkMonitor.sendLocationPermissionsGrantedBroadcast()
-            }
-            lastLocationPermissionState = hasLocation
         }
     }
 }

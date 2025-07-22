@@ -8,7 +8,6 @@ import androidx.core.app.ServiceCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.zaneschepke.networkmonitor.NetworkMonitor
-import com.zaneschepke.networkmonitor.NetworkStatus
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotification
@@ -217,9 +216,8 @@ class TunnelForegroundService : LifecycleService() {
     }
 
     private suspend fun startNetworkMonitorJob() {
-        networkMonitor.networkStatusFlow.flowOn(ioDispatcher).collectLatest { status ->
-            val isAvailable = status !is NetworkStatus.Disconnected
-            isNetworkConnected.value = isAvailable
+        networkMonitor.connectivityStateFlow.flowOn(ioDispatcher).collectLatest { status ->
+            isNetworkConnected.value = status.hasConnectivity()
             Timber.d("Network available: $status")
         }
     }

@@ -7,8 +7,8 @@ import android.os.PowerManager
 import androidx.core.app.ServiceCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import com.zaneschepke.networkmonitor.ConnectivityState
 import com.zaneschepke.networkmonitor.NetworkMonitor
-import com.zaneschepke.networkmonitor.NetworkStatus
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotification
@@ -158,20 +158,13 @@ class AutoTunnelService : LifecycleService() {
             }
     }
 
-    private fun buildNetworkState(networkStatus: NetworkStatus): NetworkState {
+    private fun buildNetworkState(connectivityState: ConnectivityState): NetworkState {
         return with(autoTunnelStateFlow.value.networkState) {
-            val wifiName =
-                when (networkStatus) {
-                    is NetworkStatus.Connected -> {
-                        networkStatus.wifiSsid
-                    }
-                    else -> null
-                }
             copy(
-                isWifiConnected = networkStatus.wifiConnected,
-                isMobileDataConnected = networkStatus.cellularConnected,
-                isEthernetConnected = networkStatus.ethernetConnected,
-                wifiName = wifiName,
+                isWifiConnected = connectivityState.wifiState.connected,
+                isMobileDataConnected = connectivityState.cellularConnected,
+                isEthernetConnected = connectivityState.ethernetConnected,
+                wifiName = connectivityState.wifiState.ssid,
             )
         }
     }
@@ -189,7 +182,7 @@ class AutoTunnelService : LifecycleService() {
                             old.isKernelEnabled == new.isKernelEnabled
                         } // Only emit when isKernelEnabled changes
                         .flatMapLatest {
-                            networkMonitor.networkStatusFlow.flowOn(ioDispatcher).map {
+                            networkMonitor.connectivityStateFlow.flowOn(ioDispatcher).map {
                                 buildNetworkState(it)
                             }
                         }

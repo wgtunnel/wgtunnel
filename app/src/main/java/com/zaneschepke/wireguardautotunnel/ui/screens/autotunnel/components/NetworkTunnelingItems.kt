@@ -40,8 +40,8 @@ fun NetworkTunnelingItems(uiState: AppUiState, viewModel: AppViewModel): List<Se
             },
             description = {
                 val cellularActive =
-                    remember(uiState.networkStatus) {
-                        uiState.networkStatus?.cellularConnected ?: false
+                    remember(uiState.connectivityState) {
+                        uiState.connectivityState?.cellularConnected ?: false
                     }
                 Text(
                     text =
@@ -77,8 +77,8 @@ fun NetworkTunnelingItems(uiState: AppUiState, viewModel: AppViewModel): List<Se
             },
             description = {
                 val ethernetActive =
-                    remember(uiState.networkStatus) {
-                        uiState.networkStatus?.ethernetConnected ?: false
+                    remember(uiState.connectivityState) {
+                        uiState.connectivityState?.ethernetConnected ?: false
                     }
                 Text(
                     text =

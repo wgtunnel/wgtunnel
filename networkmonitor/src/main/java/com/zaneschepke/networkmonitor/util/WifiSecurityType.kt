@@ -1,4 +1,4 @@
-package com.zaneschepke.networkmonitor
+package com.zaneschepke.networkmonitor.util
 
 import android.net.wifi.WifiInfo
 

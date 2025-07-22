@@ -18,7 +18,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
-import com.zaneschepke.networkmonitor.NetworkStatus
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.Route
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ForwardButton
@@ -68,11 +67,12 @@ fun WifiTunnelingItems(
                 },
                 description = {
                     val wifiInfo by
-                        remember(uiState.networkStatus) {
+                        remember(uiState.connectivityState) {
                             derivedStateOf {
-                                (uiState.networkStatus as? NetworkStatus.Connected)
-                                    ?.takeIf { it.wifiConnected }
-                                    .let { Pair(it?.wifiSsid, it?.securityType) }
+                                uiState.connectivityState
+                                    ?.wifiState
+                                    ?.takeIf { it.connected }
+                                    .let { Pair(it?.ssid, it?.securityType) }
                             }
                         }
                     val (wifiName, securityType) = wifiInfo

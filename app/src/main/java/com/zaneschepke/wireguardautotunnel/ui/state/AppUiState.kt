@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
-import com.zaneschepke.networkmonitor.NetworkStatus
+import com.zaneschepke.networkmonitor.ConnectivityState
 import com.zaneschepke.wireguardautotunnel.data.entity.GeneralState
 import com.zaneschepke.wireguardautotunnel.data.mapper.GeneralStateMapper
 import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
@@ -16,5 +16,5 @@ data class AppUiState(
     val isAutoTunnelActive: Boolean = false,
     val appConfigurationChange: Boolean = false,
     val isAppLoaded: Boolean = false,
-    val networkStatus: NetworkStatus? = null,
+    val connectivityState: ConnectivityState? = null,
 )

@@ -10,8 +10,8 @@ import com.wireguard.android.util.RootShell
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.logcatter.model.LogMessage
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
+import com.zaneschepke.networkmonitor.ConnectivityState
 import com.zaneschepke.networkmonitor.NetworkMonitor
-import com.zaneschepke.networkmonitor.NetworkStatus
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.WireGuardAutoTunnel
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
@@ -94,14 +94,14 @@ constructor(
                 appDataRepository.appState.flow,
                 tunnelManager.activeTunnels,
                 serviceManager.autoTunnelService.map { it != null },
-                networkMonitor.networkStatusFlow,
+                networkMonitor.connectivityStateFlow,
             ) { array ->
                 val settings = array[0] as AppSettings
                 val tunnels = array[1] as List<TunnelConf>
                 val appState = array[2] as AppState
                 val activeTunnels = array[3] as Map<TunnelConf, TunnelState>
                 val autoTunnel = array[4] as Boolean
-                val network = array[5] as NetworkStatus
+                val network = array[5] as ConnectivityState
 
                 AppUiState(
                     appSettings = settings,
@@ -110,7 +110,7 @@ constructor(
                     appState = appState,
                     isAutoTunnelActive = autoTunnel,
                     isAppLoaded = true,
-                    networkStatus = network,
+                    connectivityState = network,
                 )
             }
             .stateIn(
