@@ -225,4 +225,22 @@
     <string name="transport_packet_magic_header">Transpordipaketi päise kohandatud osa</string>
     <string name="underload_packet_magic_header">Väikese koormusega paketi päise kohandatud osa</string>
     <string name="vpn_settings">VPN-i süsteemsed seadistused</string>
+    <string name="move_down">Liiguta allapoole</string>
+    <string name="move_up">Liiguta ülespoole</string>
+    <string name="drag_handle">Käepide sikutamiseks</string>
+    <string name="sort">Järjesta</string>
+    <string name="shizuku_not_detected">Shizukut ei õnnestu tuvastada</string>
+    <string name="release_notes">Muudatuste logi</string>
+    <string name="use_android_recommended">Kasuta versioonikohast Androidi soovitatud meetodit WiFi teabe kogumiseks</string>
+    <string name="use_shell_via_shizuku">Selleks et juurkasutajata seadmes vältida asukohateenuse sisselülitamist, kasuta WiFi teabe kogumiseks Shizuku vahendusel käivitatud kesta</string>
+    <string name="legacy_api_description">Kasuta Androidi 12 ajast pärit aegunud meetodit WiFi teabe kogumiseks - sellega vähendad asukohateenuse päringuid, kuid see ei pruugi uuemates seadmetes usaldusväärselt toimida</string>
+    <string name="shizuku">Shizuku</string>
+    <string name="root">Juurkasutaja</string>
+    <string name="legacy">Aegunud meetod</string>
+    <string name="_default">Vaikimisi meetod</string>
+    <string name="wifi_detection_method">WiFi tuvastamise meetod</string>
+    <string name="app_restart_required">Palun käivita rakendus uuesti</string>
+    <string name="use_deprecated_wifi_api">Kasuta aegunud WiFi API-t</string>
+    <string name="current_template">Praegune: %1$s</string>
+    <string name="multiple">Mitmikvalik</string>
 </resources>
