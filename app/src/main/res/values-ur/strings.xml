@@ -265,4 +265,8 @@
     <string name="use_android_recommended">اینڈرائیڈ ورژن کی بنیاد پر وائی فائی کی معلومات حاصل کرنے کے لیے اینڈرائیڈ کا تجویز کردہ طریقہ استعمال کریں</string>
     <string name="release_notes">ریلیز نوٹس</string>
     <string name="shizuku_not_detected">شیزوکو کا پتہ نہیں چلا</string>
+    <string name="sort">چھانٹ</string>
+    <string name="drag_handle">ہینڈل کو گھسیٹیں</string>
+    <string name="move_up">اوپر منتقل کریں</string>
+    <string name="move_down">نیچے منتقل کریں</string>
 </resources>
