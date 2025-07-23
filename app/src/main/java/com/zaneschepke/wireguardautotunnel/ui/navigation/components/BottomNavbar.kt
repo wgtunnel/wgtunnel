@@ -10,7 +10,6 @@ import androidx.compose.material.icons.rounded.QuestionMark
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -68,53 +67,42 @@ fun BottomNavbar(appUiState: AppUiState) {
                 onClick = { navController.goFromRoot(Route.Support) },
             ),
         )
-    // Define ripple configuration based on platform
-    val rippleConfiguration =
-        if (isTv) {
-            RippleConfiguration()
-        } else {
-            null
-        }
 
-    // Apply ripple configuration only if needed
-    CompositionLocalProvider(LocalRippleConfiguration provides rippleConfiguration) {
-        NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
-            items.forEach { item ->
-                val isSelected = navBackStackEntry.isCurrentRoute(item.route::class)
-                val interactionSource = remember { MutableInteractionSource() }
+    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
+        items.forEach { item ->
+            val isSelected = navBackStackEntry.isCurrentRoute(item.route::class)
+            val interactionSource = remember { MutableInteractionSource() }
 
-                NavigationBarItem(
-                    icon = {
-                        if (item.active) {
-                            BadgedBox(
-                                badge = {
-                                    Badge(
-                                        modifier =
-                                            Modifier.offset(x = 8.dp, y = (-8).dp).size(6.dp),
-                                        containerColor = SilverTree,
-                                    )
-                                }
-                            ) {
-                                Icon(imageVector = item.icon, contentDescription = item.name)
+            NavigationBarItem(
+                icon = {
+                    if (item.active) {
+                        BadgedBox(
+                            badge = {
+                                Badge(
+                                    modifier = Modifier.offset(x = 8.dp, y = (-8).dp).size(6.dp),
+                                    containerColor = SilverTree,
+                                )
                             }
-                        } else {
+                        ) {
                             Icon(imageVector = item.icon, contentDescription = item.name)
                         }
-                    },
-                    onClick = { navController.goFromRoot(item.route) },
-                    selected = isSelected,
-                    enabled = true,
-                    label = null,
-                    alwaysShowLabel = false,
-                    colors =
-                        NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                            unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                            indicatorColor = Color.Transparent,
-                        ),
-                    interactionSource = interactionSource,
-                )
-            }
+                    } else {
+                        Icon(imageVector = item.icon, contentDescription = item.name)
+                    }
+                },
+                onClick = { navController.goFromRoot(item.route) },
+                selected = isSelected,
+                enabled = true,
+                label = null,
+                alwaysShowLabel = false,
+                colors =
+                    NavigationBarItemDefaults.colors(
+                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                        unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                        indicatorColor = Color.Transparent,
+                    ),
+                interactionSource = interactionSource,
+            )
         }
     }
 }

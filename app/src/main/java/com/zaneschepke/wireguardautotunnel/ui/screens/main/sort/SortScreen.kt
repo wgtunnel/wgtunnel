@@ -115,36 +115,36 @@ fun SortScreen(appUiState: AppUiState, viewModel: AppViewModel) {
                             )
                         else
                             Row {
-                                if (index != 0)
-                                    IconButton(
-                                        onClick = {
-                                            sortedTunnels =
-                                                sortedTunnels.toMutableList().apply {
-                                                    add(index + 1, removeAt(index))
-                                                }
-                                        }
-                                    ) {
-                                        Icon(
-                                            Icons.Default.ArrowUpward,
-                                            stringResource(
-                                                com.zaneschepke.wireguardautotunnel.R.string.move_up
-                                            ),
-                                        )
-                                    }
-                                if (index != sortedTunnels.count() - 1)
-                                    IconButton(
-                                        onClick = {
-                                            sortedTunnels =
-                                                sortedTunnels.toMutableList().apply {
-                                                    add(index - 1, removeAt(index))
-                                                }
-                                        }
-                                    ) {
-                                        Icon(
-                                            Icons.Default.ArrowDownward,
-                                            stringResource(R.string.move_down),
-                                        )
-                                    }
+                                IconButton(
+                                    onClick = {
+                                        sortedTunnels =
+                                            sortedTunnels.toMutableList().apply {
+                                                add(index - 1, removeAt(index))
+                                            }
+                                    },
+                                    enabled = index != 0,
+                                ) {
+                                    Icon(
+                                        Icons.Default.ArrowUpward,
+                                        stringResource(
+                                            com.zaneschepke.wireguardautotunnel.R.string.move_up
+                                        ),
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
+                                        sortedTunnels =
+                                            sortedTunnels.toMutableList().apply {
+                                                add(index + 1, removeAt(index))
+                                            }
+                                    },
+                                    enabled = index != sortedTunnels.count() - 1,
+                                ) {
+                                    Icon(
+                                        Icons.Default.ArrowDownward,
+                                        stringResource(R.string.move_down),
+                                    )
+                                }
                             }
                     },
                     isSelected = isDragging,

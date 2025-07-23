@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.overscroll
 import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,21 +82,23 @@ fun TunnelList(
                 onSwitchClick = { checked -> onToggleTunnel(tunnel, checked) },
                 isTv = isTv,
                 modifier =
-                    Modifier.combinedClickable(
-                        onClick = {
-                            if (selectedTunnels.isNotEmpty() && !isTv) {
+                    if (!isTv)
+                        Modifier.combinedClickable(
+                            onClick = {
+                                if (selectedTunnels.isNotEmpty()) {
+                                    viewModel.handleEvent(AppEvent.ToggleSelectedTunnel(tunnel))
+                                } else {
+                                    navController.navigate(Route.TunnelOptions(tunnel.id))
+                                    viewModel.handleEvent(AppEvent.ClearSelectedTunnels)
+                                }
+                            },
+                            onLongClick = {
                                 viewModel.handleEvent(AppEvent.ToggleSelectedTunnel(tunnel))
-                            } else {
-                                navController.navigate(Route.TunnelOptions(tunnel.id))
-                                viewModel.handleEvent(AppEvent.ClearSelectedTunnels)
-                            }
-                        },
-                        onLongClick = {
-                            if (!isTv) viewModel.handleEvent(AppEvent.ToggleSelectedTunnel(tunnel))
-                        },
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                    ),
+                            },
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                        )
+                    else Modifier,
             )
         }
     }
