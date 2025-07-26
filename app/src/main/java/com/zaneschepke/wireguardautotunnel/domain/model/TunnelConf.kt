@@ -95,6 +95,7 @@ data class TunnelConf(
                 pingIp,
                 isEthernetTunnel,
                 isIpv4Preferred,
+                position,
             )
             .apply { stateChangeCallback = this@TunnelConf.stateChangeCallback }
     }

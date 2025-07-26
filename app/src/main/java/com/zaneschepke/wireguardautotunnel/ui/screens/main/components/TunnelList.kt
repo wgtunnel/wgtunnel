@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.overscroll
 import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,8 +43,6 @@ fun TunnelList(
 
     val lazyListState = rememberLazyListState()
 
-    val sortedTunnels = remember(appUiState.tunnels) { appUiState.tunnels.sortedBy { it.position } }
-
     LazyColumn(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
@@ -61,7 +58,7 @@ fun TunnelList(
         if (appUiState.tunnels.isEmpty()) {
             item { GettingStartedLabel(onClick = { context.openWebUrl(it) }) }
         }
-        items(sortedTunnels, key = { it.id }) { tunnel ->
+        items(appUiState.tunnels, key = { it.id }) { tunnel ->
             val tunnelState =
                 remember(appUiState.activeTunnels) {
                     appUiState.activeTunnels.getValueById(tunnel.id) ?: TunnelState()
