@@ -157,11 +157,12 @@ private fun ConfigTypeSelector(selectedOption: ConfigType, onOptionSelected: (Co
                     }
                 },
                 colors =
-                    SegmentedButtonDefaults.colors()
-                        .copy(
-                            activeContainerColor = Color.White,
-                            inactiveContainerColor = Color.White,
-                        ),
+                    SegmentedButtonDefaults.colors(
+                        activeContainerColor = Color.White,
+                        inactiveContainerColor = Color.White,
+                        activeContentColor = Color.Black,
+                        inactiveContentColor = Color.Black,
+                    ),
                 onCheckedChange = { onOptionSelected(entry) },
                 checked = isActive,
             ) {
