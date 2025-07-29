@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="no_tunnels">Žádné tunely ještě nebyly přidány!</string>
-    <string name="tunnel_mobile_data">Tunelování na mobilních datech</string>
+    <string name="tunnel_mobile_data">Tunelovat na mobilních datech</string>
     <string name="privacy_policy">Otevřít zásady soukromí</string>
     <string name="okay">OK</string>
     <string name="thank_you">Děkujeme za používání WG Tunnel!</string>
@@ -104,8 +104,8 @@
     <string name="dynamic">Podle systému</string>
     <string name="notifications">Oznámení</string>
     <string name="kill_switch">Vypínač</string>
-    <string name="wifi_name_via_shell">Název WiFi přes shell</string>
-    <string name="use_root_shell_for_wifi">Použít root shell pro získání Wi-Fi informací, zabrání potřebě oprávnění k poloze.</string>
+    <string name="wifi_name_via_shell">Název Wi-Fi přes shell</string>
+    <string name="use_root_shell_for_wifi">Použít root shell pro získání Wi-Fi informací, zabrání potřebě oprávnění k poloze</string>
     <string name="add_from_clipboard">Přidat ze schránky</string>
     <string name="set_ethernet_tunnel">Nastavit jako tunel pro ethernet</string>
     <string name="allow_lan_traffic">Povolit LAN provoz</string>
@@ -139,10 +139,10 @@
     <string name="init_packet_magic_header">Init packet magic header</string>
     <string name="response_packet_magic_header">Response packet magic header</string>
     <string name="set_custom_ping_cooldown">Cooldown restartu pingu (s)</string>
-    <string name="trusted_wifi_names">Důvěryhodné názvy wifi</string>
+    <string name="trusted_wifi_names">Důvěryhodné názvy Wi-Fi</string>
     <string name="advanced_settings">Rozšířené nastavení</string>
     <string name="include_lan">Zahrnout LAN</string>
-    <string name="add_wifi_name">Přidat název wifi</string>
+    <string name="add_wifi_name">Přidat název Wi-Fi</string>
     <string name="vpn_channel_name">Kanál pro oznámení VPN</string>
     <string name="tunnel_specific_settings">Specifické nastavení tunelu</string>
     <string name="show_scripts">Zobrazit skripty</string>
@@ -264,4 +264,8 @@
     <string name="sort">Třídit</string>
     <string name="move_up">Posunout nahoru</string>
     <string name="move_down">Přesunout dolů</string>
+    <string name="use_android_recommended">Použije metodu doporučenou systémem Android pro získání informací o síti Wi-Fi v závislosti na verzi systému Android</string>
+    <string name="legacy_api_description">Použije zastarou metodu systému Android 12 pro získání informací o síti Wi-Fi, která omezuje dotazy na polohu, ale na novějších zařízeních nemusí spolehlivě fungovat</string>
+    <string name="use_shell_via_shizuku">Použít shell přes Shizuku k získání informací o Wi-Fi, čímž se zabrání potřebě povolení k poloze na zařízeních, která nejsou rootnutá</string>
+    <string name="drag_handle">Přetáhnout úchyt</string>
 </resources>
