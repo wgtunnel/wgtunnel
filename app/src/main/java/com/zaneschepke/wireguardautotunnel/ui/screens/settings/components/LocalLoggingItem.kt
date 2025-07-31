@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.settings.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ViewHeadline
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
@@ -16,7 +17,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 @Composable
 fun LocalLoggingItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
     return SelectionItem(
-        leadingIcon = Icons.Outlined.ViewHeadline,
+        leading = { Icon(Icons.Outlined.ViewHeadline, contentDescription = null) },
         title = {
             SelectionItemLabel(stringResource(R.string.local_logging), SelectionLabelType.TITLE)
         },

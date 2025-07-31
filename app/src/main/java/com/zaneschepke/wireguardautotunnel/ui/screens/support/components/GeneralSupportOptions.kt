@@ -4,6 +4,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Balance
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Policy
+import androidx.compose.material.icons.outlined.Balance
+import androidx.compose.material.icons.outlined.Book
+import androidx.compose.material.icons.outlined.Policy
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
@@ -24,7 +28,7 @@ fun GeneralSupportOptions(context: android.content.Context) {
             buildList {
                 add(
                     SelectionItem(
-                        leadingIcon = Icons.Filled.Book,
+                        leading = { Icon(Icons.Outlined.Book, contentDescription = null) },
                         title = {
                             SelectionItemLabel(
                                 stringResource(R.string.docs_description),
@@ -41,7 +45,7 @@ fun GeneralSupportOptions(context: android.content.Context) {
                 )
                 add(
                     SelectionItem(
-                        leadingIcon = Icons.Filled.Policy,
+                        leading = { Icon(Icons.Outlined.Policy, contentDescription = null) },
                         title = {
                             SelectionItemLabel(
                                 stringResource(R.string.privacy_policy),
@@ -60,7 +64,7 @@ fun GeneralSupportOptions(context: android.content.Context) {
                 )
                 add(
                     SelectionItem(
-                        leadingIcon = Icons.Filled.Balance,
+                        leading = { Icon(Icons.Outlined.Balance, contentDescription = null) },
                         title = {
                             SelectionItemLabel(
                                 stringResource(R.string.licenses),

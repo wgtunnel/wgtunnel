@@ -17,7 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.Route
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ForwardButton
@@ -39,7 +38,6 @@ fun WifiTunnelingItems(
     viewModel: AppViewModel,
     currentText: String,
     onTextChange: (String) -> Unit,
-    isWifiNameReadable: () -> Boolean,
 ): List<SelectionItem> {
     val context = LocalContext.current
     val navController = LocalNavController.current
@@ -48,7 +46,7 @@ fun WifiTunnelingItems(
     val baseItems =
         listOf(
             SelectionItem(
-                leadingIcon = Icons.Outlined.Wifi,
+                leading = { Icon(Icons.Outlined.Wifi, contentDescription = null) },
                 title = {
                     Text(
                         stringResource(R.string.tunnel_on_wifi),
@@ -111,7 +109,7 @@ fun WifiTunnelingItems(
         baseItems +
             listOf(
                 SelectionItem(
-                    leadingIcon = Icons.Outlined.WifiFind,
+                    leading = { Icon(Icons.Outlined.WifiFind, contentDescription = null) },
                     title = {
                         Text(
                             stringResource(R.string.wifi_detection_method),
@@ -139,7 +137,7 @@ fun WifiTunnelingItems(
                     onClick = { navController.navigate(Route.WifiDetectionMethod) },
                 ),
                 SelectionItem(
-                    leadingIcon = Icons.Outlined.Filter1,
+                    leading = { Icon(Icons.Outlined.Filter1, contentDescription = null) },
                     title = {
                         Text(
                             stringResource(R.string.use_wildcards),
@@ -201,15 +199,7 @@ fun WifiTunnelingItems(
                             onDelete = { viewModel.handleEvent(AppEvent.DeleteTrustedSSID(it)) },
                             currentText = currentText,
                             onSave = { ssid ->
-                                if (
-                                    uiState.appSettings.wifiDetectionMethod ==
-                                        AndroidNetworkMonitor.WifiDetectionMethod.ROOT ||
-                                        uiState.appSettings.wifiDetectionMethod ==
-                                            AndroidNetworkMonitor.WifiDetectionMethod.SHIZUKU ||
-                                        isWifiNameReadable()
-                                ) {
-                                    viewModel.handleEvent(AppEvent.SaveTrustedSSID(ssid))
-                                }
+                                viewModel.handleEvent(AppEvent.SaveTrustedSSID(ssid))
                             },
                             onValueChange = onTextChange,
                             supporting = {
@@ -219,7 +209,7 @@ fun WifiTunnelingItems(
                     },
                 ),
                 SelectionItem(
-                    leadingIcon = Icons.Outlined.VpnKeyOff,
+                    leading = { Icon(Icons.Outlined.VpnKeyOff, contentDescription = null) },
                     title = {
                         Text(
                             stringResource(R.string.kill_switch_off),

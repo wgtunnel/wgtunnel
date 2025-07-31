@@ -176,14 +176,19 @@ fun Context.launchSettings(): Result<Unit> {
 }
 
 fun Context.launchAppSettings() {
-    kotlin.runCatching {
-        val intent =
-            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.fromParts("package", packageName, null)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-        startActivity(intent)
-    }
+    kotlin
+        .runCatching {
+            val intent =
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", packageName, null)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+            startActivity(intent)
+        }
+        .onFailure {
+            val fallback = Intent(Settings.ACTION_SETTINGS)
+            startActivity(fallback)
+        }
 }
 
 fun Context.requestTunnelTileServiceStateUpdate() {

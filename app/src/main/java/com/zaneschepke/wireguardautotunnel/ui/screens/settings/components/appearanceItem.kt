@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.settings.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ViewQuilt
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,10 +14,10 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionIte
 import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
 
 @Composable
-fun AppearanceItem(): SelectionItem {
+fun appearanceItem(): SelectionItem {
     val navController = LocalNavController.current
     return SelectionItem(
-        leadingIcon = Icons.AutoMirrored.Outlined.ViewQuilt,
+        leading = { Icon(Icons.AutoMirrored.Outlined.ViewQuilt, contentDescription = null) },
         title = {
             Text(
                 text = stringResource(R.string.appearance),

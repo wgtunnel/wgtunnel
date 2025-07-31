@@ -65,7 +65,7 @@ constructor(
     private val logReader: LogReader,
     private val fileUtils: FileUtils,
     private val shortcutManager: ShortcutManager,
-    networkMonitor: NetworkMonitor,
+    private val networkMonitor: NetworkMonitor,
 ) : ViewModel() {
 
     private var logsJob: Job? = null
@@ -78,7 +78,7 @@ constructor(
     private val _screenCallback = MutableStateFlow<(() -> Unit)?>(null)
 
     private val _appViewState = MutableStateFlow(AppViewState())
-    val appViewState = _appViewState.asStateFlow()
+    val appViewState: StateFlow<AppViewState> = _appViewState.asStateFlow()
 
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent: SharedFlow<UiEvent> = _uiEvent.asSharedFlow()
@@ -87,7 +87,7 @@ constructor(
     val logs: StateFlow<List<LogMessage>> = _logs.asStateFlow()
     private val maxLogSize = Constants.MAX_LOG_SIZE
 
-    val uiState =
+    val uiState: StateFlow<AppUiState> =
         combine(
                 appDataRepository.settings.flow,
                 appDataRepository.tunnels.flow,
@@ -126,14 +126,15 @@ constructor(
                 handleKillSwitchChange(state.appSettings)
                 initServicesFromSavedState(state)
                 if (state.appState.isLocalLogsEnabled) logsJob = startCollectingLogs()
+                handleTunnelErrors()
             }
         }
     }
 
-    fun handleUiEvent(event: UiEvent) =
+    fun handleUiEvent(event: UiEvent): Job =
         viewModelScope.launch(mainDispatcher) { _uiEvent.emit(event) }
 
-    fun handleEvent(event: AppEvent) =
+    fun handleEvent(event: AppEvent): Job =
         viewModelScope.launch(ioDispatcher) {
             uiState.withFirstState { state ->
                 when (event) {
@@ -314,9 +315,17 @@ constructor(
             }
         }
 
-    // TODO
     private fun handleTunnelErrors() =
-        viewModelScope.launch { tunnelManager.errorEvents.collect { errorEvent -> } }
+        viewModelScope.launch {
+            tunnelManager.errorEvents.collect { errorEvent ->
+                handleShowMessage(
+                    StringValue.StringResource(
+                        R.string.tunnel_error_template,
+                        errorEvent.second.toStringRes(),
+                    )
+                )
+            }
+        }
 
     private suspend fun handleAppReadyCheck(tunnels: List<TunnelConf>) {
         if (tunnels.size == appDataRepository.tunnels.count()) {

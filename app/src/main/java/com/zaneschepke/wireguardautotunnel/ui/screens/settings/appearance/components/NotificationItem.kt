@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.compo
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,7 +17,7 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.launchNotificationSet
 fun NotificationsItem(): SelectionItem {
     val context = LocalContext.current
     return SelectionItem(
-        leadingIcon = Icons.Outlined.Notifications,
+        leading = { Icon(Icons.Outlined.Notifications, contentDescription = null) },
         title = {
             Text(
                 text = stringResource(R.string.notifications),

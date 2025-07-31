@@ -5,13 +5,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.Route
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ForwardButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
+import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
+import com.zaneschepke.wireguardautotunnel.util.extensions.goFromRoot
 
 @Composable
-fun SkipItem(viewModel: AppViewModel): SelectionItem {
+fun skipItem(): SelectionItem {
+    val navController = LocalNavController.current
     return SelectionItem(
         title = {
             Text(
@@ -19,7 +21,7 @@ fun SkipItem(viewModel: AppViewModel): SelectionItem {
                 style = MaterialTheme.typography.bodyLarge.copy(MaterialTheme.colorScheme.onSurface),
             )
         },
-        trailing = { ForwardButton { viewModel.handleEvent(AppEvent.SetLocationDisclosureShown) } },
-        onClick = { viewModel.handleEvent(AppEvent.SetLocationDisclosureShown) },
+        trailing = { ForwardButton { navController.goFromRoot(Route.AutoTunnel) } },
+        onClick = { navController.goFromRoot(Route.AutoTunnel) },
     )
 }

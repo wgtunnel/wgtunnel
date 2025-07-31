@@ -41,7 +41,7 @@
     <string name="endpoint">Endpoint</string>
     <string name="name">Name</string>
     <string name="always_on_vpn_support">Allow Always-On VPN </string>
-    <string name="location_services_not_detected">Location Services Not Detected</string>
+    <string name="location_services_not_detected">Location services not detected</string>
     <string name="db_name" translatable="false">wg-tunnel-db</string>
     <string name="auto_tunneling">Auto-tunneling</string>
     <string name="vpn_on">VPN on</string>
@@ -175,7 +175,7 @@
 	<string name="auto_tunnel_channel_id" translatable="false">Auto-tunnel Channel</string>
 	<string name="auto_tunnel_channel_name">Auto-tunnel Notification Channel</string>
 	<string name="auto_tunnel_channel_description">A channel for auto-tunnel state notifications</string>
-	<string name="stop">stop</string>
+	<string name="stop">Stop</string>
 	<string name="splt_tunneling">Split tunneling</string>
 	<string name="tunnel_specific_settings">Tunnel specific settings</string>
 	<string name="show_scripts">Show scripts</string>
@@ -224,12 +224,12 @@
     <string name="security_template">Security: %1$s</string>
     <string name="current_template">Current: %1$s</string>
     <string name="flavor_template">Flavor: %1$s</string>
-	<string name="config_error">config error</string>
-	<string name="dns_resolve_error">dns resolution error</string>
+	<string name="config_error">Invalid config</string>
+	<string name="dns_resolve_error">DNS resolution failed</string>
 	<string name="invalid_config_error">invalid_config_error</string>
-	<string name="kernel_name_error">kernel module name error</string>
-	<string name="auth_error">not authorized error</string>
-	<string name="service_running_error">service not running error</string>
+	<string name="kernel_name_error">Kernel module name error</string>
+	<string name="auth_error">Unauthorized</string>
+	<string name="service_running_error">Service not running</string>
     <string name="inactive">Inactive</string>
 	<string name="active">Active</string>
 	<string name="status">Status</string>
@@ -285,4 +285,19 @@
     <string name="drag_handle">Drag Handle</string>
     <string name="move_up">Move Up</string>
     <string name="move_down">Move Down</string>
+    <string name="error_tunnel_name">Tunnel name must be 15 characters or fewer in kernel mode</string>
+    <string name="tunnel">tunnel</string>
+    <string name="tunnel_item_description">1$s, %2$s, %3$s</string>
+    <string name="warning">Warning</string>
+    <string name="location_permissions">Location Permissions</string>
+    <string name="location_justification">In order to read Wi-Fi names in the background with your current detection
+        method, Android requires apps to be given \'Allow all the time\' and \'Precise\' (Background Location on older
+        devices) permission. Please enable these permissions in your Android app settings.
+    </string>
+    <string name="open_settings">Open Settings</string>
+    <string name="location_permissions_missing">Location permissions missing</string>
+    <string name="fix">Fix</string>
+    <string name="start">Start</string>
+    <string name="auto_tunnel_running">Auto-tunnel is running</string>
+    <string name="auto_tunnel_not_running">Auto-tunnel is not running</string>
 </resources>

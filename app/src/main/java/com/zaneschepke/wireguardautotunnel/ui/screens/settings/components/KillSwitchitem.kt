@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.settings.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.VpnKeyOff
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,10 +14,10 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionIte
 import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
 
 @Composable
-fun KillSwitchItem(): SelectionItem {
+fun killSwitchItem(): SelectionItem {
     val navController = LocalNavController.current
     return SelectionItem(
-        leadingIcon = Icons.Outlined.VpnKeyOff,
+        leading = { Icon(Icons.Outlined.VpnKeyOff, contentDescription = null) },
         title = {
             Text(
                 text = stringResource(R.string.kill_switch_options),

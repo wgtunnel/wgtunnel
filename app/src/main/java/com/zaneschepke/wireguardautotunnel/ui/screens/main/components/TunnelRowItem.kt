@@ -18,7 +18,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
@@ -40,22 +42,54 @@ fun TunnelRowItem(
     isTv: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     val leadingIconColor =
         remember(state) {
             if (state.status.isUp()) tunnelState.statistics.asColor() else Color.Gray
         }
 
-    val (leadingIcon, size) =
+    val (leadingIcon, size, typeDescription) =
         remember(tunnel) {
             when {
-                tunnel.isPrimaryTunnel -> Pair(Icons.Rounded.Star, 16.dp)
-                tunnel.isMobileDataTunnel -> Pair(Icons.Rounded.Smartphone, 16.dp)
-                tunnel.isEthernetTunnel -> Pair(Icons.Rounded.SettingsEthernet, 16.dp)
-                else -> Pair(Icons.Rounded.Circle, 14.dp)
+                tunnel.isPrimaryTunnel ->
+                    Triple(Icons.Rounded.Star, 16.dp, context.getString(R.string.primary_tunnel))
+                tunnel.isMobileDataTunnel ->
+                    Triple(
+                        Icons.Rounded.Smartphone,
+                        16.dp,
+                        context.getString(R.string.mobile_data_tunnel),
+                    )
+                tunnel.isEthernetTunnel ->
+                    Triple(
+                        Icons.Rounded.SettingsEthernet,
+                        16.dp,
+                        context.getString(R.string.ethernet_tunnel),
+                    )
+                else -> Triple(Icons.Rounded.Circle, 14.dp, context.getString(R.string.tunnel))
             }
         }
 
+    // Status description based on tunnel state
+    val statusDescription =
+        remember(state) {
+            if (state.status.isUpOrStarting()) {
+                context.getString(R.string.active)
+            } else {
+                context.getString(R.string.inactive)
+            }
+        }
+
+    // Combined content description for accessibility
+    val combinedContentDescription =
+        stringResource(
+            R.string.tunnel_item_description,
+            tunnel.tunName,
+            typeDescription,
+            statusDescription,
+        )
+
     ExpandingRowListItem(
+        modifier = modifier.semantics(mergeDescendants = true) { combinedContentDescription },
         leading = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -63,14 +97,14 @@ fun TunnelRowItem(
             ) {
                 if (isTv) {
                     Checkbox(
-                        isSelected,
+                        checked = isSelected,
                         onCheckedChange = { onToggleSelectedTunnel(tunnel) },
                         modifier = Modifier.minimumInteractiveComponentSize().size(12.dp),
                     )
                 }
                 Icon(
                     leadingIcon,
-                    stringResource(R.string.status),
+                    contentDescription = null,
                     tint = leadingIconColor,
                     modifier = Modifier.size(size),
                 )
@@ -99,6 +133,5 @@ fun TunnelRowItem(
             }
         },
         isSelected = isSelected,
-        modifier = modifier,
     )
 }

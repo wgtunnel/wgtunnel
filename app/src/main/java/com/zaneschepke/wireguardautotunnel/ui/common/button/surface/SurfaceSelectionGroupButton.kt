@@ -5,19 +5,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.zaneschepke.wireguardautotunnel.ui.theme.iconSize
 
 @Composable
-fun SurfaceSelectionGroupButton(items: List<SelectionItem>) {
+fun SurfaceSelectionGroupButton(items: List<SelectionItem>, modifier: Modifier = Modifier) {
+
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
@@ -25,9 +24,10 @@ fun SurfaceSelectionGroupButton(items: List<SelectionItem>) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier =
-                    Modifier.fillMaxWidth()
+                    modifier
+                        .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .then(item.onClick?.let { Modifier.clickable { it() } } ?: Modifier),
+                        .then(item.onClick?.let { modifier.clickable { it() } } ?: modifier),
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -37,21 +37,14 @@ fun SurfaceSelectionGroupButton(items: List<SelectionItem>) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.weight(4f, false).fillMaxWidth(),
                     ) {
-                        item.leadingIcon?.let { icon ->
-                            Icon(
-                                icon,
-                                icon.name,
-                                modifier = Modifier.size(iconSize),
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
+                        item.leading?.invoke()
                         Column(
                             horizontalAlignment = Alignment.Start,
                             verticalArrangement =
                                 Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
                             modifier =
                                 Modifier.fillMaxWidth()
-                                    .padding(start = if (item.leadingIcon != null) 16.dp else 0.dp)
+                                    .padding(start = if (item.leading != null) 16.dp else 0.dp)
                                     .weight(1f)
                                     .padding(
                                         vertical = if (item.description == null) 16.dp else 6.dp

@@ -30,6 +30,8 @@ data class TunnelConf(
     @Transient private var stateChangeCallback: ((Any) -> Unit)? = null,
 ) : Tunnel, org.amnezia.awg.backend.Tunnel {
 
+    val isNameKernelCompatible: Boolean = (name.length <= 15)
+
     fun setStateChangeCallback(callback: (Any) -> Unit) {
         stateChangeCallback = callback
     }

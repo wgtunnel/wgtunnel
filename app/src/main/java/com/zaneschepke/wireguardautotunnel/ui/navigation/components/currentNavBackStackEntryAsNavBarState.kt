@@ -25,8 +25,6 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.isCurrentRoute
 import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
 import com.zaneschepke.wireguardautotunnel.ui.state.AppViewState
 import com.zaneschepke.wireguardautotunnel.ui.state.NavBarState
-import com.zaneschepke.wireguardautotunnel.ui.theme.Brick
-import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
 import com.zaneschepke.wireguardautotunnel.ui.theme.iconSize
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
@@ -112,8 +110,6 @@ fun currentNavBackStackEntryAsNavBarState(
             when {
                 backStackEntry.isCurrentRoute(Route.Main::class) -> {
                     NavBarState(
-                        showTop = true,
-                        showBottom = true,
                         topTitle = { Text(stringResource(R.string.tunnels)) },
                         topTrailing = { TunnelActionBar() },
                         route = Route.Main,
@@ -121,36 +117,15 @@ fun currentNavBackStackEntryAsNavBarState(
                 }
 
                 backStackEntry.isCurrentRoute(Route.AutoTunnel::class) -> {
-                    val (icon, label, tint) =
-                        if (uiState.appSettings.isAutoTunnelEnabled) {
-                            Triple(Icons.Rounded.Stop, R.string.stop_auto, Brick)
-                        } else {
-                            Triple(Icons.Rounded.PlayArrow, R.string.start_auto, SilverTree)
-                        }
 
                     NavBarState(
-                        showTop = true,
-                        showBottom = true,
                         topTitle = { Text(stringResource(R.string.auto_tunnel)) },
-                        topTrailing = {
-                            IconButton(
-                                onClick = { viewModel.handleEvent(AppEvent.ToggleAutoTunnel) }
-                            ) {
-                                Icon(
-                                    icon,
-                                    stringResource(label),
-                                    tint = tint,
-                                    modifier = Modifier.size(iconSize),
-                                )
-                            }
-                        },
                         route = Route.AutoTunnel,
                     )
                 }
 
                 backStackEntry.isCurrentRoute(Route.Logs::class) -> {
                     NavBarState(
-                        showTop = true,
                         showBottom = false,
                         topTitle = { Text(stringResource(R.string.logs)) },
                         topTrailing = {
@@ -166,56 +141,42 @@ fun currentNavBackStackEntryAsNavBarState(
 
                 backStackEntry.isCurrentRoute(Route.Settings::class) ->
                     NavBarState(
-                        showTop = true,
-                        showBottom = true,
                         topTitle = { Text(stringResource(R.string.settings)) },
                         route = Route.Settings,
                     )
 
                 backStackEntry.isCurrentRoute(Route.Appearance::class) ->
                     NavBarState(
-                        showTop = true,
-                        showBottom = true,
                         topTitle = { Text(stringResource(R.string.appearance)) },
                         route = Route.Appearance,
                     )
 
                 backStackEntry.isCurrentRoute(Route.Language::class) ->
                     NavBarState(
-                        showTop = true,
-                        showBottom = true,
                         topTitle = { Text(stringResource(R.string.language)) },
                         route = Route.Language,
                     )
 
                 backStackEntry.isCurrentRoute(Route.Display::class) ->
                     NavBarState(
-                        showTop = true,
-                        showBottom = true,
                         topTitle = { Text(stringResource(R.string.display_theme)) },
                         route = Route.Display,
                     )
 
                 backStackEntry.isCurrentRoute(Route.WifiDetectionMethod::class) ->
                     NavBarState(
-                        showTop = true,
-                        showBottom = true,
                         topTitle = { Text(stringResource(R.string.wifi_detection_method)) },
                         route = Route.WifiDetectionMethod,
                     )
 
                 backStackEntry.isCurrentRoute(Route.KillSwitch::class) ->
                     NavBarState(
-                        showTop = true,
-                        showBottom = true,
                         topTitle = { Text(stringResource(R.string.kill_switch)) },
                         route = Route.KillSwitch,
                     )
 
                 backStackEntry.isCurrentRoute(Route.Support::class) ->
                     NavBarState(
-                        showTop = true,
-                        showBottom = true,
                         topTitle = { Text(stringResource(R.string.support)) },
                         route = Route.Support,
                     )

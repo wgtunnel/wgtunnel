@@ -9,24 +9,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaneschepke.wireguardautotunnel.ui.Route
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
-import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.AppSettingsItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.LocationDisclosureHeader
-import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.SkipItem
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.util.extensions.goFromRoot
+import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.appSettingsItem
+import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.skipItem
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun LocationDisclosureScreen(appUiState: AppUiState, viewModel: AppViewModel) {
-    val navController = LocalNavController.current
+fun LocationDisclosureScreen(viewModel: AppViewModel) {
 
-    LaunchedEffect(Unit, appUiState) {
-        if (appUiState.appState.isLocationDisclosureShown)
-            navController.goFromRoot(Route.AutoTunnel)
-    }
+    LaunchedEffect(Unit) { viewModel.handleEvent(AppEvent.SetLocationDisclosureShown) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -34,7 +27,7 @@ fun LocationDisclosureScreen(appUiState: AppUiState, viewModel: AppViewModel) {
         modifier = Modifier.fillMaxSize().padding(top = 18.dp).padding(horizontal = 24.dp),
     ) {
         LocationDisclosureHeader()
-        SurfaceSelectionGroupButton(items = listOf(AppSettingsItem(viewModel)))
-        SurfaceSelectionGroupButton(items = listOf(SkipItem(viewModel)))
+        SurfaceSelectionGroupButton(items = listOf(appSettingsItem()))
+        SurfaceSelectionGroupButton(items = listOf(skipItem()))
     }
 }

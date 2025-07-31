@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PublicOff
 import androidx.compose.material.icons.outlined.SettingsEthernet
 import androidx.compose.material.icons.outlined.SignalCellular4Bar
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +22,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 fun NetworkTunnelingItems(uiState: AppUiState, viewModel: AppViewModel): List<SelectionItem> {
     return listOf(
         SelectionItem(
-            leadingIcon = Icons.Outlined.SignalCellular4Bar,
+            leading = { Icon(Icons.Outlined.SignalCellular4Bar, contentDescription = null) },
             title = {
                 Text(
                     stringResource(R.string.tunnel_mobile_data),
@@ -58,7 +59,7 @@ fun NetworkTunnelingItems(uiState: AppUiState, viewModel: AppViewModel): List<Se
             onClick = { viewModel.handleEvent(AppEvent.ToggleAutoTunnelOnCellular) },
         ),
         SelectionItem(
-            leadingIcon = Icons.Outlined.SettingsEthernet,
+            leading = { Icon(Icons.Outlined.SettingsEthernet, contentDescription = null) },
             title = {
                 Text(
                     stringResource(R.string.tunnel_on_ethernet),
@@ -95,7 +96,7 @@ fun NetworkTunnelingItems(uiState: AppUiState, viewModel: AppViewModel): List<Se
             onClick = { viewModel.handleEvent(AppEvent.ToggleAutoTunnelOnEthernet) },
         ),
         SelectionItem(
-            leadingIcon = Icons.Outlined.PublicOff,
+            leading = { Icon(Icons.Outlined.PublicOff, contentDescription = null) },
             title = {
                 Text(
                     stringResource(R.string.stop_on_no_internet),

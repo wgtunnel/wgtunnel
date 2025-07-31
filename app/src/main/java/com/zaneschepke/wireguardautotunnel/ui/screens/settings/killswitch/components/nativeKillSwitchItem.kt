@@ -1,7 +1,8 @@
-package com.zaneschepke.wireguardautotunnel.ui.screens.settings.killswitch
+package com.zaneschepke.wireguardautotunnel.ui.screens.settings.killswitch.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AdminPanelSettings
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,10 +14,10 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionIte
 import com.zaneschepke.wireguardautotunnel.util.extensions.launchVpnSettings
 
 @Composable
-fun NativeKillSwitchItem(): SelectionItem {
+fun nativeKillSwitchItem(): SelectionItem {
     val context = LocalContext.current
     return SelectionItem(
-        leadingIcon = Icons.Outlined.AdminPanelSettings,
+        leading = { Icon(Icons.Outlined.AdminPanelSettings, contentDescription = null) },
         title = {
             Text(
                 text = stringResource(R.string.native_kill_switch),

@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SmartToy
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +24,7 @@ fun RemoteControlItem(uiState: AppUiState, viewModel: AppViewModel): SelectionIt
     val clipboardManager = rememberClipboardHelper()
 
     return SelectionItem(
-        leadingIcon = Icons.Filled.SmartToy,
+        leading = { Icon(Icons.Filled.SmartToy, contentDescription = null) },
         trailing = {
             ScaledSwitch(
                 checked = uiState.appState.isRemoteControlEnabled,

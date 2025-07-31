@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
-import com.zaneschepke.wireguardautotunnel.ui.screens.main.autotunnel.components.EthernetTunnelItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.autotunnel.components.MobileDataTunnelItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.autotunnel.components.WifiTunnelItem
+import com.zaneschepke.wireguardautotunnel.ui.screens.main.autotunnel.components.ethernetTunnelItem
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 
 @Composable
@@ -46,7 +46,7 @@ fun TunnelAutoTunnelScreen(
             items =
                 buildList {
                     add(MobileDataTunnelItem(tunnelConf, viewModel))
-                    add(EthernetTunnelItem(tunnelConf, viewModel))
+                    add(ethernetTunnelItem(tunnelConf, viewModel))
                     add(
                         WifiTunnelItem(tunnelConf, appSettings, viewModel, currentText) {
                             currentText = it

@@ -1,93 +1,93 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel
 
-import android.Manifest
-import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
+import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.Route
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
+import com.zaneschepke.wireguardautotunnel.ui.common.banner.WarningBanner
+import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
-import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalIsAndroidTV
+import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.AdvancedSettingsItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.NetworkTunnelingItems
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.WifiTunnelingItems
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.BackgroundLocationDialog
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.LocationServicesDialog
 import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.util.extensions.isLocationServicesEnabled
+import com.zaneschepke.wireguardautotunnel.util.extensions.launchAppSettings
+import com.zaneschepke.wireguardautotunnel.util.extensions.launchLocationServicesSettings
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AutoTunnelScreen(uiState: AppUiState, viewModel: AppViewModel) {
-    val context = LocalContext.current
     val navController = LocalNavController.current
-    val isTv = LocalIsAndroidTV.current
-    val fineLocationState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
+    val context = LocalContext.current
+
     var currentText by remember { mutableStateOf("") }
-    var isBackgroundLocationGranted by remember { mutableStateOf(true) }
-    var showLocationServicesAlertDialog by remember { mutableStateOf(false) }
     var showLocationDialog by remember { mutableStateOf(false) }
 
-    fun checkFineLocationGranted() {
-        isBackgroundLocationGranted = fineLocationState.status.isGranted
-    }
-
-    fun isWifiNameReadable(): Boolean {
-        return when {
-            !isBackgroundLocationGranted || !fineLocationState.status.isGranted -> {
-                showLocationDialog = true
-                false
+    val showLocationServicesWarning by
+        remember(
+            uiState.connectivityState?.wifiState,
+            uiState.appSettings.trustedNetworkSSIDs,
+            uiState.appSettings.wifiDetectionMethod,
+        ) {
+            derivedStateOf {
+                uiState.connectivityState?.wifiState?.locationServicesEnabled == false &&
+                    uiState.appSettings.wifiDetectionMethod.needsLocationPermissions() &&
+                    uiState.appSettings.trustedNetworkSSIDs.isNotEmpty()
             }
-            !context.isLocationServicesEnabled() -> {
-                showLocationServicesAlertDialog = true
-                false
-            }
-            else -> true
         }
-    }
 
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) checkFineLocationGranted()
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        if (isTv && Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-            checkFineLocationGranted()
-        } else {
-            val backgroundLocationState =
-                rememberPermissionState(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+    val showLocationPermissionsWarning by
+        remember(
+            uiState.connectivityState?.wifiState,
+            uiState.appSettings.trustedNetworkSSIDs,
+            uiState.appSettings.wifiDetectionMethod,
+        ) {
+            derivedStateOf {
+                uiState.connectivityState?.wifiState?.locationPermissionsGranted == false &&
+                    uiState.appSettings.wifiDetectionMethod.needsLocationPermissions() &&
+                    uiState.appSettings.trustedNetworkSSIDs.isNotEmpty()
+            }
         }
-    }
 
     LaunchedEffect(uiState.appSettings.trustedNetworkSSIDs) { currentText = "" }
 
-    LocationServicesDialog(
-        showLocationServicesAlertDialog,
-        onDismiss = { showLocationServicesAlertDialog = false },
-        onAttest = { showLocationServicesAlertDialog = false },
-    )
-
-    BackgroundLocationDialog(
-        showLocationDialog,
-        onDismiss = { showLocationDialog = false },
-        onAttest = { showLocationDialog = false },
-    )
+    if (showLocationDialog) {
+        InfoDialog(
+            onAttest = {
+                context.launchAppSettings()
+                showLocationDialog = false
+            },
+            onDismiss = { showLocationDialog = false },
+            title = { Text(stringResource(R.string.location_permissions)) },
+            body = { Text(stringResource(R.string.location_justification)) },
+            confirmText = { Text(stringResource(R.string.open_settings)) },
+        )
+    }
 
     Column(
         horizontalAlignment = Alignment.Start,
@@ -98,15 +98,65 @@ fun AutoTunnelScreen(uiState: AppUiState, viewModel: AppViewModel) {
                 .padding(vertical = 24.dp)
                 .padding(horizontal = 12.dp),
     ) {
+        WarningBanner(
+            stringResource(R.string.location_services_not_detected),
+            showLocationServicesWarning,
+            trailing = {
+                TextButton({ context.launchLocationServicesSettings() }) {
+                    Text(
+                        stringResource(R.string.fix),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            },
+        )
+        WarningBanner(
+            stringResource(R.string.location_permissions_missing),
+            showLocationPermissionsWarning,
+            trailing = {
+                TextButton({ showLocationDialog = true }) {
+                    Text(
+                        stringResource(R.string.fix),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            },
+        )
+        val (title, buttonText, icon) =
+            remember(uiState.isAutoTunnelActive) {
+                when (uiState.isAutoTunnelActive) {
+                    true ->
+                        Triple(
+                            context.getString(R.string.auto_tunnel_running),
+                            context.getString(R.string.stop),
+                            Icons.Outlined.CheckCircle,
+                        )
+                    false ->
+                        Triple(
+                            context.getString(R.string.auto_tunnel_not_running),
+                            context.getString(R.string.start),
+                            Icons.Outlined.Info,
+                        )
+                }
+            }
         SurfaceSelectionGroupButton(
             items =
-                WifiTunnelingItems(
-                    uiState,
-                    viewModel,
-                    currentText,
-                    { currentText = it },
-                    { isWifiNameReadable() },
+                listOf(
+                    SelectionItem(
+                        leading = { Icon(icon, null) },
+                        title = { Text(title) },
+                        trailing = {
+                            Button({ viewModel.handleEvent(AppEvent.ToggleAutoTunnel) }) {
+                                Text(buttonText, fontWeight = FontWeight.Bold)
+                            }
+                        },
+                    )
                 )
+        )
+        SurfaceSelectionGroupButton(
+            items = WifiTunnelingItems(uiState, viewModel, currentText) { currentText = it }
         )
         SectionDivider()
         SurfaceSelectionGroupButton(items = NetworkTunnelingItems(uiState, viewModel))

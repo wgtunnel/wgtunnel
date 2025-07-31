@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.settings.killswitch.compo
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.VpnKey
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,7 +15,7 @@ import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
 @Composable
 fun VpnKillSwitchItem(uiState: AppUiState, toggleVpnSwitch: () -> Unit): SelectionItem {
     return SelectionItem(
-        leadingIcon = Icons.Outlined.VpnKey,
+        leading = { Icon(Icons.Outlined.VpnKey, contentDescription = null) },
         title = {
             Text(
                 text = stringResource(R.string.vpn_kill_switch),

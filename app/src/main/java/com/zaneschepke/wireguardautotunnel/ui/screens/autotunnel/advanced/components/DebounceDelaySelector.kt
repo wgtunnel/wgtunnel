@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.advanced.compo
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PauseCircle
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +24,7 @@ fun DebounceDelaySelector(currentDelay: Int, onEvent: (AppEvent) -> Unit) {
     SurfaceSelectionGroupButton(
         listOf(
             SelectionItem(
-                leadingIcon = Icons.Outlined.PauseCircle,
+                leading = { Icon(Icons.Outlined.PauseCircle, contentDescription = null) },
                 title = {
                     Text(
                         stringResource(R.string.debounce_delay),

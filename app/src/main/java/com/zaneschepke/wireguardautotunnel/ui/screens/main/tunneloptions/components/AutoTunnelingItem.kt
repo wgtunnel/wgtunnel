@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.main.tunneloptions.compon
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,7 +18,7 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
 fun AutoTunnelingItem(tunnelConf: TunnelConf): SelectionItem {
     val navController = LocalNavController.current
     return SelectionItem(
-        leadingIcon = Icons.Outlined.Bolt,
+        leading = { Icon(Icons.Outlined.Bolt, contentDescription = null) },
         title = {
             Text(
                 text = stringResource(R.string.auto_tunneling),

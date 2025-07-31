@@ -5,19 +5,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FolderZip
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.outlined.FolderZip
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -121,7 +111,7 @@ fun ExportTunnelsBottomSheet(viewModel: AppViewModel) {
 private fun ExportOptionRow(label: String, onClick: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(10.dp)) {
         Icon(
-            imageVector = Icons.Filled.FolderZip,
+            imageVector = Icons.Outlined.FolderZip,
             contentDescription = label,
             modifier = Modifier.padding(10.dp),
         )

@@ -20,7 +20,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.Route
 import com.zaneschepke.wireguardautotunnel.ui.navigation.BottomNavItem
-import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.navigation.isCurrentRoute
 import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
@@ -31,7 +30,6 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.goFromRoot
 @Composable
 fun BottomNavbar(appUiState: AppUiState) {
     val navController = LocalNavController.current
-    val isTv = LocalIsAndroidTV.current
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
     val items =
@@ -48,8 +46,9 @@ fun BottomNavbar(appUiState: AppUiState) {
                 icon = Icons.Rounded.Bolt,
                 onClick = {
                     val route =
-                        if (appUiState.appState.isLocationDisclosureShown) Route.AutoTunnel
-                        else Route.LocationDisclosure
+                        if (appUiState.appState.isLocationDisclosureShown) {
+                            Route.AutoTunnel
+                        } else Route.LocationDisclosure
                     navController.goFromRoot(route)
                 },
                 active = appUiState.isAutoTunnelActive,
@@ -90,7 +89,7 @@ fun BottomNavbar(appUiState: AppUiState) {
                         Icon(imageVector = item.icon, contentDescription = item.name)
                     }
                 },
-                onClick = { navController.goFromRoot(item.route) },
+                onClick = item.onClick,
                 selected = isSelected,
                 enabled = true,
                 label = null,

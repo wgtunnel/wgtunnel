@@ -68,7 +68,7 @@ fun TunnelOptionsScreen(
                 listOf(
                     PrimaryTunnelItem(tunnelConf, viewModel),
                     AutoTunnelingItem(tunnelConf),
-                    ServerIpv4Item(tunnelConf, viewModel),
+                    serverIpv4Item(tunnelConf, viewModel),
                     SplitTunnelingItem(tunnelConf),
                 )
         )

@@ -29,4 +29,11 @@ class ActiveWifiStateManager {
     fun getLatestValue(): Pair<Network?, NetworkCapabilities?>? {
         return _stateFlow.value.entries.lastOrNull()?.value
     }
+
+    @Synchronized
+    fun clear() {
+        _stateFlow.update { currentMap ->
+            linkedMapOf(*currentMap.toList().toTypedArray()).apply { clear() }
+        }
+    }
 }

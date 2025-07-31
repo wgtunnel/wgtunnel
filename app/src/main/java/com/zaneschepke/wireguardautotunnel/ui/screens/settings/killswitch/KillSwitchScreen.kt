@@ -11,7 +11,9 @@ import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalIsAndroidTV
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.killswitch.components.LanTrafficItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.killswitch.components.VpnKillSwitchItem
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.killswitch.components.nativeKillSwitchItem
 import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
@@ -26,7 +28,7 @@ fun KillSwitchScreen(uiState: AppUiState, viewModel: AppViewModel) {
         modifier = Modifier.fillMaxSize().padding(vertical = 24.dp).padding(horizontal = 12.dp),
     ) {
         if (!isTv) {
-            SurfaceSelectionGroupButton(items = listOf(NativeKillSwitchItem()))
+            SurfaceSelectionGroupButton(items = listOf(nativeKillSwitchItem()))
             SectionDivider()
         }
         SurfaceSelectionGroupButton(

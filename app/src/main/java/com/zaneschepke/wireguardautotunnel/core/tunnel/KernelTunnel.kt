@@ -5,6 +5,7 @@ import com.wireguard.android.backend.BackendException
 import com.wireguard.android.backend.Tunnel
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendState
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
@@ -35,6 +36,8 @@ constructor(
     }
 
     override suspend fun startBackend(tunnel: TunnelConf) {
+        // name too long for kernel mode
+        if (!tunnel.isNameKernelCompatible) throw BackendError.TunnelNameTooLong
         try {
             updateTunnelStatus(tunnel, TunnelStatus.Starting)
             backend.setState(tunnel, Tunnel.State.UP, tunnel.toWgConfig())

@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.settings.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Pin
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +33,7 @@ fun PinLockItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
     }
 
     return SelectionItem(
-        leadingIcon = Icons.Outlined.Pin,
+        leading = { Icon(Icons.Outlined.Pin, contentDescription = null) },
         title = {
             Text(
                 text = stringResource(R.string.enable_app_lock),

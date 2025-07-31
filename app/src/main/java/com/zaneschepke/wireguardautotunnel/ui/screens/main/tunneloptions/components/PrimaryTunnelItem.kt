@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.main.tunneloptions.compon
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,7 +17,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 @Composable
 fun PrimaryTunnelItem(tunnelConf: TunnelConf, viewModel: AppViewModel): SelectionItem {
     return SelectionItem(
-        leadingIcon = Icons.Outlined.Star,
+        leading = { Icon(Icons.Outlined.Star, contentDescription = null) },
         title = {
             Text(
                 text = stringResource(R.string.primary_tunnel),

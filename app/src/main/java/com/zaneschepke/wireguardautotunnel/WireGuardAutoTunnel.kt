@@ -4,9 +4,6 @@ import android.app.Application
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import androidx.hilt.work.HiltWorkerFactory
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.Configuration
 import com.wireguard.android.backend.GoBackend
 import com.zaneschepke.logcatter.LogReader
@@ -23,6 +20,10 @@ import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -50,7 +51,6 @@ class WireGuardAutoTunnel : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        ProcessLifecycleOwner.get().lifecycle.addObserver(AppLifecycleObserver())
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
             StrictMode.setThreadPolicy(
@@ -90,30 +90,20 @@ class WireGuardAutoTunnel : Application(), Configuration.Provider {
     }
 
     override fun onTerminate() {
-        applicationScope.launch {
-            tunnelManager.setBackendState(BackendState.INACTIVE, emptyList())
-        }
+        applicationScope.cancel()
+        tunnelManager.setBackendState(BackendState.INACTIVE, emptyList())
         super.onTerminate()
     }
 
-    class AppLifecycleObserver : DefaultLifecycleObserver {
-
-        override fun onStart(owner: LifecycleOwner) {
-            Timber.d("Application entered foreground")
-            foreground = true
-        }
-
-        override fun onPause(owner: LifecycleOwner) {
-            Timber.d("Application entered background")
-            foreground = false
-        }
-    }
-
     companion object {
-        private var foreground = false
 
-        fun isForeground(): Boolean {
-            return foreground
+        private val _uiActive = MutableStateFlow(false)
+
+        val uiActive: StateFlow<Boolean>
+            get() = _uiActive
+
+        fun setUiActive(active: Boolean) {
+            _uiActive.update { active }
         }
 
         @Volatile private var lastActiveTunnels: List<Int> = emptyList()

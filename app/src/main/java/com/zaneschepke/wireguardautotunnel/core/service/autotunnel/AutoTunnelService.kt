@@ -3,7 +3,6 @@ package com.zaneschepke.wireguardautotunnel.core.service.autotunnel
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import android.os.PowerManager
 import androidx.core.app.ServiceCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
@@ -52,15 +51,11 @@ class AutoTunnelService : LifecycleService() {
 
     private val autoTunnelStateFlow = MutableStateFlow(defaultState)
 
-    private var wakeLock: PowerManager.WakeLock? = null
-
     private var killSwitchJob: Job? = null
 
     class LocalBinder(val service: AutoTunnelService) : Binder()
 
     private val binder = LocalBinder(this)
-
-    private var isServiceRunning = false
 
     override fun onCreate() {
         super.onCreate()
@@ -80,12 +75,9 @@ class AutoTunnelService : LifecycleService() {
     }
 
     fun start() {
-        if (isServiceRunning) return
-        isServiceRunning = true
         kotlin
             .runCatching {
                 launchWatcherNotification()
-                initWakeLock()
                 startAutoTunnelJob()
                 startAutoTunnelStateJob()
                 killSwitchJob = startKillSwitchJob()
@@ -94,8 +86,6 @@ class AutoTunnelService : LifecycleService() {
     }
 
     fun stop() {
-        isServiceRunning = false
-        wakeLock?.let { if (it.isHeld) it.release() }
         stopSelf()
     }
 
@@ -141,21 +131,6 @@ class AutoTunnelService : LifecycleService() {
             notification,
             Constants.SYSTEM_EXEMPT_SERVICE_TYPE_ID,
         )
-    }
-
-    private fun initWakeLock() {
-        wakeLock =
-            (getSystemService(POWER_SERVICE) as PowerManager).run {
-                val tag = this.javaClass.name
-                newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "$tag::lock").apply {
-                    try {
-                        Timber.i("Initiating wakelock with 10 min timeout")
-                        acquire(Constants.BATTERY_SAVER_WATCHER_WAKE_LOCK_TIMEOUT)
-                    } finally {
-                        release()
-                    }
-                }
-            }
     }
 
     private fun buildNetworkState(connectivityState: ConnectivityState): NetworkState {

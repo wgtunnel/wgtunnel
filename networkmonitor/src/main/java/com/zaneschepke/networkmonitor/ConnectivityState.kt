@@ -17,3 +17,8 @@ data class WifiState(
     val locationPermissionsGranted: Boolean,
     val locationServicesEnabled: Boolean,
 )
+
+data class Permissions(
+    val locationServicesEnabled: Boolean = false,
+    val locationPermissionGranted: Boolean = false,
+)

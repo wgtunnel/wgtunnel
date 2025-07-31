@@ -107,7 +107,6 @@ class MainActivity : AppCompatActivity() {
             val isTv = isRunningOnTv()
             val appUiState by viewModel.uiState.collectAsStateWithLifecycle()
             val appViewState by viewModel.appViewState.collectAsStateWithLifecycle()
-            val tunnelError by viewModel.tunnelManager.errorEvents.collectAsStateWithLifecycle(null)
 
             val navController = rememberNavController()
             val backStackEntry by navController.currentBackStackEntryAsState()
@@ -149,15 +148,6 @@ class MainActivity : AppCompatActivity() {
                 ) { _: ActivityResult ->
                     viewModel.handleEvent(AppEvent.SetBatteryOptimizeDisableShown)
                 }
-
-            LaunchedEffect(tunnelError) {
-                if (tunnelError == null) return@LaunchedEffect
-                val message = tunnelError!!.second.toStringRes()
-                val context = this@MainActivity
-                snackbar.showSnackbar(
-                    context.getString(R.string.tunnel_error_template, context.getString(message))
-                )
-            }
 
             with(appViewState) {
                 LaunchedEffect(isConfigChanged) {
@@ -265,7 +255,7 @@ class MainActivity : AppCompatActivity() {
                                         SettingsAdvancedScreen(appUiState, viewModel)
                                     }
                                     composable<Route.LocationDisclosure> {
-                                        LocationDisclosureScreen(appUiState, viewModel)
+                                        LocationDisclosureScreen(viewModel)
                                     }
                                     composable<Route.AutoTunnel> {
                                         AutoTunnelScreen(appUiState, viewModel)
@@ -327,5 +317,16 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        WireGuardAutoTunnel.setUiActive(true)
+        networkMonitor.checkPermissionsAndUpdateState()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        WireGuardAutoTunnel.setUiActive(false)
     }
 }

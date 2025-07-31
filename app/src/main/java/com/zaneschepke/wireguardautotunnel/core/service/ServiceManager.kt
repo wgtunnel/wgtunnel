@@ -96,6 +96,8 @@ constructor(
                 service.stop()
                 try {
                     context.unbindService(autoTunnelServiceConnection)
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to unbind AutoTunnelService")
                 } finally {
                     _tunnelService.value = null
                 }
@@ -120,6 +122,8 @@ constructor(
             service.stop()
             try {
                 context.unbindService(tunnelServiceConnection)
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to stop TunnelForegroundService")
             } finally {
                 _tunnelService.value = null
             }

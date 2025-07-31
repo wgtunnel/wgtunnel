@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.main.tunneloptions.compon
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.CallSplit
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,7 +18,7 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
 fun SplitTunnelingItem(tunnelConf: TunnelConf): SelectionItem {
     val navController = LocalNavController.current
     return SelectionItem(
-        leadingIcon = Icons.AutoMirrored.Outlined.CallSplit,
+        leading = { Icon(Icons.AutoMirrored.Outlined.CallSplit, contentDescription = null) },
         title = {
             Text(
                 text = stringResource(R.string.splt_tunneling),

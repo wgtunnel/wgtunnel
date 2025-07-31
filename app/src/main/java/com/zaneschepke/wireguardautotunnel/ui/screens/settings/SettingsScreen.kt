@@ -20,15 +20,15 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelec
 import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.AdvancedSettingsItem
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.AlwaysOnVpnItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.AppShortcutsItem
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.AppearanceItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.KernelModeItem
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.KillSwitchItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.LocalLoggingItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.PinLockItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.ReadLogsItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.RestartAtBootItem
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.alwaysOnVpnItem
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.appearanceItem
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.killSwitchItem
 import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 
@@ -64,8 +64,8 @@ fun SettingsScreen(uiState: AppUiState, viewModel: AppViewModel) {
             items =
                 buildList {
                     add(AppShortcutsItem(uiState, viewModel))
-                    if (!isTv) add(AlwaysOnVpnItem(uiState, viewModel))
-                    add(KillSwitchItem())
+                    if (!isTv) add(alwaysOnVpnItem(uiState, viewModel))
+                    add(killSwitchItem())
                     add(RestartAtBootItem(uiState, viewModel))
                 }
         )
@@ -73,7 +73,7 @@ fun SettingsScreen(uiState: AppUiState, viewModel: AppViewModel) {
         SurfaceSelectionGroupButton(
             items =
                 buildList {
-                    add(AppearanceItem())
+                    add(appearanceItem())
                     add(LocalLoggingItem(uiState, viewModel))
                     if (uiState.appState.isLocalLogsEnabled) add(ReadLogsItem())
                     add(PinLockItem(uiState, viewModel))

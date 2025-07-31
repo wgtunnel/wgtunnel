@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.settings.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AppShortcut
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,7 +17,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 @Composable
 fun AppShortcutsItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
     return SelectionItem(
-        leadingIcon = Icons.Filled.AppShortcut,
+        leading = { Icon(Icons.Filled.AppShortcut, contentDescription = null) },
         trailing = {
             ScaledSwitch(
                 checked = uiState.appSettings.isShortcutsEnabled,

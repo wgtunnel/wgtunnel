@@ -6,7 +6,7 @@ val OffWhite = Color(0xFFF2F2F4)
 val CoolGray = Color(0xFF8D9D9F)
 val LightGrey = Color(0xFFECEDEF)
 val Aqua = Color(0xFF76BEBD)
-val Plantation = Color(0xFF264A49)
+val Plantation = Color(0xFF2E3538)
 val Shark = Color(0xFF21272A)
 val BalticSea = Color(0xFF1C1B1F)
 

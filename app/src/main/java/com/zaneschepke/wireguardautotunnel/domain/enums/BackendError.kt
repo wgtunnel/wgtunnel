@@ -11,23 +11,23 @@ sealed class BackendError : Exception() {
 
     data object KernelModuleName : BackendError()
 
-    data object InvalidConfig : BackendError()
-
     data object NotAuthorized : BackendError()
 
     data object ServiceNotRunning : BackendError()
 
     data object Unknown : BackendError()
 
+    data object TunnelNameTooLong : BackendError()
+
     fun toStringRes() =
         when (this) {
             Config -> R.string.config_error
             DNS -> R.string.dns_resolve_error
-            InvalidConfig -> R.string.invalid_config_error
             KernelModuleName -> R.string.kernel_name_error
             NotAuthorized,
             Unauthorized -> R.string.auth_error
             ServiceNotRunning -> R.string.service_running_error
             Unknown -> R.string.unknown_error
+            TunnelNameTooLong -> R.string.error_tunnel_name
         }
 }

@@ -16,11 +16,7 @@ import android.os.Build
 import androidx.core.content.ContextCompat
 import com.wireguard.android.util.RootShell
 import com.zaneschepke.networkmonitor.shizuku.ShizukuShell
-import com.zaneschepke.networkmonitor.util.WIFI_SSID_SHELL_COMMAND
-import com.zaneschepke.networkmonitor.util.getCurrentSecurityType
-import com.zaneschepke.networkmonitor.util.getCurrentWifiName
-import com.zaneschepke.networkmonitor.util.getWifiSsid
-import com.zaneschepke.networkmonitor.util.isLocationServicesEnabled
+import com.zaneschepke.networkmonitor.util.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
@@ -32,15 +28,17 @@ class AndroidNetworkMonitor(
     private val applicationScope: CoroutineScope,
 ) : NetworkMonitor {
 
+    private val actionPermissionCheck = "${appContext.packageName}.PERMISSION_CHECK"
+
     interface ConfigurationListener {
         val detectionMethod: Flow<WifiDetectionMethod>
         val rootShell: RootShell
     }
 
     companion object {
-        const val LOCATION_GRANTED = "LOCATION_PERMISSIONS_GRANTED"
-        const val LOCATION_SERVICES_FILTER = "android.location.PROVIDERS_CHANGED"
-        const val ANDROID_UNKNOWN_SSID = "<unknown ssid>"
+        const val LOCATION_SERVICES_FILTER: String = "android.location.PROVIDERS_CHANGED"
+
+        const val ANDROID_UNKNOWN_SSID: String = "<unknown ssid>"
     }
 
     enum class WifiDetectionMethod(val value: Int) {
@@ -53,9 +51,12 @@ class AndroidNetworkMonitor(
             fun fromValue(value: Int): WifiDetectionMethod =
                 entries.find { it.value == value } ?: DEFAULT
         }
+
+        fun needsLocationPermissions(): Boolean {
+            return this == DEFAULT || this == LEGACY
+        }
     }
 
-    private val packageName = appContext.packageName
     private val connectivityManager =
         appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
     private val wifiManager = appContext.getSystemService(Context.WIFI_SERVICE) as WifiManager?
@@ -65,35 +66,72 @@ class AndroidNetworkMonitor(
     // Track active Wi-Fi networks, their capabilities, and last active network ID
     private val activeWifiNetworks = ActiveWifiStateManager()
 
+    private val permissionsChangedFlow = MutableStateFlow(false)
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private val wifiFlow: Flow<TransportEvent> =
-        configurationListener.detectionMethod.flatMapLatest { detectionMethod
-            -> // cancels previous flow
-            Timber.d("Updated detectionMethod=$detectionMethod, recreating wifiFlow")
-            createWifiNetworkCallbackFlow(detectionMethod) // Create a new flow for each new method
-        }
+        combine(configurationListener.detectionMethod, permissionsChangedFlow) {
+                detectionMethod,
+                changed ->
+                Pair(detectionMethod, changed)
+            }
+            .flatMapLatest { (detectionMethod, _) -> // cancels previous flow
+                Timber.d("Permission or detection method changed, recreating wifiFlow")
+                createWifiNetworkCallbackFlow(detectionMethod)
+            }
+
+    private fun isAndroidTv(): Boolean =
+        appContext.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+
+    private fun hasRequiredLocationPermissions(): Boolean {
+        val fineLocationGranted =
+            ContextCompat.checkSelfPermission(
+                appContext,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED
+        val backgroundLocationGranted =
+            if (
+                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) &&
+                    // exclude Android TV on Q as background location is not required on this
+                    // version
+                    !(Build.VERSION.SDK_INT == Build.VERSION_CODES.Q && isAndroidTv())
+            ) {
+                ContextCompat.checkSelfPermission(
+                    appContext,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                ) == PackageManager.PERMISSION_GRANTED
+            } else {
+                true // No need for ACCESS_BACKGROUND_LOCATION on Android P or Android TV on Q
+            }
+        return fineLocationGranted && backgroundLocationGranted
+    }
 
     private fun createWifiNetworkCallbackFlow(
         detectionMethod: WifiDetectionMethod
     ): Flow<TransportEvent> = callbackFlow {
-        val locationPermissionReceiver =
+
+        // The primary purpose of this receiver is to handle the case that the user enables location
+        // permissions and then returns to the app
+        // When this happens, we should check if permissions changed. If so, we need to requery
+        // Wi-Fi name for the currently connected network
+        val permissionReceiver =
             object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent) {
-                    Timber.d(
-                        "locationPermissionReceiver received intent with action: ${intent.action}"
-                    )
-                    if (intent.action == "$packageName.$LOCATION_GRANTED") {
-                        Timber.d(
-                            "Received update: Precise and all-the-time location permissions are enabled"
-                        )
-                        activeWifiNetworks.getLatestValue()?.let { details ->
-                            trySend(
-                                TransportEvent.LocationPermissionGranted(
-                                    details.first,
-                                    details.second,
-                                    detectionMethod,
-                                )
+                    if (intent.action == actionPermissionCheck) {
+                        val isGranted = hasRequiredLocationPermissions()
+                        Timber.d("Received permission check broadcast, isGranted: $isGranted")
+                        // get Wi-Fi info on permission change and update permission state
+                        if (
+                            connectivityStateFlow.replayCache
+                                .firstOrNull()
+                                ?.wifiState
+                                ?.locationPermissionsGranted != isGranted
+                        ) {
+                            Timber.d(
+                                "Location permissions have changed, canceling and restarting callback flow"
                             )
+                            activeWifiNetworks.clear()
+                            permissionsChangedFlow.update { !permissionsChangedFlow.value }
                         }
                     }
                 }
@@ -103,54 +141,42 @@ class AndroidNetworkMonitor(
             object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent) {
                     if (intent.action == LOCATION_SERVICES_FILTER) {
-                        val isGpsEnabled =
-                            locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                                ?: false
-                        val isNetworkEnabled =
-                            locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-                                ?: false
-                        val isLocationServicesEnabled = isGpsEnabled || isNetworkEnabled
-                        Timber.d(
-                            "Location Services state changed. Enabled: $isLocationServicesEnabled, GPS: $isGpsEnabled, Network: $isNetworkEnabled"
-                        )
-                        activeWifiNetworks.getLatestValue()?.let { details ->
-                            trySend(
-                                TransportEvent.LocationServicesChanged(
-                                    isLocationServicesEnabled,
-                                    details.first,
-                                    details.second,
-                                    detectionMethod,
-                                )
+                        Timber.d("Received location services broadcast")
+                        val isLocationServicesEnabled = locationManager?.isLocationServicesEnabled()
+                        if (
+                            connectivityStateFlow.replayCache
+                                .firstOrNull()
+                                ?.wifiState
+                                ?.locationServicesEnabled != isLocationServicesEnabled
+                        ) {
+                            Timber.d(
+                                "Location services have changed, canceling and restarting callback flow"
                             )
+                            // trigger cancel and recreate of callbackFlow
+                            activeWifiNetworks.clear()
+                            permissionsChangedFlow.update { !permissionsChangedFlow.value }
                         }
                     }
                 }
             }
 
-        val permissionReceiverFlags =
+        val receiverFlags =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Context.RECEIVER_NOT_EXPORTED // Internal broadcast
-            } else {
-                0
-            }
-
-        val servicesReceiverFlags =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 Context.RECEIVER_EXPORTED // System broadcast
             } else {
                 0
             }
 
         appContext.registerReceiver(
-            locationPermissionReceiver,
-            IntentFilter("$packageName.$LOCATION_GRANTED"),
-            permissionReceiverFlags,
+            permissionReceiver,
+            IntentFilter(actionPermissionCheck),
+            receiverFlags,
         )
 
         appContext.registerReceiver(
             locationServicesReceiver,
             IntentFilter(LOCATION_SERVICES_FILTER),
-            servicesReceiverFlags,
+            receiverFlags,
         )
 
         fun handleOnWifiLost(network: Network) {
@@ -187,34 +213,36 @@ class AndroidNetworkMonitor(
                 detectionMethod == WifiDetectionMethod.LEGACY ||
                     Build.VERSION.SDK_INT < Build.VERSION_CODES.S ->
                     object : ConnectivityManager.NetworkCallback() {
-                        override fun onAvailable(network: Network) {
-                            handleOnWifiAvailable(network)
-                        }
+                            override fun onAvailable(network: Network) {
+                                handleOnWifiAvailable(network)
+                            }
 
-                        override fun onLost(network: Network) {
-                            handleOnWifiLost(network)
+                            override fun onLost(network: Network) {
+                                handleOnWifiLost(network)
+                            }
                         }
-                    }
+                        .also { Timber.d("Creating Wi-Fi callback without location info flags") }
                 else ->
                     object : ConnectivityManager.NetworkCallback(FLAG_INCLUDE_LOCATION_INFO) {
 
-                        override fun onAvailable(network: Network) {
-                            if (detectionMethod != WifiDetectionMethod.DEFAULT)
-                                handleOnWifiAvailable(network)
-                        }
+                            override fun onAvailable(network: Network) {
+                                if (detectionMethod != WifiDetectionMethod.DEFAULT)
+                                    handleOnWifiAvailable(network)
+                            }
 
-                        override fun onCapabilitiesChanged(
-                            network: Network,
-                            networkCapabilities: NetworkCapabilities,
-                        ) {
-                            if (detectionMethod == WifiDetectionMethod.DEFAULT)
-                                handleOnWifiCapabilitiesChanged(network, networkCapabilities)
-                        }
+                            override fun onCapabilitiesChanged(
+                                network: Network,
+                                networkCapabilities: NetworkCapabilities,
+                            ) {
+                                if (detectionMethod == WifiDetectionMethod.DEFAULT)
+                                    handleOnWifiCapabilitiesChanged(network, networkCapabilities)
+                            }
 
-                        override fun onLost(network: Network) {
-                            handleOnWifiLost(network)
+                            override fun onLost(network: Network) {
+                                handleOnWifiLost(network)
+                            }
                         }
-                    }
+                        .also { Timber.d("Creating Wi-Fi callback with location info flags") }
             }
 
         val request =
@@ -225,11 +253,19 @@ class AndroidNetworkMonitor(
 
         connectivityManager?.registerNetworkCallback(request, callback)
 
-        trySend(TransportEvent.Unknown)
+        trySend(
+            TransportEvent.Permissions(
+                permissions =
+                    Permissions(
+                        locationManager?.isLocationServicesEnabled() ?: false,
+                        hasRequiredLocationPermissions(),
+                    )
+            )
+        )
 
         awaitClose {
             runCatching {
-                    appContext.unregisterReceiver(locationPermissionReceiver)
+                    appContext.unregisterReceiver(permissionReceiver)
                     appContext.unregisterReceiver(locationServicesReceiver)
                     connectivityManager?.unregisterNetworkCallback(callback)
                 }
@@ -295,7 +331,7 @@ class AndroidNetworkMonitor(
         }
     }
 
-    suspend fun getSsidByDetectionMethod(
+    private suspend fun getSsidByDetectionMethod(
         detectionMethod: WifiDetectionMethod?,
         networkCapabilities: NetworkCapabilities?,
     ): String {
@@ -327,15 +363,11 @@ class AndroidNetworkMonitor(
             .also { Timber.d("Current SSID via ${method.name}: $it") }
     }
 
-    override val connectivityStateFlow =
+    override val connectivityStateFlow: SharedFlow<ConnectivityState> =
         combine(
                 wifiFlow.scan(
                     WifiState(
-                        locationPermissionsGranted =
-                            ContextCompat.checkSelfPermission(
-                                appContext,
-                                Manifest.permission.ACCESS_FINE_LOCATION,
-                            ) == PackageManager.PERMISSION_GRANTED,
+                        locationPermissionsGranted = hasRequiredLocationPermissions(),
                         locationServicesEnabled =
                             locationManager?.isLocationServicesEnabled() ?: false,
                     )
@@ -361,29 +393,16 @@ class AndroidNetworkMonitor(
                                     ),
                                 securityType = wifiManager?.getCurrentSecurityType(),
                             )
-                        is TransportEvent.LocationPermissionGranted ->
+                        is TransportEvent.Permissions -> {
                             previous.copy(
-                                locationPermissionsGranted = true,
-                                ssid =
-                                    getSsidByDetectionMethod(
-                                        event.wifiDetectionMethod,
-                                        event.networkCapabilities,
-                                    ),
-                                securityType = wifiManager?.getCurrentSecurityType(),
+                                locationPermissionsGranted =
+                                    event.permissions.locationPermissionGranted,
+                                locationServicesEnabled = event.permissions.locationServicesEnabled,
                             )
-                        is TransportEvent.LocationServicesChanged ->
-                            previous.copy(
-                                locationServicesEnabled = event.enabled,
-                                ssid =
-                                    getSsidByDetectionMethod(
-                                        event.wifiDetectionMethod,
-                                        event.networkCapabilities,
-                                    ),
-                                securityType = wifiManager?.getCurrentSecurityType(),
-                            )
+                        }
                         is TransportEvent.Lost ->
                             previous.copy(connected = false, securityType = null, ssid = null)
-                        TransportEvent.Unknown -> previous
+                        is TransportEvent.Unknown -> previous
                     }
                 },
                 cellularFlow,
@@ -400,4 +419,11 @@ class AndroidNetworkMonitor(
             }
             .distinctUntilChanged()
             .shareIn(applicationScope, SharingStarted.WhileSubscribed(5000), replay = 1)
+
+    override fun checkPermissionsAndUpdateState() {
+        val action = actionPermissionCheck
+        val intent = Intent(action)
+        Timber.d("Sending broadcast: $action")
+        appContext.sendBroadcast(intent)
+    }
 }

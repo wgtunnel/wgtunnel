@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.settings.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Restore
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,7 +17,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 @Composable
 fun RestartAtBootItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
     return SelectionItem(
-        leadingIcon = Icons.Outlined.Restore,
+        leading = { Icon(Icons.Outlined.Restore, contentDescription = null) },
         trailing = {
             ScaledSwitch(
                 checked = uiState.appSettings.isRestoreOnBootEnabled,

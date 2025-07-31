@@ -17,18 +17,8 @@ sealed class TransportEvent {
         val wifiDetectionMethod: AndroidNetworkMonitor.WifiDetectionMethod? = null,
     ) : TransportEvent()
 
-    data class LocationPermissionGranted(
-        val network: Network?,
-        val networkCapabilities: NetworkCapabilities?,
-        val wifiDetectionMethod: AndroidNetworkMonitor.WifiDetectionMethod?,
-    ) : TransportEvent()
-
-    data class LocationServicesChanged(
-        val enabled: Boolean,
-        val network: Network?,
-        val networkCapabilities: NetworkCapabilities?,
-        val wifiDetectionMethod: AndroidNetworkMonitor.WifiDetectionMethod?,
-    ) : TransportEvent()
+    data class Permissions(val permissions: com.zaneschepke.networkmonitor.Permissions) :
+        TransportEvent()
 
     data object Unknown : TransportEvent()
 }

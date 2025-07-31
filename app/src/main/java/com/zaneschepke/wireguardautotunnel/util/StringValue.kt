@@ -14,7 +14,18 @@ sealed class StringValue {
         return when (this) {
             is Empty -> ""
             is DynamicString -> value
-            is StringResource -> context?.getString(resId, *args).orEmpty()
+            is StringResource -> {
+                val stringArgs =
+                    args
+                        .map { arg ->
+                            when (arg) {
+                                is Int -> context?.getString(arg) ?: arg.toString()
+                                else -> arg
+                            }
+                        }
+                        .toTypedArray()
+                context?.getString(resId, *stringArgs).orEmpty()
+            }
         }
     }
 }
