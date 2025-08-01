@@ -43,6 +43,8 @@ interface NotificationManager {
     fun show(notificationId: Int, notification: Notification)
 
     companion object {
+        const val AUTO_TUNNEL_LOCATION_PERMISSION_ID = 123
+        const val AUTO_TUNNEL_LOCATION_SERVICES_ID = 124
         // For auto tunnel foreground notification
         const val AUTO_TUNNEL_NOTIFICATION_ID = 122
         // for tunnel foreground notification

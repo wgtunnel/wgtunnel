@@ -6,7 +6,7 @@ import android.os.IBinder
 import androidx.core.app.ServiceCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import com.zaneschepke.networkmonitor.ConnectivityState
+import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
@@ -25,12 +25,13 @@ import com.zaneschepke.wireguardautotunnel.domain.state.AutoTunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.NetworkState
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.extensions.Tunnels
+import com.zaneschepke.wireguardautotunnel.util.extensions.zipWithPrevious
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-import javax.inject.Provider
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Provider
 
 @AndroidEntryPoint
 class AutoTunnelService : LifecycleService() {
@@ -75,14 +76,11 @@ class AutoTunnelService : LifecycleService() {
     }
 
     fun start() {
-        kotlin
-            .runCatching {
-                launchWatcherNotification()
-                startAutoTunnelJob()
-                startAutoTunnelStateJob()
-                killSwitchJob = startKillSwitchJob()
-            }
-            .onFailure { Timber.e(it) }
+        launchWatcherNotification()
+        startAutoTunnelJob()
+        startAutoTunnelStateJob()
+        killSwitchJob = startKillSwitchJob()
+        startNotificationJob()
     }
 
     fun stop() {
@@ -133,17 +131,6 @@ class AutoTunnelService : LifecycleService() {
         )
     }
 
-    private fun buildNetworkState(connectivityState: ConnectivityState): NetworkState {
-        return with(autoTunnelStateFlow.value.networkState) {
-            copy(
-                isWifiConnected = connectivityState.wifiState.connected,
-                isMobileDataConnected = connectivityState.cellularConnected,
-                isEthernetConnected = connectivityState.ethernetConnected,
-                wifiName = connectivityState.wifiState.ssid,
-            )
-        }
-    }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun startAutoTunnelStateJob() =
         lifecycleScope.launch(ioDispatcher) {
@@ -157,9 +144,9 @@ class AutoTunnelService : LifecycleService() {
                             old.isKernelEnabled == new.isKernelEnabled
                         } // Only emit when isKernelEnabled changes
                         .flatMapLatest {
-                            networkMonitor.connectivityStateFlow.flowOn(ioDispatcher).map {
-                                buildNetworkState(it)
-                            }
+                            networkMonitor.connectivityStateFlow
+                                .flowOn(ioDispatcher)
+                                .map(NetworkState::from)
                         }
                         .distinctUntilChanged(),
                 ) { double, networkState ->
@@ -195,6 +182,79 @@ class AutoTunnelService : LifecycleService() {
             }
             .distinctUntilChanged()
     }
+
+    // watch for changes to location permission and notify user it will impact auto-tunneling
+    // TODO can add deeplinks later back to the app for fixing
+    // TODO or a recheck button for location permission so we dont have to poll it
+    private fun startNotificationJob(): Job =
+        lifecycleScope.launch(ioDispatcher) {
+            var locationServicesShown = false
+            var locationPermissionsShown = false
+            autoTunnelStateFlow.zipWithPrevious().collect { (previous, current) ->
+                when (current.settings.wifiDetectionMethod) {
+                    AndroidNetworkMonitor.WifiDetectionMethod.DEFAULT,
+                    AndroidNetworkMonitor.WifiDetectionMethod.LEGACY -> {
+                        with(current.networkState) {
+                            if (
+                                locationPermissionGranted == false &&
+                                    (previous?.networkState?.locationPermissionGranted == true ||
+                                        !locationServicesShown)
+                            ) {
+                                locationServicesShown = true
+                                Timber.i("Detected location permission lost")
+                                val notification =
+                                    notificationManager.createNotification(
+                                        WireGuardNotification.NotificationChannels.AUTO_TUNNEL,
+                                        title = getString(R.string.warning),
+                                        description =
+                                            getString(R.string.location_permissions_missing),
+                                    )
+                                notificationManager.show(
+                                    NotificationManager.AUTO_TUNNEL_LOCATION_PERMISSION_ID,
+                                    notification,
+                                )
+                            }
+                            if (
+                                locationServicesEnabled == false &&
+                                    (previous?.networkState?.locationServicesEnabled == true ||
+                                        !locationPermissionsShown)
+                            ) {
+                                locationPermissionsShown = true
+                                Timber.i("Detected location services lost")
+                                val notification =
+                                    notificationManager.createNotification(
+                                        WireGuardNotification.NotificationChannels.AUTO_TUNNEL,
+                                        title = getString(R.string.warning),
+                                        description =
+                                            getString(R.string.location_services_not_detected),
+                                    )
+                                notificationManager.show(
+                                    NotificationManager.AUTO_TUNNEL_LOCATION_SERVICES_ID,
+                                    notification,
+                                )
+                            }
+                            if (
+                                locationServicesEnabled == true &&
+                                    previous?.networkState?.locationServicesEnabled == false
+                            ) {
+                                notificationManager.remove(
+                                    NotificationManager.AUTO_TUNNEL_LOCATION_SERVICES_ID
+                                )
+                            }
+                            if (
+                                locationPermissionGranted == true &&
+                                    previous?.networkState?.locationPermissionGranted == false
+                            ) {
+                                notificationManager.remove(
+                                    NotificationManager.AUTO_TUNNEL_LOCATION_PERMISSION_ID
+                                )
+                            }
+                        }
+                    }
+                    else -> Unit
+                }
+            }
+        }
 
     private fun startKillSwitchJob() =
         lifecycleScope.launch(ioDispatcher) {
