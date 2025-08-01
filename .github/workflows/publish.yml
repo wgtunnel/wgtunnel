@@ -25,7 +25,6 @@ on:
         description: "GitHub release type"
         options:
           - none
-          - prerelease
           - release
         default: release
         required: true
@@ -60,7 +59,7 @@ jobs:
       flavor: fdroid
 
   build-standalone:
-    if: ${{ github.event_name == 'push' || inputs.release_type == 'release' || inputs.release_type == 'prerelease' || inputs.flavor == 'standalone' }}
+    if: ${{ github.event_name == 'push' || inputs.release_type == 'release' || inputs.release_type == 'debug' || inputs.flavor == 'standalone' }}
     uses: ./.github/workflows/build.yml
     secrets: inherit
     with:
@@ -124,11 +123,6 @@ jobs:
           echo "$RELEASE_NOTES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: On prerelease release notes
-        if: ${{ github.event_name != 'push' && inputs.release_type == 'prerelease' }}
-        run: |
-          echo "RELEASE_NOTES=Testing version of app for specific feature." >> $GITHUB_ENV
-
       - name: Get checksum
         id: checksum
         run: |
@@ -162,8 +156,8 @@ jobs:
           tag_name: ${{ github.event_name == 'push' && github.ref_name || github.event.inputs.tag_name }}
           name: ${{ github.event_name == 'push' && github.ref_name || github.event.inputs.tag_name }}
           draft: false
-          prerelease: ${{ github.event_name != 'push' && inputs.release_type == 'prerelease' }}
-          make_latest: ${{ github.event_name == 'push' || inputs.release_type == 'release' }}
+          prerelease: false
+          make_latest: true
           files: |
             ${{ github.workspace }}/temp/**/*.apk
         env:

@@ -52,21 +52,19 @@ fun Project.getCommitCountSinceLastCommit(): Int {
     }
 }
 
-// Get versionCode increment for nightly/pre-release
+// Get versionCode increment for nightly
 fun Project.getVersionCodeIncrement(): Int {
     val isNightlyBuild = gradle.startParameter.taskNames.any { it.lowercase().contains("nightly") }
-    val isPreReleaseBuild = gradle.startParameter.taskNames.any { it.lowercase().contains("prerelease") }
-    if (!isNightlyBuild && !isPreReleaseBuild) return 0
+    if (!isNightlyBuild) return 0
 
     return System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull()
         ?: System.getenv("CI_BUILD_NUMBER")?.toIntOrNull()
         ?: getCommitCountSinceLastCommit()
 }
 
-// Compute versionName dynamic bumping for nightly/pre-release
+// Compute versionName dynamic bumping for nightly
 fun Project.computeVersionName(): String {
     val isNightlyBuild = isNightlyBuild()
-    val isPreReleaseBuild = isPrereleaseBuild()
 
     // Static version from Constants.kt
     val baseVersion = Semver.parse(Constants.VERSION_NAME) ?: Semver.of(0, 0, 0)
@@ -81,15 +79,6 @@ fun Project.computeVersionName(): String {
             )
             "${nightlyVersion}-nightly+git.${getGitCommitHash()}"
         }
-        isPreReleaseBuild -> {
-            // Bump minor for pre-release
-            val preReleaseVersion = Semver.of(
-                baseVersion.major,
-                baseVersion.minor,
-                0 + 1,
-            )
-            "${preReleaseVersion}-beta+git.${getGitCommitHash()}"
-        }
         else -> Constants.VERSION_NAME
     }
 }
@@ -98,19 +87,11 @@ fun Project.isNightlyBuild(): Boolean {
     return gradle.startParameter.taskNames.any { it.lowercase().contains(Constants.NIGHTLY) }
 }
 
-fun Project.isPrereleaseBuild(): Boolean {
-    return gradle.startParameter.taskNames.any { it.lowercase().contains(Constants.PRERELEASE) }
-}
-
-// Compute versionCode (static baseline, dynamic bumping for nightly/pre-release)
+// Compute versionCode (static baseline, dynamic bumping for nightly)
 fun Project.computeVersionCode(): Int {
     val isNightlyBuild = isNightlyBuild()
-    val isPreReleaseBuild = isPrereleaseBuild()
     var versionCode = Constants.VERSION_CODE
 
-    if (isPreReleaseBuild) {
-        versionCode += 100 // Minor bump
-    }
     if (isNightlyBuild) {
         versionCode += 1 // Patch bump
     }

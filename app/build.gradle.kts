@@ -72,22 +72,15 @@ android {
 
         debug {
             applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "WG Tunnel - Debug")
+            resValue("string", "app_name", "WG Tunnel Debug")
             isDebuggable = true
             resValue("string", "provider", "\"${Constants.APP_NAME}.provider.debug\"")
-        }
-
-        create(Constants.PRERELEASE) {
-            initWith(buildTypes.getByName(Constants.RELEASE))
-            applicationIdSuffix = ".prerelease"
-            resValue("string", "app_name", "WG Tunnel - Pre")
-            resValue("string", "provider", "\"${Constants.APP_NAME}.provider.pre\"")
         }
 
         create(Constants.NIGHTLY) {
             initWith(buildTypes.getByName(Constants.RELEASE))
             applicationIdSuffix = ".nightly"
-            resValue("string", "app_name", "WG Tunnel - Nightly")
+            resValue("string", "app_name", "WG Tunnel Nightly")
             resValue("string", "provider", "\"${Constants.APP_NAME}.provider.nightly\"")
         }
     }

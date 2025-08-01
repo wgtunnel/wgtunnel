@@ -12,7 +12,6 @@ on:
         default: debug
         options:
           - debug
-          - prerelease
           - nightly
           - release
       flavor:
@@ -104,9 +103,6 @@ jobs:
           case $build_type in
             "release")
               ./gradlew :app:assemble${flavor^}Release --info
-              ;;
-            "prerelease")
-              ./gradlew :app:assemble${flavor^}Prerelease --info
               ;;
             "nightly")
               ./gradlew :app:assemble${flavor^}Nightly --info

@@ -27,11 +27,11 @@ import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.extensions.Tunnels
 import com.zaneschepke.wireguardautotunnel.util.extensions.zipWithPrevious
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import javax.inject.Provider
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Provider
 
 @AndroidEntryPoint
 class AutoTunnelService : LifecycleService() {
