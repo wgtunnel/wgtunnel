@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -20,6 +22,8 @@ android {
         includeInBundle = false
     }
 
+    ksp { arg("room.schemaLocation", "$projectDir/schemas") }
+
     defaultConfig {
         applicationId = Constants.APP_ID
         minSdk = Constants.MIN_SDK
@@ -27,15 +31,10 @@ android {
         versionCode = computeVersionCode()
         versionName = computeVersionName()
 
-        ksp { arg("room.schemaLocation", "$projectDir/schemas") }
-
         sourceSets { getByName("debug").assets.srcDirs(files("$projectDir/schemas")) }
 
-        buildConfigField(
-            "String[]",
-            "LANGUAGES",
-            "new String[]{ ${languageList().joinToString(separator = ", ") { "\"$it\"" }} }",
-        )
+        val languagesArray = buildLanguagesArray(languageList())
+        buildConfigField("String[]", "LANGUAGES", "new String[]{ $languagesArray }")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
@@ -114,7 +113,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions { jvmTarget = Constants.JVM_TARGET }
+
+    kotlin { compilerOptions { jvmTarget = JvmTarget.JVM_17 } }
+
     buildFeatures {
         compose = true
         buildConfig = true

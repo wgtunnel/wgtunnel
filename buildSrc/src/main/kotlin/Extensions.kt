@@ -15,6 +15,11 @@ fun Project.languageList(): List<String> {
 		.toList() + "en"
 }
 
+
+fun buildLanguagesArray(languages: List<String>): String {
+    return languages.joinToString(separator = ", ") { "\"$it\"" }
+}
+
 // Get the Git commit hash
 fun Project.getGitCommitHash(): String {
     var grgit: Grgit? = null
