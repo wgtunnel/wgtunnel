@@ -80,7 +80,7 @@
     <string name="add_tunnels_text">Dodaj z pliku lub archiwum ZIP</string>
     <string name="unknown_error">Wystąpił nieznany błąd</string>
     <string name="start_auto">Uruchom autotunel</string>
-    <string name="location_services_not_detected">Usługi lokalizacyjne nie zostały wykryte</string>
+    <string name="location_services_not_detected">Nie wykryto usług lokalizacyjnych</string>
     <string name="background_location_message">Ta funkcja wymaga zezwolenia na określenie lokalizacji w dowolnym momencie i/lub dokładnej lokalizacji. Sprawdź</string>
     <string name="auto_tunnel_title">Usługa autotunelu</string>
     <string name="donate">Przekaż darowiznę na rzecz projektu</string>
@@ -160,7 +160,7 @@
     <string name="vpn_channel_description">Kanał powiadomień o stanie VPN</string>
     <string name="auto_tunnel_channel_name">Kanał powiadomień autotunelu</string>
     <string name="auto_tunnel_channel_description">Kanał powiadomień o stanie autotunelowania</string>
-    <string name="stop">zatrzymaj</string>
+    <string name="stop">Zatrzymaj</string>
     <string name="splt_tunneling">Tunelowanie rozdzielone</string>
     <string name="tunnel_specific_settings">Ustawienia specyficzne dla tunelu</string>
     <string name="pre_up">Przed aktywacją</string>
@@ -190,7 +190,7 @@
     <string name="active">Aktywny</string>
     <string name="status">Stan</string>
     <string name="app_permission_description">Sterowanie tunelami i funkcjami autotunelowania.</string>
-    <string name="kernel_name_error">błąd nazwy modułu jądra</string>
+    <string name="kernel_name_error">Błąd nazwy modułu jądra</string>
     <string name="add_from_url">Dodaj z adresu URL</string>
     <string name="export_failed">Eksport nie powiódł się</string>
     <string name="inactive">Nieaktywny</string>
@@ -198,7 +198,7 @@
     <string name="delete_logs">Usuń i wyczyść dzienniki</string>
     <string name="join_telegram">Dołącz do społeczności Telegramu</string>
     <string name="error_download_failed">Nie udało się pobrać konfiguracji</string>
-    <string name="service_running_error">błąd braku działania usługi</string>
+    <string name="service_running_error">Usługa nie działa</string>
     <string name="app_permission_title">Mostek sterujący WG Tunnel</string>
     <string name="enter_config_url">Wpisz adres URL konfiguracji</string>
     <string name="save">Zapisz</string>
@@ -213,9 +213,9 @@
     <string name="camera_permission_required">Wymagane zezwolenie na dostęp do aparatu</string>
     <string name="tunnel_error_template">Tunel nie powiódł się z powodu: %1$s</string>
     <string name="remote_key_template">Klucz: %1$s</string>
-    <string name="config_error">błąd konfiguracji</string>
+    <string name="config_error">Nieprawidłowa konfiguracja</string>
     <string name="dropdown">Rozwijane</string>
-    <string name="auth_error">błąd braku autoryzacji</string>
+    <string name="auth_error">Brak autoryzacji</string>
     <string name="bio_not_supported">Dane biometryczne nie są obsługiwane</string>
     <string name="tunnel_starting">Uruchamianie tunelu</string>
     <string name="enable_remote_app_control">Włącz zdalne sterowanie aplikacją</string>
@@ -226,7 +226,7 @@
     <string name="select">Wybierz</string>
     <string name="export_tunnels_amnezia">Eksportuj tunele jako Amnezia</string>
     <string name="invalid_config_error">błąd nieprawidłowej konfiguracji</string>
-    <string name="dns_resolve_error">błąd rozwiązywania DNS</string>
+    <string name="dns_resolve_error">Rozwiązywanie DNS się nie powiodło</string>
     <string name="nothing_here_yet">Jeszcze nic tu nie ma!</string>
     <string name="select_all">Wybierz wszystkie</string>
     <string name="share">Udostępnij</string>
@@ -270,4 +270,16 @@
     <string name="move_up">Przesuń w górę</string>
     <string name="move_down">Przesuń w dół</string>
     <string name="drag_handle">Uchwyt do przeciągania</string>
+    <string name="error_tunnel_name">Nazwa tunelu musi mieć maksymalnie 15 znaków w trybie jądra</string>
+    <string name="tunnel">Tunel</string>
+    <string name="tunnel_item_description">1$s, %2$s, %3$s</string>
+    <string name="warning">Ostrzeżenie</string>
+    <string name="location_permissions">Uprawnienia dotyczące lokalizacji</string>
+    <string name="location_justification">Aby móc odczytywać nazwy sieci Wi-Fi w tle za pomocą obecnej metody wykrywania, system Android wymaga od aplikacji uprawnień „Zawsze zezwalaj” i „Używaj dokładnej lokalizacji” („Lokalizacja w tle” na starszych urządzeniach). Włącz te uprawnienia w ustawieniach aplikacji systemu Android.</string>
+    <string name="open_settings">Otwórz ustawienia</string>
+    <string name="location_permissions_missing">Brak uprawnień do lokalizacji</string>
+    <string name="fix">Napraw</string>
+    <string name="start">Uruchom</string>
+    <string name="auto_tunnel_running">Autotunel jest uruchomiony</string>
+    <string name="auto_tunnel_not_running">Autotunel nie jest uruchomiony</string>
 </resources>
