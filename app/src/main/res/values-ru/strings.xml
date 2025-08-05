@@ -164,7 +164,7 @@
     <string name="bypass_lan_for_kill_switch">Разрешать трафик LAN при экстренном отключении</string>
     <string name="vpn_channel_description">Канал уведомлений о состоянии VPN</string>
     <string name="auto_tunnel_channel_description">Канал уведомлений о состоянии автотуннеля</string>
-    <string name="stop">стоп</string>
+    <string name="stop">Стоп</string>
     <string name="splt_tunneling">Раздельное туннелирование</string>
     <string name="tunnel_specific_settings">Специальные настройки туннеля</string>
     <string name="pre_up">До активации</string>
@@ -185,7 +185,7 @@
     <string name="prefer_ipv4">Предпочитать соединение IPv4</string>
     <string name="server_ipv4">Получать имя узла IPv4</string>
     <string name="multiple">Несколько</string>
-    <string name="config_error">ошибка конфигурации</string>
+    <string name="config_error">Неправильная конфигурация</string>
     <string name="active">Активный</string>
     <string name="bio_subtitle">Вход по биометрическим данным</string>
     <string name="export_logs">Экспорт журналов</string>
@@ -195,14 +195,14 @@
     <string name="wifi_name_template">Активный: %1$s</string>
     <string name="add_from_url">Добавить из URL</string>
     <string name="join_matrix">Присоединиться к сообществу в Matrix</string>
-    <string name="dns_resolve_error">ошибка получения dns</string>
-    <string name="kernel_name_error">ошибка имени модуля ядра</string>
+    <string name="dns_resolve_error">Ошибка получения DNS</string>
+    <string name="kernel_name_error">Ошибка имени модуля ядра</string>
     <string name="bio_not_created">Биометрия не создана</string>
     <string name="enter_config_url">Введите URL конфигурации</string>
     <string name="info">Информация</string>
     <string name="bio_auth_title">Биометрическая аутентификация</string>
     <string name="tunnel_error_template">Ошибка туннеля: %1$s</string>
-    <string name="service_running_error">не запущен сервис</string>
+    <string name="service_running_error">Не запущен сервис</string>
     <string name="app_permission_description">Управление туннелями и функцией автоматического туннелирования.</string>
     <string name="bio_not_supported">Биометрия не поддерживается</string>
     <string name="join_telegram">Присоединиться к сообществу в Telegram</string>
@@ -218,7 +218,7 @@
     <string name="invalid_config_error">ошибка в конфигурации</string>
     <string name="save">Сохранить</string>
     <string name="bio_update_required">Требуется обновление безопасности биометрии</string>
-    <string name="auth_error">не выполнена авторизация</string>
+    <string name="auth_error">Не выполнена авторизация</string>
     <string name="tunnel_starting">Запуск туннеля</string>
     <string name="copy">Копировать</string>
     <string name="delete">Удалить</string>
@@ -269,4 +269,16 @@
     <string name="drag_handle">Перетаскивание</string>
     <string name="move_up">Переместить вверх</string>
     <string name="move_down">Переместить вниз</string>
+    <string name="error_tunnel_name">В режиме ядра имя туннеля должно содержать не более 15 символов</string>
+    <string name="tunnel">туннель</string>
+    <string name="tunnel_item_description">1$s, %2$s, %3$s</string>
+    <string name="warning">Внимание</string>
+    <string name="location_permissions">Разрешения на доступ к местоположению</string>
+    <string name="location_justification">Чтобы получать имена сетей Wi-Fi в фоновом режиме с помощью выбранного метода обнаружения, приложению необходимо предоставить разрешения на доступ к местоположению «Разрешить всегда» и «Точное определение местоположения» («Фоновое определение местоположения» на старых устройствах). Включите эти разрешения в настройках приложения.</string>
+    <string name="open_settings">Открыть настройки</string>
+    <string name="location_permissions_missing">Отсутствуют разрешения на доступ к местоположению</string>
+    <string name="fix">Исправить</string>
+    <string name="start">Старт</string>
+    <string name="auto_tunnel_running">Автотуннелирование запущено</string>
+    <string name="auto_tunnel_not_running">Автотуннелирование не запущено</string>
 </resources>
