@@ -191,7 +191,7 @@
     <string name="invalid_config_error">ungültige_konfiguration_fehler</string>
     <string name="matrix_url">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
     <string name="search">Suchen</string>
-    <string name="config_error">Konfigurationsfehler</string>
+    <string name="config_error">Ungültige Konfiguration</string>
     <string name="join_matrix">Matrix-Community beitreten</string>
     <string name="bio_auth_title">Biometrische Authentifizierung</string>
     <string name="error_download_failed">Download der Konfiguration fehlgeschlagen</string>
@@ -211,8 +211,8 @@
     <string name="copy">Kopieren</string>
     <string name="info">Info</string>
     <string name="kernel_name_error">Fehler im Kernel-Modulnamen</string>
-    <string name="service_running_error">Fehler: Dienst läuft nicht</string>
-    <string name="auth_error">Fehler: nicht autorisiert</string>
+    <string name="service_running_error">Dienst läuft nicht</string>
+    <string name="auth_error">Nicht autorisiert</string>
     <string name="inactive">Inaktiv</string>
     <string name="bio_not_created">Biometrische Daten nicht erstellt</string>
     <string name="bio_update_required">Biometrisches Sicherheitsupdate erforderlich</string>
@@ -221,7 +221,7 @@
     <string name="export_tunnels_amnezia">Tunnel als Amnezia exportieren</string>
     <string name="export_failed">Export fehlgeschlagen</string>
     <string name="app_permission_description">Steuere Tunnel und Auto-Tunnel Funktionen.</string>
-    <string name="dns_resolve_error">dns-Auflösungsfehler</string>
+    <string name="dns_resolve_error">DNS-Auflösung fehlgeschlagen</string>
     <string name="export_tunnels_wireguard">Tunnel als WireGuard exportieren</string>
     <string name="camera_permission_required">Kameraberechtigung erforderlich</string>
     <string name="wifi_name_template">Aktiv: %1$s</string>
@@ -269,4 +269,16 @@
     <string name="move_up">Nach oben verschieben</string>
     <string name="move_down">Nach unten verschieben</string>
     <string name="drag_handle">Verschiebegriff</string>
+    <string name="error_tunnel_name">Tunnelname muss im Kernelmodus 15 Zeichen oder weniger betragen</string>
+    <string name="tunnel">Tunnel</string>
+    <string name="tunnel_item_description">1$s, %2$s, %3$s</string>
+    <string name="warning">Warnung</string>
+    <string name="location_permissions">Standortberechtigungen</string>
+    <string name="location_justification">Um Wi-Fi-Namen im Hintergrund mit deiner aktuellen Erkennungsmethode lesen zu können, benötigt Android, dass Apps die Berechtigung \'Allow all the time\' und \'Precise\' (Background Location auf älteren Geräten) erhalten. Bitte aktiviere diese Berechtigungen in deinen Android-App-Einstellungen.</string>
+    <string name="open_settings">Einstellungen öffnen</string>
+    <string name="location_permissions_missing">Standortberechtigungen fehlen</string>
+    <string name="fix">Beheben</string>
+    <string name="start">Start</string>
+    <string name="auto_tunnel_running">Auto-Tunnel läuft</string>
+    <string name="auto_tunnel_not_running">Auto-Tunnel läuft nicht</string>
 </resources>
