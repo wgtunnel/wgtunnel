@@ -22,7 +22,7 @@
     <string name="name">名称</string>
     <string name="peer">节点</string>
     <string name="always_on_vpn_support">允许 VPN 始终在线</string>
-    <string name="location_services_not_detected">定位服务未开启</string>
+    <string name="location_services_not_detected">未检测到定位服务</string>
     <string name="rotate_keys">轮换秘钥</string>
     <string name="create_import">手动创建</string>
     <string name="private_key">私钥</string>
@@ -185,12 +185,12 @@
     <string name="prefer_ipv4">首选 IPv4 连接</string>
     <string name="multiple">多个</string>
     <string name="server_ipv4">IPv4 主机名解析</string>
-    <string name="auth_error">未授权错误</string>
+    <string name="auth_error">未授权</string>
     <string name="status">状态</string>
     <string name="bio_not_created">生物特征未创建</string>
     <string name="export_failed">导出失败了</string>
     <string name="delete">删除</string>
-    <string name="dns_resolve_error">dns 解析出错</string>
+    <string name="dns_resolve_error">DNS 解析失败</string>
     <string name="dropdown">下拉</string>
     <string name="camera_permission_required">需要相机权限</string>
     <string name="join_telegram">加入 Telegram 社区</string>
@@ -209,9 +209,9 @@
     <string name="export_tunnels_wireguard">将隧道导出为 WireGuard</string>
     <string name="tunnel_error_template">隧道失败，原因：%1$s</string>
     <string name="remote_key_template">Key: %1$s</string>
-    <string name="config_error">配置错误</string>
+    <string name="config_error">无效配置</string>
     <string name="kernel_name_error">内核模块名称错误</string>
-    <string name="service_running_error">服务未运行错误</string>
+    <string name="service_running_error">服务未运行</string>
     <string name="active">活跃</string>
     <string name="bio_auth_title">生物特征认证</string>
     <string name="invalid_config_error">无效配置</string>
@@ -269,4 +269,16 @@
     <string name="drag_handle">拖动手柄</string>
     <string name="move_up">上移</string>
     <string name="move_down">下移</string>
+    <string name="error_tunnel_name">内核模式下隧道名称长度最多 15 个字符</string>
+    <string name="tunnel">隧道</string>
+    <string name="tunnel_item_description">1$s, %2$s, %3$s</string>
+    <string name="warning">警告</string>
+    <string name="location_permissions">位置权限</string>
+    <string name="location_justification">为了用当前检测方法在后台读取 Wi-Fi 名称，Android 要求应用被给予“始终允许”和“精确定位”（在较老设备上叫“后台位置”）权限。请在系统的应用设置中启用这些权限。</string>
+    <string name="open_settings">打开设置</string>
+    <string name="location_permissions_missing">缺少定位权限</string>
+    <string name="fix">修复</string>
+    <string name="start">启动</string>
+    <string name="auto_tunnel_running">自动隧道运行中</string>
+    <string name="auto_tunnel_not_running">自动隧道未运行</string>
 </resources>
