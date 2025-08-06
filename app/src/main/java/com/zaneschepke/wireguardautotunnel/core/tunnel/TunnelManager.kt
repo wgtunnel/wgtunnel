@@ -8,17 +8,21 @@ import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.di.Kernel
 import com.zaneschepke.wireguardautotunnel.di.Userspace
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendState
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
+import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
+import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
+import com.zaneschepke.wireguardautotunnel.domain.state.PingState
+import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.util.StringValue
-import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import org.amnezia.awg.crypto.Key
+import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TunnelManager
@@ -45,31 +49,16 @@ constructor(
                 initialValue = userspaceTunnel,
             )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override val activeTunnels =
-        appDataRepository.settings.flow
-            .filterNotNull()
-            .flatMapLatest { settings ->
-                if (settings.isKernelEnabled) {
-                    kernelTunnel.activeTunnels
-                } else {
-                    userspaceTunnel.activeTunnels
-                }
-            }
-            .stateIn(
-                scope = applicationScope.plus(ioDispatcher),
-                started = SharingStarted.Eagerly,
-                initialValue = emptyMap(),
-            )
+    override val activeTunnels: StateFlow<Map<TunnelConf, TunnelState>> = tunnelProviderFlow.value.activeTunnels
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val errorEvents: SharedFlow<Pair<TunnelConf, BackendError>> =
         combine(
-                tunnelProviderFlow.flatMapLatest { it.errorEvents },
-                WireGuardAutoTunnel.uiActive,
-            ) { errorEvent, isEnabled ->
-                if (isEnabled) errorEvent else null
-            }
+            tunnelProviderFlow.flatMapLatest { it.errorEvents },
+            WireGuardAutoTunnel.uiActive,
+        ) { errorEvent, isEnabled ->
+            if (isEnabled) errorEvent else null
+        }
             .filterNotNull()
             .shareIn(
                 scope = applicationScope.plus(ioDispatcher),
@@ -77,29 +66,62 @@ constructor(
                 replay = 0,
             )
 
-    // observe tunnel errors and launch notifications if ui is inactive
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override val messageEvents: SharedFlow<Pair<TunnelConf, BackendMessage>> =
+        combine(
+            tunnelProviderFlow.flatMapLatest { it.messageEvents },
+            WireGuardAutoTunnel.uiActive,
+        ) { messageEvent, isEnabled ->
+            if (isEnabled) messageEvent else null
+        }
+            .filterNotNull()
+            .shareIn(
+                scope = applicationScope.plus(ioDispatcher),
+                started = SharingStarted.WhileSubscribed(5_000),
+                replay = 0,
+            )
+
+    // observe tunnel errors and messages and launch notifications if ui is inactive
     init {
         applicationScope.launch(ioDispatcher) {
-            tunnelProviderFlow
-                .flatMapLatest { it.errorEvents }
-                .collect { (tunnelConf, error) ->
+            launch {
+                errorEvents.collect { (tunnelConf, error) ->
                     if (!WireGuardAutoTunnel.uiActive.value) {
                         val notification =
                             notificationManager.createNotification(
                                 WireGuardNotification.NotificationChannels.VPN,
                                 title = StringValue.DynamicString(tunnelConf.name),
-                                description =
-                                    StringValue.StringResource(
+                                description = when(error) {
+                                    is BackendError.BounceFailed -> error.toStringValue()
+                                    else -> StringValue.StringResource(
                                         R.string.tunnel_error_template,
                                         error.toStringRes(),
-                                    ),
+                                    )
+                                }
                             )
                         notificationManager.show(
-                            NotificationManager.TUNNEL_STATUS_NOTIFICATION_ID,
+                            NotificationManager.TUNNEL_ERROR_NOTIFICATION_ID,
                             notification,
                         )
                     }
                 }
+            }
+            launch {
+                messageEvents.collect { (tunnelConf, message) ->
+                    if (!WireGuardAutoTunnel.uiActive.value) {
+                        val notification =
+                            notificationManager.createNotification(
+                                WireGuardNotification.NotificationChannels.VPN,
+                                title = StringValue.DynamicString(tunnelConf.name),
+                                description = message.toStringValue(),
+                            )
+                        notificationManager.show(
+                            NotificationManager.TUNNEL_MESSAGES_NOTIFICATION_ID,
+                            notification,
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -110,8 +132,8 @@ constructor(
         return userspaceTunnel.hasVpnPermission()
     }
 
-    override suspend fun updateTunnelStatistics(tunnel: TunnelConf) {
-        tunnelProviderFlow.value.updateTunnelStatistics(tunnel)
+    override fun getStatistics(tunnelConf: TunnelConf): TunnelStatistics? {
+        return tunnelProviderFlow.value.getStatistics(tunnelConf)
     }
 
     override suspend fun startTunnel(tunnelConf: TunnelConf) {
@@ -138,8 +160,13 @@ constructor(
         return tunnelProviderFlow.value.runningTunnelNames()
     }
 
-    override fun getStatistics(tunnelConf: TunnelConf): TunnelStatistics? {
-        return tunnelProviderFlow.value.getStatistics(tunnelConf)
+    override suspend fun updateTunnelStatus(
+        tunnelConf: TunnelConf,
+        status: TunnelStatus?,
+        stats: TunnelStatistics?,
+        pingStates: Map<Key, PingState>?,
+    ) {
+        tunnelProviderFlow.value.updateTunnelStatus(tunnelConf, status, stats, pingStates)
     }
 
     fun restorePreviousState(): Job =

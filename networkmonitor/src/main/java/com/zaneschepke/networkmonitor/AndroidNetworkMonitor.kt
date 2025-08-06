@@ -17,9 +17,11 @@ import androidx.core.content.ContextCompat
 import com.wireguard.android.util.RootShell
 import com.zaneschepke.networkmonitor.shizuku.ShizukuShell
 import com.zaneschepke.networkmonitor.util.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
 class AndroidNetworkMonitor(
@@ -418,7 +420,7 @@ class AndroidNetworkMonitor(
                     .also { Timber.d("Connectivity Status: $it") }
             }
             .distinctUntilChanged()
-            .shareIn(applicationScope, SharingStarted.WhileSubscribed(5000), replay = 1)
+            .shareIn(applicationScope, SharingStarted.Eagerly, replay = 1)
 
     override fun checkPermissionsAndUpdateState() {
         val action = actionPermissionCheck

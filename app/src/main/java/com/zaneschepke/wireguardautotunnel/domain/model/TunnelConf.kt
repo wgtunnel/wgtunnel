@@ -2,14 +2,9 @@ package com.zaneschepke.wireguardautotunnel.domain.model
 
 import com.wireguard.android.backend.Tunnel
 import com.wireguard.config.Config
-import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.extensions.*
 import java.io.InputStream
-import java.net.InetAddress
 import java.nio.charset.StandardCharsets
-import kotlin.coroutines.CoroutineContext
-import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 data class TunnelConf(
     val id: Int = 0,
@@ -20,10 +15,8 @@ data class TunnelConf(
     val isPrimaryTunnel: Boolean = false,
     val amQuick: String,
     val isActive: Boolean = false,
-    val isPingEnabled: Boolean = false,
-    val pingInterval: Long? = null,
-    val pingCooldown: Long? = null,
-    val pingIp: String? = null,
+    val pingTarget: String? = null,
+    val restartOnPingFailure: Boolean = false,
     val isEthernetTunnel: Boolean = false,
     val isIpv4Preferred: Boolean = true,
     val position: Int = 0,
@@ -46,10 +39,8 @@ data class TunnelConf(
             isPrimaryTunnel == other.isPrimaryTunnel &&
             isMobileDataTunnel == other.isMobileDataTunnel &&
             isEthernetTunnel == other.isEthernetTunnel &&
-            isPingEnabled == other.isPingEnabled &&
-            pingIp == other.pingIp &&
-            pingCooldown == other.pingCooldown &&
-            pingInterval == other.pingInterval &&
+                pingTarget == other.pingTarget &&
+            restartOnPingFailure == other.restartOnPingFailure &&
             tunnelNetworks == other.tunnelNetworks &&
             isIpv4Preferred == other.isIpv4Preferred
     }
@@ -75,10 +66,8 @@ data class TunnelConf(
         isPrimaryTunnel: Boolean = this.isPrimaryTunnel,
         amQuick: String = this.amQuick,
         isActive: Boolean = this.isActive,
-        isPingEnabled: Boolean = this.isPingEnabled,
-        pingInterval: Long? = this.pingInterval,
-        pingCooldown: Long? = this.pingCooldown,
-        pingIp: String? = this.pingIp,
+        restartOnPingFailure: Boolean = this.restartOnPingFailure,
+        pingIp: String? = this.pingTarget,
         isEthernetTunnel: Boolean = this.isEthernetTunnel,
         isIpv4Preferred: Boolean = this.isIpv4Preferred,
     ): TunnelConf {
@@ -91,10 +80,8 @@ data class TunnelConf(
                 isPrimaryTunnel,
                 amQuick,
                 isActive,
-                isPingEnabled,
-                pingInterval,
-                pingCooldown,
                 pingIp,
+                 restartOnPingFailure,
                 isEthernetTunnel,
                 isIpv4Preferred,
                 position,
@@ -136,21 +123,6 @@ data class TunnelConf(
             num++
         }
         return tunnelName
-    }
-
-    suspend fun isTunnelPingable(context: CoroutineContext): Boolean {
-        return withContext(context) {
-            val config = toWgConfig()
-            if (pingIp != null) {
-                return@withContext InetAddress.getByName(pingIp)
-                    .isReachable(Constants.PING_TIMEOUT.toInt())
-                    .also { Timber.i("Ping reachable $pingIp: $it") }
-            }
-            config.peers
-                .map { peer -> peer.isReachable() }
-                .all { true }
-                .also { Timber.i("Ping of all peers reachable: $it") }
-        }
     }
 
     companion object {

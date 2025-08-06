@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.ui.common
+package com.zaneschepke.wireguardautotunnel.ui.common.dropdown
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -6,11 +6,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,9 +16,9 @@ import com.zaneschepke.wireguardautotunnel.R
 
 @Composable
 fun <T> DropdownSelector(
-    currentValue: T,
-    options: List<T>,
-    onValueSelected: (T) -> Unit,
+    currentValue: T?,
+    options: List<T?>,
+    onValueSelected: (T?) -> Unit,
     modifier: Modifier = Modifier,
     label: @Composable (() -> Unit)? = null,
     isExpanded: Boolean = false,
@@ -33,7 +29,7 @@ fun <T> DropdownSelector(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (label != null) label()
-        Text(text = currentValue.toString(), style = MaterialTheme.typography.bodyMedium)
+        Text(text = currentValue?.toString() ?: stringResource(R.string._default), style = MaterialTheme.typography.bodyMedium)
         Icon(Icons.Default.ArrowDropDown, contentDescription = stringResource(R.string.dropdown))
     }
     DropdownMenu(
@@ -44,11 +40,20 @@ fun <T> DropdownSelector(
         onDismissRequest = onDismiss,
     ) {
         options.forEach { option ->
+            if(option ==  null) {
+               return@forEach DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string._default)) },
+                    onClick = {
+                        onValueSelected(null)
+                        onDismiss()
+                    },
+                )
+            }
             DropdownMenuItem(
                 text = { Text(text = option.toString()) },
                 onClick = {
                     onValueSelected(option)
-                    onDismiss() // Close dropdown after selection
+                    onDismiss()
                 },
             )
         }

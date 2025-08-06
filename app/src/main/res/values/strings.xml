@@ -53,13 +53,13 @@
     <string name="rotate_keys">Rotate keys</string>
     <string name="private_key">Private key</string>
     <string name="copy_public_key">Copy public key</string>
-    <string name="base64_key">base64 key</string>
+    <string name="base64_key">Base64 key</string>
     <string name="comma_separated_list">comma separated list</string>
     <string name="listen_port">Listen port</string>
     <string name="random">(random)</string>
     <string name="optional">(optional)</string>
     <string name="preshared_key">Pre-shared key</string>
-    <string name="seconds">seconds</string>
+    <string name="seconds">Seconds</string>
     <string name="persistent_keepalive">Persistent keepalive</string>
     <string name="cancel">Cancel</string>
     <string name="error_authentication_failed">Authentication failed</string>
@@ -81,12 +81,12 @@
     <string name="delete_tunnel">Delete tunnel</string>
     <string name="delete_tunnel_message">Are you sure you would like to delete this tunnel?</string>
     <string name="yes">Yes</string>
-    <string name="all">all</string>
+    <string name="all">All</string>
     <string name="no_email_detected">No email app detected</string>
     <string name="no_browser_detected">No browser detected</string>
     <string name="open_issue">Open an issue</string>
     <string name="read_logs">Read the logs</string>
-    <string name="auto">(auto)</string>
+    <string name="auto">(Auto)</string>
     <string name="incorrect_pin">Pin is incorrect</string>
     <string name="pin_created">Pin successfully created</string>
     <string name="enter_pin">Enter your pin</string>
@@ -129,9 +129,9 @@
 	<string name="optional_default">"optional, default: "</string>
 	<string name="set_custom_ping_cooldown">Ping restart cooldown (sec)</string>
     <string name="show_amnezia_properties">Show Amnezia properties</string>
-	<string name="never">never</string>
+	<string name="never">Never</string>
 	<string name="sec">sec</string>
-	<string name="handshake">handshake</string>
+	<string name="handshake">Handshake</string>
     <string name="logs">Logs</string>
     <string name="kill_switch">Kill switch</string>
 	<string name="appearance">Appearance</string>
@@ -300,4 +300,31 @@
     <string name="start">Start</string>
     <string name="auto_tunnel_running">Auto-tunnel is running</string>
     <string name="auto_tunnel_not_running">Auto-tunnel is not running</string>
+    <string name="pinger_bounce_successful">Tunnel restarted successfully by pinger.</string>
+    <string name="pinger_bounce_recovery">Pinger restart failed. Tunnel recovered with old addresses.</string>
+    <string name="bounce_failed_template">Pinger failed to recovery tunnel with error: %1$s</string>
+    <string name="tunnel_monitoring">Tunnel monitoring</string>
+    <string name="set_custom_ping_target">Custom ping target (optional)</string>
+    <string name="ip_or_hostname">IP or hostname</string>
+    <string name="ping_target_description">Used if no internal IP is available (e.g., in full-tunnel configs). Leaving
+        blank defaults to Cloudflare.
+    </string>
+    <string name="tunnel_ping_interval">Tunnel ping interval</string>
+    <string name="attempts_per_interval">Ping attempts per interval</string>
+    <string name="ping_timeout">Tunnel ping timeout</string>
+    <string name="timeout_all_attempts">Total timeout for all attempts</string>
+    <string name="display_detailed_ping_stats">Display detailed ping stats</string>
+    <string name="monitoring_ping">Enable ping tunnel monitoring</string>
+    <string name="rx_template">"RX: %1$s MB"</string>
+    <string name="tx_template">"TX: %1$s MB"</string>
+    <string name="reachable_template">Reachable: %1$s</string>
+    <string name="ping_success_template">Last successful ping: %1$s</string>
+    <string name="sec_ago_template">%1$s sec ago</string>
+    <string name="latency_template">Latency: %1$s</string>
+    <string name="jitter_template">Jitter: %1$s</string>
+    <string name="packets_sent_template">Packets sent: %1$s</string>
+    <string name="packet_loss_template">Packet loss: %.2f%%</string>
+    <string name="ping_target_template">Ping target: %1$s</string>
+    <string name="_true">True</string>
+    <string name="_false">False</string>
 </resources>

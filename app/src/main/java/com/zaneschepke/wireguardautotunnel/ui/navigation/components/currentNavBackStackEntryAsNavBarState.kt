@@ -163,6 +163,12 @@ fun currentNavBackStackEntryAsNavBarState(
                         route = Route.Display,
                     )
 
+                backStackEntry.isCurrentRoute(Route.TunnelMonitoring::class) ->
+                    NavBarState(
+                        topTitle = { Text(stringResource(R.string.tunnel_monitoring)) },
+                        route = Route.TunnelMonitoring,
+                    )
+
                 backStackEntry.isCurrentRoute(Route.WifiDetectionMethod::class) ->
                     NavBarState(
                         topTitle = { Text(stringResource(R.string.wifi_detection_method)) },

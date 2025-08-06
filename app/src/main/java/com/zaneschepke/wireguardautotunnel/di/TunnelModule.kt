@@ -4,22 +4,24 @@ import android.content.Context
 import com.wireguard.android.backend.WgQuickBackend
 import com.wireguard.android.util.RootShell
 import com.wireguard.android.util.ToolsInstaller
+import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
+import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor
 import com.zaneschepke.wireguardautotunnel.core.tunnel.KernelTunnel
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.core.tunnel.UserspaceTunnel
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppSettingRepository
+import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -28,6 +30,7 @@ import kotlinx.coroutines.flow.map
 import org.amnezia.awg.backend.Backend
 import org.amnezia.awg.backend.GoBackend
 import org.amnezia.awg.backend.RootTunnelActionHandler
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -151,6 +154,27 @@ class TunnelModule {
             applicationScope,
             mainCoroutineDispatcher,
             appDataRepository,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideTunnelMonitor(
+        @ApplicationContext context: Context,
+        tunnelManager: TunnelManager,
+        networkMonitor: NetworkMonitor,
+        networkUtils: NetworkUtils,
+        logReader: LogReader,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
+        appDataRepository: AppDataRepository,
+    ): TunnelMonitor {
+        return TunnelMonitor(
+            appDataRepository,
+            tunnelManager,
+            networkMonitor,
+            networkUtils,
+            logReader,
+            ioDispatcher,
         )
     }
 }

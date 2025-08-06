@@ -213,6 +213,9 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.slf4j.android)
+    implementation(libs.icmp4a)
+
+
 
     // shizuku
     implementation(libs.shizuku.api)

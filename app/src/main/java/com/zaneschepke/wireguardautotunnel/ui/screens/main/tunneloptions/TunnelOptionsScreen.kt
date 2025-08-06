@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
@@ -25,6 +26,7 @@ fun TunnelOptionsScreen(
     tunnelConf: TunnelConf,
     viewModel: AppViewModel,
     appViewState: AppViewState,
+    appSettings: AppSettings,
 ) {
     val isTv = LocalIsAndroidTV.current
 
@@ -36,7 +38,10 @@ fun TunnelOptionsScreen(
         // Show authorization prompt if needed
         if (showAuthPrompt) {
             AuthorizationPromptWrapper(
-                onDismiss = { showAuthPrompt = false },
+                onDismiss = {
+                    showAuthPrompt = false
+                    viewModel.handleEvent(AppEvent.SetShowModal(AppViewState.ModalType.NONE))
+                },
                 onSuccess = {
                     showAuthPrompt = false
                     isAuthorized = true
@@ -72,15 +77,11 @@ fun TunnelOptionsScreen(
                     SplitTunnelingItem(tunnelConf),
                 )
         )
-        SectionDivider()
-        SurfaceSelectionGroupButton(
-            items =
-                buildList {
-                    add(PingRestartItem(tunnelConf, viewModel))
-                    if (tunnelConf.isPingEnabled) {
-                        add(PingConfigItem(tunnelConf, viewModel))
-                    }
-                }
-        )
+        if(appSettings.isPingEnabled) {
+            SectionDivider()
+            SurfaceSelectionGroupButton(
+                items = listOf(pingConfigItem(tunnelConf, viewModel))
+            )
+        }
     }
 }

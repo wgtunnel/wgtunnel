@@ -47,4 +47,6 @@ sealed class Route {
     @Serializable data object Logs : Route()
 
     @Serializable data object Sort : Route()
+
+    @Serializable data object TunnelMonitoring : Route()
 }

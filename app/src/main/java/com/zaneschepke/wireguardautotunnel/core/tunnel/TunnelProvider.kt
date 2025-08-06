@@ -1,14 +1,17 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendState
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
+import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
+import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.state.PingState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
-import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.amnezia.awg.crypto.Key
+import java.util.concurrent.ConcurrentHashMap
 
 interface TunnelProvider {
     /** Starts the specified tunnel configuration. */
@@ -23,19 +26,19 @@ interface TunnelProvider {
      */
     suspend fun stopTunnel(
         tunnelConf: TunnelConf? = null,
-        reason: TunnelStatus.StopReason = TunnelStatus.StopReason.USER,
+        reason: TunnelStatus.StopReason = TunnelStatus.StopReason.User,
     )
 
     /**
      * Bounces (stops and restarts) the specified tunnel.
      *
      * @param tunnelConf The tunnel to bounce.
-     * @param reason The reason for bouncing, defaults to USER for manual actions. Callers should
-     *   override with specific reasons (e.g., PING, CONFIG_CHANGED) when applicable.
+     * @param reason The reason for bouncing, defaults to User for manual actions. Callers should
+     *   override with specific reasons (e.g., Ping, ConfigChanged) when applicable.
      */
     suspend fun bounceTunnel(
         tunnelConf: TunnelConf,
-        reason: TunnelStatus.StopReason = TunnelStatus.StopReason.USER,
+        reason: TunnelStatus.StopReason = TunnelStatus.StopReason.User,
     )
 
     fun setBackendState(backendState: BackendState, allowedIps: Collection<String>)
@@ -50,9 +53,15 @@ interface TunnelProvider {
 
     val errorEvents: SharedFlow<Pair<TunnelConf, BackendError>>
 
+    val messageEvents: SharedFlow<Pair<TunnelConf, BackendMessage>>
+
     val bouncingTunnelIds: ConcurrentHashMap<Int, TunnelStatus.StopReason>
 
     fun hasVpnPermission(): Boolean
-
-    suspend fun updateTunnelStatistics(tunnel: TunnelConf)
+    suspend fun updateTunnelStatus(
+        tunnelConf: TunnelConf,
+        status: TunnelStatus? = null,
+        stats: TunnelStatistics? = null,
+        pingStates: Map<Key, PingState>? = null,
+    )
 }

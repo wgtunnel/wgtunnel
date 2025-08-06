@@ -27,9 +27,10 @@ object Constants {
     const val SUBSCRIPTION_TIMEOUT = 5_000L
 
     const val DEFAULT_PING_IP = "1.1.1.1"
-    const val PING_TIMEOUT = 5_000L
-    const val PING_INTERVAL = 60_000L
-    const val PING_COOLDOWN = PING_INTERVAL * 60 // one hour
+    const val PING_TIMEOUT: Int = 5_000
+
+    const val PING_ATTEMPTS: Int = 3
+    const val PING_INTERVAL = 30
 
     val amProperties = listOf("Jc", "Jmin", "Jmax", "S1", "S2", "H1", "H2", "H3", "H4")
     const val QR_CODE_NAME_PROPERTY = "# Name ="

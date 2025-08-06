@@ -7,15 +7,16 @@ import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotification
 import com.zaneschepke.wireguardautotunnel.core.shortcut.DynamicShortcutManager
 import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
+import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -46,5 +47,11 @@ class AppModule {
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
     ): ShortcutManager {
         return DynamicShortcutManager(context, ioDispatcher)
+    }
+
+    @Singleton
+    @Provides
+    fun provideNetworkUtils(@IoDispatcher ioDispatcher: CoroutineDispatcher): NetworkUtils {
+        return NetworkUtils(ioDispatcher)
     }
 }

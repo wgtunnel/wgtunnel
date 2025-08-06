@@ -22,6 +22,7 @@ import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.di.MainDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendState
 import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
+import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.AppState
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
@@ -36,12 +37,6 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.withFirstState
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.IOException
-import java.net.URL
-import java.time.Instant
-import java.util.*
-import javax.inject.Inject
-import javax.inject.Provider
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
@@ -51,6 +46,12 @@ import org.amnezia.awg.config.Config
 import rikka.shizuku.Shizuku
 import timber.log.Timber
 import xyz.teamgravity.pin_lock_compose.PinManager
+import java.io.IOException
+import java.net.URL
+import java.time.Instant
+import java.util.*
+import javax.inject.Inject
+import javax.inject.Provider
 
 @HiltViewModel
 class AppViewModel
@@ -126,7 +127,7 @@ constructor(
                 handleKillSwitchChange(state.appSettings)
                 initServicesFromSavedState(state)
                 if (state.appState.isLocalLogsEnabled) logsJob = startCollectingLogs()
-                handleTunnelErrors()
+                handleTunnelMessages()
             }
         }
     }
@@ -170,10 +171,6 @@ constructor(
                     is AppEvent.SetTheme -> handleThemeChange(event.theme)
                     is AppEvent.ToggleIpv4Preferred -> handleToggleIpv4(event.tunnel)
                     is AppEvent.TogglePrimaryTunnel -> handleTogglePrimaryTunnel(event.tunnel)
-                    is AppEvent.SetTunnelPingCooldown ->
-                        handlePingCoolDownChange(event.tunnel, event.pingCooldown)
-                    is AppEvent.SetTunnelPingInterval ->
-                        handlePingIntervalChange(event.tunnel, event.pingInterval)
                     is AppEvent.AddTunnelRunSSID ->
                         handleAddTunnelRunSSID(event.ssid, event.tunnel, state.tunnels)
                     is AppEvent.DeleteTunnelRunSSID ->
@@ -201,9 +198,9 @@ constructor(
 
                     AppEvent.ExportLogs -> handleExportLogs()
                     AppEvent.MessageShown -> handleErrorShown()
-                    is AppEvent.TogglePingTunnelEnabled -> handleTogglePingTunnel(event.tunnel)
-                    is AppEvent.SetTunnelPingIp ->
-                        handleTunnelPingIpChange(event.tunnelConf, event.ip)
+                    is AppEvent.ToggleRestartOnPingFailure -> handleTogglePingTunnel(event.tunnel)
+                    is AppEvent.SetTunnelPingTarget ->
+                        handleTunnelPingTargetChange(event.tunnelConf, event.host)
                     is AppEvent.SetBottomSheet -> handleSetBottomSheet(event.showSheet)
                     AppEvent.DeleteLogs -> handleDeleteLogs()
                     is AppEvent.SetScreenAction -> _screenCallback.update { event.callback }
@@ -224,9 +221,37 @@ constructor(
                     is AppEvent.SetDetectionMethod ->
                         handleSetDetectionMethod(event.detectionMethod, state.appSettings)
                     is AppEvent.SaveAllConfigs -> saveAllTunnels(event.tunnels)
+                    AppEvent.ToggleShowDetailedPingStats -> handleToggleShowDetailedPingStats(state.appState)
+                    is AppEvent.SaveMonitoringSettings -> handleMonitoringSaveChanges(state.appSettings,
+                        event.pingInterval, event.tunnelPingAttempts, event.pingTimeout)
+                    AppEvent.TogglePingMonitoring -> handleTogglePingMonitoring(state.appSettings)
+                    is AppEvent.SetPingAttempts -> saveSettings(state.appSettings.copy(tunnelPingAttempts = event.count))
+                    is AppEvent.SetPingInterval -> saveSettings(state.appSettings.copy(tunnelPingIntervalSeconds = event.interval))
+                    is AppEvent.SetPingTimeout -> saveSettings(state.appSettings.copy(tunnelPingTimeoutSeconds = event.timeout))
                 }
             }
         }
+
+    private suspend fun handleTogglePingMonitoring(appSettings: AppSettings) {
+        saveSettings(appSettings.copy(isPingEnabled = !appSettings.isPingEnabled))
+    }
+
+    private suspend fun handleMonitoringSaveChanges(
+        appSettings: AppSettings,
+        pingInterval: Int,
+        tunnelPingAttempts: Int,
+        pingTimeout: Int?,
+    ) {
+        saveSettings(appSettings.copy(
+            tunnelPingIntervalSeconds = pingInterval,
+            tunnelPingAttempts = tunnelPingAttempts,
+            tunnelPingTimeoutSeconds = pingTimeout,
+        ))
+    }
+
+    private suspend fun handleToggleShowDetailedPingStats(currentAppState : AppState) {
+        appDataRepository.appState.setShowDetailedPingStats(!currentAppState.showDetailedPingStats)
+    }
 
     private suspend fun saveAllTunnels(tunnels: List<TunnelConf>) {
         appDataRepository.tunnels.saveAll(tunnels)
@@ -315,15 +340,27 @@ constructor(
             }
         }
 
-    private fun handleTunnelErrors() =
+    private fun handleTunnelMessages() =
         viewModelScope.launch {
-            tunnelManager.errorEvents.collect { errorEvent ->
-                handleShowMessage(
-                    StringValue.StringResource(
-                        R.string.tunnel_error_template,
-                        errorEvent.second.toStringRes(),
+            launch {
+                tunnelManager.errorEvents.collect { errorEvent ->
+                    handleShowMessage(
+                        when(val event = errorEvent.second) {
+                            is BackendError.BounceFailed -> event.toStringValue()
+                            else -> StringValue.StringResource(
+                                R.string.tunnel_error_template,
+                                errorEvent.second.toStringRes(),
+                            )
+                        }
                     )
-                )
+                }
+            }
+            launch {
+                tunnelManager.messageEvents.collect { messageEvent ->
+                    handleShowMessage(
+                        messageEvent.second.toStringValue()
+                    )
+                }
             }
         }
 
@@ -336,11 +373,11 @@ constructor(
     private fun handleSetBottomSheet(bottomSheet: AppViewState.BottomSheet) =
         _appViewState.update { it.copy(bottomSheet = bottomSheet) }
 
-    private suspend fun handleTunnelPingIpChange(tunnelConf: TunnelConf, ip: String) =
-        saveTunnel(tunnelConf.copy(pingIp = ip))
+    private suspend fun handleTunnelPingTargetChange(tunnelConf: TunnelConf, target: String) =
+        saveTunnel(tunnelConf.copy(pingTarget = target))
 
     private suspend fun handleTogglePingTunnel(tunnel: TunnelConf) =
-        saveTunnel(tunnel.copy(isPingEnabled = !tunnel.isPingEnabled))
+        saveTunnel(tunnel.copy(restartOnPingFailure = !tunnel.restartOnPingFailure))
 
     private suspend fun handleToggleLocalLogging(currentlyEnabled: Boolean) {
         loggerMutex.withLock {
@@ -600,21 +637,6 @@ constructor(
 
     private suspend fun handleToggleIpv4(tunnelConf: TunnelConf) =
         saveTunnel(tunnelConf.copy(isIpv4Preferred = !tunnelConf.isIpv4Preferred))
-
-    private suspend fun handlePingIntervalChange(tunnelConf: TunnelConf, interval: String) =
-        saveTunnel(
-            tunnelConf.copy(
-                pingInterval = if (interval.isBlank()) null else interval.toLong() * 1000
-            )
-        )
-
-    private suspend fun handlePingCoolDownChange(tunnelConf: TunnelConf, cooldown: String) =
-        saveTunnel(
-            tunnelConf.copy(
-                pingCooldown = if (cooldown.isBlank()) null else cooldown.toLong() * 1000
-            )
-        )
-
     private suspend fun handleThemeChange(theme: Theme) {
         appDataRepository.appState.setTheme(theme)
     }

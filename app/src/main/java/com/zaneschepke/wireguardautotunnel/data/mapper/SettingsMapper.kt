@@ -28,11 +28,13 @@ object SettingsMapper {
             debounceDelaySeconds = settings.debounceDelaySeconds,
             isDisableKillSwitchOnTrustedEnabled = settings.isDisableKillSwitchOnTrustedEnabled,
             isTunnelOnUnsecureEnabled = settings.isTunnelOnUnsecureEnabled,
-            splitTunnelApps = settings.splitTunnelApps,
             wifiDetectionMethod =
                 AndroidNetworkMonitor.WifiDetectionMethod.fromValue(
                     settings.wifiDetectionMethod.value
                 ),
+            tunnelPingIntervalSeconds = settings.tunnelPingIntervalSeconds,
+            tunnelPingAttempts = settings.tunnelPingAttempts,
+            tunnelPingTimeoutSeconds = settings.tunnelPingTimeoutSeconds,
         )
     }
 
@@ -59,9 +61,11 @@ object SettingsMapper {
             debounceDelaySeconds = appSettings.debounceDelaySeconds,
             isDisableKillSwitchOnTrustedEnabled = appSettings.isDisableKillSwitchOnTrustedEnabled,
             isTunnelOnUnsecureEnabled = appSettings.isTunnelOnUnsecureEnabled,
-            splitTunnelApps = appSettings.splitTunnelApps.toMutableList(),
             wifiDetectionMethod =
                 Settings.WifiDetectionMethod.fromValue(appSettings.wifiDetectionMethod.value),
+            tunnelPingIntervalSeconds = appSettings.tunnelPingIntervalSeconds,
+            tunnelPingAttempts = appSettings.tunnelPingAttempts,
+            tunnelPingTimeoutSeconds = appSettings.tunnelPingTimeoutSeconds,
         )
     }
 }

@@ -3,7 +3,7 @@ package com.zaneschepke.wireguardautotunnel.util.extensions
 import androidx.compose.ui.graphics.Color
 import com.wireguard.android.backend.BackendException
 import com.wireguard.config.Peer
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendError
+import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendState
 import com.zaneschepke.wireguardautotunnel.domain.enums.HandshakeStatus
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
