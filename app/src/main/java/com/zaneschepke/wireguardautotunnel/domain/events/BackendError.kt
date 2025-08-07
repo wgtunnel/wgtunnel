@@ -1,6 +1,7 @@
-package com.zaneschepke.wireguardautotunnel.domain.enums
+package com.zaneschepke.wireguardautotunnel.domain.events
 
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.util.StringValue
 
 sealed class BackendError : Exception() {
     data object DNS : BackendError()
@@ -19,6 +20,8 @@ sealed class BackendError : Exception() {
 
     data object TunnelNameTooLong : BackendError()
 
+    data class BounceFailed(val error: BackendError) : BackendError()
+
     fun toStringRes() =
         when (this) {
             Config -> R.string.config_error
@@ -29,5 +32,17 @@ sealed class BackendError : Exception() {
             ServiceNotRunning -> R.string.service_running_error
             Unknown -> R.string.unknown_error
             TunnelNameTooLong -> R.string.error_tunnel_name
+            is BounceFailed -> R.string.bounce_failed_template
         }
+
+    fun toStringValue(): StringValue {
+        return when (val backendError = this) {
+            is BounceFailed ->
+                StringValue.StringResource(
+                    backendError.toStringRes(),
+                    backendError.error.toStringRes(),
+                )
+            else -> StringValue.StringResource(backendError.toStringRes())
+        }
+    }
 }

@@ -15,7 +15,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun KernelModeItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
+fun kernelModeItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
     return SelectionItem(
         leading = { Icon(Icons.Outlined.Code, contentDescription = null) },
         title = {

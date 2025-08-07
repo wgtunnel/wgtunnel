@@ -4,16 +4,15 @@ import android.content.Context
 import com.wireguard.android.backend.WgQuickBackend
 import com.wireguard.android.util.RootShell
 import com.wireguard.android.util.ToolsInstaller
+import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.core.tunnel.KernelTunnel
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
-import com.zaneschepke.wireguardautotunnel.core.tunnel.UserspaceTunnel
+import com.zaneschepke.wireguardautotunnel.core.tunnel.*
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppSettingRepository
+import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -108,7 +107,6 @@ class TunnelModule {
             appDataRepository,
             applicationScope,
             ioDispatcher,
-            notificationManager,
         )
     }
 
@@ -151,6 +149,25 @@ class TunnelModule {
             applicationScope,
             mainCoroutineDispatcher,
             appDataRepository,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideTunnelMonitor(
+        @ApplicationContext context: Context,
+        tunnelManager: TunnelManager,
+        networkMonitor: NetworkMonitor,
+        networkUtils: NetworkUtils,
+        logReader: LogReader,
+        appDataRepository: AppDataRepository,
+    ): TunnelMonitor {
+        return TunnelMonitor(
+            appDataRepository,
+            tunnelManager,
+            networkMonitor,
+            networkUtils,
+            logReader,
         )
     }
 }

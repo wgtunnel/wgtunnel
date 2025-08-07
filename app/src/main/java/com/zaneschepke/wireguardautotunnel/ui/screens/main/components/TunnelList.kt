@@ -69,6 +69,7 @@ fun TunnelList(
                 isSelected = selected,
                 tunnel = tunnel,
                 tunnelState = tunnelState,
+                appSettings = appUiState.appSettings,
                 onTvClick = {
                     navController.navigate(Route.TunnelOptions(tunnel.id))
                     viewModel.handleEvent(AppEvent.ClearSelectedTunnels)
@@ -78,6 +79,7 @@ fun TunnelList(
                 },
                 onSwitchClick = { checked -> onToggleTunnel(tunnel, checked) },
                 isTv = isTv,
+                showDetailedStats = appUiState.appState.showDetailedPingStats,
                 modifier =
                     if (!isTv)
                         Modifier.combinedClickable(

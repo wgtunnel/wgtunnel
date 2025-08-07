@@ -12,11 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -32,6 +28,7 @@ fun SubmitConfigurationTextBox(
     hint: String,
     isErrorValue: (value: String?) -> Boolean,
     onSubmit: (value: String) -> Unit,
+    supportingText: @Composable (() -> Unit)? = null,
     keyboardOptions: KeyboardOptions =
         KeyboardOptions(capitalization = KeyboardCapitalization.None, imeAction = ImeAction.Done),
 ) {
@@ -49,6 +46,7 @@ fun SubmitConfigurationTextBox(
         value = stateValue,
         onValueChange = { stateValue = it },
         interactionSource = interactionSource,
+        supportingText = supportingText,
         label = {
             Text(
                 label,

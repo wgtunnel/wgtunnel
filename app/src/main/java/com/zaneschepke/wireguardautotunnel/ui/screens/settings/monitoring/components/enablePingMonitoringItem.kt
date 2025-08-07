@@ -1,7 +1,7 @@
-package com.zaneschepke.wireguardautotunnel.ui.screens.settings.components
+package com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AppShortcut
+import androidx.compose.material.icons.outlined.NetworkPing
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,22 +15,22 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun AppShortcutsItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
+fun enablePingMonitoringItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
     return SelectionItem(
-        leading = { Icon(Icons.Filled.AppShortcut, contentDescription = null) },
+        leading = { Icon(Icons.Outlined.NetworkPing, contentDescription = null) },
         trailing = {
             ScaledSwitch(
-                checked = uiState.appSettings.isShortcutsEnabled,
-                onClick = { viewModel.handleEvent(AppEvent.ToggleAppShortcuts) },
+                checked = uiState.appSettings.isPingEnabled,
+                onClick = { viewModel.handleEvent(AppEvent.TogglePingMonitoring) },
             )
         },
         title = {
             Text(
-                text = stringResource(R.string.enabled_app_shortcuts),
+                text = stringResource(R.string.monitoring_ping),
                 style =
                     MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onSurface),
             )
         },
-        onClick = { viewModel.handleEvent(AppEvent.ToggleAppShortcuts) },
+        onClick = { viewModel.handleEvent(AppEvent.TogglePingMonitoring) },
     )
 }

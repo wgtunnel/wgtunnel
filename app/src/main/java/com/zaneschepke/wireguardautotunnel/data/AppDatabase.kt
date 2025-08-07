@@ -1,10 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.data
 
-import androidx.room.AutoMigration
-import androidx.room.Database
-import androidx.room.DeleteColumn
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import androidx.room.*
 import androidx.room.migration.AutoMigrationSpec
 import com.zaneschepke.wireguardautotunnel.data.dao.SettingsDao
 import com.zaneschepke.wireguardautotunnel.data.dao.TunnelConfigDao
@@ -13,7 +9,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
 
 @Database(
     entities = [Settings::class, TunnelConfig::class],
-    version = 18,
+    version = 19,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -33,6 +29,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
             AutoMigration(from = 15, to = 16),
             AutoMigration(from = 16, to = 17, spec = WifiDetectionMigration::class),
             AutoMigration(from = 17, to = 18),
+            AutoMigration(from = 18, to = 19, spec = PingMigration::class),
         ],
     exportSchema = true,
 )
@@ -52,3 +49,22 @@ class RemoveTunnelPauseMigration : AutoMigrationSpec
 
 @DeleteColumn(tableName = "Settings", columnName = "is_wifi_by_shell_enabled")
 class WifiDetectionMigration : AutoMigrationSpec
+
+@DeleteColumn.Entries(
+    DeleteColumn(tableName = "TunnelConfig", columnName = "ping_interval"),
+    DeleteColumn(tableName = "TunnelConfig", columnName = "ping_cooldown"),
+    DeleteColumn(tableName = "Settings", columnName = "split_tunnel_apps"),
+)
+@RenameColumn.Entries(
+    RenameColumn(
+        tableName = "TunnelConfig",
+        fromColumnName = "is_ping_enabled",
+        toColumnName = "restart_on_ping_failure",
+    ),
+    RenameColumn(
+        tableName = "TunnelConfig",
+        fromColumnName = "ping_ip",
+        toColumnName = "ping_target",
+    ),
+)
+class PingMigration : AutoMigrationSpec

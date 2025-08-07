@@ -31,6 +31,7 @@ class DataStoreManager(
         val theme = stringPreferencesKey("THEME")
         val isRemoteControlEnabled = booleanPreferencesKey("IS_REMOTE_CONTROL_ENABLED")
         val remoteKey = stringPreferencesKey("REMOTE_KEY")
+        val showDetailedPingStats = booleanPreferencesKey("SHOW_DETAILED_PING_STATS")
     }
 
     // preferences

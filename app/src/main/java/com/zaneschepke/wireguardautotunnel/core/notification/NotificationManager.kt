@@ -49,7 +49,8 @@ interface NotificationManager {
         const val AUTO_TUNNEL_NOTIFICATION_ID = 122
         // for tunnel foreground notification
         const val VPN_NOTIFICATION_ID = 100
-        const val TUNNEL_STATUS_NOTIFICATION_ID = 101
+        const val TUNNEL_ERROR_NOTIFICATION_ID = 101
+        const val TUNNEL_MESSAGES_NOTIFICATION_ID = 102
         const val EXTRA_ID = "id"
     }
 }

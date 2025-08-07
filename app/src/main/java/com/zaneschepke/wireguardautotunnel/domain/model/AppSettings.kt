@@ -24,14 +24,12 @@ data class AppSettings(
     val debounceDelaySeconds: Int = 3,
     val isDisableKillSwitchOnTrustedEnabled: Boolean = false,
     val isTunnelOnUnsecureEnabled: Boolean = false,
-    val splitTunnelApps: List<String> = emptyList(),
     val wifiDetectionMethod: AndroidNetworkMonitor.WifiDetectionMethod =
         AndroidNetworkMonitor.WifiDetectionMethod.DEFAULT,
+    val tunnelPingIntervalSeconds: Int = 30,
+    val tunnelPingAttempts: Int = 3,
+    val tunnelPingTimeoutSeconds: Int? = null,
 ) {
-    fun debounceDelayMillis(): Long {
-        return debounceDelaySeconds * 1000L
-    }
-
     fun toAutoTunnelStateString(): String {
         return """
             TunnelOnWifi: $isTunnelOnWifiEnabled

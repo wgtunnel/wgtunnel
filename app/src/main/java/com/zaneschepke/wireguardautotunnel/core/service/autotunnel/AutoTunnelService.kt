@@ -7,17 +7,19 @@ import androidx.core.app.ServiceCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
+import com.zaneschepke.networkmonitor.ConnectivityState
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotification
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
+import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendState
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus.StopReason.Ping
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
-import com.zaneschepke.wireguardautotunnel.domain.events.KillSwitchEvent
 import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
@@ -25,12 +27,15 @@ import com.zaneschepke.wireguardautotunnel.domain.state.AutoTunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.NetworkState
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.extensions.Tunnels
-import com.zaneschepke.wireguardautotunnel.util.extensions.zipWithPrevious
+import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import javax.inject.Provider
+import kotlin.math.pow
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -48,11 +53,19 @@ class AutoTunnelService : LifecycleService() {
 
     @Inject lateinit var tunnelManager: TunnelManager
 
+    @Inject lateinit var tunnelMonitor: TunnelMonitor
+
     private val defaultState = AutoTunnelState()
+
+    private val autoTunMutex = Mutex()
 
     private val autoTunnelStateFlow = MutableStateFlow(defaultState)
 
-    private var killSwitchJob: Job? = null
+    private val bounceCounts = MutableStateFlow<Map<Int, Int>>(emptyMap())
+
+    private var eventHandlerJob: Job? = null
+
+    private val lastBounceTimes = mutableMapOf<Int, Long>()
 
     class LocalBinder(val service: AutoTunnelService) : Binder()
 
@@ -77,10 +90,8 @@ class AutoTunnelService : LifecycleService() {
 
     fun start() {
         launchWatcherNotification()
-        startAutoTunnelJob()
         startAutoTunnelStateJob()
-        killSwitchJob = startKillSwitchJob()
-        startNotificationJob()
+        startLocationPermissionsNotificationJob()
     }
 
     fun stop() {
@@ -90,6 +101,7 @@ class AutoTunnelService : LifecycleService() {
     override fun onDestroy() {
         serviceManager.handleAutoTunnelServiceDestroy()
         restoreVpnKillSwitch()
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         super.onDestroy()
     }
 
@@ -99,7 +111,7 @@ class AutoTunnelService : LifecycleService() {
                 settings.isVpnKillSwitchEnabled &&
                     tunnelManager.getBackendState() != BackendState.KILL_SWITCH_ACTIVE
             ) {
-                killSwitchJob?.cancel()
+                eventHandlerJob?.cancel()
                 val allowedIps =
                     if (settings.isLanOnKillSwitchEnabled) TunnelConf.LAN_BYPASS_ALLOWED_IPS
                     else emptyList()
@@ -131,47 +143,141 @@ class AutoTunnelService : LifecycleService() {
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun startAutoTunnelStateJob() =
         lifecycleScope.launch(ioDispatcher) {
-            combine(
-                    combineSettings(),
-                    appDataRepository
-                        .get()
-                        .settings
-                        .flow
-                        .distinctUntilChanged { old, new ->
-                            old.isKernelEnabled == new.isKernelEnabled
-                        } // Only emit when isKernelEnabled changes
-                        .flatMapLatest {
-                            networkMonitor.connectivityStateFlow
-                                .flowOn(ioDispatcher)
-                                .map(NetworkState::from)
-                        }
-                        .distinctUntilChanged(),
-                ) { double, networkState ->
-                    AutoTunnelState(
-                        tunnelManager.activeTunnels.value,
-                        networkState,
-                        double.first,
-                        double.second,
-                    )
-                }
-                .collect { state ->
+            val networkFlow =
+                debouncedConnectivityStateFlow
+                    .flowOn(ioDispatcher)
+                    .map(NetworkState::from)
+                    .map { StateChange.NetworkChange(it) }
+                    .distinctUntilChanged()
+
+            val settingsFlow =
+                combineSettings().map { StateChange.SettingsChange(it.first, it.second) }
+
+            val tunnelsFlow =
+                tunnelManager.activeTunnels.map { StateChange.ActiveTunnelsChange(it) }
+
+            val monitoringFlow =
+                tunnelManager.activeTunnels
+                    .map { map -> map.mapValues { (_, state) -> state.pingStates } }
+                    .distinctUntilChanged()
+                    .map { StateChange.MonitoringChange(it) }
+
+            var reevaluationJob: Job? = null
+
+            // get everything in sync before we use merge
+            combine(networkFlow, settingsFlow, tunnelsFlow, monitoringFlow) {
+                    network,
+                    settings,
+                    tunnels,
+                    monitoring ->
                     autoTunnelStateFlow.update {
                         it.copy(
-                            activeTunnels = state.activeTunnels,
-                            networkState = state.networkState,
-                            settings = state.settings,
-                            tunnels = state.tunnels,
+                            activeTunnels = tunnels.activeTunnels,
+                            networkState = network.networkState,
+                            settings = settings.settings,
+                            tunnels = settings.tunnels,
                         )
                     }
                 }
+                .first()
+
+            // use merge to limit the noise of a combine and also increase the scalability of auto
+            // tunnel handling new states
+            merge(networkFlow, settingsFlow, tunnelsFlow, monitoringFlow).collect { change ->
+                if (change !is StateChange.ActiveTunnelsChange) {
+                    Timber.d("New state changed to ${change.javaClass.simpleName}")
+                }
+
+                when (change) {
+                    is StateChange.NetworkChange -> {
+                        reevaluationJob?.cancel()
+                        val previousState = autoTunnelStateFlow.value
+                        autoTunnelStateFlow.update { it.copy(networkState = change.networkState) }
+                        // Android late mobile data state change, we can ignore handling this
+                        if (
+                            isAndroidLateCellularActiveChange(
+                                previousState.networkState,
+                                change.networkState,
+                            )
+                        ) {
+                            Timber.d("Android late cellular active state change")
+                            return@collect
+                        }
+                    }
+                    is StateChange.SettingsChange -> {
+                        reevaluationJob?.cancel()
+                        autoTunnelStateFlow.update {
+                            it.copy(settings = change.settings, tunnels = change.tunnels)
+                        }
+                    }
+                    is StateChange.ActiveTunnelsChange -> {
+                        autoTunnelStateFlow.update { it.copy(activeTunnels = change.activeTunnels) }
+                        return@collect
+                    }
+                    is StateChange.MonitoringChange -> {
+                        change.pingStates.forEach { (config, pingState) ->
+                            Timber.d("Ping state $pingState")
+                            if (pingState?.all { it.value.isReachable } == true) {
+                                Timber.d("Clearing bounce count on success")
+                                bounceCounts.update { current ->
+                                    current.toMutableMap().apply { remove(config.id) }
+                                }
+                            }
+                        }
+                        return@collect handleAutoTunnelEvent(
+                            autoTunnelStateFlow.value.determineAutoTunnelEvent(
+                                StateChange.MonitoringChange(change.pingStates)
+                            )
+                        )
+                    }
+                }
+
+                handleAutoTunnelEvent(autoTunnelStateFlow.value.determineAutoTunnelEvent(change))
+
+                reevaluationJob = launch {
+                    delay(REEVALUATE_CHECK_DELAY)
+                    val currentState = autoTunnelStateFlow.value
+                    if (currentState != defaultState) {
+                        Timber.d("Re-evaluating auto-tunnel state..")
+                        handleAutoTunnelEvent(currentState.determineAutoTunnelEvent(change))
+                    }
+                }
+            }
         }
+
+    private fun isAndroidLateCellularActiveChange(
+        previous: NetworkState,
+        new: NetworkState,
+    ): Boolean {
+        return (previous.isWifiConnected != new.isWifiConnected &&
+            previous.wifiName == new.wifiName &&
+            previous.isMobileDataConnected != new.isMobileDataConnected)
+    }
+
+    // all relevant settings to auto tunnel
+    private fun areAutoTunnelSettingsTheSame(old: AppSettings, new: AppSettings): Boolean {
+        return (old.isTunnelOnWifiEnabled == new.isTunnelOnWifiEnabled &&
+            old.isTunnelOnMobileDataEnabled == new.isTunnelOnMobileDataEnabled &&
+            old.isTunnelOnEthernetEnabled == new.isTunnelOnEthernetEnabled &&
+            old.trustedNetworkSSIDs == new.trustedNetworkSSIDs &&
+            old.isPingEnabled == new.isPingEnabled &&
+            old.debounceDelaySeconds == new.debounceDelaySeconds &&
+            old.wifiDetectionMethod == new.wifiDetectionMethod &&
+            old.isVpnKillSwitchEnabled == new.isVpnKillSwitchEnabled &&
+            old.isLanOnKillSwitchEnabled == new.isLanOnKillSwitchEnabled &&
+            old.isDisableKillSwitchOnTrustedEnabled == new.isDisableKillSwitchOnTrustedEnabled &&
+            old.isStopOnNoInternetEnabled == new.isStopOnNoInternetEnabled)
+    }
 
     private fun combineSettings(): Flow<Pair<AppSettings, Tunnels>> {
         return combine(
-                appDataRepository.get().settings.flow,
+                appDataRepository
+                    .get()
+                    .settings
+                    .flow
+                    .distinctUntilChanged(::areAutoTunnelSettingsTheSame),
                 appDataRepository.get().tunnels.flow.map { tunnels ->
                     // isActive is ignored for equality checks so user can manually toggle off
                     // tunnel with auto-tunnel
@@ -183,25 +289,53 @@ class AutoTunnelService : LifecycleService() {
             .distinctUntilChanged()
     }
 
-    // watch for changes to location permission and notify user it will impact auto-tunneling
-    // TODO can add deeplinks later back to the app for fixing
-    // TODO or a recheck button for location permission so we dont have to poll it
-    private fun startNotificationJob(): Job =
+    private fun areAutoTunnelPermissionsRequiredTheSame(
+        old: AutoTunnelState,
+        new: AutoTunnelState,
+    ): Boolean {
+        return (old.settings.wifiDetectionMethod == new.settings.wifiDetectionMethod &&
+            old.networkState.locationPermissionGranted ==
+                new.networkState.locationPermissionGranted &&
+            old.networkState.locationServicesEnabled == new.networkState.locationServicesEnabled &&
+            old.tunnels == new.tunnels &&
+            old.settings.trustedNetworkSSIDs == new.settings.trustedNetworkSSIDs)
+    }
+
+    //     watch for changes to location permission and notify user it will impact auto-tunneling
+    //     TODO or a recheck button for location permission so we dont have to poll it
+    private fun startLocationPermissionsNotificationJob(): Job =
         lifecycleScope.launch(ioDispatcher) {
             var locationServicesShown = false
             var locationPermissionsShown = false
-            autoTunnelStateFlow.zipWithPrevious().collect { (previous, current) ->
-                when (current.settings.wifiDetectionMethod) {
-                    AndroidNetworkMonitor.WifiDetectionMethod.DEFAULT,
-                    AndroidNetworkMonitor.WifiDetectionMethod.LEGACY -> {
-                        with(current.networkState) {
+
+            data class NetworkPermissionState(
+                val detectionMethod: AndroidNetworkMonitor.WifiDetectionMethod,
+                val locationServicesEnabled: Boolean,
+                val locationPermissionsEnabled: Boolean,
+                val ssidReadRequired: Boolean,
+            )
+
+            autoTunnelStateFlow
+                .distinctUntilChanged(::areAutoTunnelPermissionsRequiredTheSame)
+                .map {
+                    NetworkPermissionState(
+                        it.settings.wifiDetectionMethod,
+                        it.networkState.locationServicesEnabled == true,
+                        it.networkState.locationPermissionGranted == true,
+                        (it.tunnels.any { tunnel -> tunnel.tunnelNetworks.isNotEmpty() } ||
+                            it.settings.trustedNetworkSSIDs.isNotEmpty()),
+                    )
+                }
+                .collect { state ->
+                    when (state.detectionMethod) {
+                        AndroidNetworkMonitor.WifiDetectionMethod.DEFAULT,
+                        AndroidNetworkMonitor.WifiDetectionMethod.LEGACY -> {
                             if (
-                                locationPermissionGranted == false &&
-                                    (previous?.networkState?.locationPermissionGranted == true ||
-                                        !locationServicesShown)
+                                !state.locationPermissionsEnabled &&
+                                    !locationPermissionsShown &&
+                                    state.ssidReadRequired
                             ) {
-                                locationServicesShown = true
-                                Timber.i("Detected location permission lost")
+                                locationPermissionsShown = true
                                 val notification =
                                     notificationManager.createNotification(
                                         WireGuardNotification.NotificationChannels.AUTO_TUNNEL,
@@ -215,12 +349,11 @@ class AutoTunnelService : LifecycleService() {
                                 )
                             }
                             if (
-                                locationServicesEnabled == false &&
-                                    (previous?.networkState?.locationServicesEnabled == true ||
-                                        !locationPermissionsShown)
+                                !state.locationServicesEnabled &&
+                                    !locationServicesShown &&
+                                    state.ssidReadRequired
                             ) {
-                                locationPermissionsShown = true
-                                Timber.i("Detected location services lost")
+                                locationServicesShown = true
                                 val notification =
                                     notificationManager.createNotification(
                                         WireGuardNotification.NotificationChannels.AUTO_TUNNEL,
@@ -233,93 +366,97 @@ class AutoTunnelService : LifecycleService() {
                                     notification,
                                 )
                             }
-                            if (
-                                locationServicesEnabled == true &&
-                                    previous?.networkState?.locationServicesEnabled == false
-                            ) {
+                            if (state.locationServicesEnabled || !state.ssidReadRequired) {
                                 notificationManager.remove(
                                     NotificationManager.AUTO_TUNNEL_LOCATION_SERVICES_ID
                                 )
+                                locationServicesShown = false
                             }
-                            if (
-                                locationPermissionGranted == true &&
-                                    previous?.networkState?.locationPermissionGranted == false
-                            ) {
+                            if (state.locationPermissionsEnabled || !state.ssidReadRequired) {
                                 notificationManager.remove(
                                     NotificationManager.AUTO_TUNNEL_LOCATION_PERMISSION_ID
                                 )
+                                locationPermissionsShown = false
                             }
                         }
+                        else -> Unit
                     }
-                    else -> Unit
                 }
-            }
         }
 
-    private fun startKillSwitchJob() =
-        lifecycleScope.launch(ioDispatcher) {
-            autoTunnelStateFlow.collect {
-                if (it == defaultState) return@collect
-                when (val event = it.asKillSwitchEvent()) {
-                    KillSwitchEvent.DoNothing -> Unit
-                    is KillSwitchEvent.Start -> {
-                        Timber.d("Starting kill switch")
-                        tunnelManager.setBackendState(
-                            BackendState.KILL_SWITCH_ACTIVE,
-                            event.allowedIps,
-                        )
+    private suspend fun handleAutoTunnelEvent(autoTunnelEvent: AutoTunnelEvent) {
+        autoTunMutex.withLock {
+            when (
+                val event =
+                    autoTunnelEvent.also {
+                        Timber.i("Auto tunnel event: ${it.javaClass.simpleName}")
                     }
-                    KillSwitchEvent.Stop -> {
-                        Timber.d("Stopping kill switch")
-                        tunnelManager.setBackendState(BackendState.SERVICE_ACTIVE, emptySet())
+            ) {
+                is AutoTunnelEvent.Start ->
+                    (event.tunnelConf ?: appDataRepository.get().getPrimaryOrFirstTunnel())?.let {
+                        tunnelManager.startTunnel(it)
                     }
+                is AutoTunnelEvent.Stop -> tunnelManager.stopTunnel()
+                AutoTunnelEvent.DoNothing -> Timber.i("Auto-tunneling: nothing to do")
+                is AutoTunnelEvent.Bounce ->
+                    handleBounceWithBackoff(event.configsPeerKeyResolvedMap)
+                is AutoTunnelEvent.StartKillSwitch -> {
+                    Timber.d("Starting kill switch")
+                    tunnelManager.setBackendState(BackendState.KILL_SWITCH_ACTIVE, event.allowedIps)
+                }
+                AutoTunnelEvent.StopKillSwitch -> {
+                    Timber.d("Stopping kill switch")
+                    tunnelManager.setBackendState(BackendState.SERVICE_ACTIVE, emptySet())
                 }
             }
-        }
-
-    @OptIn(FlowPreview::class)
-    private fun startAutoTunnelJob() =
-        lifecycleScope.launch(ioDispatcher) {
-            Timber.i("Starting auto-tunnel network event watcher")
-            val settings = appDataRepository.get().settings.get()
-
-            var reevaluationJob: Job? = null
-
-            autoTunnelStateFlow.debounce(settings.debounceDelayMillis()).collect { watcherState ->
-                if (watcherState == defaultState) return@collect
-                reevaluationJob?.cancel()
-                handleAutoTunnelEvent(watcherState)
-
-                // schedule one-time re-evaluation
-                reevaluationJob = launch {
-                    delay(REEVALUATE_CHECK_DELAY)
-                    if (watcherState != defaultState) {
-                        Timber.d("Re-evaluating auto-tunnel state..")
-                        handleAutoTunnelEvent(watcherState)
-                    }
-                }
-            }
-        }
-
-    private suspend fun handleAutoTunnelEvent(watcherState: AutoTunnelState) {
-        Timber.i("Auto-tunnel settings: ${watcherState.settings.toAutoTunnelStateString()}")
-        Timber.i("Auto-tunnel network state: ${watcherState.networkState}")
-        when (
-            val event =
-                watcherState.asAutoTunnelEvent().also {
-                    Timber.i("Auto-tunnel event: ${it.javaClass.simpleName}")
-                }
-        ) {
-            is AutoTunnelEvent.Start ->
-                (event.tunnelConf ?: appDataRepository.get().getPrimaryOrFirstTunnel())?.let {
-                    tunnelManager.startTunnel(it)
-                }
-            is AutoTunnelEvent.Stop -> tunnelManager.stopTunnel()
-            AutoTunnelEvent.DoNothing -> Timber.i("Auto-tunneling: nothing to do")
         }
     }
 
+    private suspend fun handleBounceWithBackoff(
+        configsPeerKeyResolvedMap: List<Pair<TunnelConf, Map<String, String?>>>
+    ) { // Simplified param: no failureCount
+        val settings = appDataRepository.get().settings.get()
+        val pingIntervalMillis = settings.tunnelPingIntervalSeconds.toMillis()
+        configsPeerKeyResolvedMap.forEach { (config, peerMap) ->
+            val bounceCount = bounceCounts.value.getOrDefault(config.id, 0)
+            val exponent = bounceCount.toDouble()
+            val backoffDelay =
+                (pingIntervalMillis * 2.0.pow(exponent)).toLong().coerceAtMost(MAX_BACKOFF_MS)
+            val currentTime = System.currentTimeMillis()
+            val lastTime = lastBounceTimes.getOrDefault(config.id, 0L)
+            if (currentTime - lastTime >= backoffDelay) {
+                Timber.d(
+                    "Bouncing tunnel ${config.name} after detecting failure, with bounce count $bounceCount and calculated backoff delay $backoffDelay ms"
+                )
+                tunnelManager.bounceTunnel(config, Ping(peerMap))
+                lastBounceTimes[config.id] = currentTime
+                bounceCounts.update { current ->
+                    current.toMutableMap().apply { this[config.id] = (this[config.id] ?: 0) + 1 }
+                }
+            } else {
+                Timber.d(
+                    "Backoff in progress for tunnel ${config.name}, skipping bounce (required delay: $backoffDelay ms)"
+                )
+            }
+        }
+    }
+
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    private val debouncedConnectivityStateFlow: Flow<ConnectivityState> by lazy {
+        appDataRepository
+            .get()
+            .settings
+            .flow
+            .map { it.debounceDelaySeconds.toMillis() }
+            .distinctUntilChanged()
+            .flatMapLatest { debounceMillis ->
+                networkMonitor.connectivityStateFlow.debounce(debounceMillis)
+            }
+    }
+
     companion object {
-        const val REEVALUATE_CHECK_DELAY = 5_000L
+        // try to keep this window short as it will interrupt manual overrides
+        const val REEVALUATE_CHECK_DELAY = 2_000L
+        const val MAX_BACKOFF_MS = 300_000L // 5 minutes
     }
 }

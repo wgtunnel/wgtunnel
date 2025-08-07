@@ -29,17 +29,15 @@ sealed class AppEvent {
 
     data object TogglePinLock : AppEvent()
 
+    data object TogglePingMonitoring : AppEvent()
+
     data class TogglePrimaryTunnel(val tunnel: TunnelConf) : AppEvent()
 
     data class ToggleIpv4Preferred(val tunnel: TunnelConf) : AppEvent()
 
-    data class TogglePingTunnelEnabled(val tunnel: TunnelConf) : AppEvent()
+    data class ToggleRestartOnPingFailure(val tunnel: TunnelConf) : AppEvent()
 
-    data class SetTunnelPingInterval(val tunnel: TunnelConf, val pingInterval: String) : AppEvent()
-
-    data class SetTunnelPingCooldown(val tunnel: TunnelConf, val pingCooldown: String) : AppEvent()
-
-    data class SetTunnelPingIp(val tunnelConf: TunnelConf, val ip: String) : AppEvent()
+    data class SetTunnelPingTarget(val tunnelConf: TunnelConf, val host: String) : AppEvent()
 
     data class AddTunnelRunSSID(val ssid: String, val tunnel: TunnelConf) : AppEvent()
 
@@ -78,6 +76,12 @@ sealed class AppEvent {
     data class SetLocale(val localeTag: String) : AppEvent()
 
     data class SetTheme(val theme: Theme) : AppEvent()
+
+    data class SaveMonitoringSettings(
+        val pingInterval: Int,
+        val tunnelPingAttempts: Int,
+        val pingTimeout: Int?,
+    ) : AppEvent()
 
     data class SetDetectionMethod(val detectionMethod: AndroidNetworkMonitor.WifiDetectionMethod) :
         AppEvent()
@@ -127,4 +131,12 @@ sealed class AppEvent {
     data object ToggleSelectAllTunnels : AppEvent()
 
     data class SaveAllConfigs(val tunnels: List<TunnelConf>) : AppEvent()
+
+    data object ToggleShowDetailedPingStats : AppEvent()
+
+    data class SetPingAttempts(val count: Int) : AppEvent()
+
+    data class SetPingTimeout(val timeout: Int?) : AppEvent()
+
+    data class SetPingInterval(val interval: Int) : AppEvent()
 }

@@ -17,9 +17,12 @@ import androidx.core.content.ContextCompat
 import com.wireguard.android.util.RootShell
 import com.zaneschepke.networkmonitor.shizuku.ShizukuShell
 import com.zaneschepke.networkmonitor.util.*
-import kotlinx.coroutines.*
+import java.util.concurrent.ConcurrentHashMap
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
 class AndroidNetworkMonitor(
@@ -64,7 +67,8 @@ class AndroidNetworkMonitor(
         appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
 
     // Track active Wi-Fi networks, their capabilities, and last active network ID
-    private val activeWifiNetworks = ActiveWifiStateManager()
+    private val activeWifiNetworks =
+        ConcurrentHashMap<String, Pair<Network?, NetworkCapabilities?>>()
 
     private val permissionsChangedFlow = MutableStateFlow(false)
 
@@ -193,7 +197,7 @@ class AndroidNetworkMonitor(
 
         fun handleOnWifiAvailable(network: Network) {
             Timber.d("Wi-Fi onAvailable: network=$network")
-            activeWifiNetworks.put(network.toString(), Pair(network, null))
+            activeWifiNetworks[network.toString()] = Pair(network, null)
             trySend(TransportEvent.Available(network, detectionMethod))
         }
 
@@ -202,7 +206,7 @@ class AndroidNetworkMonitor(
             networkCapabilities: NetworkCapabilities,
         ) {
             Timber.d("Wi-Fi onCapabilitiesChanged: network=$network")
-            activeWifiNetworks.put(network.toString(), Pair(network, networkCapabilities))
+            activeWifiNetworks[network.toString()] = Pair(network, networkCapabilities)
             trySend(
                 TransportEvent.CapabilitiesChanged(network, networkCapabilities, detectionMethod)
             )
@@ -418,7 +422,7 @@ class AndroidNetworkMonitor(
                     .also { Timber.d("Connectivity Status: $it") }
             }
             .distinctUntilChanged()
-            .shareIn(applicationScope, SharingStarted.WhileSubscribed(5000), replay = 1)
+            .shareIn(applicationScope, SharingStarted.Eagerly, replay = 1)
 
     override fun checkPermissionsAndUpdateState() {
         val action = actionPermissionCheck

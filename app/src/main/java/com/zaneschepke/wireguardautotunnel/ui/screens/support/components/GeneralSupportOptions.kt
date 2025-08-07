@@ -1,9 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.support.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Balance
-import androidx.compose.material.icons.filled.Book
-import androidx.compose.material.icons.filled.Policy
 import androidx.compose.material.icons.outlined.Balance
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Policy

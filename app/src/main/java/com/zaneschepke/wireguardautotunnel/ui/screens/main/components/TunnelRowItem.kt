@@ -4,11 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Circle
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.SettingsEthernet
-import androidx.compose.material.icons.rounded.Smartphone
-import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,6 +20,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
+import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.ui.common.ExpandingRowListItem
@@ -36,10 +33,12 @@ fun TunnelRowItem(
     isSelected: Boolean,
     tunnel: TunnelConf,
     tunnelState: TunnelState,
+    appSettings: AppSettings,
     onTvClick: () -> Unit,
     onToggleSelectedTunnel: (TunnelConf) -> Unit,
     onSwitchClick: (Boolean) -> Unit,
     isTv: Boolean,
+    showDetailedStats: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -113,7 +112,12 @@ fun TunnelRowItem(
         text = tunnel.tunName,
         expanded = {
             if (tunnelState.status != TunnelStatus.Down) {
-                TunnelStatisticsRow(tunnelState.statistics, tunnel)
+                TunnelStatisticsRow(
+                    tunnelState,
+                    tunnel,
+                    appSettings.isPingEnabled,
+                    showDetailedStats,
+                )
             }
         },
         trailing = {

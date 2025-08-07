@@ -9,6 +9,7 @@ data class AppState(
     val expandedTunnelIds: List<Int>,
     val isLocalLogsEnabled: Boolean,
     val isRemoteControlEnabled: Boolean,
+    val showDetailedPingStats: Boolean,
     val remoteKey: String?,
     val locale: String?,
     val theme: Theme,

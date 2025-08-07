@@ -62,6 +62,7 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.displa
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.language.LanguageScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.killswitch.KillSwitchScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.LogsScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.TunnelMonitoringScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.SupportScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.license.LicenseScreen
 import com.zaneschepke.wireguardautotunnel.ui.theme.WireguardAutoTunnelTheme
@@ -289,7 +290,12 @@ class MainActivity : AppCompatActivity() {
                                         appUiState.tunnels
                                             .firstOrNull { it.id == args.id }
                                             ?.let { config ->
-                                                TunnelOptionsScreen(config, viewModel, appViewState)
+                                                TunnelOptionsScreen(
+                                                    config,
+                                                    viewModel,
+                                                    appViewState,
+                                                    appUiState.appSettings,
+                                                )
                                             }
                                     }
                                     composable<Route.Lock> { PinLockScreen(viewModel) }
@@ -310,6 +316,9 @@ class MainActivity : AppCompatActivity() {
                                             }
                                     }
                                     composable<Route.Sort> { SortScreen(appUiState, viewModel) }
+                                    composable<Route.TunnelMonitoring> {
+                                        TunnelMonitoringScreen(appUiState, viewModel)
+                                    }
                                 }
                             }
                         }

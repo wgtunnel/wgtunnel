@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.ui.screens.main.tunneloptions.components
+package com.zaneschepke.wireguardautotunnel.ui.screens.main.autotunnel.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.NetworkPing
@@ -27,10 +27,10 @@ fun PingRestartItem(tunnelConf: TunnelConf, viewModel: AppViewModel): SelectionI
         },
         trailing = {
             ScaledSwitch(
-                checked = tunnelConf.isPingEnabled,
-                onClick = { viewModel.handleEvent(AppEvent.TogglePingTunnelEnabled(tunnelConf)) },
+                checked = tunnelConf.restartOnPingFailure,
+                onClick = { viewModel.handleEvent(AppEvent.ToggleRestartOnPingFailure(tunnelConf)) },
             )
         },
-        onClick = { viewModel.handleEvent(AppEvent.TogglePingTunnelEnabled(tunnelConf)) },
+        onClick = { viewModel.handleEvent(AppEvent.ToggleRestartOnPingFailure(tunnelConf)) },
     )
 }

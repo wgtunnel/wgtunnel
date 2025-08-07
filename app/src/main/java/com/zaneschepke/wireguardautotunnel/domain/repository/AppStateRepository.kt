@@ -41,5 +41,9 @@ interface AppStateRepository {
 
     suspend fun getRemoteKey(): String?
 
+    suspend fun setShowDetailedPingStats(showDetailedPing: Boolean)
+
+    suspend fun getShowDetailedPing(): Boolean
+
     val flow: Flow<AppState>
 }
