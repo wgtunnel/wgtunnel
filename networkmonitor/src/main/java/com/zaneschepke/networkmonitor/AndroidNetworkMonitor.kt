@@ -17,13 +17,13 @@ import androidx.core.content.ContextCompat
 import com.wireguard.android.util.RootShell
 import com.zaneschepke.networkmonitor.shizuku.ShizukuShell
 import com.zaneschepke.networkmonitor.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
-import java.util.concurrent.ConcurrentHashMap
 
 class AndroidNetworkMonitor(
     private val appContext: Context,
@@ -67,7 +67,8 @@ class AndroidNetworkMonitor(
         appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
 
     // Track active Wi-Fi networks, their capabilities, and last active network ID
-    private val activeWifiNetworks = ConcurrentHashMap<String, Pair<Network?, NetworkCapabilities?>>()
+    private val activeWifiNetworks =
+        ConcurrentHashMap<String, Pair<Network?, NetworkCapabilities?>>()
 
     private val permissionsChangedFlow = MutableStateFlow(false)
 

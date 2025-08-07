@@ -25,9 +25,9 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.service.tile.AutoTunnelControlTile
 import com.zaneschepke.wireguardautotunnel.core.service.tile.TunnelControlTile
 import com.zaneschepke.wireguardautotunnel.util.Constants
-import timber.log.Timber
 import java.io.File
 import java.io.InputStream
+import timber.log.Timber
 
 fun Context.openWebUrl(url: String): Result<Unit> {
     return kotlin

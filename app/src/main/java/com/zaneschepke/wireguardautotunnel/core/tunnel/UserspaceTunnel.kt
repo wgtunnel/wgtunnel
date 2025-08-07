@@ -11,14 +11,14 @@ import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.asAmBackendState
 import com.zaneschepke.wireguardautotunnel.util.extensions.asBackendState
 import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendError
+import javax.inject.Inject
+import kotlin.jvm.optionals.getOrNull
 import kotlinx.coroutines.CoroutineScope
 import org.amnezia.awg.backend.Backend
 import org.amnezia.awg.backend.BackendException
 import org.amnezia.awg.backend.Tunnel
 import org.amnezia.awg.config.Config
 import timber.log.Timber
-import javax.inject.Inject
-import kotlin.jvm.optionals.getOrNull
 
 class UserspaceTunnel
 @Inject

@@ -70,9 +70,9 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.isRunningOnTv
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 import dagger.hilt.android.AndroidEntryPoint
-import org.amnezia.awg.backend.GoBackend.VpnService
 import javax.inject.Inject
 import kotlin.system.exitProcess
+import org.amnezia.awg.backend.GoBackend.VpnService
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

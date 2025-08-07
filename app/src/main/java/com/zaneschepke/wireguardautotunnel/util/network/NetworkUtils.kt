@@ -3,14 +3,14 @@ package com.zaneschepke.wireguardautotunnel.util.network
 import com.marsounjan.icmp4a.Icmp
 import com.marsounjan.icmp4a.Icmp4a
 import com.zaneschepke.wireguardautotunnel.util.extensions.round
+import java.io.IOException
+import java.time.Instant
+import kotlin.math.sqrt
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
-import java.io.IOException
-import java.time.Instant
-import kotlin.math.sqrt
 
 class NetworkUtils(private val ioDispatcher: CoroutineDispatcher) {
 
