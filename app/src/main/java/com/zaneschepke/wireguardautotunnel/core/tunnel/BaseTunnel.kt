@@ -31,11 +31,11 @@ abstract class BaseTunnel(
 ) : TunnelProvider {
 
     private val _errorEvents =
-        MutableSharedFlow<Pair<TunnelConf, BackendError>>(replay = 0, extraBufferCapacity = 1)
+        MutableSharedFlow<Pair<TunnelConf, BackendError>>()
     override val errorEvents = _errorEvents.asSharedFlow()
 
     private val _messageEvents =
-        MutableSharedFlow<Pair<TunnelConf, BackendMessage>>(replay = 0, extraBufferCapacity = 1)
+        MutableSharedFlow<Pair<TunnelConf, BackendMessage>>()
     override val messageEvents = _messageEvents.asSharedFlow()
 
     private val activeTuns = MutableStateFlow<Map<TunnelConf, TunnelState>>(emptyMap())
