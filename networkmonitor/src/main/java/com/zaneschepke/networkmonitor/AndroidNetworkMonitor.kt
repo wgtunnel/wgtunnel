@@ -23,6 +23,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
+import java.util.concurrent.ConcurrentHashMap
 
 class AndroidNetworkMonitor(
     private val appContext: Context,
@@ -66,7 +67,7 @@ class AndroidNetworkMonitor(
         appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
 
     // Track active Wi-Fi networks, their capabilities, and last active network ID
-    private val activeWifiNetworks = ActiveWifiStateManager()
+    private val activeWifiNetworks = ConcurrentHashMap<String, Pair<Network?, NetworkCapabilities?>>()
 
     private val permissionsChangedFlow = MutableStateFlow(false)
 
@@ -195,7 +196,7 @@ class AndroidNetworkMonitor(
 
         fun handleOnWifiAvailable(network: Network) {
             Timber.d("Wi-Fi onAvailable: network=$network")
-            activeWifiNetworks.put(network.toString(), Pair(network, null))
+            activeWifiNetworks[network.toString()] = Pair(network, null)
             trySend(TransportEvent.Available(network, detectionMethod))
         }
 
@@ -204,7 +205,7 @@ class AndroidNetworkMonitor(
             networkCapabilities: NetworkCapabilities,
         ) {
             Timber.d("Wi-Fi onCapabilitiesChanged: network=$network")
-            activeWifiNetworks.put(network.toString(), Pair(network, networkCapabilities))
+            activeWifiNetworks[network.toString()] = Pair(network, networkCapabilities)
             trySend(
                 TransportEvent.CapabilitiesChanged(network, networkCapabilities, detectionMethod)
             )
