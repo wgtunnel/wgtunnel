@@ -43,7 +43,7 @@ object SettingsMapper {
             id = appSettings.id,
             isAutoTunnelEnabled = appSettings.isAutoTunnelEnabled,
             isTunnelOnMobileDataEnabled = appSettings.isTunnelOnMobileDataEnabled,
-            trustedNetworkSSIDs = appSettings.trustedNetworkSSIDs.toMutableList(),
+            trustedNetworkSSIDs = appSettings.trustedNetworkSSIDs,
             isAlwaysOnVpnEnabled = appSettings.isAlwaysOnVpnEnabled,
             isTunnelOnEthernetEnabled = appSettings.isTunnelOnEthernetEnabled,
             isShortcutsEnabled = appSettings.isShortcutsEnabled,

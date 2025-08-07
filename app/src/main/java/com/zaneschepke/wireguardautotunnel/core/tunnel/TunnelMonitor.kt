@@ -2,7 +2,6 @@ package com.zaneschepke.wireguardautotunnel.core.tunnel
 
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.networkmonitor.NetworkMonitor
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
@@ -24,7 +23,6 @@ class TunnelMonitor @Inject constructor(
     private val networkMonitor: NetworkMonitor,
     private val networkUtils: NetworkUtils,
     private val logReader: LogReader,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
 
     private val tunnelJobs = mutableMapOf<TunnelConf, Job>()
@@ -116,8 +114,7 @@ class TunnelMonitor @Inject constructor(
             pingStatsFlow.value = emptyMap()
 
             suspend fun performPing() {
-                val tunState = tunStateFlow.value
-
+                delay(3_000L)
                 val updates = mutableMapOf<Key, PingState>()
 
                 pingablePeers.forEach { peer ->
@@ -125,7 +122,11 @@ class TunnelMonitor @Inject constructor(
 
                     val allowedIpStr = peer.allowedIps.firstOrNull()?.toString()
                     if (allowedIpStr == null) {
-                        updates[peer.publicKey] = previousState.copy(isReachable = false, failureReason = FailureReason.NoResolvedEndpoint, consecutiveFailures = 0)
+                        updates[peer.publicKey] = previousState.copy(
+                            isReachable = false,
+                            failureReason = FailureReason.NoResolvedEndpoint,
+                            lastPingAttemptMillis = System.currentTimeMillis()
+                        )
                         return@forEach
                     }
 
@@ -135,16 +136,13 @@ class TunnelMonitor @Inject constructor(
 
                         val prefix = if (parts.size == 2) parts[1].toIntOrNull() ?: 32 else 32
                         if (prefix <= 1) {
-                            tunnelConf.pingTarget ?: {
-                                val resolvedEndpoint = tunState.statistics?.peerStats(peer.publicKey)?.resolvedEndpoint
-                                val host = resolvedEndpoint?.replace(Regex(":\\d+$"), "")?.removeSurrounding("[", "]")
-                                if (host?.contains(":") == true) CLOUDFLARE_IPV6_IP else CLOUDFLARE_IPV4_IP
-                            }.invoke()
+                            tunnelConf.pingTarget ?: CLOUDFLARE_IPV4_IP
                         } else {
                             internalIp.removeSurrounding("[", "]")
                         }
                     }.invoke()
 
+                    val attemptTime = System.currentTimeMillis()
                     runCatching {
                         val pingStats = settings.tunnelPingTimeoutSeconds?.let {
                             networkUtils.pingWithStats(host, settings.tunnelPingAttempts, it.toMillis())
@@ -162,7 +160,7 @@ class TunnelMonitor @Inject constructor(
                             failureReason = if (pingStats.isReachable) null else FailureReason.PingFailed,
                             lastSuccessfulPingMillis = pingStats.lastSuccessfulPingMillis ?: previousState.lastSuccessfulPingMillis,
                             pingTarget = host,
-                            consecutiveFailures = 0
+                            lastPingAttemptMillis = attemptTime
                         )
                         Timber.d(
                             "Ping successful for peer ${peer.publicKey.toBase64().substring(0, 5)}.. to host $host with stats: $pingStats"
@@ -173,7 +171,7 @@ class TunnelMonitor @Inject constructor(
                             isReachable = false,
                             failureReason = FailureReason.PingFailed,
                             pingTarget = host,
-                            consecutiveFailures = previousState.consecutiveFailures + 1
+                            lastPingAttemptMillis = attemptTime
                         )
                     }
                 }
@@ -184,7 +182,7 @@ class TunnelMonitor @Inject constructor(
                         newMap.putAll(updates)
                         newMap
                     }
-                    tunnelManager.updateTunnelStatus(tunnelConf, null, null, pingStatsFlow.value)
+                    tunnelManager.updateTunnelStatus(tunnelConf, null, null, updates)
                 }
             }
 
@@ -198,7 +196,7 @@ class TunnelMonitor @Inject constructor(
             if (!initialConnected) {
                 Timber.d("Initial no network connectivity for ${tunnelConf.tunName}")
                 pingStatsFlow.update { current ->
-                    current.mapValues { entry -> entry.value.copy(isReachable = false, failureReason = FailureReason.NoConnectivity, consecutiveFailures = 0) }
+                    current.mapValues { entry -> entry.value.copy(isReachable = false, failureReason = FailureReason.NoConnectivity, lastPingAttemptMillis = System.currentTimeMillis()) }
                 }
                 tunnelManager.updateTunnelStatus(tunnelConf, null, null, pingStatsFlow.value)
             } else {
@@ -216,7 +214,7 @@ class TunnelMonitor @Inject constructor(
                     } else {
                         Timber.d("Network connectivity lost for ${tunnelConf.tunName}")
                         pingStatsFlow.update { current ->
-                            current.mapValues { entry -> entry.value.copy(isReachable = false, failureReason = FailureReason.NoConnectivity, consecutiveFailures = 0) }
+                            current.mapValues { entry -> entry.value.copy(isReachable = false, failureReason = FailureReason.NoConnectivity, lastPingAttemptMillis = System.currentTimeMillis()) }
                         }
                         tunnelManager.updateTunnelStatus(tunnelConf, null, null, pingStatsFlow.value)
                     }
@@ -230,7 +228,7 @@ class TunnelMonitor @Inject constructor(
                     performPing()
                 } else {
                     pingStatsFlow.update { current ->
-                        current.mapValues { entry -> entry.value.copy(isReachable = false, failureReason = FailureReason.NoConnectivity, consecutiveFailures = 0) }
+                        current.mapValues { entry -> entry.value.copy(isReachable = false, failureReason = FailureReason.NoConnectivity, lastPingAttemptMillis = System.currentTimeMillis()) }
                     }
                     tunnelManager.updateTunnelStatus(tunnelConf, null, null, pingStatsFlow.value)
                 }
@@ -247,10 +245,10 @@ class TunnelMonitor @Inject constructor(
     }
 
     companion object {
-
-        const val STATS_DELAY = 1_000L
         const val CLOUDFLARE_IPV6_IP = "2606:4700:4700::1111"
         const val CLOUDFLARE_IPV4_IP = "1.1.1.1"
+
+        const val STATS_DELAY = 1_000L
 
         // ipv6 disabled or block on network
         // Failed to send handshake initiation: write udp [::]

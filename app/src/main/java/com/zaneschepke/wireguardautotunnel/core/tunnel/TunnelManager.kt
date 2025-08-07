@@ -4,10 +4,6 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.WireGuardAutoTunnel
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotification
-import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
-import com.zaneschepke.wireguardautotunnel.di.Kernel
-import com.zaneschepke.wireguardautotunnel.di.Userspace
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendState
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
@@ -28,11 +24,11 @@ import javax.inject.Inject
 class TunnelManager
 @Inject
 constructor(
-    @Kernel private val kernelTunnel: TunnelProvider,
-    @Userspace private val userspaceTunnel: TunnelProvider,
+    private val kernelTunnel: TunnelProvider,
+    private val userspaceTunnel: TunnelProvider,
     private val appDataRepository: AppDataRepository,
-    @ApplicationScope private val applicationScope: CoroutineScope,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val applicationScope: CoroutineScope,
+    private val ioDispatcher: CoroutineDispatcher,
     private val notificationManager: NotificationManager,
 ) : TunnelProvider {
 

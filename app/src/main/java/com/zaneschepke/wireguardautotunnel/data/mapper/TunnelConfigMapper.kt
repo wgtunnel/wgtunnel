@@ -30,7 +30,7 @@ object TunnelConfigMapper {
                 id,
                 tunName,
                 wgQuick,
-                tunnelNetworks.toMutableList(),
+                tunnelNetworks,
                 isMobileDataTunnel,
                 isPrimaryTunnel,
                 amQuick,

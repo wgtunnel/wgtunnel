@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel.domain.state
 import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelService
 import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.StateChange
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
+import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent.*
 import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.util.extensions.isMatchingToWildcardList
@@ -15,7 +16,7 @@ data class AutoTunnelState(
 ) {
 
     fun determineAutoTunnelEvent(stateChange: StateChange): AutoTunnelEvent {
-        when(stateChange) {
+        when(val change = stateChange) {
             is StateChange.NetworkChange, is StateChange.SettingsChange -> {
                 // Compute desired tunnel based on network conditions
                 var desiredTunnel: TunnelConf? = null
@@ -39,7 +40,7 @@ data class AutoTunnelState(
                 if (desiredTunnel != null) {
                     if (currentTunnel != desiredTunnel) {
                         // Start or switch to the desired tunnel (overrides any kill switch)
-                        return AutoTunnelEvent.Start(desiredTunnel)
+                        return Start(desiredTunnel)
                     }
                     // If already active and matching, fall through to kill switch check (though unlikely needed)
                 } else {
@@ -56,17 +57,19 @@ data class AutoTunnelState(
                     val allowedIps =
                         if (settings.isLanOnKillSwitchEnabled) TunnelConf.LAN_BYPASS_ALLOWED_IPS
                         else emptyList()
-                    return AutoTunnelEvent.StartKillSwitch(allowedIps)
+                    return StartKillSwitch(allowedIps)
                 }
             }
-            is StateChange.ActiveTunnelsChange -> {
-                val bounceTunnels = bounceOnPingFailed()
+            is StateChange.MonitoringChange -> {
+                val bounceTunnels = bounceOnPingFailed(change.consecutiveFailures)
                 if (bounceTunnels.isNotEmpty()) {
-                    return AutoTunnelEvent.Bounce(bounceTunnels)
+                    return Bounce(bounceTunnels)
                 }
             }
+
+            is StateChange.ActiveTunnelsChange -> Unit
         }
-        return AutoTunnelEvent.DoNothing
+        return DoNothing
     }
 
     // also need to check for Wi-Fi state as there is some overlap when they are both connected
@@ -113,18 +116,18 @@ data class AutoTunnelState(
                 !networkState.isMobileDataConnected
     }
 
-    private fun bounceOnPingFailed(): List<Triple<TunnelConf, Map<String, String?>, Int>> {
+    private fun bounceOnPingFailed(failures: Map<TunnelConf, Int>) : List<Triple<TunnelConf, Map<String, String?>, Int>> {
         return activeTunnels.entries.filter { (tunnel, state) ->
             tunnel.restartOnPingFailure &&
-                    state.pingStates?.any { (_, pingState) ->
+                    (state.pingStates?.any { (key , pingState) ->
                         pingState.let { pingState ->
-                            pingState.consecutiveFailures >= AutoTunnelService.CONSECUTIVE_FAILURE_THRESHOLD &&
+                            (failures[tunnel] ?: 0) >= AutoTunnelService.CONSECUTIVE_FAILURE_THRESHOLD &&
                                     pingState.failureReason == FailureReason.PingFailed
                         }
-                    } ?: false
+                    } ?: false)
         }.map { (tunnel, state) ->
-            val maxFailures = state.pingStates?.maxOfOrNull { (_, pingState) ->
-                pingState.consecutiveFailures
+            val maxFailures = state.pingStates?.maxOfOrNull { (key, pingState) ->
+                failures[tunnel] ?: 0
             } ?: 0
             val peerMap = (state.statistics?.getPeers()?.associate { peerKey ->
                 peerKey.toBase64() to state.statistics.peerStats(peerKey)?.resolvedEndpoint

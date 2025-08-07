@@ -9,11 +9,7 @@ import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor
-import com.zaneschepke.wireguardautotunnel.core.tunnel.KernelTunnel
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
-import com.zaneschepke.wireguardautotunnel.core.tunnel.UserspaceTunnel
+import com.zaneschepke.wireguardautotunnel.core.tunnel.*
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppSettingRepository
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
@@ -165,7 +161,6 @@ class TunnelModule {
         networkMonitor: NetworkMonitor,
         networkUtils: NetworkUtils,
         logReader: LogReader,
-        @IoDispatcher ioDispatcher: CoroutineDispatcher,
         appDataRepository: AppDataRepository,
     ): TunnelMonitor {
         return TunnelMonitor(
@@ -174,7 +169,6 @@ class TunnelModule {
             networkMonitor,
             networkUtils,
             logReader,
-            ioDispatcher,
         )
     }
 }

@@ -20,7 +20,7 @@ data class PingState(
     val rttStddev: Double = 0.0,
     val isReachable: Boolean = false,
     val lastSuccessfulPingMillis: Long? = null,
+    val lastPingAttemptMillis: Long? = null,
     val failureReason: FailureReason? = null,
-    val consecutiveFailures: Int = 0,
     val pingTarget: String = CLOUDFLARE_IPV4_IP,
 )

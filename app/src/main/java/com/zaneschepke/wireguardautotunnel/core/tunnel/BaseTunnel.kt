@@ -2,7 +2,6 @@ package com.zaneschepke.wireguardautotunnel.core.tunnel
 
 import com.wireguard.android.backend.Tunnel
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
@@ -26,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.cancellation.CancellationException
 
 abstract class BaseTunnel(
-    @ApplicationScope private val applicationScope: CoroutineScope,
+    private val applicationScope: CoroutineScope,
     private val appDataRepository: AppDataRepository,
     private val serviceManager: ServiceManager,
 ) : TunnelProvider {

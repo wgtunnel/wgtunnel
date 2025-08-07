@@ -1,7 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendState
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
@@ -23,7 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 class UserspaceTunnel
 @Inject
 constructor(
-    @ApplicationScope private val applicationScope: CoroutineScope,
+    applicationScope: CoroutineScope,
     val serviceManager: ServiceManager,
     val appDataRepository: AppDataRepository,
     private val backend: Backend,

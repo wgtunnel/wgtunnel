@@ -13,8 +13,8 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotification
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
+import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendState
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
@@ -60,8 +60,6 @@ class AutoTunnelService : LifecycleService() {
     private val autoTunMutex = Mutex()
 
     private val autoTunnelStateFlow = MutableStateFlow(defaultState)
-
-    private val isManualOverride = MutableStateFlow(false)
 
     private var eventHandlerJob: Job? = null
 
@@ -144,6 +142,9 @@ class AutoTunnelService : LifecycleService() {
     }
 
     private fun startAutoTunnelStateJob() = lifecycleScope.launch(ioDispatcher) {
+
+        val consecutivePingFailures = MutableStateFlow<Map<TunnelConf, Int>>(emptyMap())
+
         val networkFlow = debouncedConnectivityStateFlow
             .flowOn(ioDispatcher)
             .map(NetworkState::from)
@@ -155,22 +156,56 @@ class AutoTunnelService : LifecycleService() {
         val tunnelsFlow = tunnelManager.activeTunnels
             .map { StateChange.ActiveTunnelsChange(it) }
 
+        val monitoringFlow = tunnelManager.activeTunnels.map { map ->
+            map.mapValues { (_, state) -> state.pingStates }
+        }.distinctUntilChanged().map { StateChange.MonitoringChange(it, emptyMap()) }
+
         var reevaluationJob: Job? = null
 
-        merge(networkFlow, settingsFlow, tunnelsFlow)
+        merge(networkFlow, settingsFlow, tunnelsFlow, monitoringFlow)
             .collect { change ->
-                reevaluationJob?.cancel()
+                if(change !is StateChange.ActiveTunnelsChange) {
+                    Timber.d("New state changed to ${change.javaClass.simpleName}")
+                }
+
                 when (change) {
                     is StateChange.NetworkChange -> {
+                        reevaluationJob?.cancel()
                         autoTunnelStateFlow.update { it.copy(networkState = change.networkState) }
                     }
                     is StateChange.SettingsChange -> {
+                        reevaluationJob?.cancel()
                         autoTunnelStateFlow.update { it.copy(settings = change.settings, tunnels = change.tunnels) }
                     }
                     is StateChange.ActiveTunnelsChange -> {
                         autoTunnelStateFlow.update { it.copy(activeTunnels = change.activeTunnels) }
+                        return@collect
+                    }
+                    is StateChange.MonitoringChange -> {
+                        change.pingStates.forEach { (config, pingState) ->
+                            Timber.d("Ping state $pingState")
+                            if(pingState?.any { !it.value.isReachable } == true){
+                                consecutivePingFailures.update { current ->
+                                    current.toMutableMap().apply {
+                                        this[config] = this[config]?.let { it + 1 } ?: 1
+                                    }
+                                }
+                                Timber.d("Consecutive failures for ${config.name} are ${consecutivePingFailures.value[config]}.")
+                            } else {
+                                Timber.d("Clearing consecutive failures")
+                                consecutivePingFailures.update { current ->
+                                    current.toMutableMap().apply {
+                                        remove(config)
+                                    }
+                                }
+                            }
+                        }
+                        return@collect handleAutoTunnelEvent(autoTunnelStateFlow.value.determineAutoTunnelEvent(
+                            StateChange.MonitoringChange(change.pingStates, consecutivePingFailures.value)
+                        ))
                     }
                 }
+
                 handleAutoTunnelEvent(autoTunnelStateFlow.value.determineAutoTunnelEvent(change))
 
                 reevaluationJob = launch {
@@ -178,15 +213,7 @@ class AutoTunnelService : LifecycleService() {
                     val currentState = autoTunnelStateFlow.value
                     if (currentState != defaultState) {
                         Timber.d("Re-evaluating auto-tunnel state..")
-                        val reevalEvent = currentState.determineAutoTunnelEvent(change)
-                        if (reevalEvent is AutoTunnelEvent.Bounce) {
-                            Timber.d("Ignoring bounce on re-evaluating")
-                        } else if (reevalEvent != AutoTunnelEvent.DoNothing) {
-                            handleAutoTunnelEvent(reevalEvent)
-                        }
-                        if (reevalEvent !is AutoTunnelEvent.Bounce && currentState.settings.isPingEnabled) {
-                            resetLastBounceTimes(currentState)
-                        }
+                        handleAutoTunnelEvent(currentState.determineAutoTunnelEvent(change))
                     }
                 }
             }
