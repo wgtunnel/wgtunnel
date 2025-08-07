@@ -77,11 +77,9 @@ fun TunnelOptionsScreen(
                     SplitTunnelingItem(tunnelConf),
                 )
         )
-        if(appSettings.isPingEnabled) {
+        if (appSettings.isPingEnabled) {
             SectionDivider()
-            SurfaceSelectionGroupButton(
-                items = listOf(pingConfigItem(tunnelConf, viewModel))
-            )
+            SurfaceSelectionGroupButton(items = listOf(pingConfigItem(tunnelConf, viewModel)))
         }
     }
 }

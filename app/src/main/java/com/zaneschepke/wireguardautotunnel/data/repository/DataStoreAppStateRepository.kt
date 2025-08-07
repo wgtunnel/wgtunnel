@@ -124,7 +124,8 @@ class DataStoreAppStateRepository(private val dataStoreManager: DataStoreManager
     }
 
     override suspend fun getShowDetailedPing(): Boolean {
-        return dataStoreManager.getFromStore(DataStoreManager.showDetailedPingStats) ?: GeneralState.SHOW_DETAILED_PING_STATS_DEFAULT
+        return dataStoreManager.getFromStore(DataStoreManager.showDetailedPingStats)
+            ?: GeneralState.SHOW_DETAILED_PING_STATS_DEFAULT
     }
 
     override val flow: Flow<AppState> =
@@ -152,8 +153,9 @@ class DataStoreAppStateRepository(private val dataStoreManager: DataStoreManager
                             isRemoteControlEnabled =
                                 pref[DataStoreManager.isRemoteControlEnabled]
                                     ?: GeneralState.IS_REMOTE_CONTROL_ENABLED,
-                            showDetailedPingStats = pref[DataStoreManager.showDetailedPingStats] ?:
-                            GeneralState.SHOW_DETAILED_PING_STATS_DEFAULT,
+                            showDetailedPingStats =
+                                pref[DataStoreManager.showDetailedPingStats]
+                                    ?: GeneralState.SHOW_DETAILED_PING_STATS_DEFAULT,
                             remoteKey = pref[DataStoreManager.remoteKey],
                             locale = pref[DataStoreManager.locale],
                             theme = getTheme(),

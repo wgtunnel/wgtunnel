@@ -7,6 +7,7 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.wireguard.android.backend.GoBackend
 import com.zaneschepke.logcatter.LogReader
+import com.zaneschepke.wireguardautotunnel.core.notification.NotificationMonitor
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.core.worker.ServiceWorker
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
@@ -17,16 +18,12 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
 import com.zaneschepke.wireguardautotunnel.util.ReleaseTree
 import dagger.hilt.android.HiltAndroidApp
-import javax.inject.Inject
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
+import javax.inject.Inject
 
 @HiltAndroidApp
 class WireGuardAutoTunnel : Application(), Configuration.Provider {
@@ -45,6 +42,8 @@ class WireGuardAutoTunnel : Application(), Configuration.Provider {
     @Inject @IoDispatcher lateinit var ioDispatcher: CoroutineDispatcher
 
     @Inject @MainDispatcher lateinit var mainDispatcher: CoroutineDispatcher
+
+    @Inject lateinit var notificationMonitor: NotificationMonitor
 
     @Inject lateinit var tunnelManager: TunnelManager
 
@@ -80,6 +79,7 @@ class WireGuardAutoTunnel : Application(), Configuration.Provider {
         ServiceWorker.start(this)
 
         applicationScope.launch {
+            launch { notificationMonitor.handleApplicationNotifications() }
             appDataRepository.appState.getLocale()?.let {
                 withContext(mainDispatcher) { LocaleUtil.changeLocale(it) }
             }

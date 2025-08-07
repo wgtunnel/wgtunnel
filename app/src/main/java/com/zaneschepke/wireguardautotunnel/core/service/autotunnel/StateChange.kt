@@ -10,9 +10,11 @@ import org.amnezia.awg.crypto.Key
 
 sealed class StateChange {
     data class NetworkChange(val networkState: NetworkState) : StateChange()
+
     data class SettingsChange(val settings: AppSettings, val tunnels: Tunnels) : StateChange()
+
     data class ActiveTunnelsChange(val activeTunnels: Map<TunnelConf, TunnelState>) : StateChange()
 
-    data class MonitoringChange(val pingStates: Map<TunnelConf, Map<Key, PingState>?>,
-                                val consecutiveFailures: Map<TunnelConf, Int>) : StateChange()
+    data class MonitoringChange(val pingStates: Map<TunnelConf, Map<Key, PingState>?>) :
+        StateChange()
 }

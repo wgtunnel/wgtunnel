@@ -1,10 +1,6 @@
 package com.zaneschepke.networkmonitor.shizuku
 
 import android.os.ParcelFileDescriptor
-import java.io.BufferedReader
-import java.io.FileInputStream
-import java.io.InputStreamReader
-import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -12,6 +8,10 @@ import moe.shizuku.server.IRemoteProcess
 import moe.shizuku.server.IShizukuService
 import rikka.shizuku.Shizuku
 import timber.log.Timber
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.InputStreamReader
+import kotlin.coroutines.resumeWithException
 
 class ShizukuShell(private val applicationScope: CoroutineScope) {
     interface CommandResultListener {

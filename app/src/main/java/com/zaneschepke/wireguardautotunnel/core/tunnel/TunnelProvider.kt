@@ -58,10 +58,12 @@ interface TunnelProvider {
     val bouncingTunnelIds: ConcurrentHashMap<Int, TunnelStatus.StopReason>
 
     fun hasVpnPermission(): Boolean
+
     suspend fun updateTunnelStatus(
         tunnelConf: TunnelConf,
         status: TunnelStatus? = null,
         stats: TunnelStatistics? = null,
         pingStates: Map<Key, PingState>? = null,
+        handshakeSuccessLogs: Boolean? = null,
     )
 }

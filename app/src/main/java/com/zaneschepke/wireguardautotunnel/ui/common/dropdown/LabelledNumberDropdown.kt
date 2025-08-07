@@ -5,7 +5,14 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionIte
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 
 @Composable
-fun LabelledNumberDropdown(title: @Composable () -> Unit, description: (@Composable () -> Unit)? = null, leading: @Composable () -> Unit, onSelected: (Int?) -> Unit, options: List<Int?>, currentValue: Int?) {
+fun LabelledNumberDropdown(
+    title: @Composable () -> Unit,
+    description: (@Composable () -> Unit)? = null,
+    leading: @Composable () -> Unit,
+    onSelected: (Int?) -> Unit,
+    options: List<Int?>,
+    currentValue: Int?,
+) {
     var isDropDownExpanded by remember { mutableStateOf(false) }
     SurfaceSelectionGroupButton(
         listOf(
@@ -18,9 +25,7 @@ fun LabelledNumberDropdown(title: @Composable () -> Unit, description: (@Composa
                     DropdownSelector(
                         currentValue = currentValue,
                         options = options,
-                        onValueSelected = { num ->
-                            onSelected(num)
-                        },
+                        onValueSelected = { num -> onSelected(num) },
                         isExpanded = isDropDownExpanded,
                         onDismiss = { isDropDownExpanded = false },
                     )

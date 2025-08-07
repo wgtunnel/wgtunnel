@@ -40,11 +40,13 @@ fun AutoTunnelAdvancedScreen(appUiState: AppUiState, viewModel: AppViewModel) {
                     style =
                         MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSurface
-                        )
+                        ),
                 )
             },
             leading = { Icon(Icons.Outlined.PauseCircle, null) },
-            onSelected = { selected -> viewModel.handleEvent(AppEvent.SetDebounceDelay(selected!!)) },
+            onSelected = { selected ->
+                viewModel.handleEvent(AppEvent.SetDebounceDelay(selected!!))
+            },
             options = (0..10).toList(),
             currentValue = appUiState.appSettings.debounceDelaySeconds,
         )

@@ -41,8 +41,8 @@ fun TunnelAutoTunnelScreen(
         SurfaceSelectionGroupButton(
             items =
                 buildList {
-                    if(appSettings.isPingEnabled) {
-                        add(PingRestartItem(tunnelConf,viewModel))
+                    if (appSettings.isPingEnabled) {
+                        add(PingRestartItem(tunnelConf, viewModel))
                     }
                     add(MobileDataTunnelItem(tunnelConf, viewModel))
                     add(ethernetTunnelItem(tunnelConf, viewModel))

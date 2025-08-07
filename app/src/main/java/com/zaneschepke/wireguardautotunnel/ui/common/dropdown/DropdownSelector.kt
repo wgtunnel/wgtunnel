@@ -29,7 +29,10 @@ fun <T> DropdownSelector(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (label != null) label()
-        Text(text = currentValue?.toString() ?: stringResource(R.string._default), style = MaterialTheme.typography.bodyMedium)
+        Text(
+            text = currentValue?.toString() ?: stringResource(R.string._default),
+            style = MaterialTheme.typography.bodyMedium,
+        )
         Icon(Icons.Default.ArrowDropDown, contentDescription = stringResource(R.string.dropdown))
     }
     DropdownMenu(
@@ -40,8 +43,8 @@ fun <T> DropdownSelector(
         onDismissRequest = onDismiss,
     ) {
         options.forEach { option ->
-            if(option ==  null) {
-               return@forEach DropdownMenuItem(
+            if (option == null) {
+                return@forEach DropdownMenuItem(
                     text = { Text(text = stringResource(R.string._default)) },
                     onClick = {
                         onValueSelected(null)

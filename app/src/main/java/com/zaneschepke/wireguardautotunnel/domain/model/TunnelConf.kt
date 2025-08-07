@@ -39,7 +39,7 @@ data class TunnelConf(
             isPrimaryTunnel == other.isPrimaryTunnel &&
             isMobileDataTunnel == other.isMobileDataTunnel &&
             isEthernetTunnel == other.isEthernetTunnel &&
-                pingTarget == other.pingTarget &&
+            pingTarget == other.pingTarget &&
             restartOnPingFailure == other.restartOnPingFailure &&
             tunnelNetworks == other.tunnelNetworks &&
             isIpv4Preferred == other.isIpv4Preferred
@@ -81,7 +81,7 @@ data class TunnelConf(
                 amQuick,
                 isActive,
                 pingIp,
-                 restartOnPingFailure,
+                restartOnPingFailure,
                 isEthernetTunnel,
                 isIpv4Preferred,
                 position,

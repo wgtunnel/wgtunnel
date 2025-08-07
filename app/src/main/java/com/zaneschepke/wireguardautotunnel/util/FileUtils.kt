@@ -16,14 +16,14 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.getInputStreamFromUri
 import com.zaneschepke.wireguardautotunnel.util.extensions.installApk
 import com.zaneschepke.wireguardautotunnel.util.extensions.launchShareFile
 import com.zaneschepke.wireguardautotunnel.util.extensions.toWgQuickString
-import java.io.*
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.amnezia.awg.config.Config
 import timber.log.Timber
+import java.io.*
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
 
 class FileUtils(private val context: Context, private val ioDispatcher: CoroutineDispatcher) {
 

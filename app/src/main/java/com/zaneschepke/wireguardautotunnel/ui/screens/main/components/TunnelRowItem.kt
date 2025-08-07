@@ -112,7 +112,12 @@ fun TunnelRowItem(
         text = tunnel.tunName,
         expanded = {
             if (tunnelState.status != TunnelStatus.Down) {
-                TunnelStatisticsRow(tunnelState, tunnel, appSettings.isPingEnabled, showDetailedStats)
+                TunnelStatisticsRow(
+                    tunnelState,
+                    tunnel,
+                    appSettings.isPingEnabled,
+                    showDetailedStats,
+                )
             }
         },
         trailing = {

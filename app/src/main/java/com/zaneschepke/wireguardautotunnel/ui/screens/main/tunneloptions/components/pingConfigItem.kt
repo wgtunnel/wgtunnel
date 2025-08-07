@@ -24,12 +24,12 @@ fun pingConfigItem(tunnelConf: TunnelConf, viewModel: AppViewModel): SelectionIt
                     value = tunnelConf.pingTarget,
                     label = stringResource(R.string.set_custom_ping_target),
                     hint = stringResource(R.string.ip_or_hostname),
-                    isErrorValue = { it?.isNotBlank() == true && !it.isValidIpv4orIpv6Address() &&
+                    isErrorValue = {
+                        it?.isNotBlank() == true &&
+                            !it.isValidIpv4orIpv6Address() &&
                             !android.util.Patterns.DOMAIN_NAME.matcher(it).matches()
                     },
-                    supportingText = {
-                        Text(stringResource(R.string.ping_target_description))
-                    },
+                    supportingText = { Text(stringResource(R.string.ping_target_description)) },
                     onSubmit = { ip ->
                         viewModel.handleEvent(AppEvent.SetTunnelPingTarget(tunnelConf, ip))
                     },

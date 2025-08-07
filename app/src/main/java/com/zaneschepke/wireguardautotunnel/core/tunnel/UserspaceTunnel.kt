@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel.core.tunnel
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendState
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
+import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.AmneziaStatistics
@@ -39,6 +40,9 @@ constructor(
         } catch (e: BackendException) {
             Timber.e(e, "Failed to start up backend for tunnel ${tunnel.name}")
             throw e.toBackendError()
+        } catch (e: IllegalArgumentException) {
+            Timber.e(e, "Failed to start up backend for tunnel ${tunnel.name}")
+            throw BackendError.Config
         }
     }
 

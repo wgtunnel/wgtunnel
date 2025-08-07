@@ -61,6 +61,7 @@ abstract class BaseTunnel(
         status: TunnelStatus?,
         stats: TunnelStatistics?,
         pingStates: Map<Key, PingState>?,
+        handshakeSuccessLogs: Boolean?,
     ) {
         tunStatusMutex.withLock {
             activeTuns.update { currentTuns ->
@@ -71,7 +72,12 @@ abstract class BaseTunnel(
                     Timber.d("Removing tunnel ${tunnelConf.id} from activeTunnels as state is DOWN")
                     cleanUpTunJob(tunnelConf)
                     currentTuns - originalConf
-                } else if (existingState.status == newStatus && stats == null && pingStates == null) {
+                } else if (
+                    existingState.status == newStatus &&
+                        stats == null &&
+                        pingStates == null &&
+                        handshakeSuccessLogs == null
+                ) {
                     Timber.d("Skipping redundant state update for ${tunnelConf.id}: $newStatus")
                     currentTuns
                 } else {
@@ -80,6 +86,8 @@ abstract class BaseTunnel(
                             status = newStatus,
                             statistics = stats ?: existingState.statistics,
                             pingStates = pingStates ?: existingState.pingStates,
+                            handshakeSuccessLogs =
+                                handshakeSuccessLogs ?: existingState.handshakeSuccessLogs,
                         )
                     currentTuns + (originalConf to updated)
                 }
@@ -120,16 +128,20 @@ abstract class BaseTunnel(
         // For userspace, we need to make sure all previous tunnels are down
         if (this@BaseTunnel is UserspaceTunnel) stopActiveTunnels()
         tunMutex.withLock {
-            val job = applicationScope.launch {
-                try {
-                    Timber.d("Starting tunnel ${tunnelConf.id}...")
-                    startTunnelInner(tunnelConf)
-                    Timber.d("Started complete for tunnel ${tunnelConf.name}...")
-                    // catch cancellation that could occur before and during startTunnelInner and trigger at that suspend point
-                } catch (e: CancellationException) {
-                    Timber.w("Tunnel start has been cancelled as ${tunnelConf.name} failed to start")
+            val job =
+                applicationScope.launch {
+                    try {
+                        Timber.d("Starting tunnel ${tunnelConf.id}...")
+                        startTunnelInner(tunnelConf)
+                        Timber.d("Started complete for tunnel ${tunnelConf.name}...")
+                        // catch cancellation that could occur before and during startTunnelInner
+                        // and trigger at that suspend point
+                    } catch (e: CancellationException) {
+                        Timber.w(
+                            "Tunnel start has been cancelled as ${tunnelConf.name} failed to start"
+                        )
+                    }
                 }
-            }
             tunJobs[tunnelConf.id] = job
             job.invokeOnCompletion {
                 tunJobs.remove(tunnelConf.id)
@@ -153,39 +165,53 @@ abstract class BaseTunnel(
                 Timber.d("Started for tun ${currentConf.id}...")
                 saveTunnelActiveState(currentConf, true)
                 serviceManager.startTunnelForegroundService()
-                if(restoreAttempted) _messageEvents.emit(tunnelConf to BackendMessage.BounceRecovery)
-                if(bouncingTunnelIds[currentConf.id] is TunnelStatus.StopReason.Ping) {
+                if (restoreAttempted)
+                    _messageEvents.emit(tunnelConf to BackendMessage.BounceRecovery)
+                if (bouncingTunnelIds[currentConf.id] is TunnelStatus.StopReason.Ping) {
                     _messageEvents.emit(tunnelConf to BackendMessage.BounceSuccess)
                 }
-                return  // Success, return
+                return // Success, return
             } catch (e: BackendError) {
                 originalError = originalError ?: e
                 val bounceReason = bouncingTunnelIds[currentConf.id]
                 if (!restoreAttempted && bounceReason is TunnelStatus.StopReason.Ping) {
-                    Timber.i("Attempting to recover bounce failure with previously resolved endpoints for ${currentConf.name}")
+                    Timber.i(
+                        "Attempting to recover bounce failure with previously resolved endpoints for ${currentConf.name}"
+                    )
                     try {
                         val previouslyResolved = bounceReason.previouslyResolvedEndpoints
                         val configProxy = ConfigProxy.from(currentConf.toAmConfig())
-                        val updatedConfigProxy = configProxy.copy(
-                            peers = configProxy.peers.map {
-                                it.copy(endpoint = previouslyResolved[it.publicKey] ?: it.endpoint)
-                            }
-                        )
+                        val updatedConfigProxy =
+                            configProxy.copy(
+                                peers =
+                                    configProxy.peers.map {
+                                        it.copy(
+                                            endpoint =
+                                                previouslyResolved[it.publicKey] ?: it.endpoint
+                                        )
+                                    }
+                            )
                         val (wg, amnezia) = updatedConfigProxy.buildConfigs()
-                        currentConf = currentConf.copyWithCallback(
-                            amQuick = amnezia.toAwgQuickString(true),
-                            wgQuick = wg.toWgQuickString(true)
-                        )
+                        currentConf =
+                            currentConf.copyWithCallback(
+                                amQuick = amnezia.toAwgQuickString(true),
+                                wgQuick = wg.toWgQuickString(true),
+                            )
                         bouncingTunnelIds.remove(currentConf.id)
                         restoreAttempted = true
-                        continue  // Retry
+                        continue // Retry
                     } catch (e: Exception) {
-                        Timber.e(e, "Failed to update config with resolved endpoints for ${currentConf.name}")
-                        // Fall through to failure (will emit BounceFailed since retryAttempted=true)
+                        Timber.e(
+                            e,
+                            "Failed to update config with resolved endpoints for ${currentConf.name}",
+                        )
+                        // Fall through to failure (will emit BounceFailed since
+                        // retryAttempted=true)
                     }
                 }
                 Timber.e(e, "Failed to start backend for ${currentConf.name}")
-                val emitError = if (restoreAttempted) BackendError.BounceFailed(originalError) else e
+                val emitError =
+                    if (restoreAttempted) BackendError.BounceFailed(originalError) else e
                 _errorEvents.emit(currentConf to emitError)
                 updateTunnelStatus(currentConf, TunnelStatus.Down)
                 return
@@ -222,8 +248,7 @@ abstract class BaseTunnel(
     }
 
     private fun handleServiceStateOnChange() {
-        if (activeTuns.value.isEmpty() && bouncingTunnelIds.isEmpty())
-            serviceManager.stopTunnelForegroundService()
+        if (activeTuns.value.isEmpty()) serviceManager.stopTunnelForegroundService()
     }
 
     private suspend fun handleStuckStartingTunnelShutdown(tunnel: TunnelConf) {

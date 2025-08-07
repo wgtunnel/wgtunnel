@@ -42,7 +42,11 @@ constructor(
             updateTunnelStatus(tunnel, TunnelStatus.Starting)
             backend.setState(tunnel, Tunnel.State.UP, tunnel.toWgConfig())
         } catch (e: BackendException) {
+            Timber.e(e, "Failed to start up backend for tunnel ${tunnel.name}")
             throw e.toBackendError()
+        } catch (e: IllegalArgumentException) {
+            Timber.e(e, "Failed to start up backend for tunnel ${tunnel.name}")
+            throw BackendError.Config
         }
     }
 

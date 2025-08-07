@@ -10,7 +10,6 @@ import com.wireguard.android.util.RootShell
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.logcatter.model.LogMessage
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
-import com.zaneschepke.networkmonitor.ConnectivityState
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.WireGuardAutoTunnel
@@ -27,7 +26,6 @@ import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.AppState
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
-import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
 import com.zaneschepke.wireguardautotunnel.ui.state.AppViewState
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
@@ -38,6 +36,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -66,10 +65,17 @@ constructor(
     private val logReader: LogReader,
     private val fileUtils: FileUtils,
     private val shortcutManager: ShortcutManager,
-    private val networkMonitor: NetworkMonitor,
+    networkMonitor: NetworkMonitor,
 ) : ViewModel() {
 
     private var logsJob: Job? = null
+
+    private val _eventFlow =
+        MutableSharedFlow<AppEvent>(
+            replay = 0,
+            extraBufferCapacity = 10,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
 
     private val tunnelMutex = Mutex()
     private val settingsMutex = Mutex()
@@ -90,19 +96,23 @@ constructor(
 
     val uiState: StateFlow<AppUiState> =
         combine(
-                appDataRepository.settings.flow,
-                appDataRepository.tunnels.flow,
-                appDataRepository.appState.flow,
-                tunnelManager.activeTunnels,
-                serviceManager.autoTunnelService.map { it != null },
+                combine(
+                    appDataRepository.settings.flow,
+                    appDataRepository.tunnels.flow,
+                    appDataRepository.appState.flow,
+                ) { settings, tunnels, appState ->
+                    Triple(settings, tunnels, appState)
+                },
+                combine(
+                    tunnelManager.activeTunnels,
+                    serviceManager.autoTunnelService.map { it != null },
+                ) { activeTunnels, autoTunnel ->
+                    Pair(activeTunnels, autoTunnel)
+                },
                 networkMonitor.connectivityStateFlow,
-            ) { array ->
-                val settings = array[0] as AppSettings
-                val tunnels = array[1] as List<TunnelConf>
-                val appState = array[2] as AppState
-                val activeTunnels = array[3] as Map<TunnelConf, TunnelState>
-                val autoTunnel = array[4] as Boolean
-                val network = array[5] as ConnectivityState
+            ) { repoTriple, managerPair, network ->
+                val (settings, tunnels, appState) = repoTriple
+                val (activeTunnels, autoTunnel) = managerPair
 
                 AppUiState(
                     appSettings = settings,
@@ -116,7 +126,7 @@ constructor(
             }
             .stateIn(
                 viewModelScope + ioDispatcher,
-                SharingStarted.Companion.WhileSubscribed(Constants.SUBSCRIPTION_TIMEOUT),
+                SharingStarted.WhileSubscribed(Constants.SUBSCRIPTION_TIMEOUT),
                 AppUiState(),
             )
 
@@ -129,36 +139,36 @@ constructor(
                 if (state.appState.isLocalLogsEnabled) logsJob = startCollectingLogs()
                 handleTunnelMessages()
             }
-        }
-    }
-
-    fun handleUiEvent(event: UiEvent): Job =
-        viewModelScope.launch(mainDispatcher) { _uiEvent.emit(event) }
-
-    fun handleEvent(event: AppEvent): Job =
-        viewModelScope.launch(ioDispatcher) {
-            uiState.withFirstState { state ->
+            _eventFlow.collect { event ->
+                val state = uiState.value
                 when (event) {
                     AppEvent.ToggleLocalLogging ->
                         handleToggleLocalLogging(state.appState.isLocalLogsEnabled)
+
                     is AppEvent.SetDebounceDelay ->
                         handleSetDebounceDelay(state.appSettings, event.delay)
+
                     is AppEvent.CopySelectedTunnel -> handleCopySelectedTunnel(state.tunnels)
                     is AppEvent.DeleteSelectedTunnels -> handleDeleteSelectedTunnels()
                     is AppEvent.ImportTunnelFromClipboard ->
                         handleClipboardImport(event.text, state.tunnels)
+
                     is AppEvent.ImportTunnelFromFile ->
                         handleImportTunnelFromFile(event.data, state.tunnels)
+
                     is AppEvent.ImportTunnelFromUrl ->
                         handleImportTunnelFromUrl(event.url, state.tunnels)
+
                     is AppEvent.ImportTunnelFromQrCode ->
                         handleImportTunnelFromQr(event.qrCode, state.tunnels)
+
                     AppEvent.SetBatteryOptimizeDisableShown -> setBatteryOptimizeDisableShown()
                     is AppEvent.StartTunnel -> handleStartTunnel(event.tunnel, state.appSettings)
                     is AppEvent.StopTunnel -> handleStopTunnel(event.tunnel)
                     AppEvent.ToggleAutoTunnel -> handleToggleAutoTunnel(state)
                     is AppEvent.ToggleTunnelStatsExpanded ->
                         handleToggleTunnelStats(event.tunnelId, state.appState)
+
                     AppEvent.ToggleAlwaysOn -> handleToggleAlwaysOnVPN(state.appSettings)
                     AppEvent.TogglePinLock -> handlePinLockToggled(state.appState.isPinLockEnabled)
                     AppEvent.SetLocationDisclosureShown -> setLocationDisclosureShown()
@@ -173,26 +183,36 @@ constructor(
                     is AppEvent.TogglePrimaryTunnel -> handleTogglePrimaryTunnel(event.tunnel)
                     is AppEvent.AddTunnelRunSSID ->
                         handleAddTunnelRunSSID(event.ssid, event.tunnel, state.tunnels)
+
                     is AppEvent.DeleteTunnelRunSSID ->
                         handleRemoveTunnelRunSSID(event.ssid, event.tunnel)
+
                     is AppEvent.ToggleEthernetTunnel -> handleToggleEthernetTunnel(event.tunnel)
                     is AppEvent.ToggleMobileDataTunnel -> handleToggleMobileDataTunnel(event.tunnel)
                     AppEvent.ToggleAutoTunnelOnCellular ->
                         handleToggleAutoTunnelOnCellular(state.appSettings)
+
                     AppEvent.ToggleAutoTunnelOnWifi ->
                         handleToggleAutoTunnelOnWifi(state.appSettings)
+
                     is AppEvent.DeleteTrustedSSID ->
                         handleDeleteTrustedSSID(event.ssid, state.appSettings)
+
                     AppEvent.ToggleAutoTunnelWildcards ->
                         handleToggleAutoTunnelWildcards(state.appSettings)
+
                     is AppEvent.SaveTrustedSSID ->
                         handleSaveTrustedSSID(event.ssid, state.appSettings)
+
                     AppEvent.ToggleAutoTunnelOnEthernet ->
                         handleToggleTunnelOnEthernet(state.appSettings)
+
                     AppEvent.ToggleStopKillSwitchOnTrusted ->
                         handleToggleStopKillSwitchOnTrusted(state.appSettings)
+
                     AppEvent.ToggleStopTunnelOnNoInternet ->
                         handleToggleStopOnNoInternet(state.appSettings)
+
                     is AppEvent.ExportSelectedTunnels ->
                         handleExportSelectedTunnels(event.configType, event.uri)
 
@@ -201,6 +221,7 @@ constructor(
                     is AppEvent.ToggleRestartOnPingFailure -> handleTogglePingTunnel(event.tunnel)
                     is AppEvent.SetTunnelPingTarget ->
                         handleTunnelPingTargetChange(event.tunnelConf, event.host)
+
                     is AppEvent.SetBottomSheet -> handleSetBottomSheet(event.showSheet)
                     AppEvent.DeleteLogs -> handleDeleteLogs()
                     is AppEvent.SetScreenAction -> _screenCallback.update { event.callback }
@@ -208,11 +229,13 @@ constructor(
                     is AppEvent.ToggleSelectedTunnel -> handleToggleSelectedTunnel(event.tunnel)
                     is AppEvent.ToggleSelectAllTunnels ->
                         handleToggleSelectAllTunnels(state.tunnels)
+
                     AppEvent.VpnPermissionRequested -> requestVpnPermission(false)
                     is AppEvent.AppReadyCheck -> handleAppReadyCheck(event.tunnels)
                     is AppEvent.ShowMessage -> handleShowMessage(event.message)
                     is AppEvent.PopBackStack ->
                         _appViewState.update { it.copy(popBackStack = event.pop) }
+
                     AppEvent.ToggleRemoteControl -> handleToggleRemoteControl(state.appState)
                     AppEvent.ClearSelectedTunnels -> clearSelectedTunnels()
                     is AppEvent.SetShowModal ->
@@ -220,17 +243,40 @@ constructor(
 
                     is AppEvent.SetDetectionMethod ->
                         handleSetDetectionMethod(event.detectionMethod, state.appSettings)
+
                     is AppEvent.SaveAllConfigs -> saveAllTunnels(event.tunnels)
-                    AppEvent.ToggleShowDetailedPingStats -> handleToggleShowDetailedPingStats(state.appState)
-                    is AppEvent.SaveMonitoringSettings -> handleMonitoringSaveChanges(state.appSettings,
-                        event.pingInterval, event.tunnelPingAttempts, event.pingTimeout)
+                    AppEvent.ToggleShowDetailedPingStats ->
+                        handleToggleShowDetailedPingStats(state.appState)
+                    is AppEvent.SaveMonitoringSettings ->
+                        handleMonitoringSaveChanges(
+                            state.appSettings,
+                            event.pingInterval,
+                            event.tunnelPingAttempts,
+                            event.pingTimeout,
+                        )
+
                     AppEvent.TogglePingMonitoring -> handleTogglePingMonitoring(state.appSettings)
-                    is AppEvent.SetPingAttempts -> saveSettings(state.appSettings.copy(tunnelPingAttempts = event.count))
-                    is AppEvent.SetPingInterval -> saveSettings(state.appSettings.copy(tunnelPingIntervalSeconds = event.interval))
-                    is AppEvent.SetPingTimeout -> saveSettings(state.appSettings.copy(tunnelPingTimeoutSeconds = event.timeout))
+                    is AppEvent.SetPingAttempts ->
+                        saveSettings(state.appSettings.copy(tunnelPingAttempts = event.count))
+                    is AppEvent.SetPingInterval ->
+                        saveSettings(
+                            state.appSettings.copy(tunnelPingIntervalSeconds = event.interval)
+                        )
+                    is AppEvent.SetPingTimeout ->
+                        saveSettings(
+                            state.appSettings.copy(tunnelPingTimeoutSeconds = event.timeout)
+                        )
                 }
             }
         }
+    }
+
+    fun handleUiEvent(event: UiEvent): Job =
+        viewModelScope.launch(mainDispatcher) { _uiEvent.emit(event) }
+
+    fun handleEvent(event: AppEvent) {
+        _eventFlow.tryEmit(event)
+    }
 
     private suspend fun handleTogglePingMonitoring(appSettings: AppSettings) {
         saveSettings(appSettings.copy(isPingEnabled = !appSettings.isPingEnabled))
@@ -242,14 +288,16 @@ constructor(
         tunnelPingAttempts: Int,
         pingTimeout: Int?,
     ) {
-        saveSettings(appSettings.copy(
-            tunnelPingIntervalSeconds = pingInterval,
-            tunnelPingAttempts = tunnelPingAttempts,
-            tunnelPingTimeoutSeconds = pingTimeout,
-        ))
+        saveSettings(
+            appSettings.copy(
+                tunnelPingIntervalSeconds = pingInterval,
+                tunnelPingAttempts = tunnelPingAttempts,
+                tunnelPingTimeoutSeconds = pingTimeout,
+            )
+        )
     }
 
-    private suspend fun handleToggleShowDetailedPingStats(currentAppState : AppState) {
+    private suspend fun handleToggleShowDetailedPingStats(currentAppState: AppState) {
         appDataRepository.appState.setShowDetailedPingStats(!currentAppState.showDetailedPingStats)
     }
 
@@ -345,21 +393,20 @@ constructor(
             launch {
                 tunnelManager.errorEvents.collect { errorEvent ->
                     handleShowMessage(
-                        when(val event = errorEvent.second) {
+                        when (val event = errorEvent.second) {
                             is BackendError.BounceFailed -> event.toStringValue()
-                            else -> StringValue.StringResource(
-                                R.string.tunnel_error_template,
-                                errorEvent.second.toStringRes(),
-                            )
+                            else ->
+                                StringValue.StringResource(
+                                    R.string.tunnel_error_template,
+                                    errorEvent.second.toStringRes(),
+                                )
                         }
                     )
                 }
             }
             launch {
                 tunnelManager.messageEvents.collect { messageEvent ->
-                    handleShowMessage(
-                        messageEvent.second.toStringValue()
-                    )
+                    handleShowMessage(messageEvent.second.toStringValue())
                 }
             }
         }
@@ -637,6 +684,7 @@ constructor(
 
     private suspend fun handleToggleIpv4(tunnelConf: TunnelConf) =
         saveTunnel(tunnelConf.copy(isIpv4Preferred = !tunnelConf.isIpv4Preferred))
+
     private suspend fun handleThemeChange(theme: Theme) {
         appDataRepository.appState.setTheme(theme)
     }
@@ -843,7 +891,7 @@ constructor(
                 rootShell.get().start()
                 handleShowMessage(StringValue.StringResource(R.string.root_accepted))
                 true
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 handleShowMessage(StringValue.StringResource(R.string.error_root_denied))
                 false
             }

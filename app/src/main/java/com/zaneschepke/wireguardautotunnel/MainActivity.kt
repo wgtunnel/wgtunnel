@@ -70,9 +70,9 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.isRunningOnTv
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 import dagger.hilt.android.AndroidEntryPoint
+import org.amnezia.awg.backend.GoBackend.VpnService
 import javax.inject.Inject
 import kotlin.system.exitProcess
-import org.amnezia.awg.backend.GoBackend.VpnService
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -290,7 +290,12 @@ class MainActivity : AppCompatActivity() {
                                         appUiState.tunnels
                                             .firstOrNull { it.id == args.id }
                                             ?.let { config ->
-                                                TunnelOptionsScreen(config, viewModel, appViewState, appUiState.appSettings)
+                                                TunnelOptionsScreen(
+                                                    config,
+                                                    viewModel,
+                                                    appViewState,
+                                                    appUiState.appSettings,
+                                                )
                                             }
                                     }
                                     composable<Route.Lock> { PinLockScreen(viewModel) }
@@ -311,7 +316,9 @@ class MainActivity : AppCompatActivity() {
                                             }
                                     }
                                     composable<Route.Sort> { SortScreen(appUiState, viewModel) }
-                                    composable<Route.TunnelMonitoring>{ TunnelMonitoringScreen(appUiState, viewModel) }
+                                    composable<Route.TunnelMonitoring> {
+                                        TunnelMonitoringScreen(appUiState, viewModel)
+                                    }
                                 }
                             }
                         }

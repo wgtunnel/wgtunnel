@@ -107,7 +107,12 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlin { compilerOptions { jvmTarget = JvmTarget.JVM_17 } }
+    kotlin {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_17
+            freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
+        }
+    }
 
     buildFeatures {
         compose = true
@@ -214,8 +219,6 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.slf4j.android)
     implementation(libs.icmp4a)
-
-
 
     // shizuku
     implementation(libs.shizuku.api)

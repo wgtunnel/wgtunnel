@@ -7,9 +7,6 @@ import android.content.ServiceConnection
 import android.net.VpnService
 import android.os.IBinder
 import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelService
-import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
-import com.zaneschepke.wireguardautotunnel.di.MainDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.util.extensions.requestAutoTunnelTileServiceUpdate
 import com.zaneschepke.wireguardautotunnel.util.extensions.requestTunnelTileServiceStateUpdate
@@ -29,9 +26,9 @@ class ServiceManager
 @Inject
 constructor(
     private val context: Context,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    @ApplicationScope private val applicationScope: CoroutineScope,
-    @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
+    private val ioDispatcher: CoroutineDispatcher,
+    private val applicationScope: CoroutineScope,
+    private val mainDispatcher: CoroutineDispatcher,
     private val appDataRepository: AppDataRepository,
 ) {
 

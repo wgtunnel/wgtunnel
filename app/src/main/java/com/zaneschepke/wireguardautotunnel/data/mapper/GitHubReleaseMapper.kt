@@ -2,7 +2,6 @@ package com.zaneschepke.wireguardautotunnel.data.mapper
 
 import com.zaneschepke.wireguardautotunnel.data.entity.GitHubRelease
 import com.zaneschepke.wireguardautotunnel.domain.model.AppUpdate
-import kotlin.collections.firstOrNull
 
 object GitHubReleaseMapper {
     fun toAppUpdate(gitHubRelease: GitHubRelease, newVersion: String): AppUpdate {

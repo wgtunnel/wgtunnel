@@ -11,24 +11,16 @@ import com.zaneschepke.wireguardautotunnel.data.dao.TunnelConfigDao
 import com.zaneschepke.wireguardautotunnel.data.network.GitHubApi
 import com.zaneschepke.wireguardautotunnel.data.network.KtorClient
 import com.zaneschepke.wireguardautotunnel.data.network.KtorGitHubApi
-import com.zaneschepke.wireguardautotunnel.data.repository.AppDataRoomRepository
-import com.zaneschepke.wireguardautotunnel.data.repository.DataStoreAppStateRepository
-import com.zaneschepke.wireguardautotunnel.data.repository.GitHubUpdateRepository
-import com.zaneschepke.wireguardautotunnel.data.repository.RoomSettingsRepository
-import com.zaneschepke.wireguardautotunnel.data.repository.RoomTunnelRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppSettingRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.UpdateRepository
+import com.zaneschepke.wireguardautotunnel.data.repository.*
+import com.zaneschepke.wireguardautotunnel.domain.repository.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.ktor.client.HttpClient
-import javax.inject.Singleton
+import io.ktor.client.*
 import kotlinx.coroutines.CoroutineDispatcher
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)

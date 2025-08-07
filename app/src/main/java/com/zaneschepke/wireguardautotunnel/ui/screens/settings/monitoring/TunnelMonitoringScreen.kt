@@ -29,45 +29,55 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
 fun TunnelMonitoringScreen(uiState: AppUiState, viewModel: AppViewModel) {
-    val pingInterval: Int by remember(uiState.appSettings)
-    { mutableIntStateOf(uiState.appSettings.tunnelPingIntervalSeconds) }
-    val pingAttempts: Int by remember(uiState.appSettings)
-    { mutableIntStateOf(uiState.appSettings.tunnelPingAttempts) }
-    val pingTimeout: Int? by remember(uiState.appSettings)
-    { mutableStateOf(uiState.appSettings.tunnelPingTimeoutSeconds) }
-
+    val pingInterval: Int by
+        remember(uiState.appSettings) {
+            mutableIntStateOf(uiState.appSettings.tunnelPingIntervalSeconds)
+        }
+    val pingAttempts: Int by
+        remember(uiState.appSettings) { mutableIntStateOf(uiState.appSettings.tunnelPingAttempts) }
+    val pingTimeout: Int? by
+        remember(uiState.appSettings) {
+            mutableStateOf(uiState.appSettings.tunnelPingTimeoutSeconds)
+        }
 
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
         modifier =
-            Modifier
-                .fillMaxSize()
+            Modifier.fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(vertical = 24.dp)
                 .padding(horizontal = 12.dp),
     ) {
-        SurfaceSelectionGroupButton(listOf(
-            enablePingMonitoringItem(uiState,viewModel)
-        ))
-        if(uiState.appSettings.isPingEnabled) {
+        SurfaceSelectionGroupButton(listOf(enablePingMonitoringItem(uiState, viewModel)))
+        if (uiState.appSettings.isPingEnabled) {
             LabelledNumberDropdown(
-                title = { Text(text = stringResource(R.string.tunnel_ping_interval), style =
-                    MaterialTheme.typography.bodyMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurface
-                    )) },
+                title = {
+                    Text(
+                        text = stringResource(R.string.tunnel_ping_interval),
+                        style =
+                            MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurface
+                            ),
+                    )
+                },
                 leading = { Icon(Icons.Outlined.Timer, contentDescription = null) },
                 currentValue = pingInterval,
                 onSelected = { selected ->
                     viewModel.handleEvent(AppEvent.SetPingInterval(selected!!))
-                 },
+                },
                 options = (10..60).step(10).toList(),
             )
             LabelledNumberDropdown(
-                title = { Text(text = stringResource(R.string.attempts_per_interval), style =
-                    MaterialTheme.typography.bodyMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurface
-                    )) },
+                title = {
+                    Text(
+                        text = stringResource(R.string.attempts_per_interval),
+                        style =
+                            MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurface
+                            ),
+                    )
+                },
                 leading = { Icon(Icons.Outlined.Replay, contentDescription = null) },
                 currentValue = pingAttempts,
                 onSelected = { selected ->
@@ -76,26 +86,32 @@ fun TunnelMonitoringScreen(uiState: AppUiState, viewModel: AppViewModel) {
                 options = (1..5).toList(),
             )
             LabelledNumberDropdown(
-                title = { Text(text = stringResource(R.string.ping_timeout), style =
-                    MaterialTheme.typography.bodyMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurface
-                    )) },
+                title = {
+                    Text(
+                        text = stringResource(R.string.ping_timeout),
+                        style =
+                            MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurface
+                            ),
+                    )
+                },
                 leading = { Icon(Icons.Outlined.TimerOff, contentDescription = null) },
                 currentValue = pingTimeout,
                 description = {
-                    Text(text = stringResource(R.string.timeout_all_attempts), style = MaterialTheme.typography.bodySmall
-                        .copy(color = MaterialTheme.colorScheme.outline))
+                    Text(
+                        text = stringResource(R.string.timeout_all_attempts),
+                        style =
+                            MaterialTheme.typography.bodySmall.copy(
+                                color = MaterialTheme.colorScheme.outline
+                            ),
+                    )
                 },
                 onSelected = { selected ->
                     viewModel.handleEvent(AppEvent.SetPingTimeout(selected))
                 },
                 options = (10..20).toList() + null,
             )
-            SurfaceSelectionGroupButton(
-                listOf(
-                    detailedPingStatsItem(uiState, viewModel)
-                )
-            )
+            SurfaceSelectionGroupButton(listOf(detailedPingStatsItem(uiState, viewModel)))
         }
     }
 }

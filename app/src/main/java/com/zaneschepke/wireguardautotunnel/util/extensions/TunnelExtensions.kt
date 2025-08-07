@@ -2,17 +2,15 @@ package com.zaneschepke.wireguardautotunnel.util.extensions
 
 import androidx.compose.ui.graphics.Color
 import com.wireguard.android.backend.BackendException
-import com.wireguard.config.Peer
-import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendState
 import com.zaneschepke.wireguardautotunnel.domain.enums.HandshakeStatus
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
+import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
 import com.zaneschepke.wireguardautotunnel.ui.theme.Straw
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.NumberUtils
-import java.net.InetAddress
 import org.amnezia.awg.backend.Backend
 import org.amnezia.awg.backend.Tunnel
 import org.amnezia.awg.config.Config
@@ -38,18 +36,6 @@ fun TunnelStatistics.PeerStats.handshakeStatus(): HandshakeStatus {
             }
         }
     }
-}
-
-fun Peer.isReachable(): Boolean {
-    val host =
-        if (this.endpoint.isPresent) {
-            this.endpoint.get().host
-        } else {
-            Constants.DEFAULT_PING_IP
-        }
-    Timber.d("Checking reachability of peer: $host")
-    val reachable = InetAddress.getByName(host).isReachable(Constants.PING_TIMEOUT.toInt())
-    return reachable
 }
 
 fun TunnelStatistics?.asColor(): Color {

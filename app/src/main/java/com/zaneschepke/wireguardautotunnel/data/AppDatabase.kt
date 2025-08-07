@@ -51,28 +51,20 @@ class RemoveTunnelPauseMigration : AutoMigrationSpec
 class WifiDetectionMigration : AutoMigrationSpec
 
 @DeleteColumn.Entries(
-    DeleteColumn(
-        tableName = "TunnelConfig",
-        columnName = "ping_interval"
-    ),
-    DeleteColumn(
-        tableName = "TunnelConfig",
-        columnName = "ping_cooldown"
-    ),
-    DeleteColumn(
-    tableName = "Settings",
-    columnName = "split_tunnel_apps"
-    )
+    DeleteColumn(tableName = "TunnelConfig", columnName = "ping_interval"),
+    DeleteColumn(tableName = "TunnelConfig", columnName = "ping_cooldown"),
+    DeleteColumn(tableName = "Settings", columnName = "split_tunnel_apps"),
 )
 @RenameColumn.Entries(
     RenameColumn(
         tableName = "TunnelConfig",
         fromColumnName = "is_ping_enabled",
-        toColumnName = "restart_on_ping_failure"
+        toColumnName = "restart_on_ping_failure",
     ),
-            RenameColumn(
-            tableName = "TunnelConfig",
-    fromColumnName = "ping_ip",
-    toColumnName = "ping_target")
+    RenameColumn(
+        tableName = "TunnelConfig",
+        fromColumnName = "ping_ip",
+        toColumnName = "ping_target",
+    ),
 )
 class PingMigration : AutoMigrationSpec

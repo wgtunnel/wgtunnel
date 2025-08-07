@@ -12,7 +12,9 @@ sealed class TunnelStatus {
 
     sealed class StopReason {
         data object User : StopReason()
-        data class Ping(val previouslyResolvedEndpoints: Map<String,String?>) : StopReason()
+
+        data class Ping(val previouslyResolvedEndpoints: Map<String, String?>) : StopReason()
+
         data object ConfigChanged : StopReason()
     }
 

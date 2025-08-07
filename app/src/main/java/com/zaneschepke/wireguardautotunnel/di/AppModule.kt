@@ -4,9 +4,11 @@ import android.content.Context
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.logcatter.LogcatReader
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
+import com.zaneschepke.wireguardautotunnel.core.notification.NotificationMonitor
 import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotification
 import com.zaneschepke.wireguardautotunnel.core.shortcut.DynamicShortcutManager
 import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
+import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import dagger.Module
 import dagger.Provides
@@ -53,5 +55,14 @@ class AppModule {
     @Provides
     fun provideNetworkUtils(@IoDispatcher ioDispatcher: CoroutineDispatcher): NetworkUtils {
         return NetworkUtils(ioDispatcher)
+    }
+
+    @Singleton
+    @Provides
+    fun provideNotificationMonitor(
+        tunnelManager: TunnelManager,
+        notificationManager: NotificationManager,
+    ): NotificationMonitor {
+        return NotificationMonitor(tunnelManager, notificationManager)
     }
 }

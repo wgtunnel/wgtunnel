@@ -9,7 +9,7 @@ data class PingStats(
     var rttMax: Double = 0.0,
     var rttStddev: Double = 0.0,
     var isReachable: Boolean = false,
-    var lastSuccessfulPingMillis: Long? = null
+    var lastSuccessfulPingMillis: Long? = null,
 ) {
     fun handleOffline(): PingStats {
         return copy(
@@ -20,7 +20,7 @@ data class PingStats(
             rttAvg = 0.0,
             rttMax = 0.0,
             rttStddev = 0.0,
-            isReachable = false
+            isReachable = false,
         )
     }
 }

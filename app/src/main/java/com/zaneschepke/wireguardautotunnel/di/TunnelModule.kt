@@ -107,7 +107,6 @@ class TunnelModule {
             appDataRepository,
             applicationScope,
             ioDispatcher,
-            notificationManager,
         )
     }
 

@@ -14,17 +14,11 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionIte
 import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
 
 @Composable
-fun tunnelMonitoringItem() : SelectionItem {
+fun tunnelMonitoringItem(): SelectionItem {
     val navController = LocalNavController.current
     return SelectionItem(
-        leading = {
-            Icon(Icons.Outlined.MonitorHeart, null)
-        },
-        trailing = {
-            ForwardButton {
-                navController.navigate(Route.TunnelMonitoring)
-            }
-        },
+        leading = { Icon(Icons.Outlined.MonitorHeart, null) },
+        trailing = { ForwardButton { navController.navigate(Route.TunnelMonitoring) } },
         title = {
             Text(
                 text = stringResource(R.string.tunnel_monitoring),
@@ -32,6 +26,6 @@ fun tunnelMonitoringItem() : SelectionItem {
                     MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onSurface),
             )
         },
-        onClick = { navController.navigate(Route.TunnelMonitoring) }
+        onClick = { navController.navigate(Route.TunnelMonitoring) },
     )
 }

@@ -9,4 +9,5 @@ data class TunnelState(
     val backendState: BackendState = BackendState.INACTIVE,
     val statistics: TunnelStatistics? = null,
     val pingStates: Map<Key, PingState>? = null,
+    val handshakeSuccessLogs: Boolean? = null,
 )

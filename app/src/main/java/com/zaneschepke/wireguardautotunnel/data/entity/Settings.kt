@@ -10,8 +10,7 @@ data class Settings(
     @ColumnInfo(name = "is_tunnel_enabled") val isAutoTunnelEnabled: Boolean = false,
     @ColumnInfo(name = "is_tunnel_on_mobile_data_enabled")
     val isTunnelOnMobileDataEnabled: Boolean = false,
-    @ColumnInfo(name = "trusted_network_ssids")
-    val trustedNetworkSSIDs: List<String> = emptyList(),
+    @ColumnInfo(name = "trusted_network_ssids") val trustedNetworkSSIDs: List<String> = emptyList(),
     @ColumnInfo(name = "is_always_on_vpn_enabled") val isAlwaysOnVpnEnabled: Boolean = false,
     @ColumnInfo(name = "is_tunnel_on_ethernet_enabled")
     val isTunnelOnEthernetEnabled: Boolean = false,
@@ -51,10 +50,8 @@ data class Settings(
     val isPingMonitoringEnabled: Boolean = true,
     @ColumnInfo(name = "tunnel_ping_interval_sec", defaultValue = "30")
     val tunnelPingIntervalSeconds: Int = 30,
-    @ColumnInfo(name = "tunnel_ping_attempts", defaultValue = "3")
-    val tunnelPingAttempts: Int = 3,
-    @ColumnInfo(name = "tunnel_ping_timeout_sec")
-    val tunnelPingTimeoutSeconds: Int? = null,
+    @ColumnInfo(name = "tunnel_ping_attempts", defaultValue = "3") val tunnelPingAttempts: Int = 3,
+    @ColumnInfo(name = "tunnel_ping_timeout_sec") val tunnelPingTimeoutSeconds: Int? = null,
 ) {
     enum class WifiDetectionMethod(val value: Int) {
         DEFAULT(0),

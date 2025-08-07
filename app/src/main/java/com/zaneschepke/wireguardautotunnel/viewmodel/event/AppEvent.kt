@@ -77,7 +77,11 @@ sealed class AppEvent {
 
     data class SetTheme(val theme: Theme) : AppEvent()
 
-    data class SaveMonitoringSettings(val pingInterval: Int, val tunnelPingAttempts: Int, val pingTimeout: Int?) : AppEvent()
+    data class SaveMonitoringSettings(
+        val pingInterval: Int,
+        val tunnelPingAttempts: Int,
+        val pingTimeout: Int?,
+    ) : AppEvent()
 
     data class SetDetectionMethod(val detectionMethod: AndroidNetworkMonitor.WifiDetectionMethod) :
         AppEvent()

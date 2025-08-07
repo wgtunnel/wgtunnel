@@ -10,6 +10,7 @@ import com.zaneschepke.wireguardautotunnel.domain.state.PingState
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import dagger.hilt.android.scopes.ServiceScoped
+import io.ktor.util.collections.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.amnezia.awg.crypto.Key
@@ -17,7 +18,9 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @ServiceScoped
-class TunnelMonitor @Inject constructor(
+class TunnelMonitor
+@Inject
+constructor(
     private val appDataRepository: AppDataRepository,
     private val tunnelManager: TunnelManager,
     private val networkMonitor: NetworkMonitor,
@@ -25,24 +28,14 @@ class TunnelMonitor @Inject constructor(
     private val logReader: LogReader,
 ) {
 
-    private val tunnelJobs = mutableMapOf<TunnelConf, Job>()
-
-    private val pingStatsFlows = mutableMapOf<TunnelConf, MutableStateFlow<Map<Key, PingState>>>()
-
-    fun startMonitoring(callerScope: CoroutineScope, tunnelConf: TunnelConf) {
-        if (tunnelJobs.containsKey(tunnelConf)) return
-        pingStatsFlows[tunnelConf] = MutableStateFlow(emptyMap())
-        tunnelJobs[tunnelConf] = callerScope.launch {
+    @OptIn(FlowPreview::class)
+    suspend fun startMonitoring(tunnelConf: TunnelConf, withLogs: Boolean): Job = coroutineScope {
+        launch {
             launch { startTunnelConfChangesJob(tunnelConf) }
             launch { startPingMonitor(tunnelConf) }
-            launch { startWgStatsPoll(tunnelConf) }  // Add WG stats polling
-            launch { startLogsMonitor() }  // Global, could be started once if needed
+            launch { startWgStatsPoll(tunnelConf) }
+            if (withLogs) launch { startLogsMonitor(tunnelConf) }
         }
-    }
-
-    fun stopMonitoring(tunnelConf: TunnelConf) {
-        tunnelJobs.remove(tunnelConf)?.cancel()
-        pingStatsFlows.remove(tunnelConf)
     }
 
     private suspend fun startTunnelConfChangesJob(tunnelConf: TunnelConf) {
@@ -63,14 +56,29 @@ class TunnelMonitor @Inject constructor(
             }
     }
 
-    private suspend fun startLogsMonitor() {
-        logReader.liveLogs.collect { message ->
-            // TODO monitor logs for handshake failures for additional monitoring
+    private suspend fun startLogsMonitor(tunnelConf: TunnelConf) {
+        logReader.liveLogs.collect { log ->
+            val healthLogs =
+                when {
+                    log.message.contains(HANDSHAKE_RESPONSE_TEXT, true) ||
+                        log.message.contains(KEEPALIVE_RESPONSE_TEXT, true) -> true
+                    log.message.contains(HANDSHAKE_INIT_FAILED_TEXT, true) ||
+                        log.message.contains(HANDSHAKE_NOT_COMPLETED_TEXT) ||
+                        log.message.contains(DATA_PACKET_FAILED_TEXT) -> false
+
+                    else -> null
+                }
+            healthLogs?.let { healthy ->
+                tunnelManager.updateTunnelStatus(tunnelConf, null, null, null, healthy)
+            }
         }
     }
 
     private suspend fun startPingMonitor(tunnelConf: TunnelConf) = coroutineScope {
-        val tunStateFlow = tunnelManager.activeTunnels.mapNotNull { it.getValueById(tunnelConf.id) }.stateIn(this)
+        val pingStatsFlow = MutableStateFlow<Map<Key, PingState>>(emptyMap())
+
+        val tunStateFlow =
+            tunnelManager.activeTunnels.mapNotNull { it.getValueById(tunnelConf.id) }.stateIn(this)
 
         val connectivityStateFlow = networkMonitor.connectivityStateFlow.stateIn(this)
 
@@ -80,160 +88,158 @@ class TunnelMonitor @Inject constructor(
             val ethernetConnected: Boolean,
             val wifiConnected: Boolean,
             val cellularConnected: Boolean,
-            val wifiSsid: String?
+            val wifiSsid: String?,
         )
 
-        val networkChangeFlow = connectivityStateFlow.map {
-            NetworkChangeKey(
-                ethernetConnected = it.ethernetConnected,
-                wifiConnected = it.wifiState.connected,
-                cellularConnected = it.cellularConnected,
-                wifiSsid = if (it.wifiState.connected) it.wifiState.ssid else null
-            )
-        }.distinctUntilChanged().stateIn(this)
+        connectivityStateFlow
+            .map {
+                NetworkChangeKey(
+                    ethernetConnected = it.ethernetConnected,
+                    wifiConnected = it.wifiState.connected,
+                    cellularConnected = it.cellularConnected,
+                    wifiSsid = if (it.wifiState.connected) it.wifiState.ssid else null,
+                )
+            }
+            .distinctUntilChanged()
+            .stateIn(this)
 
-        appDataRepository.settings.flow.distinctUntilChanged { old, new ->
-            old.isPingEnabled == new.isPingEnabled &&
+        appDataRepository.settings.flow
+            .distinctUntilChanged { old, new ->
+                old.isPingEnabled == new.isPingEnabled &&
                     old.tunnelPingIntervalSeconds == new.tunnelPingIntervalSeconds &&
                     old.tunnelPingAttempts == new.tunnelPingAttempts &&
                     old.tunnelPingTimeoutSeconds == new.tunnelPingTimeoutSeconds
-        }.collectLatest { settings ->
+            }
+            .collectLatest { settings ->
+                if (!settings.isPingEnabled) return@collectLatest
 
-            if(!settings.isPingEnabled) return@collectLatest
+                Timber.d("Starting pinger for ${tunnelConf.tunName} with settings")
 
-            Timber.d("Starting pinger for ${tunnelConf.tunName} with settings")
+                val config = tunnelConf.toAmConfig()
 
-            val config = tunnelConf.toAmConfig()
+                val pingablePeers = config.peers.filter { it.allowedIps.isNotEmpty() }
+                if (pingablePeers.isEmpty()) return@collectLatest
 
-            val pingablePeers = config.peers.filter { it.allowedIps.isNotEmpty() }
-            if (pingablePeers.isEmpty()) return@collectLatest
+                suspend fun performPing() {
+                    val updates = ConcurrentMap<Key, PingState>()
 
-            val pingStatsFlow = pingStatsFlows[tunnelConf] ?: return@collectLatest
+                    pingablePeers.forEach { peer ->
+                        val previousState = pingStatsFlow.value[peer.publicKey] ?: PingState()
 
-            // Initialize
-            pingStatsFlow.value = emptyMap()
-
-            suspend fun performPing() {
-                delay(3_000L)
-                val updates = mutableMapOf<Key, PingState>()
-
-                pingablePeers.forEach { peer ->
-                    val previousState = pingStatsFlow.value[peer.publicKey] ?: PingState()
-
-                    val allowedIpStr = peer.allowedIps.firstOrNull()?.toString()
-                    if (allowedIpStr == null) {
-                        updates[peer.publicKey] = previousState.copy(
-                            isReachable = false,
-                            failureReason = FailureReason.NoResolvedEndpoint,
-                            lastPingAttemptMillis = System.currentTimeMillis()
-                        )
-                        return@forEach
-                    }
-
-                    val host = {
-                        val parts = allowedIpStr.split("/")
-                        val internalIp = if (parts.size == 2) parts[0] else allowedIpStr
-
-                        val prefix = if (parts.size == 2) parts[1].toIntOrNull() ?: 32 else 32
-                        if (prefix <= 1) {
-                            tunnelConf.pingTarget ?: CLOUDFLARE_IPV4_IP
-                        } else {
-                            internalIp.removeSurrounding("[", "]")
+                        val allowedIpStr = peer.allowedIps.firstOrNull()?.toString()
+                        if (allowedIpStr == null) {
+                            updates[peer.publicKey] =
+                                previousState.copy(
+                                    isReachable = false,
+                                    failureReason = FailureReason.NoResolvedEndpoint,
+                                    lastPingAttemptMillis = System.currentTimeMillis(),
+                                )
+                            return@forEach
                         }
-                    }.invoke()
 
-                    val attemptTime = System.currentTimeMillis()
-                    runCatching {
-                        val pingStats = settings.tunnelPingTimeoutSeconds?.let {
-                            networkUtils.pingWithStats(host, settings.tunnelPingAttempts, it.toMillis())
-                        } ?: networkUtils.pingWithStats(host, settings.tunnelPingAttempts)
+                        val host =
+                            {
+                                    val parts = allowedIpStr.split("/")
+                                    val internalIp = if (parts.size == 2) parts[0] else allowedIpStr
 
-                        updates[peer.publicKey] = previousState.copy(
-                            transmitted = pingStats.transmitted,
-                            received = pingStats.received,
-                            packetLoss = pingStats.packetLoss,
-                            rttMin = pingStats.rttMin,
-                            rttMax = pingStats.rttMax,
-                            rttAvg = pingStats.rttAvg,
-                            rttStddev = pingStats.rttStddev,
-                            isReachable = pingStats.isReachable,
-                            failureReason = if (pingStats.isReachable) null else FailureReason.PingFailed,
-                            lastSuccessfulPingMillis = pingStats.lastSuccessfulPingMillis ?: previousState.lastSuccessfulPingMillis,
-                            pingTarget = host,
-                            lastPingAttemptMillis = attemptTime
-                        )
-                        Timber.d(
-                            "Ping successful for peer ${peer.publicKey.toBase64().substring(0, 5)}.. to host $host with stats: $pingStats"
-                        )
-                    }.onFailure {
-                        Timber.e(it, "Ping failed for peer ${peer.publicKey} in ${tunnelConf.tunName} to host $host")
-                        updates[peer.publicKey] = previousState.copy(
-                            isReachable = false,
-                            failureReason = FailureReason.PingFailed,
-                            pingTarget = host,
-                            lastPingAttemptMillis = attemptTime
-                        )
+                                    val prefix =
+                                        if (parts.size == 2) parts[1].toIntOrNull() ?: 32 else 32
+                                    if (prefix <= 1) {
+                                        tunnelConf.pingTarget ?: CLOUDFLARE_IPV4_IP
+                                    } else {
+                                        internalIp.removeSurrounding("[", "]")
+                                    }
+                                }
+                                .invoke()
+
+                        val attemptTime = System.currentTimeMillis()
+                        runCatching {
+                                val pingStats =
+                                    settings.tunnelPingTimeoutSeconds?.let {
+                                        networkUtils.pingWithStats(
+                                            host,
+                                            settings.tunnelPingAttempts,
+                                            it.toMillis(),
+                                        )
+                                    }
+                                        ?: networkUtils.pingWithStats(
+                                            host,
+                                            settings.tunnelPingAttempts,
+                                        )
+
+                                updates[peer.publicKey] =
+                                    previousState.copy(
+                                        transmitted = pingStats.transmitted,
+                                        received = pingStats.received,
+                                        packetLoss = pingStats.packetLoss,
+                                        rttMin = pingStats.rttMin,
+                                        rttMax = pingStats.rttMax,
+                                        rttAvg = pingStats.rttAvg,
+                                        rttStddev = pingStats.rttStddev,
+                                        isReachable = pingStats.isReachable,
+                                        failureReason =
+                                            if (pingStats.isReachable) null
+                                            else FailureReason.PingFailed,
+                                        lastSuccessfulPingMillis =
+                                            pingStats.lastSuccessfulPingMillis
+                                                ?: previousState.lastSuccessfulPingMillis,
+                                        pingTarget = host,
+                                        lastPingAttemptMillis = attemptTime,
+                                    )
+                                Timber.d(
+                                    "Ping completed for peer ${peer.publicKey.toBase64().substring(0, 5)}.. to host $host with stats: $pingStats"
+                                )
+                            }
+                            .onFailure {
+                                Timber.e(
+                                    it,
+                                    "Ping failed for peer ${peer.publicKey} in ${tunnelConf.tunName} to host $host",
+                                )
+                                updates[peer.publicKey] =
+                                    previousState.copy(
+                                        isReachable = false,
+                                        failureReason = FailureReason.PingFailed,
+                                        pingTarget = host,
+                                        lastPingAttemptMillis = attemptTime,
+                                    )
+                            }
+                    }
+
+                    if (updates.isNotEmpty()) {
+                        pingStatsFlow.update { updates }
+                        tunnelManager.updateTunnelStatus(tunnelConf, null, null, updates)
                     }
                 }
 
-                if (updates.isNotEmpty()) {
-                    pingStatsFlow.update { current ->
-                        val newMap = current.toMutableMap()
-                        newMap.putAll(updates)
-                        newMap
-                    }
-                    tunnelManager.updateTunnelStatus(tunnelConf, null, null, updates)
-                }
-            }
+                // Wait for the tunnel to be fully active
+                tunStateFlow.filter { state -> state.status == TunnelStatus.Up }.first()
 
-            // Wait for the tunnel to be fully active
-            tunStateFlow.filter { state ->
-                state.status == TunnelStatus.Up
-            }.first()
+                // small delay to make sure tunnel is fully up before we actively monitor
+                delay(3_000L)
 
-            // Handle initial network state upon starting/restarting the collector
-            val initialConnected = isNetworkConnected.value
-            if (!initialConnected) {
-                Timber.d("Initial no network connectivity for ${tunnelConf.tunName}")
-                pingStatsFlow.update { current ->
-                    current.mapValues { entry -> entry.value.copy(isReachable = false, failureReason = FailureReason.NoConnectivity, lastPingAttemptMillis = System.currentTimeMillis()) }
-                }
-                tunnelManager.updateTunnelStatus(tunnelConf, null, null, pingStatsFlow.value)
-            } else {
-                performPing()
-            }
-
-            // Launch a separate coroutine to monitor network changes
-            launch {
-                // Drop the first emission since initial state is already handled above
-                networkChangeFlow.drop(1).collect { _ ->
-                    val connected = isNetworkConnected.value
-                    if (connected) {
-                        Timber.d("Network change detected for ${tunnelConf.tunName}, triggering immediate ping")
+                while (isActive) {
+                    if (isNetworkConnected.value) {
                         performPing()
                     } else {
-                        Timber.d("Network connectivity lost for ${tunnelConf.tunName}")
                         pingStatsFlow.update { current ->
-                            current.mapValues { entry -> entry.value.copy(isReachable = false, failureReason = FailureReason.NoConnectivity, lastPingAttemptMillis = System.currentTimeMillis()) }
+                            current.mapValues { entry ->
+                                entry.value.copy(
+                                    isReachable = false,
+                                    failureReason = FailureReason.NoConnectivity,
+                                    lastPingAttemptMillis = System.currentTimeMillis(),
+                                )
+                            }
                         }
-                        tunnelManager.updateTunnelStatus(tunnelConf, null, null, pingStatsFlow.value)
+                        tunnelManager.updateTunnelStatus(
+                            tunnelConf,
+                            null,
+                            null,
+                            pingStatsFlow.value,
+                        )
                     }
+                    delay(settings.tunnelPingIntervalSeconds.toMillis())
                 }
             }
-
-            // Main loop for scheduled pings, running independently of network changes
-            while (isActive) {
-                delay(settings.tunnelPingIntervalSeconds.toMillis())
-                if (isNetworkConnected.value) {
-                    performPing()
-                } else {
-                    pingStatsFlow.update { current ->
-                        current.mapValues { entry -> entry.value.copy(isReachable = false, failureReason = FailureReason.NoConnectivity, lastPingAttemptMillis = System.currentTimeMillis()) }
-                    }
-                    tunnelManager.updateTunnelStatus(tunnelConf, null, null, pingStatsFlow.value)
-                }
-            }
-        }
     }
 
     private suspend fun startWgStatsPoll(tunnelConf: TunnelConf) = coroutineScope {
@@ -250,10 +256,11 @@ class TunnelMonitor @Inject constructor(
 
         const val STATS_DELAY = 1_000L
 
-        // ipv6 disabled or block on network
-        // Failed to send handshake initiation: write udp [::]
-        // Failed to send data packets: write udp [::]
-        // Failed to send data packets: write udp 0.0.0.0:51820
-        // Handshake did not complete after 5 seconds, retrying
+        const val KEEPALIVE_RESPONSE_TEXT = "Receiving keepalive packet"
+        const val HANDSHAKE_RESPONSE_TEXT = "Received handshake response"
+        const val HANDSHAKE_INIT_FAILED_TEXT = "Failed to send handshake initiation: write udp"
+        const val DATA_PACKET_FAILED_TEXT = "Failed to send data packets"
+        const val HANDSHAKE_NOT_COMPLETED_TEXT =
+            "Handshake did not complete after 5 seconds, retrying"
     }
 }

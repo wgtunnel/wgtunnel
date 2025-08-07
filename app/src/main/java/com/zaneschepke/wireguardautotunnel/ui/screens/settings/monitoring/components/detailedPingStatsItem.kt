@@ -7,15 +7,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
 import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
-import com.zaneschepke.wireguardautotunnel.R
 
 @Composable
-fun detailedPingStatsItem(uiState: AppUiState, viewModel: AppViewModel) : SelectionItem {
+fun detailedPingStatsItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
     return SelectionItem(
         leading = { Icon(Icons.Outlined.QueryStats, contentDescription = null) },
         title = {
@@ -28,13 +28,9 @@ fun detailedPingStatsItem(uiState: AppUiState, viewModel: AppViewModel) : Select
         trailing = {
             ScaledSwitch(
                 checked = uiState.appState.showDetailedPingStats,
-                onClick = {
-                    viewModel.handleEvent(AppEvent.ToggleShowDetailedPingStats)
-                },
+                onClick = { viewModel.handleEvent(AppEvent.ToggleShowDetailedPingStats) },
             )
         },
-        onClick = {
-            viewModel.handleEvent(AppEvent.ToggleShowDetailedPingStats)
-        },
+        onClick = { viewModel.handleEvent(AppEvent.ToggleShowDetailedPingStats) },
     )
 }
