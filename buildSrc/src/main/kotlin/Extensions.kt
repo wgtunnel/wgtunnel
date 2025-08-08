@@ -15,13 +15,14 @@ fun Project.languageList(): List<String> {
 		.toList() + "en"
 }
 
-fun Project.allowedLicenses(): List<String> {
+fun allowedLicenses(): List<String> {
     return listOf("MIT", "Apache-2.0", "BSD-3-Clause")
 }
 
-fun Project.allowedLicenseUrls(): List<String> {
+fun allowedLicenseUrls(): List<String> {
     return listOf("https://github.com/journeyapps/zxing-android-embedded/blob/master/COPYING",
-        "https://github.com/RikkaApps/Shizuku-API/blob/master/LICENSE", "https://github.com/rafi0101/Android-Room-Database-Backup/blob/master/LICENSE")
+        "https://github.com/RikkaApps/Shizuku-API/blob/master/LICENSE", "https://github.com/rafi0101/Android-Room-Database-Backup/blob/master/LICENSE",
+        "https://opensource.org/license/mit")
 }
 
 fun buildLanguagesArray(languages: List<String>): String {
