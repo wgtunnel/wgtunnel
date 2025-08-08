@@ -419,7 +419,7 @@ constructor(
         _appViewState.update { it.copy(bottomSheet = bottomSheet) }
 
     private suspend fun handleTunnelPingTargetChange(tunnelConf: TunnelConf, target: String) =
-        saveTunnel(tunnelConf.copy(pingTarget = target))
+        saveTunnel(tunnelConf.copy(pingTarget = target.ifBlank { null }))
 
     private suspend fun handleTogglePingTunnel(tunnel: TunnelConf) =
         saveTunnel(tunnel.copy(restartOnPingFailure = !tunnel.restartOnPingFailure))
