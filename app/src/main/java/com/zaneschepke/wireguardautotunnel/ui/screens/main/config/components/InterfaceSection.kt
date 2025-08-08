@@ -17,7 +17,11 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.main.config.ConfigViewMode
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.config.state.ConfigUiState
 
 @Composable
-fun InterfaceSection(uiState: ConfigUiState, viewModel: ConfigViewModel) {
+fun InterfaceSection(
+    isTunnelNameTaken: Boolean,
+    uiState: ConfigUiState,
+    viewModel: ConfigViewModel,
+) {
     var isDropDownExpanded by remember { mutableStateOf(false) }
     val isAmneziaCompatibilitySet =
         remember(uiState.configProxy.`interface`) {
@@ -50,6 +54,7 @@ fun InterfaceSection(uiState: ConfigUiState, viewModel: ConfigViewModel) {
                 value = uiState.tunnelName,
                 onValueChange = viewModel::updateTunnelName,
                 label = stringResource(R.string.name),
+                isError = isTunnelNameTaken,
                 hint = stringResource(R.string.tunnel_name).lowercase(),
                 modifier = Modifier.fillMaxWidth(),
             )

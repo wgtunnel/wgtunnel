@@ -1,32 +1,20 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.main.config
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.config.state.ConfigUiState
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.InterfaceProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.PeerProxy
-import com.zaneschepke.wireguardautotunnel.util.StringValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 @HiltViewModel
-class ConfigViewModel
-@Inject
-constructor(
-    private val tunnelRepository: TunnelRepository,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-) : ViewModel() {
+class ConfigViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow(ConfigUiState())
     val uiState: StateFlow<ConfigUiState> = _uiState.asStateFlow()
@@ -119,41 +107,6 @@ constructor(
         val peer = _uiState.value.configProxy.peers[index]
         val updated = if (peer.isLanExcluded()) peer.includeLan() else peer.excludeLan()
         updatePeer(index, updated)
-    }
-
-    fun setMessage(message: StringValue?) {
-        _uiState.update { it.copy(message = message) }
-    }
-
-    // TODO improve error messaging
-    fun save(tunnelConf: TunnelConf?) =
-        viewModelScope.launch(ioDispatcher) {
-            val message =
-                try {
-                    val saveConfig = buildTunnelConfFromState(tunnelConf)
-                    tunnelRepository.save(saveConfig)
-                    _uiState.update { it.copy(success = true) }
-                } catch (e: Exception) {
-                    setMessage(
-                        e.message?.let { message -> (StringValue.DynamicString(message)) }
-                            ?: StringValue.StringResource(R.string.unknown_error)
-                    )
-                }
-        }
-
-    private fun buildTunnelConfFromState(tunnelConf: TunnelConf?): TunnelConf {
-        val (wg, am) = _uiState.value.configProxy.buildConfigs()
-        val name = _uiState.value.tunnelName
-        return tunnelConf?.copyWithCallback(
-            tunName = name,
-            amQuick = am.toAwgQuickString(true),
-            wgQuick = wg.toWgQuickString(true),
-        )
-            ?: TunnelConf(
-                tunName = name,
-                amQuick = am.toAwgQuickString(true),
-                wgQuick = wg.toWgQuickString(true),
-            )
     }
 
     fun onAuthenticated() {

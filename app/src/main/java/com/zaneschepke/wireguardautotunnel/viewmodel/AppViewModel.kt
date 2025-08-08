@@ -35,6 +35,12 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.withFirstState
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.IOException
+import java.net.URL
+import java.time.Instant
+import java.util.*
+import javax.inject.Inject
+import javax.inject.Provider
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -45,12 +51,6 @@ import org.amnezia.awg.config.Config
 import rikka.shizuku.Shizuku
 import timber.log.Timber
 import xyz.teamgravity.pin_lock_compose.PinManager
-import java.io.IOException
-import java.net.URL
-import java.time.Instant
-import java.util.*
-import javax.inject.Inject
-import javax.inject.Provider
 
 @HiltViewModel
 class AppViewModel
@@ -148,8 +148,7 @@ constructor(
                     is AppEvent.ImportTunnelFromClipboard ->
                         handleClipboardImport(event.text, state.tunnels)
 
-                    is AppEvent.ImportTunnelFromFile ->
-                        handleImportTunnelFromFile(event.data, state.tunnels)
+                    is AppEvent.ImportTunnelFromFile -> handleImportTunnelFromFile(event.data)
 
                     is AppEvent.ImportTunnelFromUrl ->
                         handleImportTunnelFromUrl(event.url, state.tunnels)
@@ -264,9 +263,43 @@ constructor(
                         saveSettings(
                             state.appSettings.copy(tunnelPingTimeoutSeconds = event.timeout)
                         )
+                    is AppEvent.SaveTunnelUniquely -> saveTunnelsUniquely(listOf(event.tunnel))
                 }
             }
         }
+    }
+
+    private suspend fun saveTunnelsUniquely(tunnels: List<TunnelConf>) {
+        withContext(ioDispatcher) {
+            tunnelMutex.withLock {
+                val existingTunnels = appDataRepository.tunnels.getAll()
+                val uniqueTuns = generateUniquelyNamedConfigs(tunnels, existingTunnels)
+                appDataRepository.tunnels.saveAll(uniqueTuns)
+            }
+        }
+    }
+
+    private fun generateUniquelyNamedConfigs(
+        incoming: List<TunnelConf>,
+        existing: List<TunnelConf>,
+    ): List<TunnelConf> {
+        val usedNames = existing.map { it.tunName }.toMutableSet()
+        val result = mutableListOf<TunnelConf>()
+
+        for (tun in incoming) {
+            var uniqueName = tun.tunName
+            var counter = 1
+
+            while (uniqueName in usedNames) {
+                uniqueName = "${tun.tunName} ($counter)"
+                counter++
+            }
+
+            usedNames.add(uniqueName)
+            result.add(tun.copy(tunName = uniqueName))
+        }
+
+        return result
     }
 
     fun handleUiEvent(event: UiEvent): Job =
@@ -515,17 +548,10 @@ constructor(
         _appViewState.update { it.copy(popBackStack = true) }
     }
 
-    private suspend fun handleImportTunnelFromFile(uri: Uri, tunnels: List<TunnelConf>) {
+    private suspend fun handleImportTunnelFromFile(uri: Uri) {
         runCatching {
                 val tunnelConfigs = fileUtils.buildTunnelsFromUri(uri)
-                val existingNames = tunnels.map { it.tunName }.toMutableList()
-                val uniqueTunnelConfigs =
-                    tunnelConfigs.map { config ->
-                        val uniqueName = config.generateUniqueName(existingNames)
-                        existingNames.add(uniqueName)
-                        config.copy(tunName = uniqueName)
-                    }
-                appDataRepository.tunnels.saveAll(uniqueTunnelConfigs)
+                saveTunnelsUniquely(tunnelConfigs)
             }
             .onFailure {
                 when (it) {
@@ -566,11 +592,7 @@ constructor(
                 url.openStream().use { stream ->
                     val amConfig = Config.parse(stream)
                     val tunnelConf = TunnelConf.tunnelConfigFromAmConfig(amConfig)
-                    saveTunnel(
-                        tunnelConf.copy(
-                            tunName = tunnelConf.generateUniqueName(tunnels.map { it.tunName })
-                        )
-                    )
+                    saveTunnelsUniquely(listOf(tunnelConf))
                 }
             }
             .onFailure {

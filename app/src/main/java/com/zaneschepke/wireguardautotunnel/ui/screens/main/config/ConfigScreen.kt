@@ -7,10 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -25,6 +22,7 @@ import com.zaneschepke.wireguardautotunnel.ui.common.prompt.AuthorizationPrompt
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.config.components.AddPeerButton
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.config.components.InterfaceSection
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.config.components.PeersSection
+import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
@@ -32,6 +30,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 @Composable
 fun ConfigScreen(
     tunnelConf: TunnelConf?,
+    appUiState: AppUiState,
     appViewModel: AppViewModel,
     viewModel: ConfigViewModel = hiltViewModel(),
 ) {
@@ -41,6 +40,17 @@ fun ConfigScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val activity = context as? MainActivity
+
+    var save by remember { mutableStateOf(false) }
+
+    val isTunnelNameTaken by
+        remember(uiState.tunnelName, appUiState.tunnels) {
+            derivedStateOf {
+                appUiState.tunnels
+                    .filter { it.id != tunnelConf?.id }
+                    .any { it.name == uiState.tunnelName }
+            }
+        }
 
     // Secure screen due to sensitive information
     DisposableEffect(Unit) {
@@ -58,26 +68,34 @@ fun ConfigScreen(
         appViewModel.handleEvent(
             AppEvent.SetScreenAction {
                 keyboardController?.hide()
-                viewModel.save(tunnelConf)
+                if (!isTunnelNameTaken) {
+                    save = true
+                }
             }
         )
     }
 
     LaunchedEffect(tunnelConf) { viewModel.initFromTunnel(tunnelConf) }
 
-    LaunchedEffect(uiState.success) {
-        if (uiState.success == true) {
-            appViewModel.handleEvent(
-                AppEvent.ShowMessage(StringValue.StringResource(R.string.config_changes_saved))
-            )
-            appViewModel.handleEvent(AppEvent.PopBackStack(true))
-        }
-    }
-
-    LaunchedEffect(uiState.message) {
-        uiState.message?.let { message ->
-            appViewModel.handleEvent(AppEvent.ShowMessage(message))
-            viewModel.setMessage(null)
+    // TODO improve error messages
+    LaunchedEffect(save) {
+        if (save) {
+            try {
+                appViewModel.handleEvent(
+                    AppEvent.SaveTunnelUniquely(
+                        uiState.configProxy.buildTunnelConfFromState(uiState.tunnelName, tunnelConf)
+                    )
+                )
+                appViewModel.handleEvent(
+                    AppEvent.ShowMessage(StringValue.StringResource(R.string.config_changes_saved))
+                )
+                appViewModel.handleEvent(AppEvent.PopBackStack(true))
+            } catch (e: Exception) {
+                val message = e.message ?: context.resources.getString(R.string.unknown_error)
+                appViewModel.handleEvent(AppEvent.ShowMessage(StringValue.DynamicString(message)))
+            } finally {
+                save = false
+            }
         }
     }
 
@@ -111,7 +129,7 @@ fun ConfigScreen(
         modifier =
             Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp),
     ) {
-        InterfaceSection(uiState, viewModel)
+        InterfaceSection(isTunnelNameTaken, uiState, viewModel)
         PeersSection(uiState, viewModel)
         AddPeerButton(viewModel)
     }

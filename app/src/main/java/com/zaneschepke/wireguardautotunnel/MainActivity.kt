@@ -301,7 +301,7 @@ class MainActivity : AppCompatActivity() {
                                         val args = backStack.toRoute<Route.Config>()
                                         val config =
                                             appUiState.tunnels.firstOrNull { it.id == args.id }
-                                        ConfigScreen(config, viewModel)
+                                        ConfigScreen(config, appUiState, viewModel)
                                     }
                                     composable<Route.TunnelOptions> { backStack ->
                                         val args = backStack.toRoute<Route.TunnelOptions>()
