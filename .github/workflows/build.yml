@@ -118,6 +118,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android_artifacts_${{ inputs.flavor }}
-          path: app/build/outputs/apk/${{ inputs.flavor }}/${{ inputs.build_type  }}/wgtunnel-${{ inputs.flavor }}${{ inputs.flavor == 'fdroid' && '-release' || '' }}-*.apk
+          path: >-
+            app/build/outputs/apk/${{ inputs.flavor }}/${{ inputs.build_type }}/${{
+              inputs.flavor == 'fdroid' && inputs.build_type == 'release'
+                && 'wgtunnel-fdroid-release-*.apk'
+                || format('wgtunnel-{0}-v*.apk', inputs.flavor)
+            }}
           retention-days: 1
           if-no-files-found: warn
