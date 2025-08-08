@@ -35,14 +35,8 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.withFirstState
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.IOException
-import java.net.URL
-import java.time.Instant
-import java.util.*
-import javax.inject.Inject
-import javax.inject.Provider
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -51,6 +45,12 @@ import org.amnezia.awg.config.Config
 import rikka.shizuku.Shizuku
 import timber.log.Timber
 import xyz.teamgravity.pin_lock_compose.PinManager
+import java.io.IOException
+import java.net.URL
+import java.time.Instant
+import java.util.*
+import javax.inject.Inject
+import javax.inject.Provider
 
 @HiltViewModel
 class AppViewModel
@@ -70,12 +70,7 @@ constructor(
 
     private var logsJob: Job? = null
 
-    private val _eventFlow =
-        MutableSharedFlow<AppEvent>(
-            replay = 0,
-            extraBufferCapacity = 10,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST,
-        )
+    private val _eventChannel = Channel<AppEvent>(Channel.BUFFERED)
 
     private val tunnelMutex = Mutex()
     private val settingsMutex = Mutex()
@@ -139,7 +134,7 @@ constructor(
                 if (state.appState.isLocalLogsEnabled) logsJob = startCollectingLogs()
                 handleTunnelMessages()
             }
-            _eventFlow.collect { event ->
+            for (event in _eventChannel) {
                 val state = uiState.value
                 when (event) {
                     AppEvent.ToggleLocalLogging ->
@@ -247,6 +242,7 @@ constructor(
                     is AppEvent.SaveAllConfigs -> saveAllTunnels(event.tunnels)
                     AppEvent.ToggleShowDetailedPingStats ->
                         handleToggleShowDetailedPingStats(state.appState)
+
                     is AppEvent.SaveMonitoringSettings ->
                         handleMonitoringSaveChanges(
                             state.appSettings,
@@ -258,10 +254,12 @@ constructor(
                     AppEvent.TogglePingMonitoring -> handleTogglePingMonitoring(state.appSettings)
                     is AppEvent.SetPingAttempts ->
                         saveSettings(state.appSettings.copy(tunnelPingAttempts = event.count))
+
                     is AppEvent.SetPingInterval ->
                         saveSettings(
                             state.appSettings.copy(tunnelPingIntervalSeconds = event.interval)
                         )
+
                     is AppEvent.SetPingTimeout ->
                         saveSettings(
                             state.appSettings.copy(tunnelPingTimeoutSeconds = event.timeout)
@@ -275,7 +273,7 @@ constructor(
         viewModelScope.launch(mainDispatcher) { _uiEvent.emit(event) }
 
     fun handleEvent(event: AppEvent) {
-        _eventFlow.tryEmit(event)
+        _eventChannel.trySend(event)
     }
 
     private suspend fun handleTogglePingMonitoring(appSettings: AppSettings) {
@@ -333,6 +331,7 @@ constructor(
                     )
                 }
             }
+
             else -> Unit
         }
         saveSettings(appSettings.copy(wifiDetectionMethod = detectionMethod))
