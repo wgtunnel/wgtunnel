@@ -35,12 +35,6 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.withFirstState
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.IOException
-import java.net.URL
-import java.time.Instant
-import java.util.*
-import javax.inject.Inject
-import javax.inject.Provider
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -51,6 +45,12 @@ import org.amnezia.awg.config.Config
 import rikka.shizuku.Shizuku
 import timber.log.Timber
 import xyz.teamgravity.pin_lock_compose.PinManager
+import java.io.IOException
+import java.net.URL
+import java.time.Instant
+import java.util.*
+import javax.inject.Inject
+import javax.inject.Provider
 
 @HiltViewModel
 class AppViewModel
@@ -570,11 +570,7 @@ constructor(
         runCatching {
                 val amConfig = TunnelConf.configFromAmQuick(config)
                 val tunnelConf = TunnelConf.tunnelConfigFromAmConfig(amConfig)
-                saveTunnel(
-                    tunnelConf.copy(
-                        tunName = tunnelConf.generateUniqueName(tunnels.map { it.tunName })
-                    )
-                )
+                saveTunnelsUniquely(listOf(tunnelConf))
             }
             .onFailure {
                 Timber.e(it)
