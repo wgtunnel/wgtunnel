@@ -22,6 +22,7 @@ data class AppViewState(
     }
 
     enum class BottomSheet {
+        BACKUP_AND_RESTORE,
         EXPORT_TUNNELS,
         IMPORT_TUNNELS,
         LOGS,

@@ -8,7 +8,6 @@ import android.content.Context.POWER_SERVICE
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
@@ -16,18 +15,16 @@ import android.provider.Settings
 import android.service.quicksettings.TileService
 import android.widget.Toast
 import androidx.core.content.FileProvider
-import androidx.core.location.LocationManagerCompat
 import androidx.core.net.toUri
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
+import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.service.tile.AutoTunnelControlTile
 import com.zaneschepke.wireguardautotunnel.core.service.tile.TunnelControlTile
 import com.zaneschepke.wireguardautotunnel.util.Constants
+import timber.log.Timber
 import java.io.File
 import java.io.InputStream
-import timber.log.Timber
+import kotlin.system.exitProcess
 
 fun Context.openWebUrl(url: String): Result<Unit> {
     return kotlin
@@ -113,13 +110,12 @@ fun Context.launchShareFile(file: Uri) {
     this.startActivity(chooserIntent)
 }
 
-fun Context.isLocationServicesEnabled(): Boolean {
-    val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    return LocationManagerCompat.isLocationEnabled(locationManager)
-}
-
 fun Context.showToast(resId: Int) {
     Toast.makeText(this, this.getString(resId), Toast.LENGTH_LONG).show()
+}
+
+fun Context.showToast(message: String) {
+    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 }
 
 fun Context.launchSupportEmail() {
@@ -239,17 +235,9 @@ fun Activity.setScreenBrightness(brightness: Float) {
     window.attributes = window.attributes.apply { screenBrightness = brightness }
 }
 
-fun Activity.enableImmersiveMode() {
-    WindowCompat.setDecorFitsSystemWindows(window, false)
-    val controller = WindowCompat.getInsetsController(window, window.decorView)
-    controller.systemBarsBehavior =
-        WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-    controller.hide(WindowInsetsCompat.Type.systemBars())
-}
-
-fun Activity.disableImmersiveMode() {
-    WindowCompat.setDecorFitsSystemWindows(window, true)
-    val controller = WindowCompat.getInsetsController(window, window.decorView)
-    controller.show(WindowInsetsCompat.Type.systemBars())
-    window.statusBarColor = android.graphics.Color.TRANSPARENT
+fun MainActivity.restartApp() {
+    Intent(this, MainActivity::class.java).also {
+        startActivity(it)
+        exitProcess(0)
+    }
 }

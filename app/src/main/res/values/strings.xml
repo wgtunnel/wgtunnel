@@ -327,4 +327,11 @@
     <string name="ping_target_template">Ping target: %1$s</string>
     <string name="_true">True</string>
     <string name="_false">False</string>
+    <string name="backup_success">Backup success. %1$s</string>
+    <string name="restore_success">Restore success. %1$s</string>
+    <string name="restarting_app">Restarting app to apply changes…</string>
+    <string name="restore_failed">Failed to restore from backup.</string>
+    <string name="backup_failed">Failed to create backup.</string>
+    <string name="backup_application">Backup application data</string>
+    <string name="restore_application">Restore from backup</string>
 </resources>

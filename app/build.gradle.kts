@@ -121,8 +121,8 @@ android {
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
 
     licensee {
-        Constants.allowedLicenses.forEach { allow(it) }
-        Constants.allowedLicenseUrls.forEach { allowUrl(it) }
+        allowedLicenses().forEach { allow(it) }
+        allowedLicenseUrls().forEach { allowUrl(it) }
     }
 
     applicationVariants.all {
@@ -225,6 +225,9 @@ dependencies {
     implementation(libs.shizuku.provider)
 
     implementation(libs.reorderable)
+    implementation(libs.roomdatabasebackup) {
+        exclude(group = "org.reactivestreams", module = "reactive-streams")
+    }
 }
 
 tasks.register<Copy>("copyLicenseeJsonToAssets") {

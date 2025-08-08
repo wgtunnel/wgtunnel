@@ -4,6 +4,7 @@ activityCompose = "1.10.1"
 amneziawgAndroid = "1.5.0"
 androidx-junit = "1.2.1"
 icmp4a = "1.0.0"
+roomdatabasebackup = "1.1.0"
 shizuku = "13.1.5"
 appcompat = "1.7.1"
 biometricKtx = "1.2.0-alpha05"
@@ -104,6 +105,7 @@ material-icons-extended = { module = "androidx.compose.material:material-icons-e
 
 # util
 pin-lock-compose = { module = "com.zaneschepke:pin_lock_compose", version.ref = "pinLockCompose" }
+roomdatabasebackup = { module = "de.raphaelebner:roomdatabasebackup", version.ref = "roomdatabasebackup" }
 shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizuku" }
 shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizuku" }
 qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }

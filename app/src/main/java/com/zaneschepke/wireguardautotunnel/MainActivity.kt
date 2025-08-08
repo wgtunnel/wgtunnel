@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -35,6 +36,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
+import com.zaneschepke.wireguardautotunnel.data.AppDatabase
+import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
+import com.zaneschepke.wireguardautotunnel.di.MainDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.ui.Route
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.VpnDeniedDialog
@@ -67,11 +71,16 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.support.SupportScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.license.LicenseScreen
 import com.zaneschepke.wireguardautotunnel.ui.theme.WireguardAutoTunnelTheme
 import com.zaneschepke.wireguardautotunnel.util.extensions.isRunningOnTv
+import com.zaneschepke.wireguardautotunnel.util.extensions.restartApp
+import com.zaneschepke.wireguardautotunnel.util.extensions.showToast
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 import dagger.hilt.android.AndroidEntryPoint
+import de.raphaelebner.roomdatabasebackup.core.RoomBackup
 import javax.inject.Inject
 import kotlin.system.exitProcess
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.amnezia.awg.backend.GoBackend.VpnService
 
 @AndroidEntryPoint
@@ -83,7 +92,15 @@ class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var networkMonitor: NetworkMonitor
 
+    @Inject @IoDispatcher lateinit var ioDispatcher: CoroutineDispatcher
+
+    @Inject @MainDispatcher lateinit var mainDispatcher: CoroutineDispatcher
+
+    @Inject lateinit var appDatabase: AppDatabase
+
     private var lastLocationPermissionState: Boolean? = null
+
+    private lateinit var roomBackup: RoomBackup
 
     val REQUEST_CODE = 123
 
@@ -97,6 +114,7 @@ class MainActivity : AppCompatActivity() {
             window.isNavigationBarContrastEnforced = false
         }
         super.onCreate(savedInstanceState)
+        roomBackup = RoomBackup(this)
 
         val viewModel by viewModels<AppViewModel>()
 
@@ -250,7 +268,7 @@ class MainActivity : AppCompatActivity() {
                                         MainScreen(appUiState, appViewState, viewModel)
                                     }
                                     composable<Route.Settings> {
-                                        SettingsScreen(appUiState, viewModel)
+                                        SettingsScreen(appUiState, appViewState, viewModel)
                                     }
                                     composable<Route.SettingsAdvanced> {
                                         SettingsAdvancedScreen(appUiState, viewModel)
@@ -338,4 +356,53 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         WireGuardAutoTunnel.setUiActive(false)
     }
+
+    fun performBackup() =
+        lifecycleScope.launch(ioDispatcher) {
+            roomBackup
+                .database(appDatabase)
+                .backupLocation(RoomBackup.BACKUP_FILE_LOCATION_CUSTOM_DIALOG)
+                .enableLogDebug(true)
+                .maxFileCount(5)
+                .apply {
+                    onCompleteListener { success, message, exitCode ->
+                        lifecycleScope.launch(mainDispatcher) {
+                            if (success) {
+                                showToast(
+                                    getString(
+                                        R.string.backup_success,
+                                        getString(R.string.restarting_app),
+                                    )
+                                )
+                                restartApp()
+                            } else showToast(R.string.backup_failed)
+                        }
+                    }
+                }
+                .backup()
+        }
+
+    fun performRestore() =
+        lifecycleScope.launch {
+            roomBackup
+                .database(appDatabase)
+                .enableLogDebug(true)
+                .backupLocation(RoomBackup.BACKUP_FILE_LOCATION_CUSTOM_DIALOG)
+                .apply {
+                    onCompleteListener { success, message, exitCode ->
+                        lifecycleScope.launch(mainDispatcher) {
+                            if (success) {
+                                showToast(
+                                    getString(
+                                        R.string.restore_success,
+                                        getString(R.string.restarting_app),
+                                    )
+                                )
+                                restartApp()
+                            } else showToast(R.string.restore_failed)
+                        }
+                    }
+                }
+                .restore()
+        }
 }

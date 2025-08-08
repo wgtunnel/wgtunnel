@@ -22,15 +22,23 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.AdvancedSettingsItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.*
 import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
+import com.zaneschepke.wireguardautotunnel.ui.state.AppViewState
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 
 @Composable
-fun SettingsScreen(uiState: AppUiState, viewModel: AppViewModel) {
+fun SettingsScreen(uiState: AppUiState, appViewState: AppViewState, viewModel: AppViewModel) {
     val isTv = LocalIsAndroidTV.current
     val focusManager = LocalFocusManager.current
     val navController = LocalNavController.current
 
     val interactionSource = remember { MutableInteractionSource() }
+
+    when (appViewState.bottomSheet) {
+        AppViewState.BottomSheet.BACKUP_AND_RESTORE -> {
+            SettingsBottomSheet(viewModel)
+        }
+        else -> Unit
+    }
 
     Column(
         horizontalAlignment = Alignment.Start,

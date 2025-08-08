@@ -143,6 +143,15 @@ fun currentNavBackStackEntryAsNavBarState(
                     NavBarState(
                         topTitle = { Text(stringResource(R.string.settings)) },
                         route = Route.Settings,
+                        topTrailing = {
+                            ActionIconButton(Icons.Rounded.Menu, R.string.quick_actions) {
+                                viewModel.handleEvent(
+                                    AppEvent.SetBottomSheet(
+                                        AppViewState.BottomSheet.BACKUP_AND_RESTORE
+                                    )
+                                )
+                            }
+                        },
                     )
 
                 backStackEntry.isCurrentRoute(Route.Appearance::class) ->

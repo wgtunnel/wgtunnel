@@ -331,7 +331,6 @@ constructor(
                     )
                 }
             }
-
             else -> Unit
         }
         saveSettings(appSettings.copy(wifiDetectionMethod = detectionMethod))
