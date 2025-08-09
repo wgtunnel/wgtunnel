@@ -14,7 +14,7 @@
     <string name="prominent_background_location_title">پس منظر لوکیشن کا انکشاف</string>
     <string name="public_key">عوامی کلید</string>
     <string name="app_name">ڈبلیو جی ٹنل</string>
-    <string name="error_file_extension">فائل conf یا zip نہیں ہے۔</string>
+    <string name="error_file_extension">فائل conf یا zip نہیں ہے</string>
     <string name="no_tunnels">ابھی تک کوئی ٹنلز شامل نہیں کی گئیں!</string>
     <string name="tunnels">ٹنلز</string>
     <string name="tunnel_mobile_data">موبائل ڈیٹا پر ٹنل</string>
@@ -133,7 +133,7 @@
     <string name="auto_tunneling">خودکار ٹنلنگ</string>
     <string name="create_import">شروع سے تخلیق کریں</string>
     <string name="unknown_error">نامعلوم خرابی پیش آگئی</string>
-    <string name="seconds">سیکنڈ</string>
+    <string name="seconds">سیکنڈز</string>
     <string name="persistent_keepalive">مسلسل زندہ</string>
     <string name="remove_amnezia_compatibility">ایمنیزیا مطابقت ہٹائیں</string>
     <string name="light">روشن</string>
@@ -209,11 +209,11 @@
     <string name="export_failed">برآمد ناکام</string>
     <string name="tunnel_error_template">ٹنل اس کے ساتھ ناکام ہوگئی: %1$s</string>
     <string name="wifi_name_template">فعال: %1$s</string>
-    <string name="config_error">کنفگریشن خرابی</string>
-    <string name="dns_resolve_error">ڈی این ایس ریزولوشن خرابی</string>
-    <string name="invalid_config_error">غلط_کنفگریشن_خرابی۔</string>
-    <string name="auth_error">غیر مجاز غلطی</string>
-    <string name="service_running_error">سروس نہیں چل رہی کی خرابی</string>
+    <string name="config_error">غلط ترتیب</string>
+    <string name="dns_resolve_error">ڈی این ایس ریزولوشن ناکام</string>
+    <string name="invalid_config_error">غلط_کنفگریشن_خرابی</string>
+    <string name="auth_error">غیر مجاز</string>
+    <string name="service_running_error">سروس نہیں چل رہی</string>
     <string name="inactive">غیر فعال</string>
     <string name="active">فعال</string>
     <string name="status">سٹیٹس</string>
@@ -269,4 +269,16 @@
     <string name="drag_handle">ہینڈل کو گھسیٹیں</string>
     <string name="move_up">اوپر منتقل کریں</string>
     <string name="move_down">نیچے منتقل کریں</string>
+    <string name="error_tunnel_name">کرنل موڈ میں ٹنل کا نام 15 حروف یا اس سے کم ہونا چاہیے</string>
+    <string name="tunnel">ٹنل</string>
+    <string name="tunnel_item_description">1$s, %2$s, %3$s</string>
+    <string name="warning">وارننگ</string>
+    <string name="location_permissions">مقام کی اجازت</string>
+    <string name="location_justification">آپ کے موجودہ پتہ لگانے کے طریقے کے ساتھ پس منظر میں وائی فائی کے ناموں کو پڑھنے کے لیے، اینڈرائیڈ کو ایپس کو \'ہر وقت اجازت دیں\' اور \'عین مطابق\' (پرانے آلات پر پس منظر کی جگہ) کی اجازت دینے کی ضرورت ہے۔ براہ کرم اپنی اینڈرائیڈ ایپ کی ترتیبات میں ان اجازتوں کو فعال کریں۔</string>
+    <string name="open_settings">ترتیبات کھولیں</string>
+    <string name="location_permissions_missing">مقام کی اجازتیں غائب ہیں</string>
+    <string name="fix">ٹھیک کریں</string>
+    <string name="start">شروع کریں</string>
+    <string name="auto_tunnel_running">آٹو ٹنل چل رہا ہے</string>
+    <string name="auto_tunnel_not_running">آٹو ٹنل نہیں چل رہا ہے</string>
 </resources>
