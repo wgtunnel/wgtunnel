@@ -16,7 +16,7 @@ import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendState
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendStatus
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus.StopReason.Ping
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
@@ -109,13 +109,13 @@ class AutoTunnelService : LifecycleService() {
         with(autoTunnelStateFlow.value) {
             if (
                 settings.isVpnKillSwitchEnabled &&
-                    tunnelManager.getBackendState() != BackendState.KILL_SWITCH_ACTIVE
+                    tunnelManager.getBackendStatus() !is BackendStatus.KillSwitch
             ) {
                 eventHandlerJob?.cancel()
                 val allowedIps =
                     if (settings.isLanOnKillSwitchEnabled) TunnelConf.LAN_BYPASS_ALLOWED_IPS
                     else emptyList()
-                tunnelManager.setBackendState(BackendState.KILL_SWITCH_ACTIVE, allowedIps)
+                tunnelManager.setBackendStatus(BackendStatus.KillSwitch(allowedIps))
             }
         }
     }
@@ -402,11 +402,11 @@ class AutoTunnelService : LifecycleService() {
                     handleBounceWithBackoff(event.configsPeerKeyResolvedMap)
                 is AutoTunnelEvent.StartKillSwitch -> {
                     Timber.d("Starting kill switch")
-                    tunnelManager.setBackendState(BackendState.KILL_SWITCH_ACTIVE, event.allowedIps)
+                    tunnelManager.setBackendStatus(BackendStatus.KillSwitch(event.allowedIps))
                 }
                 AutoTunnelEvent.StopKillSwitch -> {
                     Timber.d("Stopping kill switch")
-                    tunnelManager.setBackendState(BackendState.SERVICE_ACTIVE, emptySet())
+                    tunnelManager.setBackendStatus(BackendStatus.Active)
                 }
             }
         }

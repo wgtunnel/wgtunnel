@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendState
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendStatus
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
@@ -34,7 +34,8 @@ constructor(
         appDataRepository.settings.flow
             .filterNotNull()
             .flatMapLatest { settings ->
-                MutableStateFlow(if (settings.isKernelEnabled) kernelTunnel else userspaceTunnel)
+                val backend = if (settings.isKernelEnabled) kernelTunnel else userspaceTunnel
+                MutableStateFlow(backend)
             }
             .stateIn(
                 scope = applicationScope.plus(ioDispatcher),
@@ -89,12 +90,12 @@ constructor(
         tunnelProviderFlow.value.bounceTunnel(tunnelConf, reason)
     }
 
-    override fun setBackendState(backendState: BackendState, allowedIps: Collection<String>) {
-        tunnelProviderFlow.value.setBackendState(backendState, allowedIps)
+    override fun setBackendStatus(backendStatus: BackendStatus) {
+        tunnelProviderFlow.value.setBackendStatus(backendStatus)
     }
 
-    override fun getBackendState(): BackendState {
-        return tunnelProviderFlow.value.getBackendState()
+    override fun getBackendStatus(): BackendStatus {
+        return tunnelProviderFlow.value.getBackendStatus()
     }
 
     override suspend fun runningTunnelNames(): Set<String> {

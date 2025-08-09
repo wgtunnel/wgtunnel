@@ -19,7 +19,7 @@ import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.di.AppShell
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.di.MainDispatcher
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendState
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendStatus
 import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
@@ -35,6 +35,12 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.withFirstState
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.IOException
+import java.net.URL
+import java.time.Instant
+import java.util.*
+import javax.inject.Inject
+import javax.inject.Provider
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -45,12 +51,6 @@ import org.amnezia.awg.config.Config
 import rikka.shizuku.Shizuku
 import timber.log.Timber
 import xyz.teamgravity.pin_lock_compose.PinManager
-import java.io.IOException
-import java.net.URL
-import java.time.Instant
-import java.util.*
-import javax.inject.Inject
-import javax.inject.Provider
 
 @HiltViewModel
 class AppViewModel
@@ -666,19 +666,19 @@ constructor(
         val updatedSettings =
             appSettings.copy(isLanOnKillSwitchEnabled = !appSettings.isLanOnKillSwitchEnabled)
         saveSettings(updatedSettings)
-        handleKillSwitchChange(appSettings)
+        handleKillSwitchChange(updatedSettings)
     }
 
     private fun handleKillSwitchChange(appSettings: AppSettings) {
         // let auto tunnel handle kill switch changes if running
         if (uiState.value.isAutoTunnelActive) return
         if (!appSettings.isVpnKillSwitchEnabled)
-            return tunnelManager.setBackendState(BackendState.SERVICE_ACTIVE, emptyList())
+            return tunnelManager.setBackendStatus(BackendStatus.Active)
         Timber.d("Starting kill switch")
         val allowedIps =
             if (appSettings.isLanOnKillSwitchEnabled) TunnelConf.LAN_BYPASS_ALLOWED_IPS
             else emptyList()
-        tunnelManager.setBackendState(BackendState.KILL_SWITCH_ACTIVE, allowedIps)
+        tunnelManager.setBackendStatus(BackendStatus.KillSwitch(allowedIps))
     }
 
     private suspend fun handleToggleAppShortcuts(appSettings: AppSettings) {
@@ -713,7 +713,7 @@ constructor(
         }
         if (enabled && !requestRoot()) return
         // disable kill switch feature in kernel mode
-        tunnelManager.setBackendState(BackendState.INACTIVE, emptyList())
+        tunnelManager.setBackendStatus(BackendStatus.Inactive)
         saveSettings(
             appSettings.copy(
                 isKernelEnabled = enabled,

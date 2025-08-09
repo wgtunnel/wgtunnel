@@ -2,7 +2,7 @@ package com.zaneschepke.wireguardautotunnel.util.extensions
 
 import androidx.compose.ui.graphics.Color
 import com.wireguard.android.backend.BackendException
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendState
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendStatus
 import com.zaneschepke.wireguardautotunnel.domain.enums.HandshakeStatus
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
@@ -75,12 +75,21 @@ fun Config.defaultName(): String {
     }
 }
 
-fun Backend.BackendState.asBackendState(): BackendState {
-    return BackendState.valueOf(this.name)
+fun Backend.BackendStatus.asBackendStatus(): BackendStatus {
+    return when (val status = this) {
+        is Backend.BackendStatus.KillSwitchActive ->
+            BackendStatus.KillSwitch(status.allowedIps.toList())
+        is Backend.BackendStatus.ServiceActive -> BackendStatus.Active
+        else -> BackendStatus.Inactive
+    }
 }
 
-fun BackendState.asAmBackendState(): Backend.BackendState {
-    return Backend.BackendState.valueOf(this.name)
+fun BackendStatus.asAmBackendStatus(): Backend.BackendStatus {
+    return when (val status = this) {
+        is BackendStatus.Active -> Backend.BackendStatus.ServiceActive.INSTANCE
+        is BackendStatus.Inactive -> Backend.BackendStatus.Inactive.INSTANCE
+        is BackendStatus.KillSwitch -> Backend.BackendStatus.KillSwitchActive(status.allowedIps)
+    }
 }
 
 fun Tunnel.State.asTunnelState(): TunnelStatus {
