@@ -72,7 +72,7 @@ jobs:
     name: publish-github
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.event_name == 'push' && github.ref || 'main' }}
       - name: Install system dependencies
@@ -189,7 +189,7 @@ jobs:
       KEY_STORE_LOCATION: ${{ github.workspace }}/app/keystore/
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
