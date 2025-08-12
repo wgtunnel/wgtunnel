@@ -51,7 +51,7 @@
     <string name="tunnel_on_wifi">Туннель в недоверенных сетях Wi-Fi</string>
     <string name="error_file_extension">Файл не имеет расширение .conf или .zip</string>
     <string name="random">(случайно)</string>
-    <string name="app_name">ВГ Туннель</string>
+    <string name="app_name">WG Tunnel</string>
     <string name="vpn_channel_name">Канал уведомлений VPN</string>
     <string name="tunnels">Туннели</string>
     <string name="okay">Хорошо</string>
@@ -310,7 +310,7 @@
     <string name="ping_success_template">Последний успешный пинг: %1$s</string>
     <string name="ping_target_template">Цель пинга: %1$s</string>
     <string name="bounce_failed_template">Невозможно восстановить туннель после проверки пинга из-за ошибки: %1$s</string>
-    <string name="jitter_template">Задержка:%1$s</string>
+    <string name="jitter_template">Джиттер: %1$s</string>
     <string name="_true">Верно</string>
     <string name="_false">Неверно</string>
 </resources>
