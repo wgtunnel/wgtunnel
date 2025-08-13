@@ -138,19 +138,22 @@ constructor(
                         }
 
                         val host =
-                            {
-                                    val parts = allowedIpStr.split("/")
-                                    val internalIp = if (parts.size == 2) parts[0] else allowedIpStr
+                            tunnelConf.pingTarget
+                                ?: {
+                                        val parts = allowedIpStr.split("/")
+                                        val internalIp =
+                                            if (parts.size == 2) parts[0] else allowedIpStr
 
-                                    val prefix =
-                                        if (parts.size == 2) parts[1].toIntOrNull() ?: 32 else 32
-                                    if (prefix <= 1) {
-                                        tunnelConf.pingTarget ?: CLOUDFLARE_IPV4_IP
-                                    } else {
-                                        internalIp.removeSurrounding("[", "]")
+                                        val prefix =
+                                            if (parts.size == 2) parts[1].toIntOrNull() ?: 32
+                                            else 32
+                                        if (prefix <= 1) {
+                                            CLOUDFLARE_IPV4_IP
+                                        } else {
+                                            internalIp.removeSurrounding("[", "]")
+                                        }
                                     }
-                                }
-                                .invoke()
+                                    .invoke()
 
                         val attemptTime = System.currentTimeMillis()
                         runCatching {
