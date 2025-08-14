@@ -263,7 +263,7 @@ constructor(
                         saveSettings(
                             state.appSettings.copy(tunnelPingTimeoutSeconds = event.timeout)
                         )
-                    is AppEvent.SaveTunnelUniquely -> saveTunnelsUniquely(listOf(event.tunnel))
+                    is AppEvent.SaveTunnel -> saveTunnel(event.tunnel)
                 }
             }
         }

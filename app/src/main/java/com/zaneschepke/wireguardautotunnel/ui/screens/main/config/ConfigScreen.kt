@@ -82,7 +82,7 @@ fun ConfigScreen(
         if (save) {
             try {
                 appViewModel.handleEvent(
-                    AppEvent.SaveTunnelUniquely(
+                    AppEvent.SaveTunnel(
                         uiState.configProxy.buildTunnelConfFromState(uiState.tunnelName, tunnelConf)
                     )
                 )

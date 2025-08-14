@@ -77,7 +77,7 @@ sealed class AppEvent {
 
     data class SetTheme(val theme: Theme) : AppEvent()
 
-    data class SaveTunnelUniquely(val tunnel: TunnelConf) : AppEvent()
+    data class SaveTunnel(val tunnel: TunnelConf) : AppEvent()
 
     data class SaveMonitoringSettings(
         val pingInterval: Int,
