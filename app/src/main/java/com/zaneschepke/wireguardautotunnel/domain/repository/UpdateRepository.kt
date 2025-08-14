@@ -9,6 +9,6 @@ interface UpdateRepository {
     suspend fun downloadApk(
         apkUrl: String,
         fileName: String,
-        onProgress: (Float) -> Unit,
+        onProgress: suspend (Float) -> Unit,
     ): Result<File>
 }

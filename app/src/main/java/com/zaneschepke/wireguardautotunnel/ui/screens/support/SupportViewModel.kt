@@ -4,21 +4,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.di.MainDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.model.AppUpdate
 import com.zaneschepke.wireguardautotunnel.domain.repository.UpdateRepository
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @HiltViewModel
 class SupportViewModel
 @Inject
-constructor(private val updateRepository: UpdateRepository, private val fileUtils: FileUtils) :
+constructor(private val updateRepository: UpdateRepository, private val fileUtils: FileUtils,
+            @MainDispatcher private val mainDispatcher: CoroutineDispatcher) :
     ViewModel() {
 
     private val _uiState = MutableStateFlow(SupportUiState())
@@ -62,7 +66,9 @@ constructor(private val updateRepository: UpdateRepository, private val fileUtil
                 _uiState.update { it.copy(isLoading = true) }
                 updateRepository
                     .downloadApk(appUpdate.apkUrl, appUpdate.apkFileName) { progress ->
-                        _uiState.update { it.copy(downloadProgress = progress) }
+                        withContext(mainDispatcher) {
+                            _uiState.update { it.copy(downloadProgress = progress) }
+                        }
                     }
                     .onSuccess { apk ->
                         _uiState.update { it.copy(isLoading = false) }

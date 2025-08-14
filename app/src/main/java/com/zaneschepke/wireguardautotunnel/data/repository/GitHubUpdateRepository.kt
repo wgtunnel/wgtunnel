@@ -38,13 +38,13 @@ class GitHubUpdateRepository(
                     gitHubApi.getLatestRelease(githubOwner, githubRepo).onFailure(Timber::e)
                 }
             release.map { release ->
-                val apkAsset =
+                val standaloneApkAsset =
                     release.assets.find { asset ->
                         asset.name.startsWith("wgtunnel-${Constants.STANDALONE_FLAVOR}-v") &&
-                            asset.name.endsWith(".apk")
+                                asset.name.endsWith(".apk")
                     }
                 val newVersion =
-                    apkAsset
+                    standaloneApkAsset
                         ?.name
                         ?.removePrefix("wgtunnel-${Constants.STANDALONE_FLAVOR}-v")
                         ?.removeSuffix(".apk") ?: return@map null
@@ -53,7 +53,9 @@ class GitHubUpdateRepository(
                 if (isNightly && newVersion != currentVersion)
                     return@map GitHubReleaseMapper.toAppUpdate(release, newVersion)
                 if (NumberUtils.compareVersions(newVersion, currentVersion) > 0) {
-                    GitHubReleaseMapper.toAppUpdate(release, newVersion)
+                    GitHubReleaseMapper.toAppUpdate(release.copy(
+                        assets = listOf(standaloneApkAsset)
+                    ), newVersion)
                 } else {
                     null
                 }
@@ -63,7 +65,7 @@ class GitHubUpdateRepository(
     override suspend fun downloadApk(
         apkUrl: String,
         fileName: String,
-        onProgress: (Float) -> Unit,
+        onProgress: suspend (Float) -> Unit,
     ): Result<File> =
         withContext(ioDispatcher) {
             try {
