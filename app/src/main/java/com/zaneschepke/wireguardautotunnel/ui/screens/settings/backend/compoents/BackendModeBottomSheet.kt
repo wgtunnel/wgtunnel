@@ -1,0 +1,33 @@
+package com.zaneschepke.wireguardautotunnel.ui.screens.settings.backend.compoents
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
+import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
+import com.zaneschepke.wireguardautotunnel.ui.common.sheet.CustomBottomSheet
+import com.zaneschepke.wireguardautotunnel.ui.common.sheet.SheetOption
+import com.zaneschepke.wireguardautotunnel.ui.state.AppViewState
+import com.zaneschepke.wireguardautotunnel.util.extensions.asIcon
+import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
+import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
+
+@Composable
+fun BackendModeBottomSheet(appSettings: AppSettings, viewModel: AppViewModel) {
+    val context = LocalContext.current
+    CustomBottomSheet(enumValues<BackendMode>().map {
+        val icon = it.asIcon()
+        SheetOption(
+            icon,
+            label = it.asTitleString(context),
+            onClick = {
+                viewModel.handleEvent(AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE))
+                viewModel.handleEvent(AppEvent.SetBackendMode(it))
+            },
+            selected = appSettings.backendMode == it,
+        )
+    }
+    ) {
+        viewModel.handleEvent(AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE))
+    }
+}

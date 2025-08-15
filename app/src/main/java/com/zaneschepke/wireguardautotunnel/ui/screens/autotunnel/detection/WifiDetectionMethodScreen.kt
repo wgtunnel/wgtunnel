@@ -13,7 +13,7 @@ import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.wireguardautotunnel.ui.common.button.IconSurfaceButton
 import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
 import com.zaneschepke.wireguardautotunnel.util.extensions.asDescriptionString
-import com.zaneschepke.wireguardautotunnel.util.extensions.asString
+import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
@@ -26,7 +26,7 @@ fun WifiDetectionMethodScreen(uiState: AppUiState, viewModel: AppViewModel) {
         modifier = Modifier.fillMaxSize().padding(top = 24.dp).padding(horizontal = 24.dp),
     ) {
         enumValues<AndroidNetworkMonitor.WifiDetectionMethod>().forEach {
-            val title = it.asString(context)
+            val title = it.asTitleString(context)
             val description = it.asDescriptionString(context)
             IconSurfaceButton(
                 title = title,

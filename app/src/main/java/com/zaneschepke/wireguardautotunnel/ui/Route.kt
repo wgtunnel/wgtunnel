@@ -49,4 +49,8 @@ sealed class Route {
     @Serializable data object Sort : Route()
 
     @Serializable data object TunnelMonitoring : Route()
+
+    @Serializable data object BackendMode : Route()
+
+    @Serializable data object ProxyCredentials : Route()
 }

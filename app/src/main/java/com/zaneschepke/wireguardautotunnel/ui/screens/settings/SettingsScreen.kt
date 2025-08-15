@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,12 +34,9 @@ fun SettingsScreen(uiState: AppUiState, appViewState: AppViewState, viewModel: A
 
     val interactionSource = remember { MutableInteractionSource() }
 
-    when (appViewState.bottomSheet) {
-        AppViewState.BottomSheet.BACKUP_AND_RESTORE -> {
-            SettingsBottomSheet(viewModel)
-        }
-        else -> Unit
-    }
+    val showBottomSheet = remember(appViewState.bottomSheet) { derivedStateOf { appViewState.bottomSheet == AppViewState.BottomSheet.BACKUP_AND_RESTORE } }
+
+    if(showBottomSheet.value) SettingsBottomSheet(viewModel)
 
     Column(
         horizontalAlignment = Alignment.Start,
@@ -64,6 +62,21 @@ fun SettingsScreen(uiState: AppUiState, appViewState: AppViewState, viewModel: A
             items =
                 buildList {
                     add(tunnelMonitoringItem())
+                    // TODO
+                    // Add this logic for disable
+//                    if (!isTv) {
+//                        ScaledSwitch(
+//                            checked = uiState.appSettings.isKernelEnabled,
+//                            enabled =
+//                                !(uiState.appSettings.isAutoTunnelEnabled ||
+//                                        uiState.appSettings.isAlwaysOnVpnEnabled ||
+//                                        uiState.activeTunnels.isNotEmpty()),
+//                            onClick = { viewModel.handleEvent(AppEvent.ToggleKernelMode) },
+//                        )
+//                        SurfaceSelectionGroupButton(items = listOf(kernelModeItem(uiState, viewModel)))
+//                        SectionDivider()
+//                    }
+                    add(backendModeItem())
                     add(appShortcutsItem(uiState, viewModel))
                     if (!isTv) add(alwaysOnVpnItem(uiState, viewModel))
                     add(killSwitchItem())
@@ -81,10 +94,6 @@ fun SettingsScreen(uiState: AppUiState, appViewState: AppViewState, viewModel: A
                 }
         )
         SectionDivider()
-        if (!isTv) {
-            SurfaceSelectionGroupButton(items = listOf(kernelModeItem(uiState, viewModel)))
-            SectionDivider()
-        }
         SurfaceSelectionGroupButton(
             items =
                 listOf(

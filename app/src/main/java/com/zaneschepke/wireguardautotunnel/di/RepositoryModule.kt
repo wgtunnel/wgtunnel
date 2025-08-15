@@ -27,14 +27,15 @@ import kotlinx.coroutines.CoroutineDispatcher
 class RepositoryModule {
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
+    fun provideDatabase(@ApplicationContext context: Context,
+                        callback: DatabaseCallback): AppDatabase {
         return Room.databaseBuilder(
                 context,
                 AppDatabase::class.java,
                 context.getString(R.string.db_name),
             )
             .fallbackToDestructiveMigration(true)
-            .addCallback(DatabaseCallback())
+            .addCallback(callback)
             .build()
     }
 

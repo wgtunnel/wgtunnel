@@ -1,6 +1,5 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.main.config
 
-import android.view.WindowManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,9 +14,9 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.ui.common.SecureScreenFromRecording
 import com.zaneschepke.wireguardautotunnel.ui.common.prompt.AuthorizationPrompt
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.config.components.AddPeerButton
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.config.components.InterfaceSection
@@ -39,8 +38,6 @@ fun ConfigScreen(
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val activity = context as? MainActivity
-
     var save by remember { mutableStateOf(false) }
 
     val isTunnelNameTaken by
@@ -52,16 +49,7 @@ fun ConfigScreen(
             }
         }
 
-    // Secure screen due to sensitive information
-    DisposableEffect(Unit) {
-        activity
-            ?.window
-            ?.setFlags(
-                WindowManager.LayoutParams.FLAG_SECURE,
-                WindowManager.LayoutParams.FLAG_SECURE,
-            )
-        onDispose { activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE) }
-    }
+    SecureScreenFromRecording()
 
     LaunchedEffect(Unit) {
         // set callback for navbar to invoke save

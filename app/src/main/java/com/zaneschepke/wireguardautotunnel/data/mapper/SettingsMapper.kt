@@ -15,11 +15,9 @@ object SettingsMapper {
             isTunnelOnEthernetEnabled = settings.isTunnelOnEthernetEnabled,
             isShortcutsEnabled = settings.isShortcutsEnabled,
             isTunnelOnWifiEnabled = settings.isTunnelOnWifiEnabled,
-            isKernelEnabled = settings.isKernelEnabled,
             isRestoreOnBootEnabled = settings.isRestoreOnBootEnabled,
             isMultiTunnelEnabled = settings.isMultiTunnelEnabled,
             isPingEnabled = settings.isPingEnabled,
-            isAmneziaEnabled = settings.isAmneziaEnabled,
             isWildcardsEnabled = settings.isWildcardsEnabled,
             isStopOnNoInternetEnabled = settings.isStopOnNoInternetEnabled,
             isVpnKillSwitchEnabled = settings.isVpnKillSwitchEnabled,
@@ -35,6 +33,13 @@ object SettingsMapper {
             tunnelPingIntervalSeconds = settings.tunnelPingIntervalSeconds,
             tunnelPingAttempts = settings.tunnelPingAttempts,
             tunnelPingTimeoutSeconds = settings.tunnelPingTimeoutSeconds,
+            backendMode = settings.backendMode,
+            socks5ProxyEnabled = settings.socks5ProxyEnabled,
+            socks5ProxyBindAddress = settings.socks5ProxyBindAddress,
+            httpProxyEnabled = settings.httpProxyEnabled,
+            httpProxyBindAddress = settings.httpProxyBindAddress,
+            proxyUsername = settings.proxyUsername,
+            proxyPassword = settings.proxyPassword
         )
     }
 
@@ -48,11 +53,9 @@ object SettingsMapper {
             isTunnelOnEthernetEnabled = appSettings.isTunnelOnEthernetEnabled,
             isShortcutsEnabled = appSettings.isShortcutsEnabled,
             isTunnelOnWifiEnabled = appSettings.isTunnelOnWifiEnabled,
-            isKernelEnabled = appSettings.isKernelEnabled,
             isRestoreOnBootEnabled = appSettings.isRestoreOnBootEnabled,
             isMultiTunnelEnabled = appSettings.isMultiTunnelEnabled,
             isPingEnabled = appSettings.isPingEnabled,
-            isAmneziaEnabled = appSettings.isAmneziaEnabled,
             isWildcardsEnabled = appSettings.isWildcardsEnabled,
             isStopOnNoInternetEnabled = appSettings.isStopOnNoInternetEnabled,
             isVpnKillSwitchEnabled = appSettings.isVpnKillSwitchEnabled,
@@ -66,6 +69,13 @@ object SettingsMapper {
             tunnelPingIntervalSeconds = appSettings.tunnelPingIntervalSeconds,
             tunnelPingAttempts = appSettings.tunnelPingAttempts,
             tunnelPingTimeoutSeconds = appSettings.tunnelPingTimeoutSeconds,
+            backendMode = appSettings.backendMode,
+            socks5ProxyEnabled = appSettings.socks5ProxyEnabled,
+            socks5ProxyBindAddress = appSettings.socks5ProxyBindAddress,
+            httpProxyEnabled = appSettings.httpProxyEnabled,
+            httpProxyBindAddress = appSettings.httpProxyBindAddress,
+            proxyUsername = appSettings.proxyUsername,
+            proxyPassword = appSettings.proxyPassword
         )
     }
 }

@@ -9,7 +9,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
 
 @Database(
     entities = [Settings::class, TunnelConfig::class],
-    version = 19,
+    version = 20,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -30,6 +30,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
             AutoMigration(from = 16, to = 17, spec = WifiDetectionMigration::class),
             AutoMigration(from = 17, to = 18),
             AutoMigration(from = 18, to = 19, spec = PingMigration::class),
+            AutoMigration(from = 19, to = 20, spec = ProxyMigration::class),
         ],
     exportSchema = true,
 )
@@ -68,3 +69,9 @@ class WifiDetectionMigration : AutoMigrationSpec
     ),
 )
 class PingMigration : AutoMigrationSpec
+
+@DeleteColumn.Entries(
+    DeleteColumn(tableName = "Settings", columnName = "is_amnezia_enabled"),
+    DeleteColumn(tableName = "Settings", columnName = "is_kernel_enabled"),
+)
+class ProxyMigration : AutoMigrationSpec

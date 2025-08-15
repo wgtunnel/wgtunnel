@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 
 @Entity
 data class Settings(
@@ -18,16 +19,12 @@ data class Settings(
     val isShortcutsEnabled: Boolean = false,
     @ColumnInfo(name = "is_tunnel_on_wifi_enabled", defaultValue = "false")
     val isTunnelOnWifiEnabled: Boolean = false,
-    @ColumnInfo(name = "is_kernel_enabled", defaultValue = "false")
-    val isKernelEnabled: Boolean = false,
     @ColumnInfo(name = "is_restore_on_boot_enabled", defaultValue = "false")
     val isRestoreOnBootEnabled: Boolean = false,
     @ColumnInfo(name = "is_multi_tunnel_enabled", defaultValue = "false")
     val isMultiTunnelEnabled: Boolean = false,
     @ColumnInfo(name = "is_ping_enabled", defaultValue = "false")
     val isPingEnabled: Boolean = false,
-    @ColumnInfo(name = "is_amnezia_enabled", defaultValue = "false")
-    val isAmneziaEnabled: Boolean = false,
     @ColumnInfo(name = "is_wildcards_enabled", defaultValue = "false")
     val isWildcardsEnabled: Boolean = false,
     @ColumnInfo(name = "is_stop_on_no_internet_enabled", defaultValue = "false")
@@ -52,6 +49,20 @@ data class Settings(
     val tunnelPingIntervalSeconds: Int = 30,
     @ColumnInfo(name = "tunnel_ping_attempts", defaultValue = "3") val tunnelPingAttempts: Int = 3,
     @ColumnInfo(name = "tunnel_ping_timeout_sec") val tunnelPingTimeoutSeconds: Int? = null,
+    @ColumnInfo(name = "backend_mode", defaultValue = "0")
+    val backendMode: BackendMode = BackendMode.fromValue(0),
+    @ColumnInfo(name = "socks5_proxy_enabled", defaultValue = "false")
+    val socks5ProxyEnabled: Boolean = false,
+    @ColumnInfo(name = "socks5_proxy_bind_address", defaultValue = SOCKS5_PROXY_DEFAULT_BIND_ADDRESS)
+    val socks5ProxyBindAddress: String = SOCKS5_PROXY_DEFAULT_BIND_ADDRESS,
+    @ColumnInfo(name = "http_proxy_enable", defaultValue = "false")
+    val httpProxyEnabled: Boolean = false,
+    @ColumnInfo(name = "http_proxy_bind_address", defaultValue = HTTP_PROXY_DEFAULT_BIND_ADDRESS)
+    val httpProxyBindAddress: String = HTTP_PROXY_DEFAULT_BIND_ADDRESS,
+    @ColumnInfo(name = "proxy_username", defaultValue = "null")
+    val proxyUsername: String? = null,
+    @ColumnInfo(name = "proxy_password", defaultValue = "null")
+    val proxyPassword: String? = null,
 ) {
     enum class WifiDetectionMethod(val value: Int) {
         DEFAULT(0),
@@ -63,5 +74,10 @@ data class Settings(
             fun fromValue(value: Int): WifiDetectionMethod =
                 entries.find { it.value == value } ?: DEFAULT
         }
+    }
+
+    companion object {
+        const val SOCKS5_PROXY_DEFAULT_BIND_ADDRESS = "127.0.0.1:25344"
+        const val HTTP_PROXY_DEFAULT_BIND_ADDRESS = "127.0.0.1:25345"
     }
 }

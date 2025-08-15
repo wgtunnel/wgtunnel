@@ -1,7 +1,9 @@
 package com.zaneschepke.wireguardautotunnel.data
 
+import android.system.Os.stat
 import androidx.room.TypeConverter
 import com.zaneschepke.wireguardautotunnel.data.entity.Settings
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import kotlinx.serialization.json.Json
 
 class DatabaseConverters {
@@ -27,4 +29,11 @@ class DatabaseConverters {
     @TypeConverter
     fun toStatus(value: Int): Settings.WifiDetectionMethod =
         Settings.WifiDetectionMethod.fromValue(value)
+
+    @TypeConverter
+    fun toMode(value: Int): BackendMode =
+        BackendMode.fromValue(value)
+
+    @TypeConverter fun fromMode(mode: BackendMode): Int = mode.value
+
 }

@@ -1,5 +1,9 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
+import com.zaneschepke.wireguardautotunnel.di.Kernel
+import com.zaneschepke.wireguardautotunnel.di.ProxyUserspace
+import com.zaneschepke.wireguardautotunnel.di.Userspace
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendStatus
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
@@ -9,21 +13,22 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
-import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.plus
 import org.amnezia.awg.crypto.Key
+import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TunnelManager
 @Inject
 constructor(
-    private val kernelTunnel: TunnelProvider,
-    private val userspaceTunnel: TunnelProvider,
+    @Kernel private val kernelTunnel: TunnelProvider,
+    @Userspace private val userspaceTunnel: TunnelProvider,
+    @ProxyUserspace private val proxyUserspaceTunnel: TunnelProvider,
     private val appDataRepository: AppDataRepository,
     applicationScope: CoroutineScope,
     ioDispatcher: CoroutineDispatcher,
@@ -34,7 +39,11 @@ constructor(
         appDataRepository.settings.flow
             .filterNotNull()
             .flatMapLatest { settings ->
-                val backend = if (settings.isKernelEnabled) kernelTunnel else userspaceTunnel
+               val backend = when(settings.backendMode) {
+                    BackendMode.USERSPACE -> userspaceTunnel
+                    BackendMode.PROXIED_USERSPACE -> proxyUserspaceTunnel
+                    BackendMode.KERNEL -> kernelTunnel
+                }
                 MutableStateFlow(backend)
             }
             .stateIn(
@@ -126,7 +135,7 @@ constructor(
                 previouslyActiveTuns.filterNot { tun ->
                     activeTunnels.value.any { tun.id == it.key.id }
                 }
-            if (settings.isKernelEnabled) {
+            if (settings.backendMode == BackendMode.KERNEL) {
                 return tunsToStart.forEach { startTunnel(it) }
             } else {
                 tunsToStart.firstOrNull()?.let { startTunnel(it) }

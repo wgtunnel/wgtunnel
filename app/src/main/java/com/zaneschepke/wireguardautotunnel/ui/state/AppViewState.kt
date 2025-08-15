@@ -26,6 +26,7 @@ data class AppViewState(
         EXPORT_TUNNELS,
         IMPORT_TUNNELS,
         LOGS,
+        BACKEND,
         NONE,
     }
 }

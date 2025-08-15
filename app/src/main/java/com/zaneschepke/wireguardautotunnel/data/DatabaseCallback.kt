@@ -2,20 +2,24 @@ package com.zaneschepke.wireguardautotunnel.data
 
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import timber.log.Timber
+import com.zaneschepke.wireguardautotunnel.data.entity.Settings
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Provider
 
-class DatabaseCallback : RoomDatabase.Callback() {
-    override fun onCreate(db: SupportSQLiteDatabase) =
-        db.run {
-            beginTransaction()
-            try {
-                execSQL(Queries.createDefaultSettings())
-                Timber.i("Bootstrapping settings data")
-                setTransactionSuccessful()
-            } catch (e: Exception) {
-                Timber.e(e)
-            } finally {
-                endTransaction()
-            }
+class DatabaseCallback @Inject constructor(
+    private val databaseProvider: Provider<AppDatabase>
+) : RoomDatabase.Callback() {
+
+    override fun onCreate(db: SupportSQLiteDatabase) {
+        super.onCreate(db)
+
+        // Launch coroutine to insert default entry
+        CoroutineScope(Dispatchers.IO).launch {
+            val db = databaseProvider.get()
+            db.settingDao().save(Settings())
         }
+    }
 }

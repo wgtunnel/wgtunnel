@@ -334,4 +334,14 @@
     <string name="backup_failed">Failed to create backup.</string>
     <string name="backup_application">Backup application data</string>
     <string name="restore_application">Restore from backup</string>
+    <string name="userspace">Userspace</string>
+    <string name="proxied_userspace">Proxied userspace</string>
+    <string name="backend_mode">Backend mode</string>
+    <string name="selected">Selected</string>
+    <string name="socks_5_proxy">SOCKS5 proxy</string>
+    <string name="auth_settings">Proxy authentication settings</string>
+    <string name="http_proxy">HTTP proxy</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="proxy_credentials">Proxy credentials</string>
 </resources>

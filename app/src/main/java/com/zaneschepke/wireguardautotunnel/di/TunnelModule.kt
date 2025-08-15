@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.map
 import org.amnezia.awg.backend.Backend
 import org.amnezia.awg.backend.GoBackend
+import org.amnezia.awg.backend.ProxyGoBackend
 import org.amnezia.awg.backend.RootTunnelActionHandler
 
 @Module
@@ -48,8 +49,16 @@ class TunnelModule {
 
     @Provides
     @Singleton
+    @Userspace
     fun provideAmneziaBackend(@ApplicationContext context: Context): Backend {
         return GoBackend(context, RootTunnelActionHandler(org.amnezia.awg.util.RootShell(context)))
+    }
+
+    @Provides
+    @Singleton
+    @ProxyUserspace
+    fun provideAmneziaProxyBackend(@ApplicationContext context: Context) : Backend {
+        return ProxyGoBackend(context, RootTunnelActionHandler(org.amnezia.awg.util.RootShell(context)))
     }
 
     @Provides
@@ -86,7 +95,19 @@ class TunnelModule {
         @ApplicationScope applicationScope: CoroutineScope,
         serviceManager: ServiceManager,
         appDataRepository: AppDataRepository,
-        backend: Backend,
+        @Userspace backend: Backend,
+    ): TunnelProvider {
+        return UserspaceTunnel(applicationScope, serviceManager, appDataRepository, backend)
+    }
+
+    @Provides
+    @Singleton
+    @ProxyUserspace
+    fun provideProxyUserspaceProvider(
+        @ApplicationScope applicationScope: CoroutineScope,
+        serviceManager: ServiceManager,
+        appDataRepository: AppDataRepository,
+        @ProxyUserspace backend: Backend,
     ): TunnelProvider {
         return UserspaceTunnel(applicationScope, serviceManager, appDataRepository, backend)
     }
@@ -96,14 +117,15 @@ class TunnelModule {
     fun provideTunnelManager(
         @Kernel kernelTunnel: TunnelProvider,
         @Userspace userspaceTunnel: TunnelProvider,
+        @ProxyUserspace proxyTunnel: TunnelProvider,
         appDataRepository: AppDataRepository,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
         @ApplicationScope applicationScope: CoroutineScope,
-        notificationManager: NotificationManager,
     ): TunnelManager {
         return TunnelManager(
             kernelTunnel,
             userspaceTunnel,
+            proxyTunnel,
             appDataRepository,
             applicationScope,
             ioDispatcher,

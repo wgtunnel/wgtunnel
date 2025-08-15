@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.viewmodel.event
 
 import android.net.Uri
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.ui.state.AppViewState
@@ -22,8 +23,6 @@ sealed class AppEvent {
     data object ToggleLanOnKillSwitch : AppEvent()
 
     data object ToggleAppShortcuts : AppEvent()
-
-    data object ToggleKernelMode : AppEvent()
 
     data object ToggleAlwaysOn : AppEvent()
 
@@ -88,6 +87,8 @@ sealed class AppEvent {
     data class SetDetectionMethod(val detectionMethod: AndroidNetworkMonitor.WifiDetectionMethod) :
         AppEvent()
 
+    data class SetBackendMode(val backendMode: BackendMode) : AppEvent()
+
     data object ToggleAutoTunnelOnWifi : AppEvent()
 
     data object ToggleAutoTunnelOnCellular : AppEvent()
@@ -141,4 +142,15 @@ sealed class AppEvent {
     data class SetPingTimeout(val timeout: Int?) : AppEvent()
 
     data class SetPingInterval(val interval: Int) : AppEvent()
+
+    data object ToggleSocks5Proxy : AppEvent()
+
+    data object ToggleHttpProxy : AppEvent()
+
+    data class SetSocks5BindAddress(val address : String) : AppEvent()
+
+    data class SetHttpProxyBindAddress(val address : String) : AppEvent()
+
+    data class SetProxyCredentials(val username: String, val password : String) : AppEvent()
+
 }

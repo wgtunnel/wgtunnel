@@ -178,6 +178,23 @@ fun currentNavBackStackEntryAsNavBarState(
                         route = Route.TunnelMonitoring,
                     )
 
+                backStackEntry.isCurrentRoute(Route.BackendMode::class) ->
+                    NavBarState(
+                        topTitle = { Text(stringResource(R.string.backend_mode)) },
+                        route = Route.BackendMode,
+                    )
+
+                backStackEntry.isCurrentRoute(Route.ProxyCredentials::class) ->
+                    NavBarState(
+                        topTitle = { Text(stringResource(R.string.proxy_credentials)) },
+                        route = Route.BackendMode,
+                        topTrailing = {
+                            ActionIconButton(Icons.Rounded.Save, R.string.save) {
+                                viewModel.handleEvent(AppEvent.InvokeScreenAction)
+                            }
+                        },
+                    )
+
                 backStackEntry.isCurrentRoute(Route.WifiDetectionMethod::class) ->
                     NavBarState(
                         topTitle = { Text(stringResource(R.string.wifi_detection_method)) },

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalIsAndroidTV
@@ -34,7 +35,7 @@ fun KillSwitchScreen(uiState: AppUiState, viewModel: AppViewModel) {
         SurfaceSelectionGroupButton(
             items =
                 buildList {
-                    if (!uiState.appSettings.isKernelEnabled) {
+                    if (uiState.appSettings.backendMode != BackendMode.KERNEL) {
                         add(
                             VpnKillSwitchItem(uiState) {
                                 viewModel.handleEvent(AppEvent.ToggleVpnKillSwitch)

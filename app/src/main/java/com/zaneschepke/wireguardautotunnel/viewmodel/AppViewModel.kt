@@ -16,9 +16,11 @@ import com.zaneschepke.wireguardautotunnel.WireGuardAutoTunnel
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
+import com.zaneschepke.wireguardautotunnel.data.entity.Settings
 import com.zaneschepke.wireguardautotunnel.di.AppShell
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.di.MainDispatcher
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendStatus
 import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
@@ -35,12 +37,6 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.withFirstState
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.IOException
-import java.net.URL
-import java.time.Instant
-import java.util.*
-import javax.inject.Inject
-import javax.inject.Provider
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -51,6 +47,13 @@ import org.amnezia.awg.config.Config
 import rikka.shizuku.Shizuku
 import timber.log.Timber
 import xyz.teamgravity.pin_lock_compose.PinManager
+import java.io.IOException
+import java.net.URL
+import java.time.Instant
+import java.util.*
+import java.util.concurrent.TimeoutException
+import javax.inject.Inject
+import javax.inject.Provider
 
 @HiltViewModel
 class AppViewModel
@@ -171,7 +174,6 @@ constructor(
                     AppEvent.ToggleVpnKillSwitch -> handleToggleVpnKillSwitch(state.appSettings)
                     AppEvent.ToggleLanOnKillSwitch -> handleToggleLanOnKillSwitch(state.appSettings)
                     AppEvent.ToggleAppShortcuts -> handleToggleAppShortcuts(state.appSettings)
-                    AppEvent.ToggleKernelMode -> handleToggleKernelMode(state.appSettings)
                     is AppEvent.SetTheme -> handleThemeChange(event.theme)
                     is AppEvent.ToggleIpv4Preferred -> handleToggleIpv4(event.tunnel)
                     is AppEvent.TogglePrimaryTunnel -> handleTogglePrimaryTunnel(event.tunnel)
@@ -264,9 +266,41 @@ constructor(
                             state.appSettings.copy(tunnelPingTimeoutSeconds = event.timeout)
                         )
                     is AppEvent.SaveTunnel -> saveTunnel(event.tunnel)
+                    is AppEvent.SetBackendMode -> handleSetBackendMode(event.backendMode, state.appSettings)
+                    is AppEvent.SetHttpProxyBindAddress -> saveSettings(state.appSettings.copy(
+                        httpProxyBindAddress = event.address.ifBlank { Settings.HTTP_PROXY_DEFAULT_BIND_ADDRESS }
+                    ))
+                    is AppEvent.SetSocks5BindAddress -> saveSettings(state.appSettings.copy(
+                        socks5ProxyBindAddress = event.address.ifBlank { Settings.SOCKS5_PROXY_DEFAULT_BIND_ADDRESS }
+                    ))
+                    AppEvent.ToggleHttpProxy -> saveSettings(state.appSettings.copy(
+                        httpProxyEnabled = !state.appSettings.httpProxyEnabled
+                    ))
+                    AppEvent.ToggleSocks5Proxy -> saveSettings(state.appSettings.copy(
+                        socks5ProxyEnabled = !state.appSettings.socks5ProxyEnabled
+                    ))
+
+                    is AppEvent.SetProxyCredentials -> {
+                        saveSettings(state.appSettings.copy(
+                            proxyUsername = event.username.ifBlank { null }, proxyPassword = event.password.ifBlank { null }
+                        ))
+                    }
                 }
             }
         }
+    }
+
+    private suspend fun handleSetBackendMode(backendMode: BackendMode, appSettings: AppSettings) {
+        when(backendMode) {
+            BackendMode.USERSPACE, BackendMode.PROXIED_USERSPACE -> Unit
+            BackendMode.KERNEL -> {
+                if(!isKernelSupported()) return handleShowMessage(StringValue.StringResource(R.string.kernel_not_supported))
+                if(!requestRoot()) return
+            }
+        }
+        saveSettings(
+            appSettings.copy(backendMode = backendMode)
+        )
     }
 
     private suspend fun saveTunnelsUniquely(tunnels: List<TunnelConf>) {
@@ -510,7 +544,7 @@ constructor(
     private suspend fun handleStartTunnel(tunnel: TunnelConf, appSettings: AppSettings) {
         clearSelectedTunnels()
         tunControlMutex.withLock {
-            if (!tunnelManager.hasVpnPermission() && !appSettings.isKernelEnabled)
+            if (!tunnelManager.hasVpnPermission() && appSettings.backendMode == BackendMode.USERSPACE)
                 return@withLock requestVpnPermission(true)
             tunnelManager.startTunnel(tunnel)
         }
@@ -526,7 +560,7 @@ constructor(
             if (
                 !state.appSettings.isAutoTunnelEnabled &&
                     !tunnelManager.hasVpnPermission() &&
-                    !state.appSettings.isKernelEnabled
+                    state.appSettings.backendMode == BackendMode.USERSPACE
             ) {
                 return@withLock requestVpnPermission(true)
             }
@@ -672,13 +706,17 @@ constructor(
     private fun handleKillSwitchChange(appSettings: AppSettings) {
         // let auto tunnel handle kill switch changes if running
         if (uiState.value.isAutoTunnelActive) return
-        if (!appSettings.isVpnKillSwitchEnabled)
-            return tunnelManager.setBackendStatus(BackendStatus.Active)
-        Timber.d("Starting kill switch")
-        val allowedIps =
-            if (appSettings.isLanOnKillSwitchEnabled) TunnelConf.LAN_BYPASS_ALLOWED_IPS
-            else emptyList()
-        tunnelManager.setBackendStatus(BackendStatus.KillSwitch(allowedIps))
+        try {
+            if (!appSettings.isVpnKillSwitchEnabled)
+                return tunnelManager.setBackendStatus(BackendStatus.Active)
+            Timber.d("Starting kill switch")
+            val allowedIps =
+                if (appSettings.isLanOnKillSwitchEnabled) TunnelConf.LAN_BYPASS_ALLOWED_IPS
+                else emptyList()
+            tunnelManager.setBackendStatus(BackendStatus.KillSwitch(allowedIps))
+        } catch (e : TimeoutException) {
+            Timber.e(e)
+        }
     }
 
     private suspend fun handleToggleAppShortcuts(appSettings: AppSettings) {
@@ -703,24 +741,6 @@ constructor(
 
     private suspend fun handleThemeChange(theme: Theme) {
         appDataRepository.appState.setTheme(theme)
-    }
-
-    private suspend fun handleToggleKernelMode(appSettings: AppSettings) {
-        val enabled = !appSettings.isKernelEnabled
-        if (enabled && !isKernelSupported()) {
-            handleShowMessage(StringValue.StringResource(R.string.kernel_not_supported))
-            return
-        }
-        if (enabled && !requestRoot()) return
-        // disable kill switch feature in kernel mode
-        tunnelManager.setBackendStatus(BackendStatus.Inactive)
-        saveSettings(
-            appSettings.copy(
-                isKernelEnabled = enabled,
-                isVpnKillSwitchEnabled = false,
-                isLanOnKillSwitchEnabled = false,
-            )
-        )
     }
 
     private suspend fun handleRemoveTunnelRunSSID(ssid: String, tunnelConfig: TunnelConf) =

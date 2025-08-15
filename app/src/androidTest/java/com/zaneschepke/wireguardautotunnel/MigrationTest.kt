@@ -4,11 +4,10 @@ import androidx.room.testing.MigrationTestHelper
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.zaneschepke.wireguardautotunnel.data.AppDatabase
-import com.zaneschepke.wireguardautotunnel.data.Queries
-import java.io.IOException
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 class MigrationTest {
@@ -24,8 +23,6 @@ class MigrationTest {
         helper.createDatabase(dbName, 6).apply {
             // Database has schema version 1. Insert some data using SQL queries.
             // You can't use DAO classes because they expect the latest schema.
-            execSQL(Queries.createDefaultSettings())
-            execSQL(Queries.createTunnelConfig())
             // Prepare for the next version.
             close()
         }

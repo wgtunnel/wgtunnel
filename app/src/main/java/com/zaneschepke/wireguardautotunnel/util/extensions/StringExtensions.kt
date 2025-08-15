@@ -26,6 +26,15 @@ fun String.isValidIpv4orIpv6Address(): Boolean {
     return ipv4Pattern.matches(sanitized) || ipv6Pattern.matches(sanitized)
 }
 
+fun String.isValidProxyBindAddress(): Boolean {
+    val regex = Regex("""^((25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(:\d{1,5})?$""")
+    if (!regex.matches(this)) return false
+
+    val port = this.substringAfter(":", "").toIntOrNull() ?: return true
+    return port in 1..65535
+}
+
+
 fun String.hasNumberInParentheses(): Boolean {
     return hasNumberInParentheses.matches(this)
 }

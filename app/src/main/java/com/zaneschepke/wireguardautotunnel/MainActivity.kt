@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
+import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -64,6 +65,8 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.settings.advanced.Settings
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.AppearanceScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.display.DisplayScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.language.LanguageScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.backend.BackendModeScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.backend.credentials.ProxyCredentialsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.killswitch.KillSwitchScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.LogsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.TunnelMonitoringScreen
@@ -81,7 +84,6 @@ import javax.inject.Inject
 import kotlin.system.exitProcess
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import org.amnezia.awg.backend.GoBackend.VpnService
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -336,6 +338,12 @@ class MainActivity : AppCompatActivity() {
                                     composable<Route.Sort> { SortScreen(appUiState, viewModel) }
                                     composable<Route.TunnelMonitoring> {
                                         TunnelMonitoringScreen(appUiState, viewModel)
+                                    }
+                                    composable<Route.BackendMode> {
+                                        BackendModeScreen(appUiState, viewModel, appViewState)
+                                    }
+                                    composable<Route.ProxyCredentials> {
+                                        ProxyCredentialsScreen(appUiState, viewModel)
                                     }
                                 }
                             }
