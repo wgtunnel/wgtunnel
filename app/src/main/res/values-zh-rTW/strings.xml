@@ -132,7 +132,7 @@
     <string name="hide_amnezia_properties">隱藏 Amnezia 屬性</string>
     <string name="active">使用中</string>
     <string name="vpn_denied_dialog_title">拒絕存取</string>
-    <string name="always_on_message">VPN 連線所需權限被拒絕，請檢查</string>
+    <string name="always_on_message">VPN 連線被拒絕，請檢查</string>
     <string name="wildcards_active">啟用萬用字元</string>
     <string name="multiple">多個</string>
     <string name="export_tunnels_amnezia">將隧道匯出為 Amnezia</string>
@@ -202,7 +202,7 @@
     <string name="add_peer">新增端點</string>
     <string name="init_packet_magic_header">初始封包魔法標頭</string>
     <string name="response_packet_magic_header">回應封包魔法標頭</string>
-    <string name="background_location_message">此功能需要任何時間都被允許使用位置權限或者精確位置。請參閱</string>
+    <string name="background_location_message">此功能需要任何時間都被允許使用位置存取權或者精確位置。請參閱</string>
     <string name="always_on_message2">確保 永久連線的 VPN 已經關閉並再試一次</string>
     <string name="enter_config_url">輸入組態 URL</string>
     <string name="error_download_failed">下載組態失敗</string>
@@ -264,7 +264,7 @@
     <string name="tunnel_item_description">1$s, %2$s, %3$s</string>
     <string name="start">啟動</string>
     <string name="tunnel">隧道</string>
-    <string name="location_permissions">定位權限</string>
+    <string name="location_permissions">位置存取權</string>
     <string name="open_settings">開啟設定</string>
     <string name="auto_tunnel_running">自動隧道管理正在執行</string>
     <string name="auto_tunnel_not_running">自動隧道管理未執行</string>
@@ -275,4 +275,8 @@
     <string name="tunnel_monitoring">隧道監控</string>
     <string name="monitoring_ping">啟用隧道 ping 監控</string>
     <string name="ping_timeout">隧道 ping 逾時</string>
+    <string name="tunnel_ping_interval">隧道 ping 間隔</string>
+    <string name="attempts_per_interval">每一間隔的 ping 嘗試次數</string>
+    <string name="error_tunnel_name">核心模式下隧道名稱最長 15 個字元</string>
+    <string name="location_permissions_missing">缺少位置存取權</string>
 </resources>
