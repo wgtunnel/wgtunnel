@@ -279,4 +279,20 @@
     <string name="attempts_per_interval">每一間隔的 ping 嘗試次數</string>
     <string name="error_tunnel_name">核心模式下隧道名稱最長 15 個字元</string>
     <string name="location_permissions_missing">缺少位置存取權</string>
+    <string name="move_up">向上移動</string>
+    <string name="move_down">向下移動</string>
+    <string name="trusted_ssid_value_description">提交 SSID</string>
+    <string name="timeout_all_attempts">所有嘗試的總逾時值</string>
+    <string name="ping_target_description">如果內部 IP 不可用才會使用 (例如: full-tunnel 組態)。留空預設為 Cloudflare。</string>
+    <string name="drag_handle">拖曳操作</string>
+    <string name="tunnel_mobile_data">行動數據上的隧道</string>
+    <string name="tunnel_on_ethernet">乙太網路上的隧道</string>
+    <string name="prominent_background_location_title">背景定位披露</string>
+    <string name="tunnel_on_wifi">不受信任 Wi-Fi 上的隧道</string>
+    <string name="mobile_data_tunnel">設為行動數據隧道</string>
+    <string name="use_tunnel_on_wifi_name">在指定 Wi-Fi 名稱上使用隧道</string>
+    <string name="mobile_tunnel">行動數據隧道</string>
+    <string name="skip">略過</string>
+    <string name="ethernet_tunnel">乙太網路隧道</string>
+    <string name="set_ethernet_tunnel">設為乙太網路隧道</string>
 </resources>
