@@ -24,7 +24,7 @@
     <string name="vpn_off">VPN откл.</string>
     <string name="interface_">Интерфейс</string>
     <string name="optional">(необязательно)</string>
-    <string name="all">все</string>
+    <string name="all">Все</string>
     <string name="no_email_detected">Приложение для отправки почты не найдено</string>
     <string name="enter_pin">Введите PIN-код</string>
     <string name="enable_app_lock">Защита приложения</string>
@@ -119,7 +119,7 @@
     <string name="show_amnezia_properties">Показать настройки Amnezia</string>
     <string name="never">никогда</string>
     <string name="sec">сек.</string>
-    <string name="handshake">соединение</string>
+    <string name="handshake">Соединение</string>
     <string name="logs">Журналы</string>
     <string name="light">Светлая</string>
     <string name="automatic">Автовыбор</string>
