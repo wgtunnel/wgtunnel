@@ -16,7 +16,6 @@ import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendStatus
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus.StopReason.Ping
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
@@ -100,24 +99,8 @@ class AutoTunnelService : LifecycleService() {
 
     override fun onDestroy() {
         serviceManager.handleAutoTunnelServiceDestroy()
-        restoreVpnKillSwitch()
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         super.onDestroy()
-    }
-
-    private fun restoreVpnKillSwitch() {
-        with(autoTunnelStateFlow.value) {
-            if (
-                settings.isVpnKillSwitchEnabled &&
-                    tunnelManager.getBackendStatus() !is BackendStatus.KillSwitch
-            ) {
-                eventHandlerJob?.cancel()
-                val allowedIps =
-                    if (settings.isLanOnKillSwitchEnabled) TunnelConf.LAN_BYPASS_ALLOWED_IPS
-                    else emptyList()
-                tunnelManager.setBackendStatus(BackendStatus.KillSwitch(allowedIps))
-            }
-        }
     }
 
     private fun launchWatcherNotification(
@@ -400,14 +383,6 @@ class AutoTunnelService : LifecycleService() {
                 AutoTunnelEvent.DoNothing -> Timber.i("Auto-tunneling: nothing to do")
                 is AutoTunnelEvent.Bounce ->
                     handleBounceWithBackoff(event.configsPeerKeyResolvedMap)
-                is AutoTunnelEvent.StartKillSwitch -> {
-                    Timber.d("Starting kill switch")
-                    tunnelManager.setBackendStatus(BackendStatus.KillSwitch(event.allowedIps))
-                }
-                AutoTunnelEvent.StopKillSwitch -> {
-                    Timber.d("Stopping kill switch")
-                    tunnelManager.setBackendStatus(BackendStatus.Active)
-                }
             }
         }
     }

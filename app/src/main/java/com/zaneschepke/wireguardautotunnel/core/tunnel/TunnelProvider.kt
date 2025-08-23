@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendStatus
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
@@ -41,9 +41,9 @@ interface TunnelProvider {
         reason: TunnelStatus.StopReason = TunnelStatus.StopReason.User,
     )
 
-    fun setBackendStatus(backendStatus: BackendStatus)
+    fun setBackendMode(backendMode: BackendMode)
 
-    fun getBackendStatus(): BackendStatus
+    fun getBackendMode(): BackendMode
 
     suspend fun runningTunnelNames(): Set<String>
 

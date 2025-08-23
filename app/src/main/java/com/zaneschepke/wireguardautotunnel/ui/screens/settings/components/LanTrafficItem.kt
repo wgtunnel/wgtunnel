@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.ui.screens.settings.killswitch.components
+package com.zaneschepke.wireguardautotunnel.ui.screens.settings.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lan
@@ -15,7 +15,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun LanTrafficItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
+fun lanTrafficItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
     return SelectionItem(
         leading = { Icon(Icons.Outlined.Lan, contentDescription = null) },
         title = {

@@ -9,18 +9,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import com.zaneschepke.wireguardautotunnel.ui.Route
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.AdvancedSettingsItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.*
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.compoents.BackendModeBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
 import com.zaneschepke.wireguardautotunnel.ui.state.AppViewState
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
@@ -33,12 +35,28 @@ fun SettingsScreen(uiState: AppUiState, appViewState: AppViewState, viewModel: A
 
     val interactionSource = remember { MutableInteractionSource() }
 
-    when (appViewState.bottomSheet) {
-        AppViewState.BottomSheet.BACKUP_AND_RESTORE -> {
-            SettingsBottomSheet(viewModel)
+    val showBackupBottomSheet by
+        remember(appViewState.bottomSheet) {
+            derivedStateOf {
+                appViewState.bottomSheet == AppViewState.BottomSheet.BACKUP_AND_RESTORE
+            }
         }
-        else -> Unit
-    }
+    val showBottomSheet by
+        remember(appViewState.bottomSheet) {
+            derivedStateOf { appViewState.bottomSheet == AppViewState.BottomSheet.BACKEND }
+        }
+    val showProxySettings by
+        remember(uiState.appSettings.appMode) {
+            derivedStateOf {
+                when (uiState.appSettings.appMode) {
+                    AppMode.PROXY -> true
+                    else -> false
+                }
+            }
+        }
+
+    if (showBackupBottomSheet) BackupBottomSheet(viewModel)
+    if (showBottomSheet) BackendModeBottomSheet(uiState.appSettings, viewModel)
 
     Column(
         horizontalAlignment = Alignment.Start,
@@ -60,16 +78,22 @@ fun SettingsScreen(uiState: AppUiState, appViewState: AppViewState, viewModel: A
                     }
                 ),
     ) {
+        SurfaceSelectionGroupButton(buildList { add(backendModeItem(uiState, viewModel)) })
+        SectionDivider()
         SurfaceSelectionGroupButton(
             items =
                 buildList {
+                    if (uiState.appSettings.appMode == AppMode.LOCK_DOWN) {
+                        add(lanTrafficItem(uiState, viewModel))
+                    }
                     add(tunnelMonitoringItem())
-                    add(appShortcutsItem(uiState, viewModel))
-                    if (!isTv) add(alwaysOnVpnItem(uiState, viewModel))
-                    add(killSwitchItem())
-                    add(RestartAtBootItem(uiState, viewModel))
+                    add(dnsSettingsItem())
+                    // TODO changing these settings won't work in certain app states
+                    if (showProxySettings) add(proxYSettingsItem())
                 }
         )
+        SectionDivider()
+        SurfaceSelectionGroupButton(listOf(systemFeaturesItem()))
         SectionDivider()
         SurfaceSelectionGroupButton(
             items =
@@ -79,19 +103,6 @@ fun SettingsScreen(uiState: AppUiState, appViewState: AppViewState, viewModel: A
                     if (uiState.appState.isLocalLogsEnabled) add(ReadLogsItem())
                     add(PinLockItem(uiState, viewModel))
                 }
-        )
-        SectionDivider()
-        if (!isTv) {
-            SurfaceSelectionGroupButton(items = listOf(kernelModeItem(uiState, viewModel)))
-            SectionDivider()
-        }
-        SurfaceSelectionGroupButton(
-            items =
-                listOf(
-                    AdvancedSettingsItem(
-                        onClick = { navController.navigate(Route.SettingsAdvanced) }
-                    )
-                )
         )
     }
 }

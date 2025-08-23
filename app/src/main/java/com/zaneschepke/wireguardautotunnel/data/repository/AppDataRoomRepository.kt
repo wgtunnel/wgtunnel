@@ -1,10 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.data.repository
 
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppSettingRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.*
 import javax.inject.Inject
 
 class AppDataRoomRepository
@@ -13,6 +10,7 @@ constructor(
     override val settings: AppSettingRepository,
     override val tunnels: TunnelRepository,
     override val appState: AppStateRepository,
+    override val proxySettings: ProxySettingsRepository,
 ) : AppDataRepository {
 
     override suspend fun getPrimaryOrFirstTunnel(): TunnelConf? {

@@ -195,7 +195,7 @@ class FileUtils(private val context: Context, private val ioDispatcher: Coroutin
                             TunnelConf(
                                 tunName = name,
                                 wgQuick = amConf.toWgQuickString(),
-                                amQuick = amConf.toAwgQuickString(true),
+                                amQuick = amConf.toAwgQuickString(true, false),
                             )
                         )
                     } ?: throw FileReadException
@@ -214,7 +214,7 @@ class FileUtils(private val context: Context, private val ioDispatcher: Coroutin
                                 TunnelConf(
                                     tunName = name,
                                     wgQuick = amConf.toWgQuickString(),
-                                    amQuick = amConf.toAwgQuickString(true),
+                                    amQuick = amConf.toAwgQuickString(true, false),
                                 )
                             }
                             .toList()

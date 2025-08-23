@@ -27,8 +27,8 @@ fun PeersSection(uiState: ConfigUiState, viewModel: ConfigViewModel) {
 
         Surface(shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.surface) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-                modifier = Modifier.padding(16.dp).focusGroup(),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(horizontal = 16.dp).focusGroup(),
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,

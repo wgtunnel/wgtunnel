@@ -3,6 +3,9 @@ package com.zaneschepke.wireguardautotunnel.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
+import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
+import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
 
 @Entity
 data class Settings(
@@ -18,24 +21,16 @@ data class Settings(
     val isShortcutsEnabled: Boolean = false,
     @ColumnInfo(name = "is_tunnel_on_wifi_enabled", defaultValue = "false")
     val isTunnelOnWifiEnabled: Boolean = false,
-    @ColumnInfo(name = "is_kernel_enabled", defaultValue = "false")
-    val isKernelEnabled: Boolean = false,
     @ColumnInfo(name = "is_restore_on_boot_enabled", defaultValue = "false")
     val isRestoreOnBootEnabled: Boolean = false,
     @ColumnInfo(name = "is_multi_tunnel_enabled", defaultValue = "false")
     val isMultiTunnelEnabled: Boolean = false,
     @ColumnInfo(name = "is_ping_enabled", defaultValue = "false")
     val isPingEnabled: Boolean = false,
-    @ColumnInfo(name = "is_amnezia_enabled", defaultValue = "false")
-    val isAmneziaEnabled: Boolean = false,
     @ColumnInfo(name = "is_wildcards_enabled", defaultValue = "false")
     val isWildcardsEnabled: Boolean = false,
     @ColumnInfo(name = "is_stop_on_no_internet_enabled", defaultValue = "false")
     val isStopOnNoInternetEnabled: Boolean = false,
-    @ColumnInfo(name = "is_vpn_kill_switch_enabled", defaultValue = "false")
-    val isVpnKillSwitchEnabled: Boolean = false,
-    @ColumnInfo(name = "is_kernel_kill_switch_enabled", defaultValue = "false")
-    val isKernelKillSwitchEnabled: Boolean = false,
     @ColumnInfo(name = "is_lan_on_kill_switch_enabled", defaultValue = "false")
     val isLanOnKillSwitchEnabled: Boolean = false,
     @ColumnInfo(name = "debounce_delay_seconds", defaultValue = "3")
@@ -52,16 +47,8 @@ data class Settings(
     val tunnelPingIntervalSeconds: Int = 30,
     @ColumnInfo(name = "tunnel_ping_attempts", defaultValue = "3") val tunnelPingAttempts: Int = 3,
     @ColumnInfo(name = "tunnel_ping_timeout_sec") val tunnelPingTimeoutSeconds: Int? = null,
-) {
-    enum class WifiDetectionMethod(val value: Int) {
-        DEFAULT(0),
-        LEGACY(1),
-        ROOT(2),
-        SHIZUKU(3);
-
-        companion object {
-            fun fromValue(value: Int): WifiDetectionMethod =
-                entries.find { it.value == value } ?: DEFAULT
-        }
-    }
-}
+    @ColumnInfo(name = "app_mode", defaultValue = "0") val appMode: AppMode = AppMode.fromValue(0),
+    @ColumnInfo(name = "dns_protocol", defaultValue = "0")
+    val dnsProtocol: DnsProtocol = DnsProtocol.fromValue(0),
+    @ColumnInfo(name = "dns_endpoint") val dnsEndpoint: String? = null,
+)

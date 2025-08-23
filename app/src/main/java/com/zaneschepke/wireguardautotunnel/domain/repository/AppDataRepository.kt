@@ -10,4 +10,6 @@ interface AppDataRepository {
     val settings: AppSettingRepository
     val tunnels: TunnelRepository
     val appState: AppStateRepository
+
+    val proxySettings: ProxySettingsRepository
 }

@@ -1,7 +1,7 @@
 [versions]
 accompanist = "0.37.3"
 activityCompose = "1.10.1"
-amneziawgAndroid = "1.6.2"
+amneziawgAndroid = "2.0.1"
 androidx-junit = "1.3.0"
 icmp4a = "1.0.0"
 roomdatabasebackup = "1.1.0"
@@ -32,7 +32,7 @@ kotlin = "2.2.0"
 ksp = "2.2.0-2.0.2"
 composeBom = "2025.07.00"
 compose = "1.8.3"
-icons = "1.7.8"
+icons = "1.7.3"
 workRuntimeKtxVersion = "2.10.3"
 zxingAndroidEmbedded = "4.3.0"
 coreSplashscreen = "1.0.1"
@@ -102,6 +102,7 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorClientCore" }
 lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle-runtime-compose" }
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "icons" }
+material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "icons" }
 
 # util
 pin-lock-compose = { module = "com.zaneschepke:pin_lock_compose", version.ref = "pinLockCompose" }

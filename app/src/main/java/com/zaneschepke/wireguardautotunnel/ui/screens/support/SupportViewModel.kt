@@ -21,9 +21,11 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class SupportViewModel
 @Inject
-constructor(private val updateRepository: UpdateRepository, private val fileUtils: FileUtils,
-            @MainDispatcher private val mainDispatcher: CoroutineDispatcher) :
-    ViewModel() {
+constructor(
+    private val updateRepository: UpdateRepository,
+    private val fileUtils: FileUtils,
+    @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SupportUiState())
     val uiState = _uiState.asStateFlow()

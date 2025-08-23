@@ -11,8 +11,4 @@ sealed class AutoTunnelEvent {
     data object Stop : AutoTunnelEvent()
 
     data object DoNothing : AutoTunnelEvent()
-
-    data class StartKillSwitch(val allowedIps: List<String>) : AutoTunnelEvent()
-
-    data object StopKillSwitch : AutoTunnelEvent()
 }

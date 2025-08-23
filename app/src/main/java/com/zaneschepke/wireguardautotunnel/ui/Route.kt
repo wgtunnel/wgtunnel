@@ -7,8 +7,6 @@ sealed class Route {
 
     @Serializable data object Settings : Route()
 
-    @Serializable data object SettingsAdvanced : Route()
-
     @Serializable data object AutoTunnel : Route()
 
     @Serializable data object AutoTunnelAdvanced : Route()
@@ -20,8 +18,6 @@ sealed class Route {
     @Serializable data object Appearance : Route()
 
     @Serializable data object Display : Route()
-
-    @Serializable data object KillSwitch : Route()
 
     @Serializable data object Language : Route()
 
@@ -49,4 +45,10 @@ sealed class Route {
     @Serializable data object Sort : Route()
 
     @Serializable data object TunnelMonitoring : Route()
+
+    @Serializable data object SystemFeatures : Route()
+
+    @Serializable data object ProxySettings : Route()
+
+    @Serializable data object Dns : Route()
 }

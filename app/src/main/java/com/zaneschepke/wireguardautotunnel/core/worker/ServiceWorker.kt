@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.*
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import dagger.assisted.Assisted
@@ -23,7 +22,6 @@ constructor(
     private val serviceManager: ServiceManager,
     private val appDataRepository: AppDataRepository,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val tunnelManager: TunnelManager,
 ) : CoroutineWorker(context, params) {
 
     companion object {
@@ -53,10 +51,11 @@ constructor(
         withContext(ioDispatcher) {
             Timber.i("Service worker started")
             with(appDataRepository.settings.get()) {
-                if (isAutoTunnelEnabled && serviceManager.autoTunnelService.value == null)
-                    return@with serviceManager.startAutoTunnel()
-                if (tunnelManager.activeTunnels.value.isEmpty())
-                    tunnelManager.restorePreviousState()
+                Timber.i("Checking to see if auto-tunnel has been killed by system")
+                if (isAutoTunnelEnabled && serviceManager.autoTunnelService.value == null) {
+                    Timber.i("Service has been killed by system, restoring.")
+                    serviceManager.startAutoTunnel()
+                }
             }
             Result.success()
         }

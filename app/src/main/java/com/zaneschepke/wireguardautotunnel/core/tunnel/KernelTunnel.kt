@@ -5,7 +5,8 @@ import com.wireguard.android.backend.BackendException
 import com.wireguard.android.backend.Tunnel
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendStatus
+import com.zaneschepke.wireguardautotunnel.di.Kernel
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
@@ -23,7 +24,7 @@ constructor(
     @ApplicationScope private val applicationScope: CoroutineScope,
     serviceManager: ServiceManager,
     appDataRepository: AppDataRepository,
-    private val backend: Backend,
+    @Kernel private val backend: Backend,
 ) : BaseTunnel(applicationScope, appDataRepository, serviceManager) {
 
     override fun getStatistics(tunnelConf: TunnelConf): TunnelStatistics? {
@@ -59,12 +60,12 @@ constructor(
         }
     }
 
-    override fun setBackendStatus(backendStatus: BackendStatus) {
+    override fun setBackendMode(backendMode: BackendMode) {
         Timber.w("Not yet implemented for kernel")
     }
 
-    override fun getBackendStatus(): BackendStatus {
-        return BackendStatus.Inactive
+    override fun getBackendMode(): BackendMode {
+        return BackendMode.Inactive
     }
 
     override suspend fun runningTunnelNames(): Set<String> {

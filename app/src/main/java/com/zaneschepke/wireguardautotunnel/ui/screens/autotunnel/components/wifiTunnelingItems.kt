@@ -27,7 +27,7 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.LearnMoreLinkLabel
 import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
 import com.zaneschepke.wireguardautotunnel.ui.theme.iconSize
-import com.zaneschepke.wireguardautotunnel.util.extensions.asString
+import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
@@ -123,7 +123,7 @@ fun WifiTunnelingItems(
                         Text(
                             stringResource(
                                 R.string.current_template,
-                                uiState.appSettings.wifiDetectionMethod.asString(context),
+                                uiState.appSettings.wifiDetectionMethod.asTitleString(context),
                             ),
                             style =
                                 MaterialTheme.typography.bodySmall.copy(

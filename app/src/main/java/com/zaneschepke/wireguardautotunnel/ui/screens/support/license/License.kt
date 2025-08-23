@@ -5,7 +5,7 @@ data class LicenseFileEntry(
     val groupId: String,
     val artifactId: String,
     val version: String,
-    val name: String,
+    val name: String? = null,
     val spdxLicenses: List<SpdxLicense> = emptyList(),
     val scm: Scm? = null,
 )

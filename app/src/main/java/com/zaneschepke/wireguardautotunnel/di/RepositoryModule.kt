@@ -6,6 +6,7 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.AppDatabase
 import com.zaneschepke.wireguardautotunnel.data.DataStoreManager
 import com.zaneschepke.wireguardautotunnel.data.DatabaseCallback
+import com.zaneschepke.wireguardautotunnel.data.dao.ProxySettingsDao
 import com.zaneschepke.wireguardautotunnel.data.dao.SettingsDao
 import com.zaneschepke.wireguardautotunnel.data.dao.TunnelConfigDao
 import com.zaneschepke.wireguardautotunnel.data.network.GitHubApi
@@ -27,14 +28,17 @@ import kotlinx.coroutines.CoroutineDispatcher
 class RepositoryModule {
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
+    fun provideDatabase(
+        @ApplicationContext context: Context,
+        callback: DatabaseCallback,
+    ): AppDatabase {
         return Room.databaseBuilder(
                 context,
                 AppDatabase::class.java,
                 context.getString(R.string.db_name),
             )
             .fallbackToDestructiveMigration(true)
-            .addCallback(DatabaseCallback())
+            .addCallback(callback)
             .build()
     }
 
@@ -42,6 +46,12 @@ class RepositoryModule {
     @Provides
     fun provideSettingsDoa(appDatabase: AppDatabase): SettingsDao {
         return appDatabase.settingDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideProxyDoa(appDatabase: AppDatabase): ProxySettingsDao {
+        return appDatabase.proxySettingsDoa()
     }
 
     @Singleton
@@ -70,6 +80,15 @@ class RepositoryModule {
 
     @Singleton
     @Provides
+    fun provideProxySettingsRepository(
+        proxySettingsDao: ProxySettingsDao,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
+    ): ProxySettingsRepository {
+        return RoomProxySettingsRepository(proxySettingsDao, ioDispatcher)
+    }
+
+    @Singleton
+    @Provides
     fun providePreferencesDataStore(
         @ApplicationContext context: Context,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
@@ -89,8 +108,14 @@ class RepositoryModule {
         settingsRepository: AppSettingRepository,
         tunnelRepository: TunnelRepository,
         appStateRepository: AppStateRepository,
+        proxySettingsRepository: ProxySettingsRepository,
     ): AppDataRepository {
-        return AppDataRoomRepository(settingsRepository, tunnelRepository, appStateRepository)
+        return AppDataRoomRepository(
+            settingsRepository,
+            tunnelRepository,
+            appStateRepository,
+            proxySettingsRepository,
+        )
     }
 
     @Provides

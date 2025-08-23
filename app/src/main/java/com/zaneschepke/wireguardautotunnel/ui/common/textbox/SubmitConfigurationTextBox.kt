@@ -1,9 +1,9 @@
-package com.zaneschepke.wireguardautotunnel.ui.common.config
+package com.zaneschepke.wireguardautotunnel.ui.common.textbox
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -19,13 +19,13 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
-import com.zaneschepke.wireguardautotunnel.ui.common.textbox.CustomTextField
 
 @Composable
 fun SubmitConfigurationTextBox(
     value: String?,
     label: String,
     hint: String,
+    modifier: Modifier = Modifier,
     isErrorValue: (value: String?) -> Boolean,
     onSubmit: (value: String) -> Unit,
     supportingText: @Composable (() -> Unit)? = null,
@@ -62,7 +62,7 @@ fun SubmitConfigurationTextBox(
                 color = MaterialTheme.colorScheme.outline,
             )
         },
-        modifier = Modifier.padding(top = 5.dp, bottom = 10.dp).fillMaxWidth().padding(end = 16.dp),
+        modifier = modifier.fillMaxWidth().height(48.dp),
         singleLine = true,
         keyboardOptions = keyboardOptions,
         keyboardActions =

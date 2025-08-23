@@ -13,7 +13,7 @@ import com.zaneschepke.wireguardautotunnel.core.worker.ServiceWorker
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.di.MainDispatcher
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendStatus
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
 import com.zaneschepke.wireguardautotunnel.util.ReleaseTree
@@ -91,7 +91,7 @@ class WireGuardAutoTunnel : Application(), Configuration.Provider {
 
     override fun onTerminate() {
         applicationScope.cancel()
-        tunnelManager.setBackendStatus(BackendStatus.Inactive)
+        tunnelManager.setBackendMode(BackendMode.Inactive)
         super.onTerminate()
     }
 

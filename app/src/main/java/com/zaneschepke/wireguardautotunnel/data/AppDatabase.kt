@@ -2,14 +2,16 @@ package com.zaneschepke.wireguardautotunnel.data
 
 import androidx.room.*
 import androidx.room.migration.AutoMigrationSpec
+import com.zaneschepke.wireguardautotunnel.data.dao.ProxySettingsDao
 import com.zaneschepke.wireguardautotunnel.data.dao.SettingsDao
 import com.zaneschepke.wireguardautotunnel.data.dao.TunnelConfigDao
+import com.zaneschepke.wireguardautotunnel.data.entity.ProxySettings
 import com.zaneschepke.wireguardautotunnel.data.entity.Settings
 import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
 
 @Database(
-    entities = [Settings::class, TunnelConfig::class],
-    version = 19,
+    entities = [Settings::class, TunnelConfig::class, ProxySettings::class],
+    version = 20,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -30,6 +32,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
             AutoMigration(from = 16, to = 17, spec = WifiDetectionMigration::class),
             AutoMigration(from = 17, to = 18),
             AutoMigration(from = 18, to = 19, spec = PingMigration::class),
+            AutoMigration(from = 19, to = 20, spec = ProxyMigration::class),
         ],
     exportSchema = true,
 )
@@ -38,6 +41,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun settingDao(): SettingsDao
 
     abstract fun tunnelConfigDoa(): TunnelConfigDao
+
+    abstract fun proxySettingsDoa(): ProxySettingsDao
 }
 
 @DeleteColumn(tableName = "Settings", columnName = "default_tunnel")
@@ -68,3 +73,11 @@ class WifiDetectionMigration : AutoMigrationSpec
     ),
 )
 class PingMigration : AutoMigrationSpec
+
+@DeleteColumn.Entries(
+    DeleteColumn(tableName = "Settings", columnName = "is_amnezia_enabled"),
+    DeleteColumn(tableName = "Settings", columnName = "is_vpn_kill_switch_enabled"),
+    DeleteColumn(tableName = "Settings", columnName = "is_kernel_kill_switch_enabled"),
+    DeleteColumn(tableName = "Settings", columnName = "is_kernel_enabled"),
+)
+class ProxyMigration : AutoMigrationSpec

@@ -1,6 +1,8 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
+import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
 
 data class AppSettings(
     val id: Int = 0,
@@ -11,11 +13,9 @@ data class AppSettings(
     val isTunnelOnEthernetEnabled: Boolean = false,
     val isShortcutsEnabled: Boolean = false,
     val isTunnelOnWifiEnabled: Boolean = false,
-    val isKernelEnabled: Boolean = false,
     val isRestoreOnBootEnabled: Boolean = false,
     val isMultiTunnelEnabled: Boolean = false,
     val isPingEnabled: Boolean = false,
-    val isAmneziaEnabled: Boolean = false,
     val isWildcardsEnabled: Boolean = false,
     val isStopOnNoInternetEnabled: Boolean = false,
     val isVpnKillSwitchEnabled: Boolean = false,
@@ -29,6 +29,9 @@ data class AppSettings(
     val tunnelPingIntervalSeconds: Int = 30,
     val tunnelPingAttempts: Int = 3,
     val tunnelPingTimeoutSeconds: Int? = null,
+    val appMode: AppMode = AppMode.VPN,
+    val dnsProtocol: DnsProtocol = DnsProtocol.SYSTEM,
+    val dnsEndpoint: String? = null,
 ) {
     fun toAutoTunnelStateString(): String {
         return """

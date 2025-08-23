@@ -7,7 +7,6 @@ import com.wireguard.android.util.ToolsInstaller
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.networkmonitor.NetworkMonitor
-import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.*
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
@@ -26,6 +25,7 @@ import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.map
 import org.amnezia.awg.backend.Backend
 import org.amnezia.awg.backend.GoBackend
+import org.amnezia.awg.backend.ProxyGoBackend
 import org.amnezia.awg.backend.RootTunnelActionHandler
 
 @Module
@@ -48,8 +48,19 @@ class TunnelModule {
 
     @Provides
     @Singleton
+    @Userspace
     fun provideAmneziaBackend(@ApplicationContext context: Context): Backend {
         return GoBackend(context, RootTunnelActionHandler(org.amnezia.awg.util.RootShell(context)))
+    }
+
+    @Provides
+    @Singleton
+    @ProxyUserspace
+    fun provideAmneziaProxyBackend(@ApplicationContext context: Context): Backend {
+        return ProxyGoBackend(
+            context,
+            RootTunnelActionHandler(org.amnezia.awg.util.RootShell(context)),
+        )
     }
 
     @Provides
@@ -86,7 +97,19 @@ class TunnelModule {
         @ApplicationScope applicationScope: CoroutineScope,
         serviceManager: ServiceManager,
         appDataRepository: AppDataRepository,
-        backend: Backend,
+        @Userspace backend: Backend,
+    ): TunnelProvider {
+        return UserspaceTunnel(applicationScope, serviceManager, appDataRepository, backend)
+    }
+
+    @Provides
+    @Singleton
+    @ProxyUserspace
+    fun provideProxyUserspaceProvider(
+        @ApplicationScope applicationScope: CoroutineScope,
+        serviceManager: ServiceManager,
+        appDataRepository: AppDataRepository,
+        @ProxyUserspace backend: Backend,
     ): TunnelProvider {
         return UserspaceTunnel(applicationScope, serviceManager, appDataRepository, backend)
     }
@@ -96,14 +119,17 @@ class TunnelModule {
     fun provideTunnelManager(
         @Kernel kernelTunnel: TunnelProvider,
         @Userspace userspaceTunnel: TunnelProvider,
+        @ProxyUserspace proxyTunnel: TunnelProvider,
+        serviceManager: ServiceManager,
         appDataRepository: AppDataRepository,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
         @ApplicationScope applicationScope: CoroutineScope,
-        notificationManager: NotificationManager,
     ): TunnelManager {
         return TunnelManager(
             kernelTunnel,
             userspaceTunnel,
+            proxyTunnel,
+            serviceManager,
             appDataRepository,
             applicationScope,
             ioDispatcher,

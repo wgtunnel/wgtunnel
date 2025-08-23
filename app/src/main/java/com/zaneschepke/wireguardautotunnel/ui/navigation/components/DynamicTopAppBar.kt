@@ -11,12 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.ui.state.NavBarState
+import com.zaneschepke.wireguardautotunnel.ui.theme.LockedDownBannerHeight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DynamicTopAppBar(navBarState: NavBarState, modifier: Modifier = Modifier) {
     TopAppBar(
-        modifier = modifier,
+        modifier = modifier.padding(top = LockedDownBannerHeight),
         colors = TopAppBarDefaults.topAppBarColors().copy(Color.Transparent),
         title = {
             AnimatedVisibility(

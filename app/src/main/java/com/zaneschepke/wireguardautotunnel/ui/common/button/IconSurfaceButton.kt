@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-@androidx.compose.runtime.Composable
+@Composable
 fun IconSurfaceButton(
     title: String,
     onClick: () -> Unit,

@@ -27,7 +27,7 @@ fun CustomTextField(
     label: @Composable () -> Unit,
     containerColor: Color,
     onValueChange: (value: String) -> Unit = {},
-    singleLine: Boolean = false,
+    singleLine: Boolean = true,
     placeholder: @Composable (() -> Unit)? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions(),
     keyboardActions: KeyboardActions = KeyboardActions(),
@@ -37,7 +37,8 @@ fun CustomTextField(
     isError: Boolean = false,
     readOnly: Boolean = false,
     enabled: Boolean = true,
-    interactionSource: MutableInteractionSource,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    interactionSource: MutableInteractionSource = MutableInteractionSource(),
 ) {
     val space = " "
     BasicTextField(
@@ -52,6 +53,7 @@ fun CustomTextField(
         interactionSource = interactionSource,
         enabled = enabled,
         singleLine = singleLine,
+        visualTransformation = visualTransformation,
     ) {
         OutlinedTextFieldDefaults.DecorationBox(
             value = space + value,
@@ -81,14 +83,14 @@ fun CustomTextField(
                     ),
             enabled = enabled,
             label = label,
-            visualTransformation = VisualTransformation.None,
+            visualTransformation = visualTransformation,
             interactionSource = interactionSource,
             placeholder = placeholder,
             container = {
-                OutlinedTextFieldDefaults.ContainerBox(
-                    enabled,
+                OutlinedTextFieldDefaults.Container(
+                    enabled = enabled,
                     isError = isError,
-                    interactionSource,
+                    interactionSource = interactionSource,
                     colors =
                         TextFieldDefaults.colors()
                             .copy(

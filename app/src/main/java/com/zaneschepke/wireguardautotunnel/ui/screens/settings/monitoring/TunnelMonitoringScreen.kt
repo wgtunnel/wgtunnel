@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
-import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledNumberDropdown
+import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.components.detailedPingStatsItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.components.enablePingMonitoringItem
 import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
@@ -51,7 +51,7 @@ fun TunnelMonitoringScreen(uiState: AppUiState, viewModel: AppViewModel) {
     ) {
         SurfaceSelectionGroupButton(listOf(enablePingMonitoringItem(uiState, viewModel)))
         if (uiState.appSettings.isPingEnabled) {
-            LabelledNumberDropdown(
+            LabelledDropdown(
                 title = {
                     Text(
                         text = stringResource(R.string.tunnel_ping_interval),
@@ -67,8 +67,9 @@ fun TunnelMonitoringScreen(uiState: AppUiState, viewModel: AppViewModel) {
                     viewModel.handleEvent(AppEvent.SetPingInterval(selected!!))
                 },
                 options = (10..60).step(10).toList(),
+                optionToString = { it?.toString() ?: stringResource(R.string._default) },
             )
-            LabelledNumberDropdown(
+            LabelledDropdown(
                 title = {
                     Text(
                         text = stringResource(R.string.attempts_per_interval),
@@ -84,8 +85,9 @@ fun TunnelMonitoringScreen(uiState: AppUiState, viewModel: AppViewModel) {
                     viewModel.handleEvent(AppEvent.SetPingAttempts(selected!!))
                 },
                 options = (1..5).toList(),
+                optionToString = { it?.toString() ?: stringResource(R.string._default) },
             )
-            LabelledNumberDropdown(
+            LabelledDropdown(
                 title = {
                     Text(
                         text = stringResource(R.string.ping_timeout),
@@ -110,6 +112,7 @@ fun TunnelMonitoringScreen(uiState: AppUiState, viewModel: AppViewModel) {
                     viewModel.handleEvent(AppEvent.SetPingTimeout(selected))
                 },
                 options = (10..20).toList() + null,
+                optionToString = { it?.toString() ?: stringResource(R.string._default) },
             )
             SurfaceSelectionGroupButton(listOf(detailedPingStatsItem(uiState, viewModel)))
         }

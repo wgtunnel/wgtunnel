@@ -67,7 +67,7 @@ private fun QrCodeContent(tunnelConf: TunnelConf) {
     var selectedOption by remember { mutableStateOf(ConfigType.WG) }
     val qrCodeText =
         when (selectedOption) {
-            ConfigType.AM -> tunnelConf.toAmConfig().toAwgQuickString(true)
+            ConfigType.AM -> tunnelConf.toAmConfig().toAwgQuickString(true, false)
             ConfigType.WG -> tunnelConf.toWgConfig().toWgQuickString(true)
         }
 

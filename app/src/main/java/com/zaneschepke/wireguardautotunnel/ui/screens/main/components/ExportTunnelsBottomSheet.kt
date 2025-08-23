@@ -1,20 +1,16 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.main.components
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FolderZip
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberFileExportLauncherForResult
+import com.zaneschepke.wireguardautotunnel.ui.common.sheet.CustomBottomSheet
+import com.zaneschepke.wireguardautotunnel.ui.common.sheet.SheetOption
 import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.AuthorizationPromptWrapper
 import com.zaneschepke.wireguardautotunnel.ui.state.AppViewState
@@ -74,47 +70,34 @@ fun ExportTunnelsBottomSheet(viewModel: AppViewModel) {
         )
     }
 
-    ModalBottomSheet(
-        containerColor = MaterialTheme.colorScheme.surface,
-        onDismissRequest = {
-            viewModel.handleEvent(AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE))
-        },
+    CustomBottomSheet(
+        listOf(
+            SheetOption(
+                Icons.Outlined.FolderZip,
+                stringResource(R.string.export_tunnels_amnezia),
+                onClick = {
+                    exportConfigType = ConfigType.AM
+                    if (!isAuthorized && !isTv) {
+                        showAuthPrompt = true
+                    } else {
+                        shouldExport = true
+                    }
+                },
+            ),
+            SheetOption(
+                Icons.Outlined.FolderZip,
+                stringResource(R.string.export_tunnels_wireguard),
+                onClick = {
+                    exportConfigType = ConfigType.WG
+                    if (!isAuthorized && !isTv) {
+                        showAuthPrompt = true
+                    } else {
+                        shouldExport = true
+                    }
+                },
+            ),
+        )
     ) {
-        ExportOptionRow(
-            label = stringResource(R.string.export_tunnels_amnezia),
-            onClick = {
-                exportConfigType = ConfigType.AM
-                if (!isAuthorized && !isTv) {
-                    showAuthPrompt = true
-                } else {
-                    shouldExport = true
-                }
-            },
-        )
-        HorizontalDivider()
-
-        ExportOptionRow(
-            label = stringResource(R.string.export_tunnels_wireguard),
-            onClick = {
-                exportConfigType = ConfigType.WG
-                if (!isAuthorized && !isTv) {
-                    showAuthPrompt = true
-                } else {
-                    shouldExport = true
-                }
-            },
-        )
-    }
-}
-
-@Composable
-private fun ExportOptionRow(label: String, onClick: () -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(10.dp)) {
-        Icon(
-            imageVector = Icons.Outlined.FolderZip,
-            contentDescription = label,
-            modifier = Modifier.padding(10.dp),
-        )
-        Text(text = label, modifier = Modifier.padding(10.dp))
+        viewModel.handleEvent(AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE))
     }
 }

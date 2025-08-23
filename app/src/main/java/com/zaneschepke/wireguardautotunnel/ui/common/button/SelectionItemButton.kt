@@ -37,18 +37,20 @@ fun SelectionItemButton(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start,
+            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
         ) {
-            leading?.let { it() }
-            Text(
-                buttonText,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.fillMaxWidth(3 / 4f),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
+            Row {
+                leading?.let { it() }
+                Text(
+                    buttonText,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.fillMaxWidth(3 / 4f),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
             trailing?.let { it() }
         }
     }
