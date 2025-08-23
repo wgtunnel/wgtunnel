@@ -123,6 +123,9 @@ android {
     licensee {
         allowedLicenses().forEach { allow(it) }
         allowedLicenseUrls().forEach { allowUrl(it) }
+        allowDependency("com.zaneschepke", "hevtunnel", "1.0.0") {
+            because("Apache-2.0, but not auto-detected")
+        }
     }
 
     applicationVariants.all {

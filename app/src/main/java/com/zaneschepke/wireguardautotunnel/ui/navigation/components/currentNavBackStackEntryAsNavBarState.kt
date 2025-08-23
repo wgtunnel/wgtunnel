@@ -15,6 +15,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -38,6 +39,8 @@ fun currentNavBackStackEntryAsNavBarState(
     uiState: AppUiState,
     appViewState: AppViewState,
 ): State<NavBarState> {
+    val context = LocalContext.current
+
     fun isActiveSelected() =
         uiState.activeTunnels.any { active ->
             appViewState.selectedTunnels.any { it.id == active.key.id }
@@ -144,7 +147,10 @@ fun currentNavBackStackEntryAsNavBarState(
                         topTitle = { Text(stringResource(R.string.settings)) },
                         route = Route.Settings,
                         topTrailing = {
-                            ActionIconButton(Icons.Rounded.Menu, R.string.quick_actions) {
+                            ActionIconButton(
+                                Icons.Rounded.SettingsBackupRestore,
+                                R.string.quick_actions,
+                            ) {
                                 viewModel.handleEvent(
                                     AppEvent.SetBottomSheet(
                                         AppViewState.BottomSheet.BACKUP_AND_RESTORE
@@ -178,16 +184,10 @@ fun currentNavBackStackEntryAsNavBarState(
                         route = Route.TunnelMonitoring,
                     )
 
-                backStackEntry.isCurrentRoute(Route.BackendMode::class) ->
+                backStackEntry.isCurrentRoute(Route.ProxySettings::class) ->
                     NavBarState(
-                        topTitle = { Text(stringResource(R.string.backend_mode)) },
-                        route = Route.BackendMode,
-                    )
-
-                backStackEntry.isCurrentRoute(Route.ProxyCredentials::class) ->
-                    NavBarState(
-                        topTitle = { Text(stringResource(R.string.proxy_credentials)) },
-                        route = Route.BackendMode,
+                        topTitle = { Text(stringResource(R.string.proxy_settings)) },
+                        route = Route.ProxySettings,
                         topTrailing = {
                             ActionIconButton(Icons.Rounded.Save, R.string.save) {
                                 viewModel.handleEvent(AppEvent.InvokeScreenAction)
@@ -201,10 +201,16 @@ fun currentNavBackStackEntryAsNavBarState(
                         route = Route.WifiDetectionMethod,
                     )
 
-                backStackEntry.isCurrentRoute(Route.KillSwitch::class) ->
+                backStackEntry.isCurrentRoute(Route.SystemFeatures::class) ->
                     NavBarState(
-                        topTitle = { Text(stringResource(R.string.kill_switch)) },
-                        route = Route.KillSwitch,
+                        topTitle = { Text(stringResource(R.string.android_integrations)) },
+                        route = Route.SystemFeatures,
+                    )
+
+                backStackEntry.isCurrentRoute(Route.Dns::class) ->
+                    NavBarState(
+                        topTitle = { Text(stringResource(R.string.dns_settings)) },
+                        route = Route.Dns,
                     )
 
                 backStackEntry.isCurrentRoute(Route.Support::class) ->
@@ -241,8 +247,7 @@ fun currentNavBackStackEntryAsNavBarState(
                     )
                 }
 
-                backStackEntry.isCurrentRoute(Route.AutoTunnelAdvanced::class) ||
-                    backStackEntry.isCurrentRoute(Route.SettingsAdvanced::class) ->
+                backStackEntry.isCurrentRoute(Route.AutoTunnelAdvanced::class) ->
                     NavBarState(
                         showTop = true,
                         showBottom = true,
@@ -295,12 +300,14 @@ fun currentNavBackStackEntryAsNavBarState(
 
                 backStackEntry.isCurrentRoute(Route.Config::class) -> {
                     val args = backStackEntry?.toRoute<Route.Config>()
-                    val name = uiState.tunnels.find { it.id == args?.id }?.name
+                    val name =
+                        uiState.tunnels.find { it.id == args?.id }?.name
+                            ?: context.getString(R.string.new_tunnel)
 
                     NavBarState(
                         showTop = true,
                         showBottom = true,
-                        topTitle = { name?.let { Text(it) } },
+                        topTitle = { Text(name) },
                         topTrailing = {
                             ActionIconButton(Icons.Rounded.Save, R.string.save) {
                                 viewModel.handleEvent(AppEvent.InvokeScreenAction)

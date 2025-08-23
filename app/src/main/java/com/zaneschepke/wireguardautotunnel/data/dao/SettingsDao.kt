@@ -16,7 +16,7 @@ interface SettingsDao {
 
     @Query("SELECT * FROM settings LIMIT 1") fun getSettingsFlow(): Flow<Settings>
 
-    @Query("SELECT * FROM settings") fun getAllFlow(): Flow<MutableList<Settings>>
+    @Query("SELECT * FROM settings") fun getAllFlow(): Flow<List<Settings>>
 
     @Delete suspend fun delete(t: Settings)
 

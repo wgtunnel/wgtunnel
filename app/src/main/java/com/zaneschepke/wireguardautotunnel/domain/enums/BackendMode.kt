@@ -1,12 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.domain.enums
 
-enum class BackendMode(val value: Int) {
-    USERSPACE(0),
-    PROXIED_USERSPACE(1),
-    KERNEL(2);
+sealed class BackendMode {
+    data object Inactive : BackendMode()
 
-    companion object {
-        fun fromValue(value: Int): BackendMode  =
-            entries.find { it.value == value } ?: USERSPACE
-    }
+    data class KillSwitch(val allowedIps: Set<String>) : BackendMode()
 }

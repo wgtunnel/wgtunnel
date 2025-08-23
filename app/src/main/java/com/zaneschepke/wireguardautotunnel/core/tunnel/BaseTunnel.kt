@@ -192,7 +192,7 @@ abstract class BaseTunnel(
                         val (wg, amnezia) = updatedConfigProxy.buildConfigs()
                         currentConf =
                             currentConf.copyWithCallback(
-                                amQuick = amnezia.toAwgQuickString(true),
+                                amQuick = amnezia.toAwgQuickString(true, false),
                                 wgQuick = wg.toWgQuickString(true),
                             )
                         bouncingTunnelIds.remove(currentConf.id)

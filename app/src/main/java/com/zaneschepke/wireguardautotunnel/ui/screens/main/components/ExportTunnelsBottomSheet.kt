@@ -70,32 +70,34 @@ fun ExportTunnelsBottomSheet(viewModel: AppViewModel) {
         )
     }
 
-    CustomBottomSheet(listOf(
-        SheetOption(
-            Icons.Outlined.FolderZip,
-            stringResource(R.string.export_tunnels_amnezia),
-            onClick = {
-                exportConfigType = ConfigType.AM
-                if (!isAuthorized && !isTv) {
-                    showAuthPrompt = true
-                } else {
-                    shouldExport = true
-                }
-            },
-        ),
-        SheetOption(
-            Icons.Outlined.FolderZip,
-            stringResource(R.string.export_tunnels_wireguard),
-            onClick = {
-                exportConfigType = ConfigType.WG
-                if (!isAuthorized && !isTv) {
-                    showAuthPrompt = true
-                } else {
-                    shouldExport = true
-                }
-            },
-        ),
-    )) {
+    CustomBottomSheet(
+        listOf(
+            SheetOption(
+                Icons.Outlined.FolderZip,
+                stringResource(R.string.export_tunnels_amnezia),
+                onClick = {
+                    exportConfigType = ConfigType.AM
+                    if (!isAuthorized && !isTv) {
+                        showAuthPrompt = true
+                    } else {
+                        shouldExport = true
+                    }
+                },
+            ),
+            SheetOption(
+                Icons.Outlined.FolderZip,
+                stringResource(R.string.export_tunnels_wireguard),
+                onClick = {
+                    exportConfigType = ConfigType.WG
+                    if (!isAuthorized && !isTv) {
+                        showAuthPrompt = true
+                    } else {
+                        shouldExport = true
+                    }
+                },
+            ),
+        )
+    ) {
         viewModel.handleEvent(AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE))
     }
 }

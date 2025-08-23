@@ -2,7 +2,9 @@ package com.zaneschepke.wireguardautotunnel.viewmodel.event
 
 import android.net.Uri
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
+import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
+import com.zaneschepke.wireguardautotunnel.data.model.DnsProvider
 import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.ui.state.AppViewState
@@ -87,7 +89,7 @@ sealed class AppEvent {
     data class SetDetectionMethod(val detectionMethod: AndroidNetworkMonitor.WifiDetectionMethod) :
         AppEvent()
 
-    data class SetBackendMode(val backendMode: BackendMode) : AppEvent()
+    data class SetAppMode(val appMode: AppMode) : AppEvent()
 
     data object ToggleAutoTunnelOnWifi : AppEvent()
 
@@ -143,14 +145,16 @@ sealed class AppEvent {
 
     data class SetPingInterval(val interval: Int) : AppEvent()
 
-    data object ToggleSocks5Proxy : AppEvent()
+    data class SetDnsProtocol(val dnsProtocol: DnsProtocol) : AppEvent()
 
-    data object ToggleHttpProxy : AppEvent()
+    data class SetDnsProvider(val dnsProvider: DnsProvider) : AppEvent()
 
-    data class SetSocks5BindAddress(val address : String) : AppEvent()
-
-    data class SetHttpProxyBindAddress(val address : String) : AppEvent()
-
-    data class SetProxyCredentials(val username: String, val password : String) : AppEvent()
-
+    data class SetProxySettings(
+        val socks5Enabled: Boolean,
+        val httpProxyEnabled: Boolean,
+        val httpBindAddress: String?,
+        val socks5BindAddress: String?,
+        val username: String,
+        val password: String,
+    ) : AppEvent()
 }

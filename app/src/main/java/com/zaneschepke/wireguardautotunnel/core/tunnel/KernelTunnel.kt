@@ -6,7 +6,7 @@ import com.wireguard.android.backend.Tunnel
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.Kernel
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendStatus
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
@@ -14,9 +14,9 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.domain.state.WireGuardStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendError
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import timber.log.Timber
-import javax.inject.Inject
 
 class KernelTunnel
 @Inject
@@ -60,12 +60,12 @@ constructor(
         }
     }
 
-    override fun setBackendStatus(backendStatus: BackendStatus) {
+    override fun setBackendMode(backendMode: BackendMode) {
         Timber.w("Not yet implemented for kernel")
     }
 
-    override fun getBackendStatus(): BackendStatus {
-        return BackendStatus.Inactive
+    override fun getBackendMode(): BackendMode {
+        return BackendMode.Inactive
     }
 
     override suspend fun runningTunnelNames(): Set<String> {

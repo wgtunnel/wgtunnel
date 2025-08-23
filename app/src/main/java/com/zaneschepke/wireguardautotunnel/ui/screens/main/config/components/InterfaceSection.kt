@@ -11,10 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.common.config.ConfigurationTextBox
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.config.ConfigViewModel
 import com.zaneschepke.wireguardautotunnel.ui.screens.main.config.state.ConfigUiState
+import java.util.*
 
 @Composable
 fun InterfaceSection(
@@ -30,8 +31,8 @@ fun InterfaceSection(
 
     Surface(shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.surface) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-            modifier = Modifier.padding(16.dp).focusGroup(),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.padding(horizontal = 16.dp).focusGroup(),
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -55,7 +56,9 @@ fun InterfaceSection(
                 onValueChange = viewModel::updateTunnelName,
                 label = stringResource(R.string.name),
                 isError = isTunnelNameTaken,
-                hint = stringResource(R.string.tunnel_name).lowercase(),
+                hint =
+                    stringResource(R.string.hint_template, stringResource(R.string.tunnel_name))
+                        .lowercase(Locale.getDefault()),
                 modifier = Modifier.fillMaxWidth(),
             )
             InterfaceFields(

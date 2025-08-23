@@ -99,14 +99,16 @@ data class TunnelConf(
 
     override fun getName(): String = tunName
 
-    override fun isIpv4ResolutionPreferred(): Boolean = isIpv4Preferred
-
     override fun onStateChange(newState: org.amnezia.awg.backend.Tunnel.State) {
         stateChangeCallback?.invoke(newState)
     }
 
     override fun onStateChange(newState: Tunnel.State) {
         stateChangeCallback?.invoke(newState)
+    }
+
+    override fun isIpv4ResolutionPreferred(): Boolean {
+        return true
     }
 
     fun generateUniqueName(tunnelNames: List<String>): String {
@@ -142,7 +144,7 @@ data class TunnelConf(
             config: org.amnezia.awg.config.Config,
             name: String? = null,
         ): TunnelConf {
-            val amQuick = config.toAwgQuickString(true)
+            val amQuick = config.toAwgQuickString(true, false)
             val wgQuick = config.toWgQuickString()
             return TunnelConf(
                 tunName = name ?: config.defaultName(),
@@ -154,8 +156,8 @@ data class TunnelConf(
         private const val IPV6_ALL_NETWORKS = "::/0"
         private const val IPV4_ALL_NETWORKS = "0.0.0.0/0"
         val ALL_IPS = listOf(IPV4_ALL_NETWORKS, IPV6_ALL_NETWORKS)
-        private val IPV4_PUBLIC_NETWORKS =
-            listOf(
+        val IPV4_PUBLIC_NETWORKS =
+            setOf(
                 "0.0.0.0/5",
                 "8.0.0.0/7",
                 "11.0.0.0/8",
@@ -187,6 +189,6 @@ data class TunnelConf(
                 "200.0.0.0/5",
                 "208.0.0.0/4",
             )
-        val LAN_BYPASS_ALLOWED_IPS = listOf(IPV6_ALL_NETWORKS) + IPV4_PUBLIC_NETWORKS
+        val LAN_BYPASS_ALLOWED_IPS = setOf(IPV6_ALL_NETWORKS) + IPV4_PUBLIC_NETWORKS
     }
 }

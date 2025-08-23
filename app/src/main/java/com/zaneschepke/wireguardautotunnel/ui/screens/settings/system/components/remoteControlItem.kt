@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.ui.screens.settings.advanced.components
+package com.zaneschepke.wireguardautotunnel.ui.screens.settings.system.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -20,7 +20,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun RemoteControlItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
+fun remoteControlItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
     val clipboardManager = rememberClipboardHelper()
 
     return SelectionItem(

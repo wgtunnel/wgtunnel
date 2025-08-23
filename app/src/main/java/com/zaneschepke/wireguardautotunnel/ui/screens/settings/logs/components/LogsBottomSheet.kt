@@ -22,26 +22,20 @@ fun LogsBottomSheet(viewModel: AppViewModel) {
                 Icons.Outlined.FolderZip,
                 stringResource(R.string.export_logs),
                 onClick = {
-                    viewModel.handleEvent(
-                        AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE)
-                    )
+                    viewModel.handleEvent(AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE))
                     viewModel.handleEvent(AppEvent.ExportLogs)
-                }
+                },
             ),
             SheetOption(
                 Icons.Outlined.Delete,
                 stringResource(R.string.delete_logs),
                 onClick = {
-                    viewModel.handleEvent(
-                        AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE)
-                    )
+                    viewModel.handleEvent(AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE))
                     viewModel.handleEvent(AppEvent.DeleteLogs)
-                }
-            )
+                },
+            ),
         )
     ) {
-        viewModel.handleEvent(
-            AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE)
-        )
+        viewModel.handleEvent(AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE))
     }
 }

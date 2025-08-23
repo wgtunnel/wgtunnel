@@ -41,7 +41,7 @@ class GitHubUpdateRepository(
                 val standaloneApkAsset =
                     release.assets.find { asset ->
                         asset.name.startsWith("wgtunnel-${Constants.STANDALONE_FLAVOR}-v") &&
-                                asset.name.endsWith(".apk")
+                            asset.name.endsWith(".apk")
                     }
                 val newVersion =
                     standaloneApkAsset
@@ -53,9 +53,10 @@ class GitHubUpdateRepository(
                 if (isNightly && newVersion != currentVersion)
                     return@map GitHubReleaseMapper.toAppUpdate(release, newVersion)
                 if (NumberUtils.compareVersions(newVersion, currentVersion) > 0) {
-                    GitHubReleaseMapper.toAppUpdate(release.copy(
-                        assets = listOf(standaloneApkAsset)
-                    ), newVersion)
+                    GitHubReleaseMapper.toAppUpdate(
+                        release.copy(assets = listOf(standaloneApkAsset)),
+                        newVersion,
+                    )
                 } else {
                     null
                 }

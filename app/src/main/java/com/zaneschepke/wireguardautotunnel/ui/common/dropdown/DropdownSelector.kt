@@ -2,7 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.common.dropdown
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -23,37 +23,29 @@ fun <T> DropdownSelector(
     label: @Composable (() -> Unit)? = null,
     isExpanded: Boolean = false,
     onDismiss: () -> Unit = {},
+    optionToString: @Composable (T?) -> String = {
+        it?.toString() ?: stringResource(R.string._default)
+    },
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(5.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (label != null) label()
-        Text(
-            text = currentValue?.toString() ?: stringResource(R.string._default),
-            style = MaterialTheme.typography.bodyMedium,
-        )
+        Text(text = optionToString(currentValue), style = MaterialTheme.typography.bodyMedium)
         Icon(Icons.Default.ArrowDropDown, contentDescription = stringResource(R.string.dropdown))
     }
+
     DropdownMenu(
-        modifier = modifier.height(250.dp),
+        modifier = modifier.heightIn(max = 250.dp),
         scrollState = rememberScrollState(),
         containerColor = MaterialTheme.colorScheme.surface,
         expanded = isExpanded,
         onDismissRequest = onDismiss,
     ) {
         options.forEach { option ->
-            if (option == null) {
-                return@forEach DropdownMenuItem(
-                    text = { Text(text = stringResource(R.string._default)) },
-                    onClick = {
-                        onValueSelected(null)
-                        onDismiss()
-                    },
-                )
-            }
             DropdownMenuItem(
-                text = { Text(text = option.toString()) },
+                text = { Text(optionToString(option)) },
                 onClick = {
                     onValueSelected(option)
                     onDismiss()

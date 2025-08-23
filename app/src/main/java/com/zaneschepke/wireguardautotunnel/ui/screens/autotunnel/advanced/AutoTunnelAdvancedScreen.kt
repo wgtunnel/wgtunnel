@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledNumberDropdown
+import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
 import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
@@ -33,7 +33,7 @@ fun AutoTunnelAdvancedScreen(appUiState: AppUiState, viewModel: AppViewModel) {
                 .padding(vertical = 24.dp)
                 .padding(horizontal = 12.dp),
     ) {
-        LabelledNumberDropdown(
+        LabelledDropdown(
             title = {
                 Text(
                     stringResource(R.string.debounce_delay),
@@ -49,6 +49,7 @@ fun AutoTunnelAdvancedScreen(appUiState: AppUiState, viewModel: AppViewModel) {
             },
             options = (0..10).toList(),
             currentValue = appUiState.appSettings.debounceDelaySeconds,
+            optionToString = { it?.toString() ?: stringResource(R.string._default) },
         )
     }
 }

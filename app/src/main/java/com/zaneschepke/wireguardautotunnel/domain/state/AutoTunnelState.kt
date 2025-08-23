@@ -53,16 +53,6 @@ data class AutoTunnelState(
                         return AutoTunnelEvent.Stop
                     }
                 }
-                // Handle kill switch only if no user tunnel is or will be active
-                if (stopKillSwitchOnTrusted()) {
-                    return AutoTunnelEvent.StopKillSwitch
-                }
-                if (startKillSwitch()) {
-                    val allowedIps =
-                        if (settings.isLanOnKillSwitchEnabled) TunnelConf.LAN_BYPASS_ALLOWED_IPS
-                        else emptyList()
-                    return StartKillSwitch(allowedIps)
-                }
             }
             is StateChange.MonitoringChange -> {
                 val bounceTunnels = bounceOnPingFailed()

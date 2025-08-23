@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.ui.screens.settings.components
+package com.zaneschepke.wireguardautotunnel.ui.screens.settings.system.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Restore
@@ -15,7 +15,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun RestartAtBootItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
+fun restartAtBootItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
     return SelectionItem(
         leading = { Icon(Icons.Outlined.Restore, contentDescription = null) },
         trailing = {

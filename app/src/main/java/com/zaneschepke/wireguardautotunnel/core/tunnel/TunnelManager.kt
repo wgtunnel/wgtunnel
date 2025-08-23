@@ -1,26 +1,30 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
-import com.zaneschepke.wireguardautotunnel.di.Kernel
-import com.zaneschepke.wireguardautotunnel.di.ProxyUserspace
-import com.zaneschepke.wireguardautotunnel.di.Userspace
+import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
+import com.zaneschepke.wireguardautotunnel.di.*
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendStatus
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
+import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
+import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.plus
 import org.amnezia.awg.crypto.Key
-import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
+import timber.log.Timber
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TunnelManager
@@ -29,31 +33,88 @@ constructor(
     @Kernel private val kernelTunnel: TunnelProvider,
     @Userspace private val userspaceTunnel: TunnelProvider,
     @ProxyUserspace private val proxyUserspaceTunnel: TunnelProvider,
+    private val serviceManager: ServiceManager,
     private val appDataRepository: AppDataRepository,
-    applicationScope: CoroutineScope,
-    ioDispatcher: CoroutineDispatcher,
+    @ApplicationScope applicationScope: CoroutineScope,
+    @IoDispatcher ioDispatcher: CoroutineDispatcher,
 ) : TunnelProvider {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val tunnelProviderFlow =
+    @OptIn(ExperimentalAtomicApi::class)
+    private val tunnelProviderFlow: StateFlow<TunnelProvider> = run {
+        val currentBackend = AtomicReference(userspaceTunnel)
+        val currentSettings = AtomicReference(AppSettings())
+        val initialEmit = AtomicBoolean(true)
+
         appDataRepository.settings.flow
             .filterNotNull()
-            .flatMapLatest { settings ->
-               val backend = when(settings.backendMode) {
-                    BackendMode.USERSPACE -> userspaceTunnel
-                    BackendMode.PROXIED_USERSPACE -> proxyUserspaceTunnel
-                    BackendMode.KERNEL -> kernelTunnel
-                }
-                MutableStateFlow(backend)
+            // ignore default state
+            .filterNot { it == AppSettings() }
+            .distinctUntilChanged { old, new ->
+                old.appMode == new.appMode &&
+                    old.isLanOnKillSwitchEnabled == new.isLanOnKillSwitchEnabled
             }
+            .map { settings ->
+                Timber.d("App mode changes with ${settings.appMode}")
+                val backend =
+                    when (settings.appMode) {
+                        AppMode.VPN -> userspaceTunnel
+                        AppMode.PROXY -> proxyUserspaceTunnel
+                        AppMode.LOCK_DOWN -> proxyUserspaceTunnel
+                        AppMode.KERNEL -> kernelTunnel
+                    }
+                settings to backend
+            }
+            .onEach { (settings, newBackend) ->
+                val isInitialEmit = initialEmit.exchange(false)
+                val oldBackend = currentBackend.exchange(newBackend)
+                val oldSettings = currentSettings.exchange(settings)
+
+                if ((oldSettings.appMode != settings.appMode) && !isInitialEmit) {
+                    oldBackend.stopTunnel()
+                    if (oldSettings.appMode == AppMode.LOCK_DOWN)
+                        proxyUserspaceTunnel.setBackendMode(BackendMode.Inactive)
+                }
+                if (settings.appMode == AppMode.LOCK_DOWN) {
+                    // kill switch will always catch all ipv6, just add ipv4 networks for allowsIps
+                    val allowedIps =
+                        if (settings.isLanOnKillSwitchEnabled) TunnelConf.IPV4_PUBLIC_NETWORKS
+                        else emptySet()
+                    proxyUserspaceTunnel.setBackendMode(BackendMode.KillSwitch(allowedIps))
+                }
+                // restore state if configured
+                if (isInitialEmit && settings.isRestoreOnBootEnabled) {
+                    Timber.d("Restoring previous state")
+                    if (
+                        settings.isAutoTunnelEnabled &&
+                            serviceManager.autoTunnelService.value == null
+                    ) {
+                        serviceManager.startAutoTunnel()
+                    } else {
+                        val previouslyActiveTuns = appDataRepository.tunnels.getActive()
+                        val tunsToStart =
+                            previouslyActiveTuns.filterNot { tun ->
+                                activeTunnels.value.any { tun.id == it.key.id }
+                            }
+                        tunsToStart.forEach { startTunnel(it) }
+                    }
+                }
+            }
+            .map { (_, backend) -> backend }
             .stateIn(
                 scope = applicationScope.plus(ioDispatcher),
                 started = SharingStarted.Eagerly,
                 initialValue = userspaceTunnel,
             )
+    }
 
     override val activeTunnels: StateFlow<Map<TunnelConf, TunnelState>> =
-        tunnelProviderFlow.value.activeTunnels
+        tunnelProviderFlow
+            .flatMapLatest { it.activeTunnels }
+            .stateIn(
+                scope = applicationScope.plus(ioDispatcher),
+                started = SharingStarted.Eagerly,
+                initialValue = emptyMap(),
+            )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val errorEvents: SharedFlow<Pair<TunnelConf, BackendError>> =
@@ -99,12 +160,12 @@ constructor(
         tunnelProviderFlow.value.bounceTunnel(tunnelConf, reason)
     }
 
-    override fun setBackendStatus(backendStatus: BackendStatus) {
-        tunnelProviderFlow.value.setBackendStatus(backendStatus)
+    override fun setBackendMode(backendMode: BackendMode) {
+        tunnelProviderFlow.value.setBackendMode(backendMode)
     }
 
-    override fun getBackendStatus(): BackendStatus {
-        return tunnelProviderFlow.value.getBackendStatus()
+    override fun getBackendMode(): BackendMode {
+        return tunnelProviderFlow.value.getBackendMode()
     }
 
     override suspend fun runningTunnelNames(): Set<String> {
@@ -125,21 +186,5 @@ constructor(
             pingStates,
             handshakeSuccessLogs,
         )
-    }
-
-    suspend fun restorePreviousState() {
-        val settings = appDataRepository.settings.get()
-        if (settings.isRestoreOnBootEnabled) {
-            val previouslyActiveTuns = appDataRepository.tunnels.getActive()
-            val tunsToStart =
-                previouslyActiveTuns.filterNot { tun ->
-                    activeTunnels.value.any { tun.id == it.key.id }
-                }
-            if (settings.backendMode == BackendMode.KERNEL) {
-                return tunsToStart.forEach { startTunnel(it) }
-            } else {
-                tunsToStart.firstOrNull()?.let { startTunnel(it) }
-            }
-        }
     }
 }

@@ -16,18 +16,19 @@ import com.zaneschepke.wireguardautotunnel.WireGuardAutoTunnel
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.data.entity.Settings
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
+import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
+import com.zaneschepke.wireguardautotunnel.data.model.DnsProvider
 import com.zaneschepke.wireguardautotunnel.di.AppShell
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.di.MainDispatcher
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendStatus
 import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
 import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.AppState
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
 import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
 import com.zaneschepke.wireguardautotunnel.ui.state.AppViewState
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
@@ -37,6 +38,12 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.withFirstState
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.IOException
+import java.net.URL
+import java.time.Instant
+import java.util.*
+import javax.inject.Inject
+import javax.inject.Provider
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -47,19 +54,13 @@ import org.amnezia.awg.config.Config
 import rikka.shizuku.Shizuku
 import timber.log.Timber
 import xyz.teamgravity.pin_lock_compose.PinManager
-import java.io.IOException
-import java.net.URL
-import java.time.Instant
-import java.util.*
-import java.util.concurrent.TimeoutException
-import javax.inject.Inject
-import javax.inject.Provider
 
 @HiltViewModel
 class AppViewModel
 @Inject
 constructor(
     val appDataRepository: AppDataRepository,
+    val proxySettingsRepository: ProxySettingsRepository,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
     @AppShell private val rootShell: Provider<RootShell>,
@@ -104,16 +105,18 @@ constructor(
                 combine(
                     tunnelManager.activeTunnels,
                     serviceManager.autoTunnelService.map { it != null },
-                ) { activeTunnels, autoTunnel ->
-                    Pair(activeTunnels, autoTunnel)
+                    proxySettingsRepository.flow,
+                ) { activeTunnels, autoTunnel, proxySettings ->
+                    Triple(activeTunnels, autoTunnel, proxySettings)
                 },
                 networkMonitor.connectivityStateFlow,
-            ) { repoTriple, managerPair, network ->
+            ) { repoTriple, triple, network ->
                 val (settings, tunnels, appState) = repoTriple
-                val (activeTunnels, autoTunnel) = managerPair
+                val (activeTunnels, autoTunnel, proxySettings) = triple
 
                 AppUiState(
                     appSettings = settings,
+                    proxySettings = proxySettings,
                     tunnels = tunnels,
                     activeTunnels = activeTunnels,
                     appState = appState,
@@ -132,8 +135,6 @@ constructor(
         viewModelScope.launch(ioDispatcher) {
             uiState.withFirstState { state ->
                 initPin(state.appState.isPinLockEnabled)
-                handleKillSwitchChange(state.appSettings)
-                initServicesFromSavedState(state)
                 if (state.appState.isLocalLogsEnabled) logsJob = startCollectingLogs()
                 handleTunnelMessages()
             }
@@ -266,41 +267,53 @@ constructor(
                             state.appSettings.copy(tunnelPingTimeoutSeconds = event.timeout)
                         )
                     is AppEvent.SaveTunnel -> saveTunnel(event.tunnel)
-                    is AppEvent.SetBackendMode -> handleSetBackendMode(event.backendMode, state.appSettings)
-                    is AppEvent.SetHttpProxyBindAddress -> saveSettings(state.appSettings.copy(
-                        httpProxyBindAddress = event.address.ifBlank { Settings.HTTP_PROXY_DEFAULT_BIND_ADDRESS }
-                    ))
-                    is AppEvent.SetSocks5BindAddress -> saveSettings(state.appSettings.copy(
-                        socks5ProxyBindAddress = event.address.ifBlank { Settings.SOCKS5_PROXY_DEFAULT_BIND_ADDRESS }
-                    ))
-                    AppEvent.ToggleHttpProxy -> saveSettings(state.appSettings.copy(
-                        httpProxyEnabled = !state.appSettings.httpProxyEnabled
-                    ))
-                    AppEvent.ToggleSocks5Proxy -> saveSettings(state.appSettings.copy(
-                        socks5ProxyEnabled = !state.appSettings.socks5ProxyEnabled
-                    ))
+                    is AppEvent.SetAppMode -> handleSetAppMode(event.appMode, state.appSettings)
+                    is AppEvent.SetProxySettings ->
+                        proxySettingsRepository.save(
+                            state.proxySettings.copy(
+                                proxyUsername = event.username.ifBlank { null },
+                                proxyPassword = event.password.ifBlank { null },
+                                socks5ProxyEnabled = event.socks5Enabled,
+                                httpProxyEnabled = event.httpProxyEnabled,
+                                socks5ProxyBindAddress = event.socks5BindAddress?.ifBlank { null },
+                                httpProxyBindAddress = event.httpBindAddress?.ifBlank { null },
+                            )
+                        )
 
-                    is AppEvent.SetProxyCredentials -> {
-                        saveSettings(state.appSettings.copy(
-                            proxyUsername = event.username.ifBlank { null }, proxyPassword = event.password.ifBlank { null }
-                        ))
-                    }
+                    is AppEvent.SetDnsProtocol ->
+                        handleSetDnsProtocol(event.dnsProtocol, state.appSettings)
+                    is AppEvent.SetDnsProvider ->
+                        handleSetDnsProvider(event.dnsProvider, state.appSettings)
                 }
             }
         }
     }
 
-    private suspend fun handleSetBackendMode(backendMode: BackendMode, appSettings: AppSettings) {
-        when(backendMode) {
-            BackendMode.USERSPACE, BackendMode.PROXIED_USERSPACE -> Unit
-            BackendMode.KERNEL -> {
-                if(!isKernelSupported()) return handleShowMessage(StringValue.StringResource(R.string.kernel_not_supported))
-                if(!requestRoot()) return
+    private suspend fun handleSetDnsProvider(dnsProvider: DnsProvider, appSettings: AppSettings) {
+        saveSettings(appSettings.copy(dnsEndpoint = dnsProvider.asAddress(appSettings.dnsProtocol)))
+    }
+
+    private suspend fun handleSetDnsProtocol(protocol: DnsProtocol, appSettings: AppSettings) {
+        saveSettings(appSettings.copy(dnsProtocol = protocol))
+    }
+
+    private suspend fun handleSetAppMode(appMode: AppMode, appSettings: AppSettings) {
+        when (appMode) {
+            AppMode.VPN,
+            AppMode.PROXY -> Unit
+            AppMode.LOCK_DOWN -> {
+                if (!tunnelManager.hasVpnPermission()) return requestVpnPermission(true)
+            }
+            AppMode.KERNEL -> {
+                if (!isKernelSupported())
+                    return handleShowMessage(
+                        StringValue.StringResource(R.string.kernel_not_supported)
+                    )
+                if (!requestRoot()) return
             }
         }
-        saveSettings(
-            appSettings.copy(backendMode = backendMode)
-        )
+        Timber.d("Saving new app mode ${appMode.name}")
+        saveSettings(appSettings.copy(appMode = appMode))
     }
 
     private suspend fun saveTunnelsUniquely(tunnels: List<TunnelConf>) {
@@ -544,7 +557,7 @@ constructor(
     private suspend fun handleStartTunnel(tunnel: TunnelConf, appSettings: AppSettings) {
         clearSelectedTunnels()
         tunControlMutex.withLock {
-            if (!tunnelManager.hasVpnPermission() && appSettings.backendMode == BackendMode.USERSPACE)
+            if (!tunnelManager.hasVpnPermission() && appSettings.appMode == AppMode.VPN)
                 return@withLock requestVpnPermission(true)
             tunnelManager.startTunnel(tunnel)
         }
@@ -560,7 +573,7 @@ constructor(
             if (
                 !state.appSettings.isAutoTunnelEnabled &&
                     !tunnelManager.hasVpnPermission() &&
-                    state.appSettings.backendMode == BackendMode.USERSPACE
+                    state.appSettings.appMode == AppMode.VPN
             ) {
                 return@withLock requestVpnPermission(true)
             }
@@ -650,14 +663,6 @@ constructor(
         appDataRepository.appState.setBatteryOptimizationDisableShown(true)
     }
 
-    private fun initServicesFromSavedState(state: AppUiState) =
-        viewModelScope.launch(ioDispatcher) {
-            tunControlMutex.withLock {
-                if (state.appSettings.isAutoTunnelEnabled) serviceManager.startAutoTunnel()
-                state.tunnels.filter { it.isActive }.forEach { tunnelManager.startTunnel(it) }
-            }
-        }
-
     private fun initPin(enabled: Boolean) {
         if (enabled) PinManager.initialize(WireGuardAutoTunnel.instance)
     }
@@ -693,30 +698,14 @@ constructor(
                     if (enabled) appSettings.isLanOnKillSwitchEnabled else false,
             )
         saveSettings(updatedSettings)
-        handleKillSwitchChange(updatedSettings)
+        //        handleKillSwitchChange(updatedSettings)
     }
 
     private suspend fun handleToggleLanOnKillSwitch(appSettings: AppSettings) {
         val updatedSettings =
             appSettings.copy(isLanOnKillSwitchEnabled = !appSettings.isLanOnKillSwitchEnabled)
         saveSettings(updatedSettings)
-        handleKillSwitchChange(updatedSettings)
-    }
-
-    private fun handleKillSwitchChange(appSettings: AppSettings) {
-        // let auto tunnel handle kill switch changes if running
-        if (uiState.value.isAutoTunnelActive) return
-        try {
-            if (!appSettings.isVpnKillSwitchEnabled)
-                return tunnelManager.setBackendStatus(BackendStatus.Active)
-            Timber.d("Starting kill switch")
-            val allowedIps =
-                if (appSettings.isLanOnKillSwitchEnabled) TunnelConf.LAN_BYPASS_ALLOWED_IPS
-                else emptyList()
-            tunnelManager.setBackendStatus(BackendStatus.KillSwitch(allowedIps))
-        } catch (e : TimeoutException) {
-            Timber.e(e)
-        }
+        //        handleKillSwitchChange(updatedSettings)
     }
 
     private suspend fun handleToggleAppShortcuts(appSettings: AppSettings) {

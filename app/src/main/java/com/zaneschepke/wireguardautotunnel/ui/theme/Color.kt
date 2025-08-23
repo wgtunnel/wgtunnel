@@ -15,7 +15,8 @@ val ElectricTeal = Color(0xFF4DD0E1)
 
 // Status colors
 val SilverTree = Color(0xFF6DB58B)
-val Brick = Color(0xFFCE4257)
+val AlertRed = Color(0xFFCF6679)
+
 val Straw = Color(0xFFD4C483)
 
 sealed class ThemeColors(

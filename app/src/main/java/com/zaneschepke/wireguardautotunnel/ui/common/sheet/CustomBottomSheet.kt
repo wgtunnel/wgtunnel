@@ -16,9 +16,17 @@ import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 
 @Composable
-fun SheetOption(label: String, leadingIcon: ImageVector? = null, onClick: () -> Unit, selected: Boolean, modifier: Modifier = Modifier) {
-    Row(modifier = modifier.fillMaxWidth().clickable(onClick = onClick).padding(10.dp),
-        horizontalArrangement = Arrangement.SpaceBetween) {
+fun SheetOption(
+    label: String,
+    leadingIcon: ImageVector? = null,
+    onClick: () -> Unit,
+    selected: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth().clickable(onClick = onClick).padding(10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
         Row {
             leadingIcon?.let {
                 Icon(
@@ -29,7 +37,7 @@ fun SheetOption(label: String, leadingIcon: ImageVector? = null, onClick: () -> 
             }
             Text(text = label, modifier = Modifier.padding(10.dp))
         }
-        if(selected) {
+        if (selected) {
             Icon(
                 imageVector = Icons.Outlined.Check,
                 contentDescription = stringResource(R.string.selected),
@@ -48,7 +56,7 @@ fun CustomBottomSheet(options: List<SheetOption>, onDismiss: () -> Unit) {
     ) {
         options.forEachIndexed { index, option ->
             SheetOption(option.label, option.leadingIcon, option.onClick, option.selected)
-            if(index != options.size - 1) HorizontalDivider()
+            if (index != options.size - 1) HorizontalDivider()
         }
     }
 }
@@ -57,5 +65,5 @@ data class SheetOption(
     val leadingIcon: ImageVector,
     val label: String,
     val onClick: () -> Unit,
-    val selected: Boolean = false
+    val selected: Boolean = false,
 )

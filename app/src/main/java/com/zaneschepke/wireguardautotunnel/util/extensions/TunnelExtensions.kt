@@ -2,7 +2,7 @@ package com.zaneschepke.wireguardautotunnel.util.extensions
 
 import androidx.compose.ui.graphics.Color
 import com.wireguard.android.backend.BackendException
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendStatus
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.HandshakeStatus
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
@@ -52,7 +52,7 @@ fun TunnelStatistics?.asColor(): Color {
 }
 
 fun Config.toWgQuickString(): String {
-    val amQuick = toAwgQuickString(true)
+    val amQuick = toAwgQuickString(true, false)
     val lines = amQuick.lines().toMutableList()
     val linesIterator = lines.iterator()
     while (linesIterator.hasNext()) {
@@ -75,20 +75,17 @@ fun Config.defaultName(): String {
     }
 }
 
-fun Backend.BackendStatus.asBackendStatus(): BackendStatus {
+fun Backend.BackendMode.asBackendMode(): BackendMode {
     return when (val status = this) {
-        is Backend.BackendStatus.KillSwitchActive ->
-            BackendStatus.KillSwitch(status.allowedIps.toList())
-        is Backend.BackendStatus.ServiceActive -> BackendStatus.Active
-        else -> BackendStatus.Inactive
+        is Backend.BackendMode.KillSwitch -> BackendMode.KillSwitch(status.allowedIps)
+        else -> BackendMode.Inactive
     }
 }
 
-fun BackendStatus.asAmBackendStatus(): Backend.BackendStatus {
+fun BackendMode.asAmBackendMode(): Backend.BackendMode {
     return when (val status = this) {
-        is BackendStatus.Active -> Backend.BackendStatus.ServiceActive.INSTANCE
-        is BackendStatus.Inactive -> Backend.BackendStatus.Inactive.INSTANCE
-        is BackendStatus.KillSwitch -> Backend.BackendStatus.KillSwitchActive(status.allowedIps)
+        is BackendMode.Inactive -> Backend.BackendMode.Inactive.INSTANCE
+        is BackendMode.KillSwitch -> Backend.BackendMode.KillSwitch(status.allowedIps)
     }
 }
 

@@ -113,9 +113,13 @@ fun ConfigScreen(
     }
 
     Column(
+        horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
         modifier =
-            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp),
+            Modifier.fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(top = 12.dp, bottom = 24.dp)
+                .padding(horizontal = 12.dp),
     ) {
         InterfaceSection(isTunnelNameTaken, uiState, viewModel)
         PeersSection(uiState, viewModel)

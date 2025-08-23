@@ -31,43 +31,52 @@ fun TunnelImportSheet(
                     onClick = {
                         onDismiss()
                         onFileClick()
-                    }
-                ))
-            if(!isTv) add(
-                SheetOption(
-                    Icons.Outlined.QrCode,
-                    stringResource(R.string.add_from_qr),
-                    onClick = {
-                        onDismiss()
-                        onQrClick()
-                    }
+                    },
                 )
             )
-            add(SheetOption(
-                Icons.Outlined.ContentPasteGo,
-                stringResource(R.string.add_from_clipboard),
-                onClick = {
-                    onDismiss()
-                    onClipboardClick()
-                }
-            ))
-            add(SheetOption(
-                Icons.Outlined.Link,
-                stringResource(R.string.add_from_url),
-                onClick = {
-                    onDismiss()
-                    onUrlClick()
-                }
-            ))
-            add(SheetOption(
-                Icons.Outlined.Create,
-                stringResource(R.string.create_import),
-                onClick = {
-                    onDismiss()
-                    onManualImportClick()
-                }
-            ))
-        }) {
+            if (!isTv)
+                add(
+                    SheetOption(
+                        Icons.Outlined.QrCode,
+                        stringResource(R.string.add_from_qr),
+                        onClick = {
+                            onDismiss()
+                            onQrClick()
+                        },
+                    )
+                )
+            add(
+                SheetOption(
+                    Icons.Outlined.ContentPasteGo,
+                    stringResource(R.string.add_from_clipboard),
+                    onClick = {
+                        onDismiss()
+                        onClipboardClick()
+                    },
+                )
+            )
+            add(
+                SheetOption(
+                    Icons.Outlined.Link,
+                    stringResource(R.string.add_from_url),
+                    onClick = {
+                        onDismiss()
+                        onUrlClick()
+                    },
+                )
+            )
+            add(
+                SheetOption(
+                    Icons.Outlined.Create,
+                    stringResource(R.string.create_import),
+                    onClick = {
+                        onDismiss()
+                        onManualImportClick()
+                    },
+                )
+            )
+        }
+    ) {
         onDismiss()
     }
 }

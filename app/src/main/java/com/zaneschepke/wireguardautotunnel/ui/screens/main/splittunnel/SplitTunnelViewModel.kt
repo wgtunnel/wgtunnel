@@ -172,7 +172,7 @@ constructor(
         val (wg, am) = proxy.buildConfigs()
         tunnelRepository.save(
             tunnel.copyWithCallback(
-                amQuick = am.toAwgQuickString(true),
+                amQuick = am.toAwgQuickString(true, false),
                 wgQuick = wg.toWgQuickString(true),
             )
         )

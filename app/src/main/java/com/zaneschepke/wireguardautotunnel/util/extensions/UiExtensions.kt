@@ -2,15 +2,16 @@ package com.zaneschepke.wireguardautotunnel.util.extensions
 
 import android.content.Context
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.SupervisedUserCircle
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Terminal
+import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavController
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.ui.Route
 import com.zaneschepke.wireguardautotunnel.ui.navigation.isCurrentRoute
 
@@ -44,27 +45,23 @@ fun AndroidNetworkMonitor.WifiDetectionMethod.asDescriptionString(context: Conte
     }
 }
 
-fun BackendMode.asTitleString(context: Context): String {
+fun AppMode.asTitleString(context: Context): String {
     return when (this) {
-        BackendMode.USERSPACE -> context.getString(R.string.userspace)
-        BackendMode.PROXIED_USERSPACE -> context.getString(R.string.proxied_userspace)
-        BackendMode.KERNEL -> context.getString(R.string.kernel)
-    }
-}
-
-fun BackendMode.asDescriptionString(context: Context): String {
-    return when (this) {
-        BackendMode.USERSPACE -> ""
-        BackendMode.PROXIED_USERSPACE -> ""
-        BackendMode.KERNEL -> ""
+        AppMode.VPN -> context.getString(R.string.vpn)
+        AppMode.PROXY ->
+            context.getString(R.string.expiremental_template, context.getString(R.string.proxy))
+        AppMode.KERNEL ->
+            context.getString(R.string.root_required_template, context.getString(R.string.kernel))
+        AppMode.LOCK_DOWN -> context.getString(R.string.expiremental_template, "Lockdown")
     }
 }
 
 @Composable
-fun BackendMode.asIcon(): ImageVector {
-    return when(this) {
-        BackendMode.USERSPACE -> Icons.Outlined.SupervisedUserCircle
-        BackendMode.PROXIED_USERSPACE -> ImageVector.vectorResource(R.drawable.proxy)
-        BackendMode.KERNEL -> Icons.Outlined.Terminal
+fun AppMode.asIcon(): ImageVector {
+    return when (this) {
+        AppMode.VPN -> Icons.Outlined.VpnKey
+        AppMode.PROXY -> ImageVector.vectorResource(R.drawable.proxy)
+        AppMode.KERNEL -> Icons.Outlined.Terminal
+        AppMode.LOCK_DOWN -> Icons.Outlined.Lock
     }
 }

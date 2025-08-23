@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 20,
-    "identityHash": "316a788d54e0876f1f26d1781f9ef051",
+    "identityHash": "51f828868c0ea2f0f5c987410ff5c5a1",
     "entities": [
       {
         "tableName": "Settings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `is_tunnel_enabled` INTEGER NOT NULL, `is_tunnel_on_mobile_data_enabled` INTEGER NOT NULL, `trusted_network_ssids` TEXT NOT NULL, `is_always_on_vpn_enabled` INTEGER NOT NULL, `is_tunnel_on_ethernet_enabled` INTEGER NOT NULL, `is_shortcuts_enabled` INTEGER NOT NULL DEFAULT false, `is_tunnel_on_wifi_enabled` INTEGER NOT NULL DEFAULT false, `is_restore_on_boot_enabled` INTEGER NOT NULL DEFAULT false, `is_multi_tunnel_enabled` INTEGER NOT NULL DEFAULT false, `is_ping_enabled` INTEGER NOT NULL DEFAULT false, `is_wildcards_enabled` INTEGER NOT NULL DEFAULT false, `is_stop_on_no_internet_enabled` INTEGER NOT NULL DEFAULT false, `is_vpn_kill_switch_enabled` INTEGER NOT NULL DEFAULT false, `is_kernel_kill_switch_enabled` INTEGER NOT NULL DEFAULT false, `is_lan_on_kill_switch_enabled` INTEGER NOT NULL DEFAULT false, `debounce_delay_seconds` INTEGER NOT NULL DEFAULT 3, `is_disable_kill_switch_on_trusted_enabled` INTEGER NOT NULL DEFAULT false, `is_tunnel_on_unsecure_enabled` INTEGER NOT NULL DEFAULT false, `wifi_detection_method` INTEGER NOT NULL DEFAULT 0, `is_ping_monitoring_enabled` INTEGER NOT NULL DEFAULT true, `tunnel_ping_interval_sec` INTEGER NOT NULL DEFAULT 30, `tunnel_ping_attempts` INTEGER NOT NULL DEFAULT 3, `tunnel_ping_timeout_sec` INTEGER, `backend_mode` INTEGER NOT NULL DEFAULT 0, `socks5_proxy_enabled` INTEGER NOT NULL DEFAULT false, `socks5_proxy_bind_address` TEXT NOT NULL DEFAULT '127.0.0.1:25344', `http_proxy_enable` INTEGER NOT NULL DEFAULT false, `http_proxy_bind_address` TEXT NOT NULL DEFAULT '127.0.0.1:25345', `proxy_username` TEXT DEFAULT null, `proxy_password` TEXT DEFAULT null)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `is_tunnel_enabled` INTEGER NOT NULL, `is_tunnel_on_mobile_data_enabled` INTEGER NOT NULL, `trusted_network_ssids` TEXT NOT NULL, `is_always_on_vpn_enabled` INTEGER NOT NULL, `is_tunnel_on_ethernet_enabled` INTEGER NOT NULL, `is_shortcuts_enabled` INTEGER NOT NULL DEFAULT false, `is_tunnel_on_wifi_enabled` INTEGER NOT NULL DEFAULT false, `is_restore_on_boot_enabled` INTEGER NOT NULL DEFAULT false, `is_multi_tunnel_enabled` INTEGER NOT NULL DEFAULT false, `is_ping_enabled` INTEGER NOT NULL DEFAULT false, `is_wildcards_enabled` INTEGER NOT NULL DEFAULT false, `is_stop_on_no_internet_enabled` INTEGER NOT NULL DEFAULT false, `is_lan_on_kill_switch_enabled` INTEGER NOT NULL DEFAULT false, `debounce_delay_seconds` INTEGER NOT NULL DEFAULT 3, `is_disable_kill_switch_on_trusted_enabled` INTEGER NOT NULL DEFAULT false, `is_tunnel_on_unsecure_enabled` INTEGER NOT NULL DEFAULT false, `wifi_detection_method` INTEGER NOT NULL DEFAULT 0, `is_ping_monitoring_enabled` INTEGER NOT NULL DEFAULT true, `tunnel_ping_interval_sec` INTEGER NOT NULL DEFAULT 30, `tunnel_ping_attempts` INTEGER NOT NULL DEFAULT 3, `tunnel_ping_timeout_sec` INTEGER, `app_mode` INTEGER NOT NULL DEFAULT 0, `dns_protocol` INTEGER NOT NULL DEFAULT 0, `dns_endpoint` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -94,20 +94,6 @@
             "defaultValue": "false"
           },
           {
-            "fieldPath": "isVpnKillSwitchEnabled",
-            "columnName": "is_vpn_kill_switch_enabled",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "false"
-          },
-          {
-            "fieldPath": "isKernelKillSwitchEnabled",
-            "columnName": "is_kernel_kill_switch_enabled",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "false"
-          },
-          {
             "fieldPath": "isLanOnKillSwitchEnabled",
             "columnName": "is_lan_on_kill_switch_enabled",
             "affinity": "INTEGER",
@@ -169,51 +155,23 @@
             "affinity": "INTEGER"
           },
           {
-            "fieldPath": "backendMode",
-            "columnName": "backend_mode",
+            "fieldPath": "appMode",
+            "columnName": "app_mode",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
           },
           {
-            "fieldPath": "socks5ProxyEnabled",
-            "columnName": "socks5_proxy_enabled",
+            "fieldPath": "dnsProtocol",
+            "columnName": "dns_protocol",
             "affinity": "INTEGER",
             "notNull": true,
-            "defaultValue": "false"
+            "defaultValue": "0"
           },
           {
-            "fieldPath": "socks5ProxyBindAddress",
-            "columnName": "socks5_proxy_bind_address",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "'127.0.0.1:25344'"
-          },
-          {
-            "fieldPath": "httpProxyEnabled",
-            "columnName": "http_proxy_enable",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "false"
-          },
-          {
-            "fieldPath": "httpProxyBindAddress",
-            "columnName": "http_proxy_bind_address",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "'127.0.0.1:25345'"
-          },
-          {
-            "fieldPath": "proxyUsername",
-            "columnName": "proxy_username",
-            "affinity": "TEXT",
-            "defaultValue": "null"
-          },
-          {
-            "fieldPath": "proxyPassword",
-            "columnName": "proxy_password",
-            "affinity": "TEXT",
-            "defaultValue": "null"
+            "fieldPath": "dnsEndpoint",
+            "columnName": "dns_endpoint",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -339,11 +297,63 @@
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_TunnelConfig_name` ON `${TABLE_NAME}` (`name`)"
           }
         ]
+      },
+      {
+        "tableName": "proxy_settings",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `socks5_proxy_enabled` INTEGER NOT NULL DEFAULT false, `socks5_proxy_bind_address` TEXT, `http_proxy_enable` INTEGER NOT NULL DEFAULT false, `http_proxy_bind_address` TEXT, `proxy_username` TEXT, `proxy_password` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "socks5ProxyEnabled",
+            "columnName": "socks5_proxy_enabled",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "false"
+          },
+          {
+            "fieldPath": "socks5ProxyBindAddress",
+            "columnName": "socks5_proxy_bind_address",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "httpProxyEnabled",
+            "columnName": "http_proxy_enable",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "false"
+          },
+          {
+            "fieldPath": "httpProxyBindAddress",
+            "columnName": "http_proxy_bind_address",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "proxyUsername",
+            "columnName": "proxy_username",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "proxyPassword",
+            "columnName": "proxy_password",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '316a788d54e0876f1f26d1781f9ef051')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '51f828868c0ea2f0f5c987410ff5c5a1')"
     ]
   }
 }

@@ -2,13 +2,15 @@ package com.zaneschepke.wireguardautotunnel.data
 
 import androidx.room.*
 import androidx.room.migration.AutoMigrationSpec
+import com.zaneschepke.wireguardautotunnel.data.dao.ProxySettingsDao
 import com.zaneschepke.wireguardautotunnel.data.dao.SettingsDao
 import com.zaneschepke.wireguardautotunnel.data.dao.TunnelConfigDao
+import com.zaneschepke.wireguardautotunnel.data.entity.ProxySettings
 import com.zaneschepke.wireguardautotunnel.data.entity.Settings
 import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
 
 @Database(
-    entities = [Settings::class, TunnelConfig::class],
+    entities = [Settings::class, TunnelConfig::class, ProxySettings::class],
     version = 20,
     autoMigrations =
         [
@@ -39,6 +41,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun settingDao(): SettingsDao
 
     abstract fun tunnelConfigDoa(): TunnelConfigDao
+
+    abstract fun proxySettingsDoa(): ProxySettingsDao
 }
 
 @DeleteColumn(tableName = "Settings", columnName = "default_tunnel")
@@ -72,6 +76,8 @@ class PingMigration : AutoMigrationSpec
 
 @DeleteColumn.Entries(
     DeleteColumn(tableName = "Settings", columnName = "is_amnezia_enabled"),
+    DeleteColumn(tableName = "Settings", columnName = "is_vpn_kill_switch_enabled"),
+    DeleteColumn(tableName = "Settings", columnName = "is_kernel_kill_switch_enabled"),
     DeleteColumn(tableName = "Settings", columnName = "is_kernel_enabled"),
 )
 class ProxyMigration : AutoMigrationSpec

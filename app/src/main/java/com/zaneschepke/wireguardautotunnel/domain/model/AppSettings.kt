@@ -1,9 +1,8 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
-import com.zaneschepke.wireguardautotunnel.data.entity.Settings.Companion.HTTP_PROXY_DEFAULT_BIND_ADDRESS
-import com.zaneschepke.wireguardautotunnel.data.entity.Settings.Companion.SOCKS5_PROXY_DEFAULT_BIND_ADDRESS
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
+import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
 
 data class AppSettings(
     val id: Int = 0,
@@ -30,13 +29,9 @@ data class AppSettings(
     val tunnelPingIntervalSeconds: Int = 30,
     val tunnelPingAttempts: Int = 3,
     val tunnelPingTimeoutSeconds: Int? = null,
-    val backendMode : BackendMode = BackendMode.USERSPACE,
-    val socks5ProxyEnabled: Boolean = false,
-    val socks5ProxyBindAddress: String = SOCKS5_PROXY_DEFAULT_BIND_ADDRESS,
-    val httpProxyEnabled: Boolean = false,
-    val httpProxyBindAddress: String = HTTP_PROXY_DEFAULT_BIND_ADDRESS,
-    val proxyUsername: String? = null,
-    val proxyPassword: String? = null,
+    val appMode: AppMode = AppMode.VPN,
+    val dnsProtocol: DnsProtocol = DnsProtocol.SYSTEM,
+    val dnsEndpoint: String? = null,
 ) {
     fun toAutoTunnelStateString(): String {
         return """

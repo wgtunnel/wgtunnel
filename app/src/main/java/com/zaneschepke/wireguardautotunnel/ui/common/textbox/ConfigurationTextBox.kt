@@ -1,55 +1,70 @@
-package com.zaneschepke.wireguardautotunnel.ui.common.config
+package com.zaneschepke.wireguardautotunnel.ui.common.textbox
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun ConfigurationTextBox(
     value: String,
+    label: String,
     hint: String,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
     keyboardActions: KeyboardActions = KeyboardActions(),
-    label: String,
-    modifier: Modifier,
     isError: Boolean = false,
     keyboardOptions: KeyboardOptions =
         KeyboardOptions(capitalization = KeyboardCapitalization.None, imeAction = ImeAction.Done),
+    leading: (@Composable () -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
-    interactionSource: MutableInteractionSource? = null,
+    supportingText: (@Composable () -> Unit)? = null,
+    interactionSource: MutableInteractionSource = MutableInteractionSource(),
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    singleLine: Boolean = true,
 ) {
-    OutlinedTextField(
+    CustomTextField(
         isError = isError,
-        textStyle = MaterialTheme.typography.labelLarge,
-        modifier = modifier,
+        textStyle =
+            MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurface),
+        modifier = modifier.fillMaxWidth().height(48.dp),
         value = value,
-        singleLine = true,
+        visualTransformation = visualTransformation,
+        singleLine = singleLine,
         interactionSource = interactionSource,
         onValueChange = { onValueChange(it) },
         label = {
             Text(
                 label,
                 color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.labelMedium,
             )
         },
-        maxLines = 1,
+        containerColor = MaterialTheme.colorScheme.surface,
         placeholder = {
             Text(
                 hint,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
-                style = MaterialTheme.typography.bodyMedium,
             )
         },
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
-        trailingIcon = trailing,
+        trailing = trailing,
+        supportingText = supportingText,
+        leading = leading,
+        readOnly = readOnly,
+        enabled = enabled,
     )
 }

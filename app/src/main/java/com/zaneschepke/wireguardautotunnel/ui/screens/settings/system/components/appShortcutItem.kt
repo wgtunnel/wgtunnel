@@ -1,7 +1,7 @@
-package com.zaneschepke.wireguardautotunnel.ui.screens.settings.components
+package com.zaneschepke.wireguardautotunnel.ui.screens.settings.system.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.VpnLock
+import androidx.compose.material.icons.filled.AppShortcut
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,27 +15,22 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun alwaysOnVpnItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
+fun appShortcutsItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
     return SelectionItem(
-        leading = { Icon(Icons.Outlined.VpnLock, contentDescription = null) },
+        leading = { Icon(Icons.Filled.AppShortcut, contentDescription = null) },
         trailing = {
             ScaledSwitch(
-                enabled =
-                    !((uiState.appSettings.isTunnelOnWifiEnabled ||
-                        uiState.appSettings.isTunnelOnEthernetEnabled ||
-                        uiState.appSettings.isTunnelOnMobileDataEnabled) &&
-                        uiState.appSettings.isAutoTunnelEnabled),
-                checked = uiState.appSettings.isAlwaysOnVpnEnabled,
-                onClick = { viewModel.handleEvent(AppEvent.ToggleAlwaysOn) },
+                checked = uiState.appSettings.isShortcutsEnabled,
+                onClick = { viewModel.handleEvent(AppEvent.ToggleAppShortcuts) },
             )
         },
         title = {
             Text(
-                text = stringResource(R.string.always_on_vpn_support),
+                text = stringResource(R.string.enabled_app_shortcuts),
                 style =
                     MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onSurface),
             )
         },
-        onClick = { viewModel.handleEvent(AppEvent.ToggleAlwaysOn) },
+        onClick = { viewModel.handleEvent(AppEvent.ToggleAppShortcuts) },
     )
 }

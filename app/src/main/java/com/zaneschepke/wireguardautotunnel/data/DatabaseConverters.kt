@@ -1,9 +1,9 @@
 package com.zaneschepke.wireguardautotunnel.data
 
-import android.system.Os.stat
 import androidx.room.TypeConverter
-import com.zaneschepke.wireguardautotunnel.data.entity.Settings
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
+import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
+import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
 import kotlinx.serialization.json.Json
 
 class DatabaseConverters {
@@ -24,16 +24,16 @@ class DatabaseConverters {
         }
     }
 
-    @TypeConverter fun fromStatus(status: Settings.WifiDetectionMethod): Int = status.value
+    @TypeConverter fun fromStatus(status: WifiDetectionMethod): Int = status.value
 
     @TypeConverter
-    fun toStatus(value: Int): Settings.WifiDetectionMethod =
-        Settings.WifiDetectionMethod.fromValue(value)
+    fun toStatus(value: Int): WifiDetectionMethod = WifiDetectionMethod.fromValue(value)
 
-    @TypeConverter
-    fun toMode(value: Int): BackendMode =
-        BackendMode.fromValue(value)
+    @TypeConverter fun toMode(value: Int): AppMode = AppMode.fromValue(value)
 
-    @TypeConverter fun fromMode(mode: BackendMode): Int = mode.value
+    @TypeConverter fun fromMode(mode: AppMode): Int = mode.value
 
+    @TypeConverter fun toDnsProtocol(value: Int): DnsProtocol = DnsProtocol.fromValue(value)
+
+    @TypeConverter fun fromDnsProtocol(mode: DnsProtocol): Int = mode.value
 }

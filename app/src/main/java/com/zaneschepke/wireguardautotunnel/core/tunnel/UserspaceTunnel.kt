@@ -1,23 +1,31 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendStatus
+import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
+import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
+import com.zaneschepke.wireguardautotunnel.domain.model.AppProxySettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.AmneziaStatistics
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
-import com.zaneschepke.wireguardautotunnel.util.extensions.asAmBackendStatus
-import com.zaneschepke.wireguardautotunnel.util.extensions.asBackendStatus
+import com.zaneschepke.wireguardautotunnel.util.extensions.asAmBackendMode
+import com.zaneschepke.wireguardautotunnel.util.extensions.asBackendMode
 import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendError
+import java.util.*
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import org.amnezia.awg.backend.Backend
 import org.amnezia.awg.backend.BackendException
+import org.amnezia.awg.backend.ProxyGoBackend
 import org.amnezia.awg.backend.Tunnel
+import org.amnezia.awg.config.Config
+import org.amnezia.awg.config.DnsSettings
+import org.amnezia.awg.config.proxy.HttpProxy
+import org.amnezia.awg.config.proxy.Proxy
+import org.amnezia.awg.config.proxy.Socks5Proxy
 import timber.log.Timber
-import javax.inject.Inject
-import kotlin.jvm.optionals.getOrNull
 
 class UserspaceTunnel
 @Inject
@@ -31,18 +39,55 @@ constructor(
     override suspend fun startBackend(tunnel: TunnelConf) {
         try {
             updateTunnelStatus(tunnel, TunnelStatus.Starting)
-            val amConfig = tunnel.toAmConfig()
-            var previousKillSwitch: Backend.BackendStatus? = null
-            // prevent dns failures from bringing tuns up when vpn kill switch active
-            if (
-                amConfig.peers.any { it.endpoint.getOrNull()?.toString()?.isUrl() == true } &&
-                    backend.backendStatus is Backend.BackendStatus.KillSwitchActive
-            ) {
-                previousKillSwitch = backend.backendStatus
-                setBackendStatus(BackendStatus.Active)
-            }
-            backend.setState(tunnel, Tunnel.State.UP, amConfig)
-            previousKillSwitch?.let { backend.backendStatus = it }
+
+            val proxies: List<Proxy> =
+                when (backend) {
+                    is ProxyGoBackend -> {
+                        val proxySettings = appDataRepository.proxySettings.get()
+                        Timber.d("Adding proxy configs")
+                        buildList {
+                            if (proxySettings.socks5ProxyEnabled) {
+                                add(
+                                    Socks5Proxy(
+                                        proxySettings.socks5ProxyBindAddress
+                                            ?: AppProxySettings.DEFAULT_SOCKS_BIND_ADDRESS,
+                                        proxySettings.proxyUsername,
+                                        proxySettings.proxyPassword,
+                                    )
+                                )
+                            }
+                            if (proxySettings.httpProxyEnabled) {
+                                add(
+                                    HttpProxy(
+                                        proxySettings.httpProxyBindAddress
+                                            ?: AppProxySettings.DEFAULT_HTTP_BIND_ADDRESS,
+                                        proxySettings.proxyUsername,
+                                        proxySettings.proxyPassword,
+                                    )
+                                )
+                            }
+                        }
+                    }
+                    else -> emptyList()
+                }
+            val setting = appDataRepository.settings.get()
+            val config = tunnel.toAmConfig()
+            val updatedConfig =
+                Config.Builder()
+                    .apply {
+                        setInterface(config.`interface`)
+                        addPeers(config.peers)
+                        addProxies(proxies)
+                        setDnsSettings(
+                            DnsSettings(
+                                setting.dnsProtocol == DnsProtocol.DOH,
+                                Optional.ofNullable(setting.dnsEndpoint),
+                            )
+                        )
+                    }
+                    .build()
+
+            backend.setState(tunnel, Tunnel.State.UP, updatedConfig)
         } catch (e: BackendException) {
             Timber.e(e, "Failed to start up backend for tunnel ${tunnel.name}")
             throw e.toBackendError()
@@ -62,17 +107,17 @@ constructor(
         }
     }
 
-    override fun setBackendStatus(backendStatus: BackendStatus) {
-        Timber.d("Setting backend state: $backendStatus")
+    override fun setBackendMode(backendMode: BackendMode) {
+        Timber.d("Setting backend mode: $backendMode")
         try {
-            backend.backendStatus = backendStatus.asAmBackendStatus()
+            backend.backendMode = backendMode.asAmBackendMode()
         } catch (e: BackendException) {
             throw e.toBackendError()
         }
     }
 
-    override fun getBackendStatus(): BackendStatus {
-        return backend.backendStatus.asBackendStatus()
+    override fun getBackendMode(): BackendMode {
+        return backend.backendMode.asBackendMode()
     }
 
     override suspend fun runningTunnelNames(): Set<String> {

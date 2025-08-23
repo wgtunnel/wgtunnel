@@ -7,7 +7,6 @@ import com.wireguard.android.util.ToolsInstaller
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.networkmonitor.NetworkMonitor
-import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.*
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
@@ -57,8 +56,11 @@ class TunnelModule {
     @Provides
     @Singleton
     @ProxyUserspace
-    fun provideAmneziaProxyBackend(@ApplicationContext context: Context) : Backend {
-        return ProxyGoBackend(context, RootTunnelActionHandler(org.amnezia.awg.util.RootShell(context)))
+    fun provideAmneziaProxyBackend(@ApplicationContext context: Context): Backend {
+        return ProxyGoBackend(
+            context,
+            RootTunnelActionHandler(org.amnezia.awg.util.RootShell(context)),
+        )
     }
 
     @Provides
@@ -118,6 +120,7 @@ class TunnelModule {
         @Kernel kernelTunnel: TunnelProvider,
         @Userspace userspaceTunnel: TunnelProvider,
         @ProxyUserspace proxyTunnel: TunnelProvider,
+        serviceManager: ServiceManager,
         appDataRepository: AppDataRepository,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
         @ApplicationScope applicationScope: CoroutineScope,
@@ -126,6 +129,7 @@ class TunnelModule {
             kernelTunnel,
             userspaceTunnel,
             proxyTunnel,
+            serviceManager,
             appDataRepository,
             applicationScope,
             ioDispatcher,

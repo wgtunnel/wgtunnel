@@ -145,7 +145,14 @@ fun AutoTunnelScreen(uiState: AppUiState, viewModel: AppViewModel) {
                         title = { Text(title) },
                         trailing = {
                             Button({ viewModel.handleEvent(AppEvent.ToggleAutoTunnel) }) {
-                                Text(buttonText, fontWeight = FontWeight.Bold)
+                                Text(
+                                    buttonText,
+                                    fontWeight = FontWeight.Bold,
+                                    style =
+                                        MaterialTheme.typography.bodyMedium.copy(
+                                            color = MaterialTheme.colorScheme.surface
+                                        ),
+                                )
                             }
                         },
                     )

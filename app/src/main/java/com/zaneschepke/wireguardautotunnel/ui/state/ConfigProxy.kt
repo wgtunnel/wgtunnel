@@ -33,12 +33,12 @@ data class ConfigProxy(val peers: List<PeerProxy>, val `interface`: InterfacePro
         val (wg, am) = buildConfigs()
         return tunnelConf?.copyWithCallback(
             tunName = name,
-            amQuick = am.toAwgQuickString(true),
+            amQuick = am.toAwgQuickString(true, false),
             wgQuick = wg.toWgQuickString(true),
         )
             ?: TunnelConf(
                 tunName = name,
-                amQuick = am.toAwgQuickString(true),
+                amQuick = am.toAwgQuickString(true, false),
                 wgQuick = wg.toWgQuickString(true),
             )
     }
