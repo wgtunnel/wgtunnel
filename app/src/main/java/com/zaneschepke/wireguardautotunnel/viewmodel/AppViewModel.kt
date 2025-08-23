@@ -23,7 +23,7 @@ import com.zaneschepke.wireguardautotunnel.di.AppShell
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.di.MainDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
-import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
+import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.AppState
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
@@ -472,7 +472,7 @@ constructor(
                 tunnelManager.errorEvents.collect { errorEvent ->
                     handleShowMessage(
                         when (val event = errorEvent.second) {
-                            is BackendError.BounceFailed -> event.toStringValue()
+                            is BackendCoreException.BounceFailed -> event.toStringValue()
                             else ->
                                 StringValue.StringResource(
                                     R.string.tunnel_error_template,

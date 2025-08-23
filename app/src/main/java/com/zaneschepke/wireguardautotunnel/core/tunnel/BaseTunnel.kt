@@ -3,7 +3,7 @@ package com.zaneschepke.wireguardautotunnel.core.tunnel
 import com.wireguard.android.backend.Tunnel
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
-import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
+import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
@@ -30,7 +30,7 @@ abstract class BaseTunnel(
     private val serviceManager: ServiceManager,
 ) : TunnelProvider {
 
-    private val _errorEvents = MutableSharedFlow<Pair<TunnelConf, BackendError>>()
+    private val _errorEvents = MutableSharedFlow<Pair<TunnelConf, BackendCoreException>>()
     override val errorEvents = _errorEvents.asSharedFlow()
 
     private val _messageEvents = MutableSharedFlow<Pair<TunnelConf, BackendMessage>>()
@@ -154,7 +154,7 @@ abstract class BaseTunnel(
 
         var currentConf = tunnelConf
         var restoreAttempted = false
-        var originalError: BackendError? = null
+        var originalError: BackendCoreException? = null
 
         while (true) {
             try {
@@ -169,7 +169,7 @@ abstract class BaseTunnel(
                     _messageEvents.emit(tunnelConf to BackendMessage.BounceSuccess)
                 }
                 return // Success, return
-            } catch (e: BackendError) {
+            } catch (e: BackendCoreException) {
                 originalError = originalError ?: e
                 val bounceReason = bouncingTunnelIds[currentConf.id]
                 if (!restoreAttempted && bounceReason is TunnelStatus.StopReason.Ping) {
@@ -209,7 +209,7 @@ abstract class BaseTunnel(
                 }
                 Timber.e(e, "Failed to start backend for ${currentConf.name}")
                 val emitError =
-                    if (restoreAttempted) BackendError.BounceFailed(originalError) else e
+                    if (restoreAttempted) BackendCoreException.BounceFailed(originalError) else e
                 _errorEvents.emit(currentConf to emitError)
                 updateTunnelStatus(currentConf, TunnelStatus.Down)
                 return
@@ -238,7 +238,7 @@ abstract class BaseTunnel(
             stopBackend(tunnel)
             saveTunnelActiveState(tunnelConf, false)
             removeActiveTunnel(tunnel)
-        } catch (e: BackendError) {
+        } catch (e: BackendCoreException) {
             Timber.e(e, "Failed to stop tunnel ${tunnelConf.id}")
             _errorEvents.emit(tunnelConf to e)
             updateTunnelStatus(tunnelConf, TunnelStatus.Down)

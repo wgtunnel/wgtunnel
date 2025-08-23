@@ -2,7 +2,7 @@ package com.zaneschepke.wireguardautotunnel.core.tunnel
 
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
-import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
+import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
@@ -51,7 +51,7 @@ interface TunnelProvider {
 
     val activeTunnels: StateFlow<Map<TunnelConf, TunnelState>>
 
-    val errorEvents: SharedFlow<Pair<TunnelConf, BackendError>>
+    val errorEvents: SharedFlow<Pair<TunnelConf, BackendCoreException>>
 
     val messageEvents: SharedFlow<Pair<TunnelConf, BackendMessage>>
 

@@ -3,7 +3,7 @@ package com.zaneschepke.wireguardautotunnel.core.notification
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.WireGuardAutoTunnel
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
+import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import jakarta.inject.Inject
 import kotlinx.coroutines.coroutineScope
@@ -30,7 +30,7 @@ constructor(
                         title = StringValue.DynamicString(tunnelConf.name),
                         description =
                             when (error) {
-                                is BackendError.BounceFailed -> error.toStringValue()
+                                is BackendCoreException.BounceFailed -> error.toStringValue()
                                 else ->
                                     StringValue.StringResource(
                                         R.string.tunnel_error_template,

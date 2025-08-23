@@ -5,7 +5,7 @@ import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.di.*
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
-import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
+import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
 import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
@@ -79,7 +79,15 @@ constructor(
                     val allowedIps =
                         if (settings.isLanOnKillSwitchEnabled) TunnelConf.IPV4_PUBLIC_NETWORKS
                         else emptySet()
-                    proxyUserspaceTunnel.setBackendMode(BackendMode.KillSwitch(allowedIps))
+                    try {
+                        // TODO handle situation where they don't have vpn permission, request it
+                        if (hasVpnPermission()) {
+                            proxyUserspaceTunnel.setBackendMode(BackendMode.KillSwitch(allowedIps))
+                        }
+                    } catch (e: BackendCoreException) {
+                        // TODO expose this error to user
+                        Timber.e(e)
+                    }
                 }
                 // restore state if configured
                 if (isInitialEmit && settings.isRestoreOnBootEnabled) {
@@ -117,7 +125,7 @@ constructor(
             )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val errorEvents: SharedFlow<Pair<TunnelConf, BackendError>> =
+    override val errorEvents: SharedFlow<Pair<TunnelConf, BackendCoreException>> =
         tunnelProviderFlow
             .flatMapLatest { it.errorEvents }
             .shareIn(

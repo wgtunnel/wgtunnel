@@ -8,12 +8,12 @@ import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.Kernel
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
-import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
+import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.domain.state.WireGuardStatistics
-import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendError
+import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendCoreException
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import timber.log.Timber
@@ -38,16 +38,16 @@ constructor(
 
     override suspend fun startBackend(tunnel: TunnelConf) {
         // name too long for kernel mode
-        if (!tunnel.isNameKernelCompatible) throw BackendError.TunnelNameTooLong
+        if (!tunnel.isNameKernelCompatible) throw BackendCoreException.TunnelNameTooLong
         try {
             updateTunnelStatus(tunnel, TunnelStatus.Starting)
             backend.setState(tunnel, Tunnel.State.UP, tunnel.toWgConfig())
         } catch (e: BackendException) {
             Timber.e(e, "Failed to start up backend for tunnel ${tunnel.name}")
-            throw e.toBackendError()
+            throw e.toBackendCoreException()
         } catch (e: IllegalArgumentException) {
             Timber.e(e, "Failed to start up backend for tunnel ${tunnel.name}")
-            throw BackendError.Config
+            throw BackendCoreException.Config
         }
     }
 
@@ -56,7 +56,7 @@ constructor(
         try {
             backend.setState(tunnel, Tunnel.State.DOWN, tunnel.toWgConfig())
         } catch (e: BackendException) {
-            throw e.toBackendError()
+            throw e.toBackendCoreException()
         }
     }
 

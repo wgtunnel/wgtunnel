@@ -3,24 +3,24 @@ package com.zaneschepke.wireguardautotunnel.domain.events
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 
-sealed class BackendError : Exception() {
-    data object DNS : BackendError()
+sealed class BackendCoreException : Exception() {
+    data object DNS : BackendCoreException()
 
-    data object Unauthorized : BackendError()
+    data object Unauthorized : BackendCoreException()
 
-    data object Config : BackendError()
+    data object Config : BackendCoreException()
 
-    data object KernelModuleName : BackendError()
+    data object KernelModuleName : BackendCoreException()
 
-    data object NotAuthorized : BackendError()
+    data object NotAuthorized : BackendCoreException()
 
-    data object ServiceNotRunning : BackendError()
+    data object ServiceNotRunning : BackendCoreException()
 
-    data object Unknown : BackendError()
+    data object Unknown : BackendCoreException()
 
-    data object TunnelNameTooLong : BackendError()
+    data object TunnelNameTooLong : BackendCoreException()
 
-    data class BounceFailed(val error: BackendError) : BackendError()
+    data class BounceFailed(val error: BackendCoreException) : BackendCoreException()
 
     fun toStringRes() =
         when (this) {

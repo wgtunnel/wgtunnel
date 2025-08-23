@@ -12,7 +12,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
 
 @Database(
     entities = [Settings::class, TunnelConfig::class, ProxySettings::class],
-    version = 20,
+    version = 21,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -34,6 +34,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
             AutoMigration(from = 17, to = 18),
             AutoMigration(from = 18, to = 19, spec = PingMigration::class),
             AutoMigration(from = 19, to = 20, spec = ProxyMigration::class),
+            AutoMigration(from = 20, to = 21, spec = FixProxySettingsMigration::class),
         ],
     exportSchema = true,
 )
@@ -84,5 +85,17 @@ class PingMigration : AutoMigrationSpec
 class ProxyMigration : AutoMigrationSpec {
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
         db.execSQL("INSERT INTO proxy_settings DEFAULT VALUES")
+    }
+}
+
+class FixProxySettingsMigration : AutoMigrationSpec {
+    override fun onPostMigrate(db: SupportSQLiteDatabase) {
+        val cursor = db.query("SELECT COUNT(*) FROM proxy_settings")
+        val count = if (cursor.moveToFirst()) cursor.getInt(0) else 0
+        cursor.close()
+
+        if (count == 0) {
+            db.execSQL("INSERT INTO proxy_settings DEFAULT VALUES")
+        }
     }
 }

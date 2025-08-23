@@ -4,7 +4,7 @@ import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
-import com.zaneschepke.wireguardautotunnel.domain.events.BackendError
+import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.model.AppProxySettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
@@ -12,7 +12,8 @@ import com.zaneschepke.wireguardautotunnel.domain.state.AmneziaStatistics
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.asAmBackendMode
 import com.zaneschepke.wireguardautotunnel.util.extensions.asBackendMode
-import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendError
+import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendCoreException
+import java.io.IOException
 import java.util.*
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -90,10 +91,10 @@ constructor(
             backend.setState(tunnel, Tunnel.State.UP, updatedConfig)
         } catch (e: BackendException) {
             Timber.e(e, "Failed to start up backend for tunnel ${tunnel.name}")
-            throw e.toBackendError()
+            throw e.toBackendCoreException()
         } catch (e: IllegalArgumentException) {
             Timber.e(e, "Failed to start up backend for tunnel ${tunnel.name}")
-            throw BackendError.Config
+            throw BackendCoreException.Config
         }
     }
 
@@ -103,7 +104,7 @@ constructor(
             backend.setState(tunnel, Tunnel.State.DOWN, tunnel.toAmConfig())
         } catch (e: BackendException) {
             Timber.e(e, "Failed to stop tunnel ${tunnel.id}")
-            throw e.toBackendError()
+            throw e.toBackendCoreException()
         }
     }
 
@@ -112,7 +113,10 @@ constructor(
         try {
             backend.backendMode = backendMode.asAmBackendMode()
         } catch (e: BackendException) {
-            throw e.toBackendError()
+            throw e.toBackendCoreException()
+            // TODO this should be mapped to BackendException in the lib
+        } catch (e: IOException) {
+            throw BackendCoreException.NotAuthorized
         }
     }
 
