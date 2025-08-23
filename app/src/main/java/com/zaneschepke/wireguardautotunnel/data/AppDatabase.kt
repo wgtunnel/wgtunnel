@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.data
 
 import androidx.room.*
 import androidx.room.migration.AutoMigrationSpec
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.zaneschepke.wireguardautotunnel.data.dao.ProxySettingsDao
 import com.zaneschepke.wireguardautotunnel.data.dao.SettingsDao
 import com.zaneschepke.wireguardautotunnel.data.dao.TunnelConfigDao
@@ -80,4 +81,8 @@ class PingMigration : AutoMigrationSpec
     DeleteColumn(tableName = "Settings", columnName = "is_kernel_kill_switch_enabled"),
     DeleteColumn(tableName = "Settings", columnName = "is_kernel_enabled"),
 )
-class ProxyMigration : AutoMigrationSpec
+class ProxyMigration : AutoMigrationSpec {
+    override fun onPostMigrate(db: SupportSQLiteDatabase) {
+        db.execSQL("INSERT INTO proxy_settings DEFAULT VALUES")
+    }
+}
