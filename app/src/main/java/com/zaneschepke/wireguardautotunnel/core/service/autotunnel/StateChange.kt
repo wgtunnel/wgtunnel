@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.core.service.autotunnel
 
-import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
+import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.state.NetworkState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
@@ -11,7 +11,7 @@ import org.amnezia.awg.crypto.Key
 sealed class StateChange {
     data class NetworkChange(val networkState: NetworkState) : StateChange()
 
-    data class SettingsChange(val settings: AppSettings, val tunnels: Tunnels) : StateChange()
+    data class SettingsChange(val settings: GeneralSettings, val tunnels: Tunnels) : StateChange()
 
     data class ActiveTunnelsChange(val activeTunnels: Map<TunnelConf, TunnelState>) : StateChange()
 

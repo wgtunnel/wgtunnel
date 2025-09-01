@@ -10,20 +10,15 @@ import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun enablePingMonitoringItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
+fun enablePingMonitoringItem(
+    isPingEnabled: Boolean,
+    onChange: (checked: Boolean) -> Unit,
+): SelectionItem {
     return SelectionItem(
         leading = { Icon(Icons.Outlined.NetworkPing, contentDescription = null) },
-        trailing = {
-            ScaledSwitch(
-                checked = uiState.appSettings.isPingEnabled,
-                onClick = { viewModel.handleEvent(AppEvent.TogglePingMonitoring) },
-            )
-        },
+        trailing = { ScaledSwitch(checked = isPingEnabled, onClick = onChange) },
         title = {
             Text(
                 text = stringResource(R.string.monitoring_ping),
@@ -31,6 +26,6 @@ fun enablePingMonitoringItem(uiState: AppUiState, viewModel: AppViewModel): Sele
                     MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onSurface),
             )
         },
-        onClick = { viewModel.handleEvent(AppEvent.TogglePingMonitoring) },
+        onClick = { onChange(!isPingEnabled) },
     )
 }

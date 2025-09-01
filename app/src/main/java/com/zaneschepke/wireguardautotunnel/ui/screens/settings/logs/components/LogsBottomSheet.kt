@@ -9,33 +9,24 @@ import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.sheet.CustomBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.common.sheet.SheetOption
-import com.zaneschepke.wireguardautotunnel.ui.state.AppViewState
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LogsBottomSheet(viewModel: AppViewModel) {
+fun LogsBottomSheet(onExport: () -> Unit, onDelete: () -> Unit, onDismiss: () -> Unit) {
     CustomBottomSheet(
         listOf(
             SheetOption(
                 Icons.Outlined.FolderZip,
                 stringResource(R.string.export_logs),
-                onClick = {
-                    viewModel.handleEvent(AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE))
-                    viewModel.handleEvent(AppEvent.ExportLogs)
-                },
+                onClick = onExport,
             ),
             SheetOption(
                 Icons.Outlined.Delete,
                 stringResource(R.string.delete_logs),
-                onClick = {
-                    viewModel.handleEvent(AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE))
-                    viewModel.handleEvent(AppEvent.DeleteLogs)
-                },
+                onClick = onDelete,
             ),
         )
     ) {
-        viewModel.handleEvent(AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE))
+        onDismiss()
     }
 }

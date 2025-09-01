@@ -14,12 +14,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
+import com.zaneschepke.wireguardautotunnel.ui.state.AutoTunnelUiState
+import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 
 @Composable
-fun NetworkTunnelingItems(uiState: AppUiState, viewModel: AppViewModel): List<SelectionItem> {
+fun networkTunnelingItems(
+    autoTunnelState: AutoTunnelUiState,
+    viewModel: AutoTunnelViewModel,
+): List<SelectionItem> {
     return listOf(
         SelectionItem(
             leading = { Icon(Icons.Outlined.SignalCellular4Bar, contentDescription = null) },
@@ -34,15 +36,15 @@ fun NetworkTunnelingItems(uiState: AppUiState, viewModel: AppViewModel): List<Se
             },
             trailing = {
                 ScaledSwitch(
-                    enabled = !uiState.appSettings.isAlwaysOnVpnEnabled,
-                    checked = uiState.appSettings.isTunnelOnMobileDataEnabled,
-                    onClick = { viewModel.handleEvent(AppEvent.ToggleAutoTunnelOnCellular) },
+                    enabled = !autoTunnelState.generalSettings.isAlwaysOnVpnEnabled,
+                    checked = autoTunnelState.generalSettings.isTunnelOnMobileDataEnabled,
+                    onClick = { viewModel.setTunnelOnCellular(it) },
                 )
             },
             description = {
                 val cellularActive =
-                    remember(uiState.connectivityState) {
-                        uiState.connectivityState?.cellularConnected ?: false
+                    remember(autoTunnelState.connectivityState) {
+                        autoTunnelState.connectivityState?.cellularConnected ?: false
                     }
                 Text(
                     text =
@@ -56,7 +58,11 @@ fun NetworkTunnelingItems(uiState: AppUiState, viewModel: AppViewModel): List<Se
                     overflow = TextOverflow.Ellipsis,
                 )
             },
-            onClick = { viewModel.handleEvent(AppEvent.ToggleAutoTunnelOnCellular) },
+            onClick = {
+                viewModel.setTunnelOnCellular(
+                    !autoTunnelState.generalSettings.isTunnelOnMobileDataEnabled
+                )
+            },
         ),
         SelectionItem(
             leading = { Icon(Icons.Outlined.SettingsEthernet, contentDescription = null) },
@@ -71,15 +77,15 @@ fun NetworkTunnelingItems(uiState: AppUiState, viewModel: AppViewModel): List<Se
             },
             trailing = {
                 ScaledSwitch(
-                    enabled = !uiState.appSettings.isAlwaysOnVpnEnabled,
-                    checked = uiState.appSettings.isTunnelOnEthernetEnabled,
-                    onClick = { viewModel.handleEvent(AppEvent.ToggleAutoTunnelOnEthernet) },
+                    enabled = !autoTunnelState.generalSettings.isAlwaysOnVpnEnabled,
+                    checked = autoTunnelState.generalSettings.isTunnelOnEthernetEnabled,
+                    onClick = { viewModel.setTunnelOnEthernet(it) },
                 )
             },
             description = {
                 val ethernetActive =
-                    remember(uiState.connectivityState) {
-                        uiState.connectivityState?.ethernetConnected ?: false
+                    remember(autoTunnelState.connectivityState) {
+                        autoTunnelState.connectivityState?.ethernetConnected ?: false
                     }
                 Text(
                     text =
@@ -93,7 +99,11 @@ fun NetworkTunnelingItems(uiState: AppUiState, viewModel: AppViewModel): List<Se
                     overflow = TextOverflow.Ellipsis,
                 )
             },
-            onClick = { viewModel.handleEvent(AppEvent.ToggleAutoTunnelOnEthernet) },
+            onClick = {
+                viewModel.setTunnelOnEthernet(
+                    !autoTunnelState.generalSettings.isTunnelOnEthernetEnabled
+                )
+            },
         ),
         SelectionItem(
             leading = { Icon(Icons.Outlined.PublicOff, contentDescription = null) },
@@ -115,11 +125,15 @@ fun NetworkTunnelingItems(uiState: AppUiState, viewModel: AppViewModel): List<Se
             },
             trailing = {
                 ScaledSwitch(
-                    checked = uiState.appSettings.isStopOnNoInternetEnabled,
-                    onClick = { viewModel.handleEvent(AppEvent.ToggleStopTunnelOnNoInternet) },
+                    checked = autoTunnelState.generalSettings.isStopOnNoInternetEnabled,
+                    onClick = { viewModel.setStopOnNoInternetEnabled(it) },
                 )
             },
-            onClick = { viewModel.handleEvent(AppEvent.ToggleStopTunnelOnNoInternet) },
+            onClick = {
+                viewModel.setStopOnNoInternetEnabled(
+                    !autoTunnelState.generalSettings.isStopOnNoInternetEnabled
+                )
+            },
         ),
     )
 }

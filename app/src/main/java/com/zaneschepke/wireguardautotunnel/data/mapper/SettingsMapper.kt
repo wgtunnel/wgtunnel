@@ -1,14 +1,13 @@
 package com.zaneschepke.wireguardautotunnel.data.mapper
 
-import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.wireguardautotunnel.data.entity.Settings
 import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
 import com.zaneschepke.wireguardautotunnel.data.model.DnsSettings
 import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
-import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
+import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
 
-fun Settings.toAppSettings(): AppSettings {
-    return AppSettings(
+fun Settings.toAppSettings(): GeneralSettings {
+    return GeneralSettings(
         id = id,
         isAutoTunnelEnabled = isAutoTunnelEnabled,
         isTunnelOnMobileDataEnabled = isTunnelOnMobileDataEnabled,
@@ -26,8 +25,7 @@ fun Settings.toAppSettings(): AppSettings {
         debounceDelaySeconds = debounceDelaySeconds,
         isDisableKillSwitchOnTrustedEnabled = isDisableKillSwitchOnTrustedEnabled,
         isTunnelOnUnsecureEnabled = isTunnelOnUnsecureEnabled,
-        wifiDetectionMethod =
-            AndroidNetworkMonitor.WifiDetectionMethod.fromValue(wifiDetectionMethod.value),
+        wifiDetectionMethod = WifiDetectionMethod.fromValue(wifiDetectionMethod.value),
         tunnelPingIntervalSeconds = tunnelPingIntervalSeconds,
         tunnelPingAttempts = tunnelPingAttempts,
         tunnelPingTimeoutSeconds = tunnelPingTimeoutSeconds,
@@ -37,7 +35,7 @@ fun Settings.toAppSettings(): AppSettings {
     )
 }
 
-fun AppSettings.toSettings(): Settings {
+fun GeneralSettings.toSettings(): Settings {
     return Settings(
         id = id,
         isAutoTunnelEnabled = isAutoTunnelEnabled,
@@ -66,7 +64,7 @@ fun AppSettings.toSettings(): Settings {
     )
 }
 
-fun AppSettings.toDomain(): DnsSettings {
+fun GeneralSettings.toDomain(): DnsSettings {
     return DnsSettings(
         protocol =
             DnsProtocol.entries.toTypedArray().getOrElse(dnsProtocol.value) { DnsProtocol.SYSTEM },
@@ -74,6 +72,6 @@ fun AppSettings.toDomain(): DnsSettings {
     )
 }
 
-fun DnsSettings.toAppSettings(existing: AppSettings): AppSettings {
+fun DnsSettings.toAppSettings(existing: GeneralSettings): GeneralSettings {
     return existing.copy(dnsProtocol = protocol, dnsEndpoint = endpoint)
 }

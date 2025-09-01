@@ -3,14 +3,14 @@ package com.zaneschepke.wireguardautotunnel.domain.model
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
 
 data class AppState(
-    val isLocationDisclosureShown: Boolean,
-    val isBatteryOptimizationDisableShown: Boolean,
-    val isPinLockEnabled: Boolean,
-    val expandedTunnelIds: List<Int>,
-    val isLocalLogsEnabled: Boolean,
-    val isRemoteControlEnabled: Boolean,
-    val showDetailedPingStats: Boolean,
-    val remoteKey: String?,
-    val locale: String?,
-    val theme: Theme,
+    val isLocationDisclosureShown: Boolean = false,
+    val isBatteryOptimizationDisableShown: Boolean = false,
+    val isPinLockEnabled: Boolean = false,
+    val expandedTunnelIds: List<Int> = emptyList(),
+    val isLocalLogsEnabled: Boolean = false,
+    val isRemoteControlEnabled: Boolean = false,
+    val showDetailedPingStats: Boolean = false,
+    val remoteKey: String? = null,
+    val locale: String? = null,
+    val theme: Theme = Theme.AUTOMATIC,
 )

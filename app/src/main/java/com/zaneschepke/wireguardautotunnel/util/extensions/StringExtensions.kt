@@ -26,15 +26,17 @@ fun String.isValidIpv4orIpv6Address(): Boolean {
     return ipv4Pattern.matches(sanitized) || ipv6Pattern.matches(sanitized)
 }
 
-fun String.isValidProxyBindAddress(): Boolean {
+// only allow valid Android ports
+fun String.isValidAndroidProxyBindAddress(): Boolean {
+    // Regex: IPv4 address with mandatory port (1–65535)
     val regex =
         Regex(
-            """^((25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(:\d{1,5})?$"""
+            """^((25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d):([1-9]\d{0,4}|[1-5]\d{4}|6[0-5][0-5][0-3][0-5])$"""
         )
     if (!regex.matches(this)) return false
 
-    val port = this.substringAfter(":", "").toIntOrNull() ?: return false
-    return port in 1..65535
+    val port = this.substringAfter(":").toIntOrNull() ?: return false
+    return port in 1024..65535
 }
 
 fun String.hasNumberInParentheses(): Boolean {
@@ -47,7 +49,7 @@ fun String.extractNameAndNumber(): Pair<String, Int>? {
     return matchResult?.let { Pair(it.groupValues[1], it.groupValues[2].toInt()) }
 }
 
-fun List<String>.isMatchingToWildcardList(value: String): Boolean {
+fun Set<String>.isMatchingToWildcardList(value: String): Boolean {
     val excludeValues =
         this.filter { it.startsWith("!") }.map { it.removePrefix("!").transformWildcardsToRegex() }
     Timber.d("Excluded values: $excludeValues")
@@ -86,4 +88,11 @@ fun Iterable<String>.joinAndTrim(): String {
 
 fun String.toTrimmedList(): List<String> {
     return this.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+}
+
+inline fun String?.ifNotBlank(block: (String) -> Unit): String? {
+    if (this != null && isNotBlank()) {
+        block(this)
+    }
+    return this
 }

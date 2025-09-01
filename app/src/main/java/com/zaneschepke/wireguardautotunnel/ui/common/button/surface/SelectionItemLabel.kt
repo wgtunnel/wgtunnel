@@ -22,6 +22,7 @@ fun SelectionItemLabel(text: String, labelType: SelectionLabelType, modifier: Mo
 }
 
 enum class SelectionLabelType {
+
     DESCRIPTION,
     TITLE,
 }

@@ -10,23 +10,20 @@ import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun alwaysOnVpnItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
+fun alwaysOnVpnItem(checked: Boolean, onChange: (checked: Boolean) -> Unit): SelectionItem {
     return SelectionItem(
         leading = { Icon(Icons.Outlined.VpnLock, contentDescription = null) },
         trailing = {
             ScaledSwitch(
-                enabled =
-                    !((uiState.appSettings.isTunnelOnWifiEnabled ||
-                        uiState.appSettings.isTunnelOnEthernetEnabled ||
-                        uiState.appSettings.isTunnelOnMobileDataEnabled) &&
-                        uiState.appSettings.isAutoTunnelEnabled),
-                checked = uiState.appSettings.isAlwaysOnVpnEnabled,
-                onClick = { viewModel.handleEvent(AppEvent.ToggleAlwaysOn) },
+                //                enabled =
+                //                    !((uiState.generalSettings.isTunnelOnWifiEnabled ||
+                //                        uiState.generalSettings.isTunnelOnEthernetEnabled ||
+                //                        uiState.generalSettings.isTunnelOnMobileDataEnabled) &&
+                //                        uiState.generalSettings.isAutoTunnelEnabled),
+                checked = checked,
+                onClick = onChange,
             )
         },
         title = {
@@ -36,6 +33,6 @@ fun alwaysOnVpnItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem
                     MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onSurface),
             )
         },
-        onClick = { viewModel.handleEvent(AppEvent.ToggleAlwaysOn) },
+        onClick = { onChange(!checked) },
     )
 }

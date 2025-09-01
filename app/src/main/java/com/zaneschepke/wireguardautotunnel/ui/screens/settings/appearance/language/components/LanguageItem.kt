@@ -1,20 +1,14 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.language.components
 
 import androidx.compose.runtime.Composable
+import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SelectionItemButton
 import com.zaneschepke.wireguardautotunnel.ui.common.label.SelectedLabel
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 import java.util.*
 
 @Composable
-fun LanguageItem(
-    locale: Locale,
-    appUiState: AppUiState,
-    viewModel: AppViewModel,
-    isAndroidTv: Boolean,
-) {
+fun languageItem(currentLocale: String, locale: Locale, onChange: (String) -> Unit) {
+    val isTv = LocalIsAndroidTV.current
     SelectionItemButton(
         buttonText =
             locale.getDisplayLanguage(locale).replaceFirstChar {
@@ -27,12 +21,12 @@ fun LanguageItem(
                 } else {
                     ""
                 },
-        onClick = { viewModel.handleEvent(AppEvent.SetLocale(locale.toLanguageTag())) },
+        onClick = { onChange(locale.toLanguageTag()) },
         trailing = {
-            if (locale.toLanguageTag() == appUiState.appState.locale) {
+            if (locale.toLanguageTag() == currentLocale) {
                 SelectedLabel()
             }
         },
-        ripple = isAndroidTv,
+        ripple = isTv,
     )
 }

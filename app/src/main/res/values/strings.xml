@@ -89,8 +89,8 @@
     <string name="auto">(Auto)</string>
     <string name="incorrect_pin">Pin is incorrect</string>
     <string name="pin_created">Pin successfully created</string>
-    <string name="enter_pin">Enter your pin</string>
-    <string name="create_pin">Create pin</string>
+    <string name="enter_pin">Enter PIN</string>
+    <string name="create_pin">Create PIN</string>
     <string name="enable_app_lock">Enable app lock</string>
     <string name="restart_on_ping">Restart on ping fail (beta)</string>
     <string name="mobile_data_tunnel">Set as mobile data tunnel</string>
@@ -364,4 +364,21 @@
     <string name="server_port">Server:Port</string>
     <string name="new_tunnel">New tunnel</string>
     <string name="system_features">System features</string>
+    <string name="read_failed">Failed to read data.</string>
+    <string name="invalid_key">Invalid key</string>
+    <string name="invalid_number">Invalid number</string>
+    <string name="invalid_value">Invalid value</string>
+    <string name="missing_attribute">Missing attribute</string>
+    <string name="missing_section">Missing section</string>
+    <string name="syntax_error">Syntax error</string>
+    <string name="unknown_attribute">Unknown attribute</string>
+    <string name="unknown_section">Unknown section</string>
+    <string name="config_error_template">Bad config. %1$s at location: %2$s.</string>
+    <string name="ports_must_differ">Failed. Proxies must have different ports.</string>
+    <string name="password_no_spaces">Password cannot have spaces.</string>
+    <string name="tunnel_name_taken">Tunnel name is already used.</string>
+    <string name="range_hint">(%1$d–%2$d)</string>
+    <string name="mimic_quic">Mimic QUIC</string>
+    <string name="mimic_dns">Mimic DNS</string>
+    <string name="mimic_sip">Mimic SIP</string>
 </resources>

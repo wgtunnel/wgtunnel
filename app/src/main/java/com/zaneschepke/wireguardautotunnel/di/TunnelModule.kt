@@ -10,14 +10,14 @@ import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.*
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.util.extensions.to
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +27,7 @@ import org.amnezia.awg.backend.Backend
 import org.amnezia.awg.backend.GoBackend
 import org.amnezia.awg.backend.ProxyGoBackend
 import org.amnezia.awg.backend.RootTunnelActionHandler
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -140,7 +141,7 @@ class TunnelModule {
     @Singleton
     fun provideNetworkMonitor(
         @ApplicationContext context: Context,
-        settingsRepository: AppSettingRepository,
+        settingsRepository: GeneralSettingRepository,
         @ApplicationScope applicationScope: CoroutineScope,
         @AppShell appShell: RootShell,
     ): NetworkMonitor {
@@ -151,7 +152,7 @@ class TunnelModule {
                     get() =
                         settingsRepository.flow
                             .distinctUntilChangedBy { it.wifiDetectionMethod }
-                            .map { it.wifiDetectionMethod }
+                            .map { it.wifiDetectionMethod.to() }
 
                 override val rootShell: RootShell
                     get() = appShell

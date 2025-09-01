@@ -1,47 +1,66 @@
 package com.zaneschepke.wireguardautotunnel.util.extensions
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
-import com.zaneschepke.wireguardautotunnel.ui.Route
-import com.zaneschepke.wireguardautotunnel.ui.navigation.isCurrentRoute
+import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
+import kotlin.reflect.KClass
 
-fun NavController.goFromRoot(route: Route) {
-    if (currentBackStackEntry?.isCurrentRoute(route::class) == true) return
-    this.navigate(route) {
-        popUpTo(Route.Main) { saveState = true }
-        launchSingleTop = true
+@SuppressLint("RestrictedApi")
+fun <T : Route> NavBackStackEntry?.isCurrentRoute(cls: KClass<T>): Boolean {
+    return this?.destination?.hierarchy?.any { it.hasRoute(route = cls) } == true
+}
+
+@Composable
+inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(
+    navController: NavController
+): T {
+    val navGraphRoute = destination.parent?.route ?: return hiltViewModel<T>()
+    val parentEntry = remember(this) { navController.getBackStackEntry(navGraphRoute) }
+    return hiltViewModel(parentEntry)
+}
+
+fun WifiDetectionMethod.asTitleString(context: Context): String {
+    return when (this) {
+        WifiDetectionMethod.DEFAULT -> context.getString(R.string._default)
+        WifiDetectionMethod.LEGACY -> context.getString(R.string.legacy)
+        WifiDetectionMethod.ROOT -> context.getString(R.string.root)
+        WifiDetectionMethod.SHIZUKU -> context.getString(R.string.shizuku)
     }
 }
 
-fun AndroidNetworkMonitor.WifiDetectionMethod.asTitleString(context: Context): String {
+fun WifiDetectionMethod.to(): AndroidNetworkMonitor.WifiDetectionMethod {
     return when (this) {
-        AndroidNetworkMonitor.WifiDetectionMethod.DEFAULT -> context.getString(R.string._default)
-        AndroidNetworkMonitor.WifiDetectionMethod.LEGACY -> context.getString(R.string.legacy)
-        AndroidNetworkMonitor.WifiDetectionMethod.ROOT -> context.getString(R.string.root)
-        AndroidNetworkMonitor.WifiDetectionMethod.SHIZUKU -> context.getString(R.string.shizuku)
+        WifiDetectionMethod.DEFAULT -> AndroidNetworkMonitor.WifiDetectionMethod.DEFAULT
+        WifiDetectionMethod.LEGACY -> AndroidNetworkMonitor.WifiDetectionMethod.LEGACY
+        WifiDetectionMethod.ROOT -> AndroidNetworkMonitor.WifiDetectionMethod.ROOT
+        WifiDetectionMethod.SHIZUKU -> AndroidNetworkMonitor.WifiDetectionMethod.SHIZUKU
     }
 }
 
-fun AndroidNetworkMonitor.WifiDetectionMethod.asDescriptionString(context: Context): String? {
+fun WifiDetectionMethod.asDescriptionString(context: Context): String? {
     return when (this) {
-        AndroidNetworkMonitor.WifiDetectionMethod.LEGACY ->
-            context.getString(R.string.legacy_api_description)
-        AndroidNetworkMonitor.WifiDetectionMethod.ROOT ->
-            context.getString(R.string.use_root_shell_for_wifi)
-        AndroidNetworkMonitor.WifiDetectionMethod.SHIZUKU ->
-            context.getString(R.string.use_shell_via_shizuku)
-        AndroidNetworkMonitor.WifiDetectionMethod.DEFAULT ->
-            context.getString(R.string.use_android_recommended)
+        WifiDetectionMethod.LEGACY -> context.getString(R.string.legacy_api_description)
+        WifiDetectionMethod.ROOT -> context.getString(R.string.use_root_shell_for_wifi)
+        WifiDetectionMethod.SHIZUKU -> context.getString(R.string.use_shell_via_shizuku)
+        WifiDetectionMethod.DEFAULT -> context.getString(R.string.use_android_recommended)
     }
 }
 

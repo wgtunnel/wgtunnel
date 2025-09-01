@@ -13,32 +13,37 @@ import androidx.compose.material.icons.outlined.TimerOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.components.detailedPingStatsItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.components.enablePingMonitoringItem
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
+import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
+import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 
 @Composable
-fun TunnelMonitoringScreen(uiState: AppUiState, viewModel: AppViewModel) {
-    val pingInterval: Int by
-        remember(uiState.appSettings) {
-            mutableIntStateOf(uiState.appSettings.tunnelPingIntervalSeconds)
-        }
-    val pingAttempts: Int by
-        remember(uiState.appSettings) { mutableIntStateOf(uiState.appSettings.tunnelPingAttempts) }
-    val pingTimeout: Int? by
-        remember(uiState.appSettings) {
-            mutableStateOf(uiState.appSettings.tunnelPingTimeoutSeconds)
-        }
+fun TunnelMonitoringScreen(viewModel: SettingsViewModel) {
+    val sharedViewModel = LocalSharedVm.current
+    val settingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        sharedViewModel.updateNavbarState(
+            NavbarState(
+                topTitle = { Text(stringResource(R.string.tunnel_monitoring)) },
+                showTopItems = true,
+                showBottomItems = true,
+            )
+        )
+    }
 
     Column(
         horizontalAlignment = Alignment.Start,
@@ -49,8 +54,14 @@ fun TunnelMonitoringScreen(uiState: AppUiState, viewModel: AppViewModel) {
                 .padding(vertical = 24.dp)
                 .padding(horizontal = 12.dp),
     ) {
-        SurfaceSelectionGroupButton(listOf(enablePingMonitoringItem(uiState, viewModel)))
-        if (uiState.appSettings.isPingEnabled) {
+        SurfaceSelectionGroupButton(
+            listOf(
+                enablePingMonitoringItem(settingsState.settings.isPingEnabled) {
+                    viewModel.setPingEnabled(it)
+                }
+            )
+        )
+        if (settingsState.settings.isPingEnabled) {
             LabelledDropdown(
                 title = {
                     Text(
@@ -62,9 +73,9 @@ fun TunnelMonitoringScreen(uiState: AppUiState, viewModel: AppViewModel) {
                     )
                 },
                 leading = { Icon(Icons.Outlined.Timer, contentDescription = null) },
-                currentValue = pingInterval,
+                currentValue = settingsState.settings.tunnelPingIntervalSeconds,
                 onSelected = { selected ->
-                    viewModel.handleEvent(AppEvent.SetPingInterval(selected!!))
+                    selected?.let { viewModel.setTunnelPingIntervalSeconds(it) }
                 },
                 options = (10..60).step(10).toList(),
                 optionToString = { it?.toString() ?: stringResource(R.string._default) },
@@ -80,10 +91,8 @@ fun TunnelMonitoringScreen(uiState: AppUiState, viewModel: AppViewModel) {
                     )
                 },
                 leading = { Icon(Icons.Outlined.Replay, contentDescription = null) },
-                currentValue = pingAttempts,
-                onSelected = { selected ->
-                    viewModel.handleEvent(AppEvent.SetPingAttempts(selected!!))
-                },
+                currentValue = settingsState.settings.tunnelPingAttempts,
+                onSelected = { selected -> selected?.let { viewModel.setTunnelPingAttempts(it) } },
                 options = (1..5).toList(),
                 optionToString = { it?.toString() ?: stringResource(R.string._default) },
             )
@@ -98,7 +107,7 @@ fun TunnelMonitoringScreen(uiState: AppUiState, viewModel: AppViewModel) {
                     )
                 },
                 leading = { Icon(Icons.Outlined.TimerOff, contentDescription = null) },
-                currentValue = pingTimeout,
+                currentValue = settingsState.settings.tunnelPingTimeoutSeconds,
                 description = {
                     Text(
                         text = stringResource(R.string.timeout_all_attempts),
@@ -109,12 +118,18 @@ fun TunnelMonitoringScreen(uiState: AppUiState, viewModel: AppViewModel) {
                     )
                 },
                 onSelected = { selected ->
-                    viewModel.handleEvent(AppEvent.SetPingTimeout(selected))
+                    selected?.let { viewModel.setTunnelPingTimeoutSeconds(it) }
                 },
                 options = (10..20).toList() + null,
                 optionToString = { it?.toString() ?: stringResource(R.string._default) },
             )
-            SurfaceSelectionGroupButton(listOf(detailedPingStatsItem(uiState, viewModel)))
+            SurfaceSelectionGroupButton(
+                listOf(
+                    detailedPingStatsItem(settingsState.showDetailedPingStats) {
+                        viewModel.setDetailedPingStats(it)
+                    }
+                )
+            )
         }
     }
 }

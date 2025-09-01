@@ -15,17 +15,15 @@ fun BigDecimal.toThreeDecimalPlaceString(): String {
 
 fun <T> List<T>.update(index: Int, item: T): List<T> = toMutableList().apply { this[index] = item }
 
-fun <T> List<T>.removeAt(index: Int): List<T> = toMutableList().apply { this.removeAt(index) }
-
 typealias Tunnels = List<TunnelConf>
 
 typealias TunnelConfigs = List<TunnelConfig>
 
 typealias Packages = List<PackageInfo>
 
-fun <T> MutableList<T>.addAllUnique(elements: Collection<T>, comparator: (T, T) -> Boolean) {
-    addAll(elements.filterNot { new -> this.any { existing -> comparator(existing, new) } })
-}
+typealias TunnelName = String?
+
+typealias QuickConfig = String
 
 fun <T, R : Comparable<R>> List<T>.isSortedBy(selector: (T) -> R): Boolean {
     return zipWithNext().all { (a, b) -> selector(a) <= selector(b) }

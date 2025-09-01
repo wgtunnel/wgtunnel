@@ -6,6 +6,10 @@ enum class WifiDetectionMethod(val value: Int) {
     ROOT(2),
     SHIZUKU(3);
 
+    fun needsLocationPermissions(): Boolean {
+        return this == LEGACY || this == DEFAULT
+    }
+
     companion object {
         fun fromValue(value: Int): WifiDetectionMethod =
             entries.find { it.value == value } ?: DEFAULT

@@ -13,7 +13,7 @@ data class Settings(
     @ColumnInfo(name = "is_tunnel_enabled") val isAutoTunnelEnabled: Boolean = false,
     @ColumnInfo(name = "is_tunnel_on_mobile_data_enabled")
     val isTunnelOnMobileDataEnabled: Boolean = false,
-    @ColumnInfo(name = "trusted_network_ssids") val trustedNetworkSSIDs: List<String> = emptyList(),
+    @ColumnInfo(name = "trusted_network_ssids") val trustedNetworkSSIDs: Set<String> = emptySet(),
     @ColumnInfo(name = "is_always_on_vpn_enabled") val isAlwaysOnVpnEnabled: Boolean = false,
     @ColumnInfo(name = "is_tunnel_on_ethernet_enabled")
     val isTunnelOnEthernetEnabled: Boolean = false,

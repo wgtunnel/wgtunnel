@@ -8,55 +8,80 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.SettingsBackupRestore
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
+import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
+import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
+import com.zaneschepke.wireguardautotunnel.ui.common.button.ActionIconButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
-import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalIsAndroidTV
-import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.*
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.compoents.BackendModeBottomSheet
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.ui.state.AppViewState
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.compoents.AppModeBottomSheet
+import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
+import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
+import xyz.teamgravity.pin_lock_compose.PinManager
 
 @Composable
-fun SettingsScreen(uiState: AppUiState, appViewState: AppViewState, viewModel: AppViewModel) {
+fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val isTv = LocalIsAndroidTV.current
-    val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
     val navController = LocalNavController.current
-
+    val focusManager = LocalFocusManager.current
+    val sharedViewModel = LocalSharedVm.current
     val interactionSource = remember { MutableInteractionSource() }
 
-    val showBackupBottomSheet by
-        remember(appViewState.bottomSheet) {
-            derivedStateOf {
-                appViewState.bottomSheet == AppViewState.BottomSheet.BACKUP_AND_RESTORE
-            }
-        }
-    val showBottomSheet by
-        remember(appViewState.bottomSheet) {
-            derivedStateOf { appViewState.bottomSheet == AppViewState.BottomSheet.BACKEND }
-        }
+    val settingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+
+    if (!settingsState.stateInitialized) return
+
+    var showBackupSheet by rememberSaveable { mutableStateOf(false) }
+    var showAppModeSheet by rememberSaveable { mutableStateOf(false) }
+
     val showProxySettings by
-        remember(uiState.appSettings.appMode) {
+        remember(settingsState.settings.appMode) {
             derivedStateOf {
-                when (uiState.appSettings.appMode) {
+                when (settingsState.settings.appMode) {
                     AppMode.PROXY -> true
                     else -> false
                 }
             }
         }
 
-    if (showBackupBottomSheet) BackupBottomSheet(viewModel)
-    if (showBottomSheet) BackendModeBottomSheet(uiState.appSettings, viewModel)
+    LaunchedEffect(Unit) {
+        sharedViewModel.updateNavbarState(
+            NavbarState(
+                showTopItems = true,
+                showBottomItems = true,
+                topTitle = { Text(stringResource(R.string.settings)) },
+                topTrailing = {
+                    ActionIconButton(Icons.Rounded.SettingsBackupRestore, R.string.quick_actions) {
+                        showBackupSheet = true
+                    }
+                },
+            )
+        )
+    }
+
+    if (showBackupSheet) BackupBottomSheet() { showBackupSheet = false }
+    if (showAppModeSheet)
+        AppModeBottomSheet(sharedViewModel::setAppMode, settingsState.settings.appMode) {
+            showAppModeSheet = false
+        }
 
     Column(
         horizontalAlignment = Alignment.Start,
@@ -78,30 +103,51 @@ fun SettingsScreen(uiState: AppUiState, appViewState: AppViewState, viewModel: A
                     }
                 ),
     ) {
-        SurfaceSelectionGroupButton(buildList { add(backendModeItem(uiState, viewModel)) })
+        SurfaceSelectionGroupButton(
+            buildList {
+                add(backendModeItem(settingsState.settings.appMode) { showAppModeSheet = true })
+            }
+        )
         SectionDivider()
         SurfaceSelectionGroupButton(
             items =
                 buildList {
-                    if (uiState.appSettings.appMode == AppMode.LOCK_DOWN) {
-                        add(lanTrafficItem(uiState, viewModel))
+                    if (settingsState.settings.appMode == AppMode.LOCK_DOWN) {
+                        add(
+                            lanTrafficItem(settingsState.settings.isLanOnKillSwitchEnabled) {
+                                viewModel.setLanKillSwitchEnabled(it)
+                            }
+                        )
                     }
-                    add(tunnelMonitoringItem())
-                    add(dnsSettingsItem())
+                    add(tunnelMonitoringItem(navController))
+                    add(dnsSettingsItem(navController))
                     // TODO changing these settings won't work in certain app states
-                    if (showProxySettings) add(proxYSettingsItem())
+                    if (showProxySettings) add(proxYSettingsItem(navController))
                 }
         )
         SectionDivider()
-        SurfaceSelectionGroupButton(listOf(systemFeaturesItem()))
+        SurfaceSelectionGroupButton(listOf(systemFeaturesItem(navController)))
         SectionDivider()
         SurfaceSelectionGroupButton(
             items =
                 buildList {
-                    add(appearanceItem())
-                    add(LocalLoggingItem(uiState, viewModel))
-                    if (uiState.appState.isLocalLogsEnabled) add(ReadLogsItem())
-                    add(PinLockItem(uiState, viewModel))
+                    add(appearanceItem(navController))
+                    add(
+                        localLoggingItem(settingsState.isLocalLoggingEnabled) {
+                            viewModel.setLocalLogging(it)
+                        }
+                    )
+                    if (settingsState.isLocalLoggingEnabled) add(readLogsItem(navController))
+                    add(
+                        pinLockItem(settingsState.isPinLockEnabled) { enabled ->
+                            if (enabled) {
+                                PinManager.initialize(context)
+                                navController.navigate(Route.Lock)
+                            } else {
+                                sharedViewModel.setPinLockEnabled(false)
+                            }
+                        }
+                    )
                 }
         )
     }

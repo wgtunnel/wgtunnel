@@ -7,7 +7,7 @@ interface AppDataRepository {
 
     suspend fun getStartTunnelConfig(): TunnelConf?
 
-    val settings: AppSettingRepository
+    val settings: GeneralSettingRepository
     val tunnels: TunnelRepository
     val appState: AppStateRepository
 

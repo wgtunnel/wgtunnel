@@ -1,107 +1,153 @@
 package com.zaneschepke.wireguardautotunnel.ui.navigation.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.QuestionMark
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.Route
 import com.zaneschepke.wireguardautotunnel.ui.navigation.BottomNavItem
-import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.navigation.isCurrentRoute
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
+import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
-import com.zaneschepke.wireguardautotunnel.util.extensions.goFromRoot
+import com.zaneschepke.wireguardautotunnel.util.extensions.debounce
+
+@Composable
+fun NavHostController.getCurrentGraph(): State<Route?> {
+    val navBackStackEntry by currentBackStackEntryAsState()
+
+    return remember(navBackStackEntry) {
+        derivedStateOf {
+            val parentRouteString = navBackStackEntry?.destination?.parent?.route
+            when (parentRouteString) {
+                Route.TunnelsGraph::class.qualifiedName -> Route.TunnelsGraph
+                Route.AutoTunnelGraph::class.qualifiedName -> Route.AutoTunnelGraph
+                Route.SettingsGraph::class.qualifiedName -> Route.SettingsGraph
+                Route.SupportGraph::class.qualifiedName -> Route.SupportGraph
+                else -> null
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomNavbar(appUiState: AppUiState) {
-    val navController = LocalNavController.current
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
+fun BottomNavbar(
+    isAutoTunnelActive: Boolean,
+    navbarState: NavbarState,
+    navController: NavHostController,
+) {
+
+    val currentGraph by navController.getCurrentGraph()
+    val coroutineScope = rememberCoroutineScope()
+
+    val navigateToDebounced =
+        remember<(Route) -> Unit> {
+            debounce(scope = coroutineScope, 150L) { route ->
+                navController.navigate(route) {
+                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+        }
 
     val items =
         listOf(
             BottomNavItem(
                 name = stringResource(R.string.tunnels),
-                route = Route.Main,
                 icon = Icons.Rounded.Home,
-                onClick = { navController.goFromRoot(Route.Main) },
+                onClick = { navigateToDebounced(Route.TunnelsGraph) },
+                route = Route.TunnelsGraph,
             ),
             BottomNavItem(
                 name = stringResource(R.string.auto_tunnel),
-                route = Route.AutoTunnel,
                 icon = Icons.Rounded.Bolt,
-                onClick = {
-                    val route =
-                        if (appUiState.appState.isLocationDisclosureShown) {
-                            Route.AutoTunnel
-                        } else Route.LocationDisclosure
-                    navController.goFromRoot(route)
-                },
-                active = appUiState.isAutoTunnelActive,
+                onClick = { navigateToDebounced(Route.AutoTunnelGraph) },
+                route = Route.AutoTunnelGraph,
+                active = isAutoTunnelActive,
             ),
             BottomNavItem(
                 name = stringResource(R.string.settings),
-                route = Route.Settings,
                 icon = Icons.Rounded.Settings,
-                onClick = { navController.goFromRoot(Route.Settings) },
+                onClick = { navigateToDebounced(Route.SettingsGraph) },
+                route = Route.SettingsGraph,
             ),
             BottomNavItem(
                 name = stringResource(R.string.support),
-                route = Route.Support,
                 icon = Icons.Rounded.QuestionMark,
-                onClick = { navController.goFromRoot(Route.Support) },
+                onClick = { navigateToDebounced(Route.SupportGraph) },
+                route = Route.SupportGraph,
             ),
         )
 
-    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
-        items.forEach { item ->
-            val isSelected = navBackStackEntry.isCurrentRoute(item.route::class)
-            val interactionSource = remember { MutableInteractionSource() }
-
-            NavigationBarItem(
-                icon = {
-                    if (item.active) {
-                        BadgedBox(
-                            badge = {
-                                Badge(
-                                    modifier = Modifier.offset(x = 8.dp, y = (-8).dp).size(6.dp),
-                                    containerColor = SilverTree,
-                                )
-                            }
-                        ) {
-                            Icon(imageVector = item.icon, contentDescription = item.name)
-                        }
-                    } else {
-                        Icon(imageVector = item.icon, contentDescription = item.name)
+    if (!navbarState.removeBottom) {
+        NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
+            AnimatedVisibility(
+                visible = navbarState.showBottomItems,
+                enter = slideInVertically(initialOffsetY = { it }),
+                exit = slideOutVertically(targetOffsetY = { it }),
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(0.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    items.forEach { item ->
+                        val interactionSource = remember { MutableInteractionSource() }
+                        NavigationBarItem(
+                            icon = {
+                                if (item.active) {
+                                    BadgedBox(
+                                        badge = {
+                                            Badge(
+                                                modifier =
+                                                    Modifier.offset(x = 8.dp, y = (-8).dp)
+                                                        .size(6.dp),
+                                                containerColor = SilverTree,
+                                            )
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.name,
+                                        )
+                                    }
+                                } else {
+                                    Icon(imageVector = item.icon, contentDescription = item.name)
+                                }
+                            },
+                            onClick = item.onClick,
+                            selected = currentGraph == item.route,
+                            enabled = true,
+                            label = null,
+                            alwaysShowLabel = false,
+                            colors =
+                                NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                                    unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                                    indicatorColor = Color.Transparent,
+                                ),
+                            interactionSource = interactionSource,
+                        )
                     }
-                },
-                onClick = item.onClick,
-                selected = isSelected,
-                enabled = true,
-                label = null,
-                alwaysShowLabel = false,
-                colors =
-                    NavigationBarItemDefaults.colors(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                        indicatorColor = Color.Transparent,
-                    ),
-                interactionSource = interactionSource,
-            )
+                }
+            }
         }
     }
 }

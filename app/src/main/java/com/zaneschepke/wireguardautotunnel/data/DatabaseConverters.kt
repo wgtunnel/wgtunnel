@@ -24,6 +24,16 @@ class DatabaseConverters {
         }
     }
 
+    @TypeConverter
+    fun setToString(value: Set<String>): String {
+        return listToString(value.toList())
+    }
+
+    @TypeConverter
+    fun stringToSet(value: String): Set<String> {
+        return stringToList(value).toSet()
+    }
+
     @TypeConverter fun fromStatus(status: WifiDetectionMethod): Int = status.value
 
     @TypeConverter

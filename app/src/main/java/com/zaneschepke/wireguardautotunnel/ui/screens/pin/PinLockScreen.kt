@@ -1,28 +1,39 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.pin
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.Route
-import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalIsAndroidTV
-import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
+import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
+import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 import xyz.teamgravity.pin_lock_compose.PinLock
+import xyz.teamgravity.pin_lock_compose.PinManager
 
 @Composable
-fun PinLockScreen(viewModel: AppViewModel) {
+fun PinLockScreen() {
+    val sharedViewModel = LocalSharedVm.current
     val navController = LocalNavController.current
-    val isTv = LocalIsAndroidTV.current
+    val pinAlreadyExists by rememberSaveable { mutableStateOf(PinManager.pinExists()) }
+    var pinCreated by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        sharedViewModel.updateNavbarState(
+            NavbarState(showTopItems = false, showBottomItems = false)
+        )
+    }
+
     PinLock(
-        title = { pinExists ->
+        title = {
             Text(
                 color = MaterialTheme.colorScheme.onSurface,
                 text =
-                    if (pinExists) {
+                    if (pinAlreadyExists || pinCreated) {
                         stringResource(id = R.string.enter_pin)
                     } else {
                         stringResource(id = R.string.create_pin)
@@ -32,29 +43,21 @@ fun PinLockScreen(viewModel: AppViewModel) {
         backgroundColor = MaterialTheme.colorScheme.surface,
         textColor = MaterialTheme.colorScheme.onSurface,
         onPinCorrect = {
-            // pin is correct, navigate or hide pin lock
-            if (isTv) {
-                navController.navigate(Route.Main)
-            } else {
-                val isPopped = navController.popBackStack()
-                if (!isPopped) {
-                    navController.navigate(Route.Main)
-                }
-            }
+            sharedViewModel.authenticated()
+            navController.popBackStack()
+            navController.navigate(Route.TunnelsGraph)
         },
         onPinIncorrect = {
-            // pin is incorrect, show error
-            viewModel.handleEvent(
-                AppEvent.ShowMessage(StringValue.StringResource(R.string.incorrect_pin))
-            )
+            sharedViewModel.showToast(StringValue.StringResource(R.string.incorrect_pin))
         },
         onPinCreated = {
-            // pin created for the first time, navigate or hide pin lock
-            viewModel.handleEvent(
-                AppEvent.ShowMessage(StringValue.StringResource(R.string.pin_created))
-            )
-
-            viewModel.handleEvent(AppEvent.TogglePinLock)
+            pinCreated = true
+            sharedViewModel.showToast(StringValue.StringResource(R.string.pin_created))
+            sharedViewModel.setPinLockEnabled(true)
         },
     )
+    BackHandler(enabled = (!pinAlreadyExists && !pinCreated)) {
+        PinManager.clearPin()
+        navController.navigate(Route.SettingsGraph)
+    }
 }

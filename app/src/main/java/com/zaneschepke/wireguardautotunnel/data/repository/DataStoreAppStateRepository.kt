@@ -3,15 +3,25 @@ package com.zaneschepke.wireguardautotunnel.data.repository
 import com.zaneschepke.wireguardautotunnel.data.DataStoreManager
 import com.zaneschepke.wireguardautotunnel.data.entity.GeneralState
 import com.zaneschepke.wireguardautotunnel.data.mapper.GeneralStateMapper
+import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
+import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.model.AppState
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.plus
 import timber.log.Timber
 
-class DataStoreAppStateRepository(private val dataStoreManager: DataStoreManager) :
-    AppStateRepository {
+class DataStoreAppStateRepository(
+    private val dataStoreManager: DataStoreManager,
+    @ApplicationScope private val applicationScope: CoroutineScope,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+) : AppStateRepository {
     override suspend fun isLocationDisclosureShown(): Boolean {
         return dataStoreManager.getFromStore(DataStoreManager.locationDisclosureShown)
             ?: GeneralState.LOCATION_DISCLOSURE_SHOWN_DEFAULT
@@ -167,4 +177,9 @@ class DataStoreAppStateRepository(private val dataStoreManager: DataStoreManager
                 } ?: GeneralState()
             }
             .map(GeneralStateMapper::toAppState)
+            .stateIn(
+                scope = applicationScope + ioDispatcher,
+                started = SharingStarted.Eagerly,
+                initialValue = AppState(),
+            )
 }

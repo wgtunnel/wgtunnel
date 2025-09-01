@@ -22,7 +22,7 @@ fun ExpandingRowListItem(
     text: String,
     trailing: @Composable () -> Unit,
     isSelected: Boolean,
-    expanded: @Composable () -> Unit,
+    expanded: (@Composable () -> Unit),
     modifier: Modifier = Modifier,
 ) {
     Box(

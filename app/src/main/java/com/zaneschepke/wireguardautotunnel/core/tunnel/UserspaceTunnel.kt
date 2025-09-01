@@ -13,9 +13,6 @@ import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.asAmBackendMode
 import com.zaneschepke.wireguardautotunnel.util.extensions.asBackendMode
 import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendCoreException
-import java.io.IOException
-import java.util.*
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import org.amnezia.awg.backend.Backend
 import org.amnezia.awg.backend.BackendException
@@ -27,6 +24,9 @@ import org.amnezia.awg.config.proxy.HttpProxy
 import org.amnezia.awg.config.proxy.Proxy
 import org.amnezia.awg.config.proxy.Socks5Proxy
 import timber.log.Timber
+import java.io.IOException
+import java.util.*
+import javax.inject.Inject
 
 class UserspaceTunnel
 @Inject
@@ -87,7 +87,6 @@ constructor(
                         )
                     }
                     .build()
-
             backend.setState(tunnel, Tunnel.State.UP, updatedConfig)
         } catch (e: BackendException) {
             Timber.e(e, "Failed to start up backend for tunnel ${tunnel.name}")

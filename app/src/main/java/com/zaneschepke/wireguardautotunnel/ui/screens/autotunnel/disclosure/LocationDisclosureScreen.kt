@@ -9,17 +9,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.LocationDisclosureHeader
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.appSettingsItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.skipItem
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
+import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 
 @Composable
-fun LocationDisclosureScreen(viewModel: AppViewModel) {
+fun LocationDisclosureScreen(viewModel: AutoTunnelViewModel) {
+    val navController = LocalNavController.current
 
-    LaunchedEffect(Unit) { viewModel.handleEvent(AppEvent.SetLocationDisclosureShown) }
+    LaunchedEffect(Unit) { viewModel.setLocationDisclosureShown() }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -28,6 +29,6 @@ fun LocationDisclosureScreen(viewModel: AppViewModel) {
     ) {
         LocationDisclosureHeader()
         SurfaceSelectionGroupButton(items = listOf(appSettingsItem()))
-        SurfaceSelectionGroupButton(items = listOf(skipItem()))
+        SurfaceSelectionGroupButton(items = listOf(skipItem(navController)))
     }
 }

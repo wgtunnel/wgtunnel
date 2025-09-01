@@ -7,15 +7,14 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
-import java.io.IOException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.io.IOException
 
 class DataStoreManager(
     private val context: Context,
@@ -83,10 +82,6 @@ class DataStoreManager(
                 null
             }
         }
-    }
-
-    fun <T> getFromStoreBlocking(key: Preferences.Key<T>) = runBlocking {
-        context.dataStore.data.map { it[key] }.first()
     }
 
     val preferencesFlow: Flow<Preferences?> = context.dataStore.data.flowOn(ioDispatcher)

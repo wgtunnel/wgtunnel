@@ -10,20 +10,12 @@ import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun restartAtBootItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
+fun restartAtBootItem(enabled: Boolean, onChange: (checked: Boolean) -> Unit): SelectionItem {
     return SelectionItem(
         leading = { Icon(Icons.Outlined.Restore, contentDescription = null) },
-        trailing = {
-            ScaledSwitch(
-                checked = uiState.appSettings.isRestoreOnBootEnabled,
-                onClick = { viewModel.handleEvent(AppEvent.ToggleRestartAtBoot) },
-            )
-        },
+        trailing = { ScaledSwitch(checked = enabled, onClick = onChange) },
         title = {
             Text(
                 text = stringResource(R.string.restart_at_boot),
@@ -31,6 +23,6 @@ fun restartAtBootItem(uiState: AppUiState, viewModel: AppViewModel): SelectionIt
                     MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onSurface),
             )
         },
-        onClick = { viewModel.handleEvent(AppEvent.ToggleRestartAtBoot) },
+        onClick = { onChange(!enabled) },
     )
 }

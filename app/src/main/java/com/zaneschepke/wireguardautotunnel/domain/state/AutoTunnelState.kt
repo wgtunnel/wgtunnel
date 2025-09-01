@@ -3,14 +3,14 @@ package com.zaneschepke.wireguardautotunnel.domain.state
 import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.StateChange
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent.*
-import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
+import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.util.extensions.isMatchingToWildcardList
 
 data class AutoTunnelState(
     val activeTunnels: Map<TunnelConf, TunnelState> = emptyMap(),
     val networkState: NetworkState = NetworkState(),
-    val settings: AppSettings = AppSettings(),
+    val settings: GeneralSettings = GeneralSettings(),
     val tunnels: List<TunnelConf> = emptyList(),
 ) {
 
@@ -137,7 +137,7 @@ data class AutoTunnelState(
 
     private fun hasTrustedWifiName(
         wifiName: String,
-        wifiNames: List<String> = settings.trustedNetworkSSIDs,
+        wifiNames: Set<String> = settings.trustedNetworkSSIDs,
     ): Boolean {
         return if (settings.isWildcardsEnabled) {
             wifiNames.isMatchingToWildcardList(wifiName)
