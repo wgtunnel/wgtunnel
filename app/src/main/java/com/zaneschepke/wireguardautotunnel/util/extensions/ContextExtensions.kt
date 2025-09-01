@@ -6,6 +6,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Context.POWER_SERVICE
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -20,9 +21,12 @@ import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.service.tile.AutoTunnelControlTile
 import com.zaneschepke.wireguardautotunnel.core.service.tile.TunnelControlTile
+import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.state.TunnelApp
 import com.zaneschepke.wireguardautotunnel.util.Constants
+import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import java.io.File
 import java.io.InputStream
+import java.util.*
 import kotlin.system.exitProcess
 import timber.log.Timber
 
@@ -43,12 +47,6 @@ fun Context.isBatteryOptimizationsDisabled(): Boolean {
     val pm = getSystemService(POWER_SERVICE) as PowerManager
     return pm.isIgnoringBatteryOptimizations(packageName)
 }
-
-val Context.actionBarSize
-    get() =
-        theme.obtainStyledAttributes(intArrayOf(android.R.attr.actionBarSize)).let { attrs ->
-            attrs.getDimension(0, 0F).toInt().also { attrs.recycle() }
-        }
 
 fun Context.launchNotificationSettings() {
     if (isRunningOnTv()) return launchAppSettings()
@@ -85,8 +83,8 @@ fun Context.hasSAFSupport(mimeType: String): Boolean {
         isRunningOnTv() &&
             activitiesToResolveIntent.all {
                 val name = it.activityInfo.packageName
-                name.startsWith(Constants.GOOGLE_TV_EXPLORER_STUB) ||
-                    name.startsWith(Constants.ANDROID_TV_EXPLORER_STUB)
+                name.startsWith(FileUtils.GOOGLE_TV_EXPLORER_STUB) ||
+                    name.startsWith(FileUtils.ANDROID_TV_EXPLORER_STUB)
             }
     ) {
         Timber.w("Only stub file explorers found on TV")
@@ -96,11 +94,12 @@ fun Context.hasSAFSupport(mimeType: String): Boolean {
     }
 }
 
-fun Context.launchShareFile(file: Uri) {
+fun Context.launchShareFile(file: File) {
+    val uri = FileProvider.getUriForFile(this, getString(R.string.provider), file)
     val shareIntent =
         Intent().apply {
             action = Intent.ACTION_SEND
-            type = Constants.ALL_FILE_TYPES
+            type = FileUtils.ALL_FILE_TYPES
             putExtra(Intent.EXTRA_STREAM, file)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -207,6 +206,18 @@ fun Context.getAllInternetCapablePackages(): List<PackageInfo> {
     }
 }
 
+fun Context.getSplitTunnelApps(): List<TunnelApp> {
+    val packages = getAllInternetCapablePackages()
+    return packages
+        .filter { it.applicationInfo != null }
+        .map { pkg ->
+            TunnelApp(
+                packageManager.getApplicationLabel(pkg.applicationInfo!!).toString(),
+                pkg.packageName,
+            )
+        }
+}
+
 fun Context.canInstallPackages(): Boolean {
     return packageManager.canRequestPackageInstalls()
 }
@@ -239,5 +250,24 @@ fun MainActivity.restartApp() {
     Intent(this, MainActivity::class.java).also {
         startActivity(it)
         exitProcess(0)
+    }
+}
+
+fun PackageManager.getFriendlyAppName(packageName: String, appInfo: ApplicationInfo): String {
+    val label =
+        try {
+            getApplicationLabel(appInfo).toString()
+        } catch (e: PackageManager.NameNotFoundException) {
+            packageName
+        }
+
+    // probably a package, parse it
+    return if (label.count { it == '.' } > 1) {
+        val lastSegment = label.substringAfterLast(".", label)
+        lastSegment.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+        }
+    } else {
+        label
     }
 }

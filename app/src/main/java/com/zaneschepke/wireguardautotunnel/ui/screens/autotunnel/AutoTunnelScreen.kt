@@ -17,60 +17,74 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.Route
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
+import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.WarningBanner
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
-import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.AdvancedSettingsItem
-import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.NetworkTunnelingItems
-import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.WifiTunnelingItems
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
+import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.networkTunnelingItems
+import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.wifiTunnelingItems
+import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.util.extensions.launchAppSettings
 import com.zaneschepke.wireguardautotunnel.util.extensions.launchLocationServicesSettings
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
+import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun AutoTunnelScreen(uiState: AppUiState, viewModel: AppViewModel) {
-    val navController = LocalNavController.current
+fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     val context = LocalContext.current
+    val sharedViewModel = LocalSharedVm.current
+    val navController = LocalNavController.current
+    val autoTunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
-    var currentText by remember { mutableStateOf("") }
+    if (!autoTunnelState.stateInitialized) return
+
+    LaunchedEffect(Unit) {
+        sharedViewModel.updateNavbarState(
+            NavbarState(
+                showBottomItems = true,
+                topTitle = { Text(stringResource(R.string.auto_tunnel)) },
+            )
+        )
+    }
+
     var showLocationDialog by remember { mutableStateOf(false) }
 
     val showLocationServicesWarning by
         remember(
-            uiState.connectivityState?.wifiState,
-            uiState.appSettings.trustedNetworkSSIDs,
-            uiState.appSettings.wifiDetectionMethod,
+            autoTunnelState.connectivityState?.wifiState,
+            autoTunnelState.generalSettings.trustedNetworkSSIDs,
+            autoTunnelState.generalSettings.wifiDetectionMethod,
         ) {
             derivedStateOf {
-                uiState.connectivityState?.wifiState?.locationServicesEnabled == false &&
-                    uiState.appSettings.wifiDetectionMethod.needsLocationPermissions() &&
-                    uiState.appSettings.trustedNetworkSSIDs.isNotEmpty()
+                autoTunnelState.connectivityState?.wifiState?.locationServicesEnabled == false &&
+                    autoTunnelState.generalSettings.wifiDetectionMethod
+                        .needsLocationPermissions() &&
+                    autoTunnelState.generalSettings.trustedNetworkSSIDs.isNotEmpty()
             }
         }
 
     val showLocationPermissionsWarning by
         remember(
-            uiState.connectivityState?.wifiState,
-            uiState.appSettings.trustedNetworkSSIDs,
-            uiState.appSettings.wifiDetectionMethod,
+            autoTunnelState.connectivityState?.wifiState,
+            autoTunnelState.generalSettings.trustedNetworkSSIDs,
+            autoTunnelState.generalSettings.wifiDetectionMethod,
         ) {
             derivedStateOf {
-                uiState.connectivityState?.wifiState?.locationPermissionsGranted == false &&
-                    uiState.appSettings.wifiDetectionMethod.needsLocationPermissions() &&
-                    uiState.appSettings.trustedNetworkSSIDs.isNotEmpty()
+                autoTunnelState.connectivityState?.wifiState?.locationPermissionsGranted == false &&
+                    autoTunnelState.generalSettings.wifiDetectionMethod
+                        .needsLocationPermissions() &&
+                    autoTunnelState.generalSettings.trustedNetworkSSIDs.isNotEmpty()
             }
         }
-
-    LaunchedEffect(uiState.appSettings.trustedNetworkSSIDs) { currentText = "" }
 
     if (showLocationDialog) {
         InfoDialog(
@@ -121,8 +135,8 @@ fun AutoTunnelScreen(uiState: AppUiState, viewModel: AppViewModel) {
             },
         )
         val (title, buttonText, icon) =
-            remember(uiState.isAutoTunnelActive) {
-                when (uiState.isAutoTunnelActive) {
+            remember(autoTunnelState.autoTunnelActive) {
+                when (autoTunnelState.autoTunnelActive) {
                     true ->
                         Triple(
                             context.getString(R.string.auto_tunnel_running),
@@ -144,7 +158,7 @@ fun AutoTunnelScreen(uiState: AppUiState, viewModel: AppViewModel) {
                         leading = { Icon(icon, null) },
                         title = { Text(title) },
                         trailing = {
-                            Button({ viewModel.handleEvent(AppEvent.ToggleAutoTunnel) }) {
+                            Button({ viewModel.toggleAutoTunnel() }) {
                                 Text(
                                     buttonText,
                                     fontWeight = FontWeight.Bold,
@@ -159,16 +173,16 @@ fun AutoTunnelScreen(uiState: AppUiState, viewModel: AppViewModel) {
                 )
         )
         SurfaceSelectionGroupButton(
-            items = WifiTunnelingItems(uiState, viewModel, currentText) { currentText = it }
+            items = wifiTunnelingItems(autoTunnelState, viewModel, navController)
         )
         SectionDivider()
-        SurfaceSelectionGroupButton(items = NetworkTunnelingItems(uiState, viewModel))
+        SurfaceSelectionGroupButton(items = networkTunnelingItems(autoTunnelState, viewModel))
         SectionDivider()
         SurfaceSelectionGroupButton(
             items =
                 listOf(
                     AdvancedSettingsItem(
-                        onClick = { navController.navigate(Route.AutoTunnelAdvanced) }
+                        onClick = { navController.navigate(Route.AdvancedAutoTunnel) }
                     )
                 )
         )

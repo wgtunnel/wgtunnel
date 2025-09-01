@@ -10,12 +10,12 @@ import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun lanTrafficItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
+fun lanTrafficItem(
+    isLanKillSwitchEnabled: Boolean,
+    onClick: (enable: Boolean) -> Unit,
+): SelectionItem {
     return SelectionItem(
         leading = { Icon(Icons.Outlined.Lan, contentDescription = null) },
         title = {
@@ -31,12 +31,7 @@ fun lanTrafficItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem 
                 style = MaterialTheme.typography.bodySmall.copy(MaterialTheme.colorScheme.outline),
             )
         },
-        trailing = {
-            ScaledSwitch(
-                checked = uiState.appSettings.isLanOnKillSwitchEnabled,
-                onClick = { viewModel.handleEvent(AppEvent.ToggleLanOnKillSwitch) },
-            )
-        },
-        onClick = { viewModel.handleEvent(AppEvent.ToggleLanOnKillSwitch) },
+        trailing = { ScaledSwitch(checked = isLanKillSwitchEnabled, onClick = onClick) },
+        onClick = { onClick(!isLanKillSwitchEnabled) },
     )
 }

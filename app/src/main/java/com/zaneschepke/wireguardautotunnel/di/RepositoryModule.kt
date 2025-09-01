@@ -22,10 +22,28 @@ import dagger.hilt.components.SingletonComponent
 import io.ktor.client.*
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 
 @Module
 @InstallIn(SingletonComponent::class)
 class RepositoryModule {
+
+    @Provides
+    @Singleton
+    fun provideGlobalEffectRepository(): GlobalEffectRepository {
+        return GlobalEffectRepository()
+    }
+
+    @Provides
+    @Singleton
+    fun provideInstalledPackageRepository(
+        @ApplicationContext context: Context,
+        @ApplicationScope applicationScope: CoroutineScope,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
+    ): InstalledPackageRepository {
+        return InstalledAndroidPackageRepository(context, applicationScope, ioDispatcher)
+    }
+
     @Provides
     @Singleton
     fun provideDatabase(
@@ -74,7 +92,7 @@ class RepositoryModule {
     fun provideSettingsRepository(
         settingsDao: SettingsDao,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
-    ): AppSettingRepository {
+    ): GeneralSettingRepository {
         return RoomSettingsRepository(settingsDao, ioDispatcher)
     }
 
@@ -98,14 +116,18 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideGeneralStateRepository(dataStoreManager: DataStoreManager): AppStateRepository {
-        return DataStoreAppStateRepository(dataStoreManager)
+    fun provideGeneralStateRepository(
+        dataStoreManager: DataStoreManager,
+        @ApplicationScope applicationScope: CoroutineScope,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
+    ): AppStateRepository {
+        return DataStoreAppStateRepository(dataStoreManager, applicationScope, ioDispatcher)
     }
 
     @Provides
     @Singleton
     fun provideAppDataRepository(
-        settingsRepository: AppSettingRepository,
+        settingsRepository: GeneralSettingRepository,
         tunnelRepository: TunnelRepository,
         appStateRepository: AppStateRepository,
         proxySettingsRepository: ProxySettingsRepository,

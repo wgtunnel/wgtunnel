@@ -23,6 +23,7 @@ import kotlinx.coroutines.SupervisorJob
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
+
     @Singleton
     @ApplicationScope
     @Provides

@@ -6,22 +6,40 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
+import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.SecureScreenFromRecording
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
-import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.system.components.*
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
+import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
+import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 
 @Composable
-fun SystemFeaturesScreen(appUiState: AppUiState, viewModel: AppViewModel) {
+fun SystemFeaturesScreen(viewModel: SettingsViewModel) {
+    val sharedViewModel = LocalSharedVm.current
+    val settingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     val isTv = LocalIsAndroidTV.current
+
+    LaunchedEffect(Unit) {
+        sharedViewModel.updateNavbarState(
+            NavbarState(
+                topTitle = { Text(stringResource(R.string.android_integrations)) },
+                showBottomItems = true,
+            )
+        )
+    }
 
     SecureScreenFromRecording()
 
@@ -38,15 +56,32 @@ fun SystemFeaturesScreen(appUiState: AppUiState, viewModel: AppViewModel) {
         SectionDivider()
         SurfaceSelectionGroupButton(
             buildList {
-                add(restartAtBootItem(appUiState, viewModel))
-                if (!isTv) add(alwaysOnVpnItem(appUiState, viewModel))
+                add(
+                    restartAtBootItem(settingsState.settings.isRestoreOnBootEnabled) {
+                        viewModel.setRestoreOnBootEnabled(it)
+                    }
+                )
+                if (!isTv)
+                    add(
+                        alwaysOnVpnItem(settingsState.settings.isAlwaysOnVpnEnabled) {
+                            viewModel.setAlwaysOnVpnEnabled(it)
+                        }
+                    )
             }
         )
         SectionDivider()
         SurfaceSelectionGroupButton(
             buildList {
-                add(appShortcutsItem(appUiState, viewModel))
-                add(remoteControlItem(appUiState, viewModel))
+                add(
+                    appShortcutsItem(settingsState.settings.isShortcutsEnabled) {
+                        viewModel.setShortcutsEnabled(it)
+                    }
+                )
+                add(
+                    remoteControlItem(settingsState.isRemoteEnabled, settingsState.remoteKey) {
+                        viewModel.setRemoteEnabled(it)
+                    }
+                )
             }
         )
     }

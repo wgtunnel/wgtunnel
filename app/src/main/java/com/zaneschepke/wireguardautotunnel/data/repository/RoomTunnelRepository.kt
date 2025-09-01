@@ -105,4 +105,10 @@ class RoomTunnelRepository(
             tunnelConfigDao.findByPrimary().map(TunnelConfigMapper::toTunnelConf)
         }
     }
+
+    override suspend fun delete(tunnels: List<TunnelConf>) {
+        withContext(ioDispatcher) {
+            tunnelConfigDao.delete(tunnels.map { TunnelConfigMapper.toTunnelConfig(it) })
+        }
+    }
 }

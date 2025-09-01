@@ -1,20 +1,28 @@
 package com.zaneschepke.wireguardautotunnel.util.extensions
 
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 fun <K, V> Flow<Map<K, V>>.distinctByKeys(): Flow<Map<K, V>> {
     return distinctUntilChanged { old, new -> old.keys == new.keys }
 }
 
-fun <T> Flow<T>.zipWithPrevious(): Flow<Pair<T?, T>> = flow {
-    var previous: T? = null
-    collect { current ->
-        emit(previous to current)
-        previous = current
+fun <T> debounce(
+    scope: CoroutineScope,
+    delayMillis: Long = 300L,
+    onDebounced: (T) -> Unit,
+): (T) -> Unit {
+    var job: Job? = null
+    return { param: T ->
+        job?.cancel()
+        job =
+            scope.launch {
+                delay(delayMillis)
+                onDebounced(param)
+            }
     }
-}
-
-suspend fun <R> StateFlow<AppUiState>.withFirstState(block: suspend (AppUiState) -> R): R {
-    return block(first { it.isAppLoaded })
 }

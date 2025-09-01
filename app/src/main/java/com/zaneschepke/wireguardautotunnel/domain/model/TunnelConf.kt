@@ -1,16 +1,19 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
+import android.os.Parcelable
 import com.wireguard.android.backend.Tunnel
 import com.wireguard.config.Config
 import com.zaneschepke.wireguardautotunnel.util.extensions.*
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class TunnelConf(
     val id: Int = 0,
     val tunName: String,
     val wgQuick: String,
-    val tunnelNetworks: List<String> = emptyList(),
+    val tunnelNetworks: Set<String> = emptySet(),
     val isMobileDataTunnel: Boolean = false,
     val isPrimaryTunnel: Boolean = false,
     val amQuick: String,
@@ -21,7 +24,7 @@ data class TunnelConf(
     val isIpv4Preferred: Boolean = true,
     val position: Int = 0,
     @Transient private var stateChangeCallback: ((Any) -> Unit)? = null,
-) : Tunnel, org.amnezia.awg.backend.Tunnel {
+) : Tunnel, org.amnezia.awg.backend.Tunnel, Parcelable {
 
     val isNameKernelCompatible: Boolean = (name.length <= 15)
 
@@ -61,7 +64,7 @@ data class TunnelConf(
         id: Int = this.id,
         tunName: String = this.tunName,
         wgQuick: String = this.wgQuick,
-        tunnelNetworks: List<String> = this.tunnelNetworks,
+        tunnelNetworks: Set<String> = this.tunnelNetworks,
         isMobileDataTunnel: Boolean = this.isMobileDataTunnel,
         isPrimaryTunnel: Boolean = this.isPrimaryTunnel,
         amQuick: String = this.amQuick,
@@ -140,7 +143,17 @@ data class TunnelConf(
             }
         }
 
-        fun tunnelConfigFromAmConfig(
+        fun tunnelConfFromQuick(amQuick: String, name: String? = null): TunnelConf {
+            val config = configFromAmQuick(amQuick)
+            val wgQuick = config.toWgQuickString()
+            return TunnelConf(
+                tunName = name ?: config.defaultName(),
+                wgQuick = wgQuick,
+                amQuick = amQuick,
+            )
+        }
+
+        private fun tunnelConfFromAmConfig(
             config: org.amnezia.awg.config.Config,
             name: String? = null,
         ): TunnelConf {

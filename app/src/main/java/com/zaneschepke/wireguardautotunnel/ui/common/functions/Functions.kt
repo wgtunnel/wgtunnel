@@ -9,8 +9,8 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalIsAndroidTV
-import com.zaneschepke.wireguardautotunnel.util.Constants
+import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
+import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import timber.log.Timber
 
 @Composable
@@ -26,9 +26,9 @@ fun rememberFileImportLauncherForResult(
                     super.createIntent(context, input).apply {
                         type =
                             if (isTv) {
-                                Constants.ALLOWED_TV_FILE_TYPES
+                                FileUtils.ALLOWED_TV_FILE_TYPES
                             } else {
-                                Constants.ALL_FILE_TYPES
+                                FileUtils.ALL_FILE_TYPES
                             }
                     }
 
@@ -51,8 +51,8 @@ fun rememberFileImportLauncherForResult(
                 if (
                     activitiesToResolveIntent.all {
                         val name = it.activityInfo.packageName
-                        name.startsWith(Constants.GOOGLE_TV_EXPLORER_STUB) ||
-                            name.startsWith(Constants.ANDROID_TV_EXPLORER_STUB)
+                        name.startsWith(FileUtils.GOOGLE_TV_EXPLORER_STUB) ||
+                            name.startsWith(FileUtils.ANDROID_TV_EXPLORER_STUB)
                     }
                 ) {
                     onNoFileExplorer()
@@ -68,7 +68,7 @@ fun rememberFileImportLauncherForResult(
 
 @Composable
 fun rememberFileExportLauncherForResult(
-    mimeType: String = Constants.ZIP_FILE_MIME_TYPE,
+    mimeType: String = FileUtils.ZIP_FILE_MIME_TYPE,
     onResult: (Uri?) -> Unit,
 ): ManagedActivityResultLauncher<String, Uri?> {
     val isTv = LocalIsAndroidTV.current
@@ -82,7 +82,7 @@ fun rememberFileExportLauncherForResult(
                             addCategory(Intent.CATEGORY_OPENABLE)
                             type =
                                 if (isTv) {
-                                    Constants.ALLOWED_TV_FILE_TYPES
+                                    FileUtils.ALLOWED_TV_FILE_TYPES
                                 } else {
                                     mimeType
                                 }

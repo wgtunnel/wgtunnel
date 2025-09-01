@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalIsAndroidTV
+import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 
 private val DarkColorScheme =
     darkColorScheme(

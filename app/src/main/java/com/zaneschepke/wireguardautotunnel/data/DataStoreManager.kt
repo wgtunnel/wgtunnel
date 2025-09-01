@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -83,10 +82,6 @@ class DataStoreManager(
                 null
             }
         }
-    }
-
-    fun <T> getFromStoreBlocking(key: Preferences.Key<T>) = runBlocking {
-        context.dataStore.data.map { it[key] }.first()
     }
 
     val preferencesFlow: Flow<Preferences?> = context.dataStore.data.flowOn(ioDispatcher)

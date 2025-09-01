@@ -7,6 +7,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
@@ -15,54 +16,52 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
+import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.ContactSupportOptions
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.GeneralSupportOptions
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.UpdateSection
+import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.extensions.canInstallPackages
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
 import com.zaneschepke.wireguardautotunnel.util.extensions.requestInstallPackagesPermission
-import com.zaneschepke.wireguardautotunnel.util.extensions.showToast
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
+import com.zaneschepke.wireguardautotunnel.viewmodel.SupportViewModel
 
 @Composable
-fun SupportScreen(viewModel: SupportViewModel = hiltViewModel(), appViewModel: AppViewModel) {
+fun SupportScreen(viewModel: SupportViewModel) {
     val context = LocalContext.current
+    val sharedViewModel = LocalSharedVm.current
+    val navController = LocalNavController.current
+    val supportState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var showPermissionDialog by remember { mutableStateOf(false) }
+    var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(uiState.error) {
-        uiState.error?.let {
-            viewModel.handleErrorShown()
-            appViewModel.handleEvent(AppEvent.ShowMessage(it))
-            viewModel.handleErrorShown()
-        }
+    LaunchedEffect(Unit) {
+        sharedViewModel.updateNavbarState(
+            NavbarState(
+                topTitle = { Text(stringResource(R.string.support)) },
+                showBottomItems = true,
+            )
+        )
     }
 
-    LaunchedEffect(uiState.isUptoDate) {
-        if (uiState.isUptoDate == true)
-            return@LaunchedEffect context.showToast(R.string.latest_installed)
-    }
-
-    if (uiState.appUpdate != null) {
+    if (supportState.appUpdate != null) {
         InfoDialog(
-            onDismiss = { viewModel.handleUpdateShown() },
+            onDismiss = { viewModel.dismissUpdate() },
             onAttest = {
                 if (BuildConfig.FLAVOR != Constants.STANDALONE_FLAVOR) {
-                    uiState.appUpdate?.apkUrl?.let { context.openWebUrl(it) }
+                    supportState.appUpdate?.apkUrl?.let { context.openWebUrl(it) }
                     return@InfoDialog
                 }
                 if (context.canInstallPackages()) {
-                    viewModel.handleDownloadAndInstallApk()
+                    viewModel.downloadAndInstall()
                 } else {
                     showPermissionDialog = true
                 }
@@ -75,25 +74,13 @@ fun SupportScreen(viewModel: SupportViewModel = hiltViewModel(), appViewModel: A
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     val annotatedString = buildAnnotatedString {
-                        append("${uiState.appUpdate?.version ?: ""}\n")
+                        append("${supportState.appUpdate?.version ?: ""}\n")
                         // Add clickable text for second line
                         withLink(
                             link =
                                 LinkAnnotation.Clickable(
                                     tag = stringResource(id = R.string.release_notes),
-                                    linkInteractionListener = {
-                                        val version =
-                                            if (BuildConfig.VERSION_NAME.contains("nightly")) {
-                                                "nightly"
-                                            } else {
-                                                uiState.appUpdate
-                                                    ?.version
-                                                    ?.removePrefix("v")
-                                                    ?.trim() ?: ""
-                                            }
-                                        val url = "${Constants.BASE_RELEASE_URL}$version".trim()
-                                        context.openWebUrl(url)
-                                    },
+                                    linkInteractionListener = { viewModel.viewReleaseNotes() },
                                     styles =
                                         TextLinkStyles(
                                             style =
@@ -109,9 +96,9 @@ fun SupportScreen(viewModel: SupportViewModel = hiltViewModel(), appViewModel: A
                     }
 
                     Text(text = annotatedString)
-                    if (uiState.isLoading) {
+                    if (supportState.isLoading) {
                         LinearProgressIndicator(
-                            progress = { uiState.downloadProgress },
+                            progress = { supportState.downloadProgress },
                             modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                             trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                             color = MaterialTheme.colorScheme.primary,
@@ -156,20 +143,9 @@ fun SupportScreen(viewModel: SupportViewModel = hiltViewModel(), appViewModel: A
             stringResource(R.string.thank_you),
             modifier = Modifier.padding(horizontal = 12.dp).padding(bottom = 12.dp),
         )
-        UpdateSection(
-            onUpdateCheck = {
-                if (
-                    BuildConfig.DEBUG ||
-                        BuildConfig.VERSION_NAME.contains("beta") ||
-                        BuildConfig.FLAVOR == Constants.GOOGLE_PLAY_FLAVOR
-                )
-                    return@UpdateSection context.showToast(R.string.update_check_unsupported)
-                context.showToast(R.string.checking_for_update)
-                viewModel.handleUpdateCheck()
-            }
-        )
+        UpdateSection(onUpdateCheck = { viewModel.checkForUpdate() })
         SectionDivider()
-        GeneralSupportOptions(context)
+        GeneralSupportOptions(navController)
         SectionDivider()
         ContactSupportOptions(context)
     }

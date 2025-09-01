@@ -19,13 +19,14 @@ import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus.StopReason.Ping
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
-import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
+import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.AutoTunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.NetworkState
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.extensions.Tunnels
+import com.zaneschepke.wireguardautotunnel.util.extensions.to
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -117,6 +118,7 @@ class AutoTunnelService : LifecycleService() {
                             NotificationAction.AUTO_TUNNEL_OFF
                         )
                     ),
+                onGoing = true,
             )
         ServiceCompat.startForeground(
             this,
@@ -240,7 +242,7 @@ class AutoTunnelService : LifecycleService() {
     }
 
     // all relevant settings to auto tunnel
-    private fun areAutoTunnelSettingsTheSame(old: AppSettings, new: AppSettings): Boolean {
+    private fun areAutoTunnelSettingsTheSame(old: GeneralSettings, new: GeneralSettings): Boolean {
         return (old.isTunnelOnWifiEnabled == new.isTunnelOnWifiEnabled &&
             old.isTunnelOnMobileDataEnabled == new.isTunnelOnMobileDataEnabled &&
             old.isTunnelOnEthernetEnabled == new.isTunnelOnEthernetEnabled &&
@@ -254,7 +256,7 @@ class AutoTunnelService : LifecycleService() {
             old.isStopOnNoInternetEnabled == new.isStopOnNoInternetEnabled)
     }
 
-    private fun combineSettings(): Flow<Pair<AppSettings, Tunnels>> {
+    private fun combineSettings(): Flow<Pair<GeneralSettings, Tunnels>> {
         return combine(
                 appDataRepository
                     .get()
@@ -302,7 +304,7 @@ class AutoTunnelService : LifecycleService() {
                 .distinctUntilChanged(::areAutoTunnelPermissionsRequiredTheSame)
                 .map {
                     NetworkPermissionState(
-                        it.settings.wifiDetectionMethod,
+                        it.settings.wifiDetectionMethod.to(),
                         it.networkState.locationServicesEnabled == true,
                         it.networkState.locationPermissionGranted == true,
                         (it.tunnels.any { tunnel -> tunnel.tunnelNetworks.isNotEmpty() } ||

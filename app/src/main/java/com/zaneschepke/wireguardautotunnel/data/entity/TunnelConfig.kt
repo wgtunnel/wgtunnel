@@ -11,7 +11,7 @@ data class TunnelConfig(
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "wg_quick") val wgQuick: String,
     @ColumnInfo(name = "tunnel_networks", defaultValue = "")
-    val tunnelNetworks: List<String> = listOf(),
+    val tunnelNetworks: Set<String> = setOf(),
     @ColumnInfo(name = "is_mobile_data_tunnel", defaultValue = "false")
     val isMobileDataTunnel: Boolean = false,
     @ColumnInfo(name = "is_primary_tunnel", defaultValue = "false")
@@ -27,7 +27,7 @@ data class TunnelConfig(
     val isIpv4Preferred: Boolean = true,
     @ColumnInfo(name = "position", defaultValue = "0") val position: Int = 0,
     @ColumnInfo(name = "auto_tunnel_apps", defaultValue = "[]")
-    val autoTunnelApps: List<String> = listOf(),
+    val autoTunnelApps: Set<String> = setOf(),
 ) {
 
     companion object {

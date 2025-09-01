@@ -10,12 +10,12 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItemLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionLabelType
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun LocalLoggingItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
+fun localLoggingItem(
+    isLocalLoggingEnabled: Boolean,
+    onClick: (checked: Boolean) -> Unit,
+): SelectionItem {
     return SelectionItem(
         leading = { Icon(Icons.Outlined.ViewHeadline, contentDescription = null) },
         title = {
@@ -27,12 +27,7 @@ fun LocalLoggingItem(uiState: AppUiState, viewModel: AppViewModel): SelectionIte
                 SelectionLabelType.DESCRIPTION,
             )
         },
-        trailing = {
-            ScaledSwitch(
-                checked = uiState.appState.isLocalLogsEnabled,
-                onClick = { viewModel.handleEvent(AppEvent.ToggleLocalLogging) },
-            )
-        },
-        onClick = { viewModel.handleEvent(AppEvent.ToggleLocalLogging) },
+        trailing = { ScaledSwitch(checked = isLocalLoggingEnabled, onClick = onClick) },
+        onClick = { onClick(!isLocalLoggingEnabled) },
     )
 }

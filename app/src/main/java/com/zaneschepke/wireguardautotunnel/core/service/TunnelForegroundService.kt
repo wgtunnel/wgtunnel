@@ -131,6 +131,7 @@ class TunnelForegroundService : LifecycleService() {
                         tunnelConf.id,
                     )
                 ),
+            onGoing = true,
         )
     }
 

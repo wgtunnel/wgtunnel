@@ -7,7 +7,7 @@ import javax.inject.Inject
 class AppDataRoomRepository
 @Inject
 constructor(
-    override val settings: AppSettingRepository,
+    override val settings: GeneralSettingRepository,
     override val tunnels: TunnelRepository,
     override val appState: AppStateRepository,
     override val proxySettings: ProxySettingsRepository,

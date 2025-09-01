@@ -16,9 +16,9 @@ interface NotificationManager {
         title: String = "",
         actions: Collection<NotificationCompat.Action> = emptyList(),
         description: String = "",
-        showTimestamp: Boolean = false,
+        showTimestamp: Boolean = true,
         importance: Int = NotificationManager.IMPORTANCE_HIGH,
-        onGoing: Boolean = true,
+        onGoing: Boolean = false,
         onlyAlertOnce: Boolean = true,
     ): Notification
 
@@ -27,9 +27,9 @@ interface NotificationManager {
         title: StringValue,
         actions: Collection<NotificationCompat.Action> = emptyList(),
         description: StringValue,
-        showTimestamp: Boolean = false,
+        showTimestamp: Boolean = true,
         importance: Int = NotificationManager.IMPORTANCE_HIGH,
-        onGoing: Boolean = true,
+        onGoing: Boolean = false,
         onlyAlertOnce: Boolean = true,
     ): Notification
 

@@ -10,20 +10,12 @@ import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun appShortcutsItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
+fun appShortcutsItem(checked: Boolean, onChange: (checked: Boolean) -> Unit): SelectionItem {
     return SelectionItem(
         leading = { Icon(Icons.Filled.AppShortcut, contentDescription = null) },
-        trailing = {
-            ScaledSwitch(
-                checked = uiState.appSettings.isShortcutsEnabled,
-                onClick = { viewModel.handleEvent(AppEvent.ToggleAppShortcuts) },
-            )
-        },
+        trailing = { ScaledSwitch(checked = checked, onClick = onChange) },
         title = {
             Text(
                 text = stringResource(R.string.enabled_app_shortcuts),
@@ -31,6 +23,6 @@ fun appShortcutsItem(uiState: AppUiState, viewModel: AppViewModel): SelectionIte
                     MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onSurface),
             )
         },
-        onClick = { viewModel.handleEvent(AppEvent.ToggleAppShortcuts) },
+        onClick = { onChange(!checked) },
     )
 }

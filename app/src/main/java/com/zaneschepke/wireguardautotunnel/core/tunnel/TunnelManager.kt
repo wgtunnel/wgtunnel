@@ -7,7 +7,7 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
-import com.zaneschepke.wireguardautotunnel.domain.model.AppSettings
+import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
@@ -42,13 +42,13 @@ constructor(
     @OptIn(ExperimentalAtomicApi::class)
     private val tunnelProviderFlow: StateFlow<TunnelProvider> = run {
         val currentBackend = AtomicReference(userspaceTunnel)
-        val currentSettings = AtomicReference(AppSettings())
+        val currentSettings = AtomicReference(GeneralSettings())
         val initialEmit = AtomicBoolean(true)
 
         appDataRepository.settings.flow
             .filterNotNull()
             // ignore default state
-            .filterNot { it == AppSettings() }
+            .filterNot { it == GeneralSettings() }
             .distinctUntilChanged { old, new ->
                 old.appMode == new.appMode &&
                     old.isLanOnKillSwitchEnabled == new.isLanOnKillSwitchEnabled

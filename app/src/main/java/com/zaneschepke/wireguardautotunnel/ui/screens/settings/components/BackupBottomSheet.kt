@@ -12,13 +12,10 @@ import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.sheet.CustomBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.common.sheet.SheetOption
-import com.zaneschepke.wireguardautotunnel.ui.state.AppViewState
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BackupBottomSheet(viewModel: AppViewModel) {
+fun BackupBottomSheet(onDismiss: () -> Unit) {
     val context = LocalContext.current
 
     CustomBottomSheet(
@@ -27,7 +24,7 @@ fun BackupBottomSheet(viewModel: AppViewModel) {
                 ImageVector.vectorResource(R.drawable.database),
                 stringResource(R.string.backup_application),
                 onClick = {
-                    viewModel.handleEvent(AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE))
+                    onDismiss()
                     (context as? MainActivity)?.performBackup()
                 },
             ),
@@ -35,12 +32,12 @@ fun BackupBottomSheet(viewModel: AppViewModel) {
                 Icons.Outlined.Restore,
                 stringResource(R.string.restore_application),
                 onClick = {
-                    viewModel.handleEvent(AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE))
+                    onDismiss()
                     (context as? MainActivity)?.performRestore()
                 },
             ),
         )
     ) {
-        viewModel.handleEvent(AppEvent.SetBottomSheet(AppViewState.BottomSheet.NONE))
+        onDismiss()
     }
 }

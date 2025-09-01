@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.grgit)
     alias(libs.plugins.licensee)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -229,6 +230,11 @@ dependencies {
     implementation(libs.roomdatabasebackup) {
         exclude(group = "org.reactivestreams", module = "reactive-streams")
     }
+
+    // state management
+    implementation(libs.orbit.compose)
+    implementation(libs.orbit.viewmodel)
+    implementation(libs.orbit.core)
 }
 
 tasks.register<Copy>("copyLicenseeJsonToAssets") {

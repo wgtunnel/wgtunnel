@@ -87,7 +87,6 @@ constructor(
                         )
                     }
                     .build()
-
             backend.setState(tunnel, Tunnel.State.UP, updatedConfig)
         } catch (e: BackendException) {
             Timber.e(e, "Failed to start up backend for tunnel ${tunnel.name}")

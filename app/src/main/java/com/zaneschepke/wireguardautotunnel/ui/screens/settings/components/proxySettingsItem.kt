@@ -7,15 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.navigation.NavController
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.Route
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ForwardButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
-import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 
 @Composable
-fun proxYSettingsItem(): SelectionItem {
-    val navController = LocalNavController.current
+fun proxYSettingsItem(navController: NavController): SelectionItem {
     return SelectionItem(
         leading = { Icon(ImageVector.vectorResource(R.drawable.proxy), null) },
         trailing = { ForwardButton { navController.navigate(Route.ProxySettings) } },

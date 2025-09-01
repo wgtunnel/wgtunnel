@@ -3,45 +3,47 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.Filter1
+import androidx.compose.material.icons.outlined.Security
+import androidx.compose.material.icons.outlined.Wifi
+import androidx.compose.material.icons.outlined.WifiFind
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.Route
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ForwardButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
-import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalNavController
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.LearnMoreLinkLabel
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
+import com.zaneschepke.wireguardautotunnel.ui.state.AutoTunnelUiState
 import com.zaneschepke.wireguardautotunnel.ui.theme.iconSize
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
+import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 
 @Composable
-fun WifiTunnelingItems(
-    uiState: AppUiState,
-    viewModel: AppViewModel,
-    currentText: String,
-    onTextChange: (String) -> Unit,
+fun wifiTunnelingItems(
+    autoTunnelState: AutoTunnelUiState,
+    viewModel: AutoTunnelViewModel,
+    navController: NavController,
 ): List<SelectionItem> {
     val context = LocalContext.current
-    val navController = LocalNavController.current
     val clipboardHelper = rememberClipboardHelper()
+
+    var currentText by rememberSaveable { mutableStateOf("") }
+
+    LaunchedEffect(autoTunnelState.generalSettings.trustedNetworkSSIDs) { currentText = "" }
 
     val baseItems =
         listOf(
@@ -58,16 +60,16 @@ fun WifiTunnelingItems(
                 },
                 trailing = {
                     ScaledSwitch(
-                        enabled = !uiState.appSettings.isAlwaysOnVpnEnabled,
-                        checked = uiState.appSettings.isTunnelOnWifiEnabled,
-                        onClick = { viewModel.handleEvent(AppEvent.ToggleAutoTunnelOnWifi) },
+                        enabled = !autoTunnelState.generalSettings.isAlwaysOnVpnEnabled,
+                        checked = autoTunnelState.generalSettings.isTunnelOnWifiEnabled,
+                        onClick = { viewModel.setAutoTunnelOnWifiEnabled(it) },
                     )
                 },
                 description = {
                     val wifiInfo by
-                        remember(uiState.connectivityState) {
+                        remember(autoTunnelState.connectivityState) {
                             derivedStateOf {
-                                uiState.connectivityState
+                                autoTunnelState.connectivityState
                                     ?.wifiState
                                     ?.takeIf { it.connected }
                                     .let { Pair(it?.ssid, it?.securityType) }
@@ -101,11 +103,15 @@ fun WifiTunnelingItems(
                         }
                     }
                 },
-                onClick = { viewModel.handleEvent(AppEvent.ToggleAutoTunnelOnWifi) },
+                onClick = {
+                    viewModel.setAutoTunnelOnWifiEnabled(
+                        !autoTunnelState.generalSettings.isTunnelOnWifiEnabled
+                    )
+                },
             )
         )
 
-    return if (uiState.appSettings.isTunnelOnWifiEnabled) {
+    return if (autoTunnelState.generalSettings.isTunnelOnWifiEnabled) {
         baseItems +
             listOf(
                 SelectionItem(
@@ -123,7 +129,9 @@ fun WifiTunnelingItems(
                         Text(
                             stringResource(
                                 R.string.current_template,
-                                uiState.appSettings.wifiDetectionMethod.asTitleString(context),
+                                autoTunnelState.generalSettings.wifiDetectionMethod.asTitleString(
+                                    context
+                                ),
                             ),
                             style =
                                 MaterialTheme.typography.bodySmall.copy(
@@ -155,11 +163,15 @@ fun WifiTunnelingItems(
                     },
                     trailing = {
                         ScaledSwitch(
-                            checked = uiState.appSettings.isWildcardsEnabled,
-                            onClick = { viewModel.handleEvent(AppEvent.ToggleAutoTunnelWildcards) },
+                            checked = autoTunnelState.generalSettings.isWildcardsEnabled,
+                            onClick = { viewModel.setWildcardsEnabled(it) },
                         )
                     },
-                    onClick = { viewModel.handleEvent(AppEvent.ToggleAutoTunnelWildcards) },
+                    onClick = {
+                        viewModel.setWildcardsEnabled(
+                            !autoTunnelState.generalSettings.isWildcardsEnabled
+                        )
+                    },
                 ),
                 SelectionItem(
                     title = {
@@ -195,40 +207,17 @@ fun WifiTunnelingItems(
                     },
                     description = {
                         TrustedNetworkTextBox(
-                            uiState.appSettings.trustedNetworkSSIDs,
-                            onDelete = { viewModel.handleEvent(AppEvent.DeleteTrustedSSID(it)) },
+                            autoTunnelState.generalSettings.trustedNetworkSSIDs,
+                            onDelete = { viewModel.removeTrustedNetworkName(it) },
                             currentText = currentText,
-                            onSave = { ssid ->
-                                viewModel.handleEvent(AppEvent.SaveTrustedSSID(ssid))
-                            },
-                            onValueChange = onTextChange,
+                            onSave = { ssid -> viewModel.saveTrustedNetworkName(ssid) },
+                            onValueChange = { currentText = it },
                             supporting = {
-                                if (uiState.appSettings.isWildcardsEnabled) WildcardsLabel()
+                                if (autoTunnelState.generalSettings.isWildcardsEnabled)
+                                    WildcardsLabel()
                             },
                         )
                     },
-                ),
-                SelectionItem(
-                    leading = { Icon(Icons.Outlined.VpnKeyOff, contentDescription = null) },
-                    title = {
-                        Text(
-                            stringResource(R.string.kill_switch_off),
-                            style =
-                                MaterialTheme.typography.bodyMedium.copy(
-                                    MaterialTheme.colorScheme.onSurface
-                                ),
-                        )
-                    },
-                    trailing = {
-                        ScaledSwitch(
-                            enabled = uiState.appSettings.isVpnKillSwitchEnabled,
-                            checked = uiState.appSettings.isDisableKillSwitchOnTrustedEnabled,
-                            onClick = {
-                                viewModel.handleEvent(AppEvent.ToggleStopKillSwitchOnTrusted)
-                            },
-                        )
-                    },
-                    onClick = { viewModel.handleEvent(AppEvent.ToggleStopKillSwitchOnTrusted) },
                 ),
             )
     } else {

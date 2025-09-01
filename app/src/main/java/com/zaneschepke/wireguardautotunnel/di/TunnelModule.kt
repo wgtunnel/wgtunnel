@@ -10,7 +10,8 @@ import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.*
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.util.extensions.to
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import dagger.Module
 import dagger.Provides
@@ -140,7 +141,7 @@ class TunnelModule {
     @Singleton
     fun provideNetworkMonitor(
         @ApplicationContext context: Context,
-        settingsRepository: AppSettingRepository,
+        settingsRepository: GeneralSettingRepository,
         @ApplicationScope applicationScope: CoroutineScope,
         @AppShell appShell: RootShell,
     ): NetworkMonitor {
@@ -151,7 +152,7 @@ class TunnelModule {
                     get() =
                         settingsRepository.flow
                             .distinctUntilChangedBy { it.wifiDetectionMethod }
-                            .map { it.wifiDetectionMethod }
+                            .map { it.wifiDetectionMethod.to() }
 
                 override val rootShell: RootShell
                     get() = appShell

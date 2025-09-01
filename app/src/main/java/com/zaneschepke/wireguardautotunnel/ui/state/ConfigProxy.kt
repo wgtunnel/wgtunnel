@@ -1,9 +1,11 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import org.amnezia.awg.config.Config
 
-data class ConfigProxy(val peers: List<PeerProxy>, val `interface`: InterfaceProxy) {
+data class ConfigProxy(
+    val peers: List<PeerProxy> = emptyList(),
+    val `interface`: InterfaceProxy = InterfaceProxy(),
+) {
 
     fun hasScripts(): Boolean {
         return `interface`.preUp.isNotBlank() ||
@@ -27,20 +29,6 @@ data class ConfigProxy(val peers: List<PeerProxy>, val `interface`: InterfacePro
                 }
                 .build(),
         )
-    }
-
-    fun buildTunnelConfFromState(name: String, tunnelConf: TunnelConf?): TunnelConf {
-        val (wg, am) = buildConfigs()
-        return tunnelConf?.copyWithCallback(
-            tunName = name,
-            amQuick = am.toAwgQuickString(true, false),
-            wgQuick = wg.toWgQuickString(true),
-        )
-            ?: TunnelConf(
-                tunName = name,
-                amQuick = am.toAwgQuickString(true, false),
-                wgQuick = wg.toWgQuickString(true),
-            )
     }
 
     companion object {

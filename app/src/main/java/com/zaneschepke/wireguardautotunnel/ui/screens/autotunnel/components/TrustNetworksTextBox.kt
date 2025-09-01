@@ -20,14 +20,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ClickableIconButton
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.CustomTextField
-import com.zaneschepke.wireguardautotunnel.ui.navigation.LocalIsAndroidTV
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TrustedNetworkTextBox(
-    trustedNetworks: List<String>,
+    trustedNetworks: Set<String>,
     onDelete: (ssid: String) -> Unit,
     currentText: String,
     onSave: (ssid: String) -> Unit,

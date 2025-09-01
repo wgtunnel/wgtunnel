@@ -34,4 +34,6 @@ interface TunnelRepository {
     suspend fun findByMobileDataTunnel(): Tunnels
 
     suspend fun findPrimary(): Tunnels
+
+    suspend fun delete(tunnels: List<TunnelConf>)
 }

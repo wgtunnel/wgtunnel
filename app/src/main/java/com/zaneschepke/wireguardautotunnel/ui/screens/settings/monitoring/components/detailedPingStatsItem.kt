@@ -10,12 +10,12 @@ import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun detailedPingStatsItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
+fun detailedPingStatsItem(
+    detailedPingStatsEnabled: Boolean,
+    onChange: (checked: Boolean) -> Unit,
+): SelectionItem {
     return SelectionItem(
         leading = { Icon(Icons.Outlined.QueryStats, contentDescription = null) },
         title = {
@@ -25,12 +25,7 @@ fun detailedPingStatsItem(uiState: AppUiState, viewModel: AppViewModel): Selecti
                     MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onSurface),
             )
         },
-        trailing = {
-            ScaledSwitch(
-                checked = uiState.appState.showDetailedPingStats,
-                onClick = { viewModel.handleEvent(AppEvent.ToggleShowDetailedPingStats) },
-            )
-        },
-        onClick = { viewModel.handleEvent(AppEvent.ToggleShowDetailedPingStats) },
+        trailing = { ScaledSwitch(checked = detailedPingStatsEnabled, onClick = onChange) },
+        onClick = { onChange(!detailedPingStatsEnabled) },
     )
 }

@@ -9,17 +9,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItemLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionLabelType
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.ui.state.AppViewState
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun backendModeItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
+fun backendModeItem(appMode: AppMode, onClick: () -> Unit): SelectionItem {
     val context = LocalContext.current
     return SelectionItem(
         leading = { Icon(ImageVector.vectorResource(R.drawable.sdk), contentDescription = null) },
@@ -31,15 +28,10 @@ fun backendModeItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem
         },
         description = {
             SelectionItemLabel(
-                stringResource(
-                    R.string.current_template,
-                    uiState.appSettings.appMode.asTitleString(context),
-                ),
+                stringResource(R.string.current_template, appMode.asTitleString(context)),
                 SelectionLabelType.DESCRIPTION,
             )
         },
-        onClick = {
-            viewModel.handleEvent(AppEvent.SetBottomSheet(AppViewState.BottomSheet.BACKEND))
-        },
+        onClick = onClick,
     )
 }

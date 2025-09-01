@@ -15,25 +15,21 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
-import com.zaneschepke.wireguardautotunnel.ui.state.AppUiState
-import com.zaneschepke.wireguardautotunnel.viewmodel.AppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.event.AppEvent
 
 @Composable
-fun remoteControlItem(uiState: AppUiState, viewModel: AppViewModel): SelectionItem {
+fun remoteControlItem(
+    checked: Boolean,
+    key: String?,
+    onChange: (checked: Boolean) -> Unit,
+): SelectionItem {
     val clipboardManager = rememberClipboardHelper()
 
     return SelectionItem(
         leading = { Icon(Icons.Filled.SmartToy, contentDescription = null) },
-        trailing = {
-            ScaledSwitch(
-                checked = uiState.appState.isRemoteControlEnabled,
-                onClick = { viewModel.handleEvent(AppEvent.ToggleRemoteControl) },
-            )
-        },
+        trailing = { ScaledSwitch(checked = checked, onClick = onChange) },
         description = {
-            uiState.appState.remoteKey?.let { key ->
-                AnimatedVisibility(visible = uiState.appState.isRemoteControlEnabled) {
+            key?.let { key ->
+                AnimatedVisibility(visible = checked) {
                     Text(
                         text = stringResource(R.string.remote_key_template, key),
                         style =
@@ -54,6 +50,6 @@ fun remoteControlItem(uiState: AppUiState, viewModel: AppViewModel): SelectionIt
                     MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onSurface),
             )
         },
-        onClick = { viewModel.handleEvent(AppEvent.ToggleRemoteControl) },
+        onClick = { onChange(!checked) },
     )
 }

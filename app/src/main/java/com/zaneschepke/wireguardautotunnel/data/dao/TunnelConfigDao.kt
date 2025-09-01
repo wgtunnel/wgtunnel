@@ -22,6 +22,8 @@ interface TunnelConfigDao {
 
     @Delete suspend fun delete(t: TunnelConfig)
 
+    @Delete suspend fun delete(t: TunnelConfigs)
+
     @Query("SELECT COUNT('id') FROM TunnelConfig") suspend fun count(): Long
 
     @Query("SELECT * FROM TunnelConfig WHERE tunnel_networks LIKE '%' || :name || '%'")
