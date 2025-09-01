@@ -35,7 +35,6 @@ fun WifiDetectionMethodScreen(viewModel: AutoTunnelViewModel) {
             NavbarState(
                 topTitle = { Text(stringResource(R.string.wifi_detection_method)) },
                 showBottomItems = true,
-                showTopItems = true,
             )
         )
     }

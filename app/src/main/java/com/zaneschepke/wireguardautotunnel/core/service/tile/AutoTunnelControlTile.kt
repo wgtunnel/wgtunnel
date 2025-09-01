@@ -11,9 +11,9 @@ import androidx.lifecycle.lifecycleScope
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class AutoTunnelControlTile : TileService(), LifecycleOwner {

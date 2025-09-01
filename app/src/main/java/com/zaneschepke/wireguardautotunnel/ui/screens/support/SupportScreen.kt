@@ -47,7 +47,6 @@ fun SupportScreen(viewModel: SupportViewModel) {
         sharedViewModel.updateNavbarState(
             NavbarState(
                 topTitle = { Text(stringResource(R.string.support)) },
-                showTopItems = true,
                 showBottomItems = true,
             )
         )

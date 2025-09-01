@@ -60,7 +60,6 @@ fun SplitTunnelScreen(tunnelId: Int, viewModel: SplitTunnelViewModel = hiltViewM
                         viewModel.saveSplitTunnelSelection(tunnelId, splitConfig)
                     }
                 },
-                showTopItems = true,
                 showBottomItems = true,
             )
         )

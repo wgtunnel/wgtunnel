@@ -108,7 +108,6 @@ fun TunnelsScreen(viewModel: TunnelsViewModel) {
             NavbarState(
                 topTitle = { Text(stringResource(R.string.tunnels)) },
                 topTrailing = { TunnelActionBar() },
-                showTopItems = true,
                 showBottomItems = true,
             )
         )

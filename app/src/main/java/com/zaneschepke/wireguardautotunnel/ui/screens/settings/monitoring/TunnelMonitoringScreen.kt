@@ -39,7 +39,6 @@ fun TunnelMonitoringScreen(viewModel: SettingsViewModel) {
         sharedViewModel.updateNavbarState(
             NavbarState(
                 topTitle = { Text(stringResource(R.string.tunnel_monitoring)) },
-                showTopItems = true,
                 showBottomItems = true,
             )
         )

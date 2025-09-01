@@ -8,10 +8,10 @@ import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
+import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.amnezia.awg.crypto.Key
-import java.util.concurrent.ConcurrentHashMap
 
 interface TunnelProvider {
     /** Starts the specified tunnel configuration. */

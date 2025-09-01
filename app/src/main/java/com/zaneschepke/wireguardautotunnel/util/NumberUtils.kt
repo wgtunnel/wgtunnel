@@ -1,11 +1,11 @@
 package com.zaneschepke.wireguardautotunnel.util
 
 import com.vdurmont.semver4j.Semver
-import timber.log.Timber
 import java.math.BigDecimal
 import java.time.Duration
 import java.time.Instant
 import kotlin.math.pow
+import timber.log.Timber
 
 object NumberUtils {
     private const val BYTES_IN_KB = 1024.0

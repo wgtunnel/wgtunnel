@@ -38,7 +38,6 @@ fun LogsScreen(viewModel: LoggerViewModel = hiltViewModel()) {
     LaunchedEffect(Unit) {
         sharedViewModel.updateNavbarState(
             NavbarState(
-                showTopItems = true,
                 showBottomItems = false,
                 removeBottom = true,
                 topTitle = { Text(stringResource(R.string.logs)) },

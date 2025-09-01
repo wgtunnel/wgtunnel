@@ -21,6 +21,8 @@ import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import javax.inject.Provider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -29,8 +31,6 @@ import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import rikka.shizuku.Shizuku
 import xyz.teamgravity.pin_lock_compose.PinManager
-import javax.inject.Inject
-import javax.inject.Provider
 
 @HiltViewModel
 class SharedAppViewModel

@@ -1,13 +1,13 @@
 package com.zaneschepke.logcatter
 
 import com.zaneschepke.logcatter.model.LogMessage
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
 
 class LogcatStreamReader(private val pid: Int, private val fileManager: LogFileManager) {
     private val bufferSize = 1024

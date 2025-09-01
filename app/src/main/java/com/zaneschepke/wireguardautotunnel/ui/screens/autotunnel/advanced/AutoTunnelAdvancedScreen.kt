@@ -33,7 +33,6 @@ fun AutoTunnelAdvancedScreen(viewModel: AutoTunnelViewModel) {
     LaunchedEffect(Unit) {
         sharedViewModel.updateNavbarState(
             NavbarState(
-                showTopItems = true,
                 showBottomItems = true,
                 topTitle = { Text(stringResource(R.string.advanced_settings)) },
             )

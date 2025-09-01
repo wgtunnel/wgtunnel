@@ -22,11 +22,7 @@ fun PinLockScreen() {
     val pinAlreadyExists by rememberSaveable { mutableStateOf(PinManager.pinExists()) }
     var pinCreated by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        sharedViewModel.updateNavbarState(
-            NavbarState(showTopItems = false, showBottomItems = false)
-        )
-    }
+    LaunchedEffect(Unit) { sharedViewModel.updateNavbarState(NavbarState(showBottomItems = false)) }
 
     PinLock(
         title = {

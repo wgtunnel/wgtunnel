@@ -54,7 +54,6 @@ fun ConfigScreen(tunnelId: Int? = null, viewModel: TunnelsViewModel = hiltViewMo
     LaunchedEffect(key1 = Unit) {
         sharedViewModel.updateNavbarState(
             NavbarState(
-                showTopItems = true,
                 showBottomItems = true,
                 topTitle = { Text(tunnelConf?.name ?: stringResource(R.string.new_tunnel)) },
                 topTrailing = {

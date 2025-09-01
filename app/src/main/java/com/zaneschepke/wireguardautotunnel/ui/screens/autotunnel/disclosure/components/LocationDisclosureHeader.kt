@@ -20,14 +20,14 @@ fun LocationDisclosureHeader() {
     Icon(
         imageVector = icon,
         contentDescription = icon.name,
-        modifier = Modifier.padding(30.dp).size(128.dp),
+        modifier = Modifier.padding(24.dp).size(100.dp),
     )
     Text(
         text = stringResource(R.string.prominent_background_location_title),
-        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
     )
     Text(
         text = stringResource(R.string.prominent_background_location_message),
-        style = MaterialTheme.typography.bodyLarge,
+        style = MaterialTheme.typography.bodyMedium,
     )
 }

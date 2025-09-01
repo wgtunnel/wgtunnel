@@ -33,11 +33,7 @@ fun TunnelAutoTunnelScreen(tunnelId: Int, viewModel: TunnelsViewModel) {
 
     LaunchedEffect(Unit) {
         sharedViewModel.updateNavbarState(
-            NavbarState(
-                showTopItems = true,
-                showBottomItems = true,
-                topTitle = { Text(tunnelConf.name) },
-            )
+            NavbarState(showBottomItems = true, topTitle = { Text(tunnelConf.name) })
         )
     }
 

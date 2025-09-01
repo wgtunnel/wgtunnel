@@ -36,7 +36,6 @@ fun SystemFeaturesScreen(viewModel: SettingsViewModel) {
         sharedViewModel.updateNavbarState(
             NavbarState(
                 topTitle = { Text(stringResource(R.string.android_integrations)) },
-                showTopItems = true,
                 showBottomItems = true,
             )
         )

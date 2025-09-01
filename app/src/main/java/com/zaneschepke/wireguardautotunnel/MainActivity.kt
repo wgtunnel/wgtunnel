@@ -79,10 +79,10 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.*
 import com.zaneschepke.wireguardautotunnel.viewmodel.*
 import dagger.hilt.android.AndroidEntryPoint
 import de.raphaelebner.roomdatabasebackup.core.RoomBackup
-import kotlinx.coroutines.launch
-import xyz.teamgravity.pin_lock_compose.PinManager
 import java.util.*
 import javax.inject.Inject
+import kotlinx.coroutines.launch
+import xyz.teamgravity.pin_lock_compose.PinManager
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

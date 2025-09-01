@@ -12,7 +12,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
 
 @Database(
     entities = [Settings::class, TunnelConfig::class, ProxySettings::class],
-    version = 21,
+    version = 22,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -35,6 +35,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
             AutoMigration(from = 18, to = 19, spec = PingMigration::class),
             AutoMigration(from = 19, to = 20, spec = ProxyMigration::class),
             AutoMigration(from = 20, to = 21, spec = FixProxySettingsMigration::class),
+            AutoMigration(from = 21, to = 22),
         ],
     exportSchema = true,
 )

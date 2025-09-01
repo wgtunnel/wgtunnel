@@ -4,9 +4,9 @@ import android.os.Parcelable
 import com.wireguard.android.backend.Tunnel
 import com.wireguard.config.Config
 import com.zaneschepke.wireguardautotunnel.util.extensions.*
-import kotlinx.parcelize.Parcelize
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class TunnelConf(

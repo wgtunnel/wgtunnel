@@ -51,7 +51,6 @@ fun SortScreen(viewModel: TunnelsViewModel) {
     LaunchedEffect(Unit) {
         sharedViewModel.updateNavbarState(
             NavbarState(
-                showTopItems = true,
                 showBottomItems = true,
                 topTitle = { Text(stringResource(R.string.sort)) },
                 topTrailing = {

@@ -1,6 +1,5 @@
 package com.zaneschepke.wireguardautotunnel.ui.navigation.components
 
-import androidx.compose.animation.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,15 +19,7 @@ fun DynamicTopAppBar(navBarState: NavbarState, modifier: Modifier = Modifier) {
         modifier = modifier.padding(top = LockedDownBannerHeight),
         colors = TopAppBarDefaults.topAppBarColors().copy(Color.Transparent),
         title = {
-            Box(modifier = Modifier.padding(start = 10.dp)) {
-                AnimatedVisibility(
-                    visible = navBarState.showTopItems,
-                    enter = slideInVertically() + fadeIn(),
-                    exit = slideOutVertically() + fadeOut(),
-                ) {
-                    navBarState.topTitle?.invoke()
-                }
-            }
+            Box(modifier = Modifier.padding(start = 10.dp)) { navBarState.topTitle?.invoke() }
         },
         actions = {
             Box(modifier = Modifier.padding(end = 10.dp)) { navBarState.topTrailing?.invoke() }

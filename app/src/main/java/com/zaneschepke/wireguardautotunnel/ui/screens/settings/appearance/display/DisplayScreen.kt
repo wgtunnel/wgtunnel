@@ -29,7 +29,6 @@ fun DisplayScreen() {
     LaunchedEffect(Unit) {
         sharedViewModel.updateNavbarState(
             NavbarState(
-                showTopItems = true,
                 showBottomItems = true,
                 topTitle = { Text(stringResource(R.string.display_theme)) },
             )
