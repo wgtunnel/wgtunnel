@@ -69,7 +69,7 @@
     <string name="auto">(automatisch)</string>
     <string name="incorrect_pin">PIN nicht korrekt</string>
     <string name="pin_created">PIN erfolgreich erstellt</string>
-    <string name="enter_pin">Deine PIN eingeben</string>
+    <string name="enter_pin">PIN eingeben</string>
     <string name="version">Version</string>
     <string name="settings">Einstellungen</string>
     <string name="support">Unterstützung</string>
@@ -343,4 +343,21 @@
     <string name="server_port">Server:Port</string>
     <string name="new_tunnel">Neuer Tunnel</string>
     <string name="system_features">Systemfunktionen</string>
+    <string name="read_failed">Daten konnten nicht gelesen werden.</string>
+    <string name="invalid_key">Ungültiger Schlüssel</string>
+    <string name="invalid_number">Ungültige Nummer</string>
+    <string name="invalid_value">Ungültiger Wert</string>
+    <string name="missing_attribute">Fehlendes Attribut</string>
+    <string name="missing_section">Fehlender Abschnitt</string>
+    <string name="syntax_error">Syntaxfehler</string>
+    <string name="unknown_attribute">Unbekanntes Attribut</string>
+    <string name="unknown_section">Unbekannter Abschnitt</string>
+    <string name="config_error_template">Schlechte Konfiguration. %1$s am Standort: %2$s.</string>
+    <string name="ports_must_differ">Fehlgeschlagen. Proxys müssen unterschiedliche Ports haben.</string>
+    <string name="password_no_spaces">Passwort kann keine Leerzeichen beinhalten.</string>
+    <string name="tunnel_name_taken">Tunnelname bereits in Gebrauch.</string>
+    <string name="range_hint">(%1$d–%2$d)</string>
+    <string name="mimic_quic">Mimic QUIC</string>
+    <string name="mimic_dns">Mimic DNS</string>
+    <string name="mimic_sip">Mimic SIP</string>
 </resources>
