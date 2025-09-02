@@ -344,4 +344,21 @@
     <string name="server_port">Serwer:Port</string>
     <string name="new_tunnel">Nowy tunel</string>
     <string name="system_features">Funkcje systemu</string>
+    <string name="read_failed">Nie udało się odczytać danych.</string>
+    <string name="invalid_key">Nieprawidłowy klucz</string>
+    <string name="invalid_number">Nieprawidłowa liczba</string>
+    <string name="invalid_value">Nieprawidłowa wartość</string>
+    <string name="missing_attribute">Brakujący atrybut</string>
+    <string name="missing_section">Brakująca sekcja</string>
+    <string name="syntax_error">Błąd składni</string>
+    <string name="unknown_attribute">Nieznany atrybut</string>
+    <string name="unknown_section">Nieznana sekcja</string>
+    <string name="config_error_template">Błędna konfiguracja. %1$s w lokalizacji: %2$s.</string>
+    <string name="ports_must_differ">Nie udało się. Serwery proxy muszą mieć różne porty.</string>
+    <string name="password_no_spaces">Hasło nie może zawierać spacji.</string>
+    <string name="tunnel_name_taken">Nazwa tunelu jest już używana.</string>
+    <string name="range_hint">(%1$d–%2$d)</string>
+    <string name="mimic_quic">Imituj QUIC</string>
+    <string name="mimic_dns">Imituj DNS</string>
+    <string name="mimic_sip">Imituj SIP</string>
 </resources>
