@@ -91,8 +91,8 @@
     <string name="read_logs">查看日志</string>
     <string name="auto">(自动)</string>
     <string name="pin_created">创建密码成功</string>
-    <string name="enter_pin">输入密码</string>
-    <string name="create_pin">创建密码</string>
+    <string name="enter_pin">输入 PIN 码</string>
+    <string name="create_pin">创建 PIN 码</string>
     <string name="set_primary_tunnel">设置为主隧道</string>
     <string name="mobile_data_tunnel">允许使用数据流量</string>
     <string name="init_packet_junk_size">初始化无效包大小</string>
@@ -343,4 +343,21 @@
     <string name="server_port">服务器：端口</string>
     <string name="new_tunnel">新隧道</string>
     <string name="system_features">系统特性</string>
+    <string name="read_failed">读取数据失败。</string>
+    <string name="invalid_key">无效密钥</string>
+    <string name="invalid_number">无效数字</string>
+    <string name="invalid_value">无效值</string>
+    <string name="missing_attribute">缺少属性</string>
+    <string name="missing_section">缺少部分</string>
+    <string name="syntax_error">语法错误</string>
+    <string name="unknown_attribute">未知属性</string>
+    <string name="unknown_section">未知部分</string>
+    <string name="config_error_template">错误的配置。位置：%2$s 处的 %1$s。</string>
+    <string name="ports_must_differ">失败了。代理必须有不同的端口。</string>
+    <string name="password_no_spaces">密码不能有空格。</string>
+    <string name="tunnel_name_taken">已经有同名隧道。</string>
+    <string name="range_hint">（%1$d–%2$d）</string>
+    <string name="mimic_quic">模拟 QUIC</string>
+    <string name="mimic_dns">模拟 DNS</string>
+    <string name="mimic_sip">模拟 SIP</string>
 </resources>
