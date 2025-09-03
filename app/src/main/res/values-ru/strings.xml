@@ -343,4 +343,21 @@
     <string name="server_port">Сервер:порт</string>
     <string name="new_tunnel">Новый туннель</string>
     <string name="system_features">Системные функции</string>
+    <string name="read_failed">Невозможно прочитать данные.</string>
+    <string name="invalid_key">Неправильный ключ</string>
+    <string name="invalid_number">Неправильное число</string>
+    <string name="invalid_value">Неправильное значение</string>
+    <string name="missing_attribute">Отсутствует атрибут</string>
+    <string name="syntax_error">Синтаксическая ошибка</string>
+    <string name="unknown_attribute">Неизвестный атрибут</string>
+    <string name="config_error_template">Неправильная конфигурация: %1$s в позиции %2$s.</string>
+    <string name="ports_must_differ">Ошибка: прокси должны иметь разные порты.</string>
+    <string name="password_no_spaces">Пароль не может содержать пробелы.</string>
+    <string name="mimic_quic">Имитировать QUIC</string>
+    <string name="mimic_dns">Имитировать DNS</string>
+    <string name="mimic_sip">Имитировать SIP</string>
+    <string name="missing_section">Отсутствует раздел</string>
+    <string name="unknown_section">Неизвестный раздел</string>
+    <string name="tunnel_name_taken">Имя туннеля уже используется.</string>
+    <string name="range_hint">(%1$d–%2$d)</string>
 </resources>
