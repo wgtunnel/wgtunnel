@@ -252,8 +252,7 @@ constructor(
     fun toggleIpv4Preferred(tunnelId: Int) = intent {
         val latestTunnel = state.tunnels.find { it.id == tunnelId }
         if (latestTunnel != null) {
-            val update = if (latestTunnel.isPrimaryTunnel) null else latestTunnel
-            tunnelRepository.updatePrimaryTunnel(update)
+            tunnelRepository.save(latestTunnel.copy(isIpv4Preferred = !latestTunnel.isIpv4Preferred))
         }
     }
 
