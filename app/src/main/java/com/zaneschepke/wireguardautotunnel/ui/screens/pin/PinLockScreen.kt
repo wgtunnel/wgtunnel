@@ -3,14 +3,16 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.pin
 import androidx.activity.compose.BackHandler
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import xyz.teamgravity.pin_lock_compose.PinLock
 import xyz.teamgravity.pin_lock_compose.PinManager
@@ -21,8 +23,6 @@ fun PinLockScreen() {
     val navController = LocalNavController.current
     val pinAlreadyExists by rememberSaveable { mutableStateOf(PinManager.pinExists()) }
     var pinCreated by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) { sharedViewModel.updateNavbarState(NavbarState(showBottomItems = false)) }
 
     PinLock(
         title = {

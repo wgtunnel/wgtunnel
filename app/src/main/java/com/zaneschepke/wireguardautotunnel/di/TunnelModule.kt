@@ -18,7 +18,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -28,6 +27,7 @@ import org.amnezia.awg.backend.Backend
 import org.amnezia.awg.backend.GoBackend
 import org.amnezia.awg.backend.ProxyGoBackend
 import org.amnezia.awg.backend.RootTunnelActionHandler
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)

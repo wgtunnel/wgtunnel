@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
+import androidx.compose.runtime.Composable
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.lifecycle.ViewModel
 import com.wireguard.android.util.RootShell
@@ -14,15 +15,14 @@ import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
+import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.SharedAppUiState
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
-import javax.inject.Provider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -31,6 +31,8 @@ import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import rikka.shizuku.Shizuku
 import xyz.teamgravity.pin_lock_compose.PinManager
+import javax.inject.Inject
+import javax.inject.Provider
 
 @HiltViewModel
 class SharedAppViewModel
@@ -40,15 +42,16 @@ constructor(
     private val serviceManager: ServiceManager,
     private val tunnelManager: TunnelManager,
     private val globalEffectRepository: GlobalEffectRepository,
+    private val tunnelRepository: TunnelRepository,
     private val settingsRepository: GeneralSettingRepository,
     @AppShell private val rootShell: Provider<RootShell>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-) : ContainerHost<SharedAppUiState, Nothing>, ViewModel() {
+) : ContainerHost<SharedAppUiState, LocalSideEffect>, ViewModel() {
 
     val globalSideEffect = globalEffectRepository.flow
 
     override val container =
-        container<SharedAppUiState, Nothing>(
+        container<SharedAppUiState, LocalSideEffect>(
             SharedAppUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
@@ -57,12 +60,14 @@ constructor(
                         appStateRepository.flow,
                         serviceManager.autoTunnelService.map { it != null },
                         settingsRepository.flow,
-                    ) { appState, autoTunnelActive, settings ->
+                        tunnelRepository.flow,
+                    ) { appState, autoTunnelActive, settings, tunnels ->
                         state.copy(
                             theme = appState.theme,
                             locale = appState.locale ?: LocaleUtil.OPTION_PHONE_LANGUAGE,
                             pinLockEnabled = appState.isPinLockEnabled,
                             isAutoTunnelActive = autoTunnelActive,
+                            tunnels = tunnels,
                             settings = settings,
                             isLocationDisclosureShown = appState.isLocationDisclosureShown,
                             isAppLoaded = true,
@@ -95,6 +100,10 @@ constructor(
         tunnelManager.startTunnel(tunnelConf)
     }
 
+    fun postSideEffect(localSideEffect: LocalSideEffect) = intent {
+        postSideEffect(localSideEffect)
+    }
+
     fun setTheme(theme: Theme) = intent { appStateRepository.setTheme(theme) }
 
     fun setLocale(locale: String) = intent {
@@ -125,8 +134,8 @@ constructor(
         settingsRepository.save(state.settings.copy(appMode = appMode))
     }
 
-    fun updateNavbarState(newState: NavbarState) = intent {
-        reduce { state.copy(navBarState = newState) }
+    fun updateTopNavActions(actions: (@Composable () -> Unit)?) = intent {
+        reduce { state.copy(topNavActions = actions) }
     }
 
     suspend fun postSideEffect(globalSideEffect: GlobalSideEffect) {

@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -19,15 +17,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ActionIconButton
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.components.LogList
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.components.LogsBottomSheet
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
+import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.viewmodel.LoggerViewModel
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun LogsScreen(viewModel: LoggerViewModel = hiltViewModel()) {
-    val sharedViewModel = LocalSharedVm.current
+    val sharedAppViewModel = LocalSharedVm.current
     val loggerState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     val lazyColumnListState = rememberLazyListState()
@@ -35,19 +33,8 @@ fun LogsScreen(viewModel: LoggerViewModel = hiltViewModel()) {
     var lastScrollPosition by rememberSaveable() { mutableIntStateOf(0) }
     var showLogsSheet by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        sharedViewModel.updateNavbarState(
-            NavbarState(
-                showBottomItems = false,
-                removeBottom = true,
-                topTitle = { Text(stringResource(R.string.logs)) },
-                topTrailing = {
-                    ActionIconButton(Icons.Rounded.Menu, R.string.quick_actions) {
-                        showLogsSheet = true
-                    }
-                },
-            )
-        )
+    sharedAppViewModel.collectSideEffect { sideEffect ->
+        if (sideEffect is LocalSideEffect.Sheet.LoggerActions) showLogsSheet = true
     }
 
     LaunchedEffect(isAutoScrolling) {

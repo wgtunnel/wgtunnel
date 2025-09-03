@@ -5,10 +5,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Forward5
 import androidx.compose.material.icons.outlined.Http
 import androidx.compose.material.icons.outlined.RemoveRedEye
-import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,7 +22,6 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.model.AppProxySettings
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SecureScreenFromRecording
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ActionIconButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItemLabel
@@ -32,14 +29,13 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionLab
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
+import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.viewmodel.ProxySettingsViewModel
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
-
     val sharedViewModel = LocalSharedVm.current
-
     val proxySettingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     val proxySettings by remember { derivedStateOf { proxySettingsState.proxySettings } }
@@ -57,28 +53,22 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
 
     if (!proxySettingsState.stateInitialized) return
 
-    LaunchedEffect(Unit) {
-        sharedViewModel.updateNavbarState(
-            NavbarState(
-                showBottomItems = true,
-                topTitle = { Text(stringResource(R.string.proxy_settings)) },
-                topTrailing = {
-                    ActionIconButton(Icons.Rounded.Save, R.string.save) {
-                        keyboardController?.hide()
-                        viewModel.save(
-                            AppProxySettings(
-                                socks5ProxyEnabled = proxySettings.socks5ProxyEnabled,
-                                socks5ProxyBindAddress = socksBindAddress,
-                                httpProxyEnabled = proxySettings.httpProxyEnabled,
-                                httpProxyBindAddress = httpBindAddress,
-                                proxyUsername = proxyUsername,
-                                proxyPassword = proxyPassword,
-                            )
-                        )
-                    }
-                },
-            )
-        )
+    sharedViewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            LocalSideEffect.SaveChanges -> {
+                viewModel.save(
+                    AppProxySettings(
+                        socks5ProxyEnabled = proxySettings.socks5ProxyEnabled,
+                        socks5ProxyBindAddress = socksBindAddress,
+                        httpProxyEnabled = proxySettings.httpProxyEnabled,
+                        httpProxyBindAddress = httpBindAddress,
+                        proxyUsername = proxyUsername,
+                        proxyPassword = proxyPassword,
+                    )
+                )
+            }
+            else -> Unit
+        }
     }
 
     SecureScreenFromRecording()

@@ -13,11 +13,6 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
-import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
-import kotlin.concurrent.atomics.AtomicBoolean
-import kotlin.concurrent.atomics.AtomicReference
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,6 +20,11 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.plus
 import org.amnezia.awg.crypto.Key
 import timber.log.Timber
+import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TunnelManager

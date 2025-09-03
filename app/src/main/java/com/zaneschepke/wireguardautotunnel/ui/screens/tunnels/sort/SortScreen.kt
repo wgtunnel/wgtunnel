@@ -11,13 +11,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.DragHandle
-import androidx.compose.material.icons.rounded.Save
-import androidx.compose.material.icons.rounded.SortByAlpha
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -30,10 +30,10 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.ExpandingRowListItem
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ActionIconButton
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
+import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.util.extensions.isSortedBy
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
+import org.orbitmvi.orbit.compose.collectSideEffect
 import sh.calvin.reorderable.DragGestureDetector
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -48,34 +48,27 @@ fun SortScreen(viewModel: TunnelsViewModel) {
     var sortAscending by rememberSaveable { mutableStateOf<Boolean?>(null) }
     var editableTunnels by rememberSaveable { mutableStateOf(tunnelsState.tunnels) }
 
-    LaunchedEffect(Unit) {
-        sharedViewModel.updateNavbarState(
-            NavbarState(
-                showBottomItems = true,
-                topTitle = { Text(stringResource(R.string.sort)) },
-                topTrailing = {
-                    Row {
-                        ActionIconButton(Icons.Rounded.SortByAlpha, R.string.sort) {
-                            sortAscending =
-                                when (sortAscending) {
-                                    null -> !editableTunnels.isSortedBy { it.name }
-                                    true -> false
-                                    false -> null
-                                }
-                            editableTunnels =
-                                when (sortAscending) {
-                                    true -> editableTunnels.sortedBy { it.name }
-                                    false -> editableTunnels.sortedByDescending { it.name }
-                                    null -> tunnelsState.tunnels
-                                }
-                        }
-                        ActionIconButton(Icons.Rounded.Save, R.string.save) {
-                            viewModel.saveSortChanges(editableTunnels)
-                        }
+    sharedViewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            LocalSideEffect.SaveChanges -> {
+                viewModel.saveSortChanges(editableTunnels)
+            }
+            LocalSideEffect.Sort -> {
+                sortAscending =
+                    when (sortAscending) {
+                        null -> !editableTunnels.isSortedBy { it.name }
+                        true -> false
+                        false -> null
                     }
-                },
-            )
-        )
+                editableTunnels =
+                    when (sortAscending) {
+                        true -> editableTunnels.sortedBy { it.name }
+                        false -> editableTunnels.sortedByDescending { it.name }
+                        null -> tunnelsState.tunnels
+                    }
+            }
+            else -> Unit
+        }
     }
 
     val lazyListState = rememberLazyListState()

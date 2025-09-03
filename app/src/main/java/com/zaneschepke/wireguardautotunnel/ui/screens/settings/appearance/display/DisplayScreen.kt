@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,7 +14,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.IconSurfaceButton
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
 
 @Composable
@@ -25,15 +22,6 @@ fun DisplayScreen() {
     val sharedViewModel = LocalSharedVm.current
 
     val appState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        sharedViewModel.updateNavbarState(
-            NavbarState(
-                showBottomItems = true,
-                topTitle = { Text(stringResource(R.string.display_theme)) },
-            )
-        )
-    }
 
     Column(
         horizontalAlignment = Alignment.Start,

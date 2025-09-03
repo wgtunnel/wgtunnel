@@ -6,8 +6,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
@@ -20,14 +23,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.ContactSupportOptions
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.GeneralSupportOptions
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.UpdateSection
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.extensions.canInstallPackages
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
@@ -37,20 +38,10 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.SupportViewModel
 @Composable
 fun SupportScreen(viewModel: SupportViewModel) {
     val context = LocalContext.current
-    val sharedViewModel = LocalSharedVm.current
     val navController = LocalNavController.current
     val supportState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        sharedViewModel.updateNavbarState(
-            NavbarState(
-                topTitle = { Text(stringResource(R.string.support)) },
-                showBottomItems = true,
-            )
-        )
-    }
 
     if (supportState.appUpdate != null) {
         InfoDialog(

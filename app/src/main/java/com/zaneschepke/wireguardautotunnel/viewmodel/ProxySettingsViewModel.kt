@@ -10,9 +10,9 @@ import com.zaneschepke.wireguardautotunnel.ui.state.ProxySettingsUiState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.isValidAndroidProxyBindAddress
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
+import javax.inject.Inject
 
 @HiltViewModel
 class ProxySettingsViewModel

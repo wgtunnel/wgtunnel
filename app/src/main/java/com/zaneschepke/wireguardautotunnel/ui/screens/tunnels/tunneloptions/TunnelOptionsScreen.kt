@@ -1,30 +1,27 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.tunneloptions
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.QrCode2
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ActionIconButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
-import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Config
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.AuthorizationPromptWrapper
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.tunneloptions.components.*
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
+import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun TunnelOptionsScreen(tunnelId: Int, viewModel: TunnelsViewModel) {
@@ -43,26 +40,8 @@ fun TunnelOptionsScreen(tunnelId: Int, viewModel: TunnelsViewModel) {
     var isAuthorized by rememberSaveable { mutableStateOf(isTv) }
     var showQrModal by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        sharedViewModel.updateNavbarState(
-            NavbarState(
-                showBottomItems = true,
-                topTitle = { Text(tunnelConf.name) },
-                topTrailing = {
-                    Row {
-                        ActionIconButton(
-                            Icons.Rounded.QrCode2,
-                            com.zaneschepke.wireguardautotunnel.R.string.show_qr,
-                        ) {
-                            showQrModal = true
-                        }
-                        ActionIconButton(Icons.Rounded.Edit, R.string.edit_tunnel) {
-                            navController.navigate(Config(tunnelId))
-                        }
-                    }
-                },
-            )
-        )
+    sharedViewModel.collectSideEffect { sideEffect ->
+        if (sideEffect is LocalSideEffect.Modal.QR) showQrModal = true
     }
 
     if (showQrModal) {

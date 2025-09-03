@@ -14,9 +14,9 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.domain.state.WireGuardStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendCoreException
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import timber.log.Timber
+import javax.inject.Inject
 
 class KernelTunnel
 @Inject

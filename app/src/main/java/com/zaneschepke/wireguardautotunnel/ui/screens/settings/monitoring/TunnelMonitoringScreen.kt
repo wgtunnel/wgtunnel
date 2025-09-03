@@ -14,7 +14,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,27 +21,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.components.detailedPingStatsItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.components.enablePingMonitoringItem
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 
 @Composable
 fun TunnelMonitoringScreen(viewModel: SettingsViewModel) {
-    val sharedViewModel = LocalSharedVm.current
     val settingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        sharedViewModel.updateNavbarState(
-            NavbarState(
-                topTitle = { Text(stringResource(R.string.tunnel_monitoring)) },
-                showBottomItems = true,
-            )
-        )
-    }
 
     Column(
         horizontalAlignment = Alignment.Start,

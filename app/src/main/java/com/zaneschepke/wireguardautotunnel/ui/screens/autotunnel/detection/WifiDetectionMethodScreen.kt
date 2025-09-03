@@ -4,21 +4,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.IconSurfaceButton
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.util.extensions.asDescriptionString
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
@@ -29,15 +24,6 @@ fun WifiDetectionMethodScreen(viewModel: AutoTunnelViewModel) {
     val sharedViewModel = LocalSharedVm.current
 
     val autoTunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        sharedViewModel.updateNavbarState(
-            NavbarState(
-                topTitle = { Text(stringResource(R.string.wifi_detection_method)) },
-                showBottomItems = true,
-            )
-        )
-    }
 
     Column(
         horizontalAlignment = Alignment.Start,

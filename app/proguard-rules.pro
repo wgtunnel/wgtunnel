@@ -1,3 +1,0 @@
--keep class com.zaneschepke.wireguardautotunnel.ui.navigation.Route { *; }
--keep class com.zaneschepke.wireguardautotunnel.ui.navigation.Route$** { *; }
--keepclassmembers class com.zaneschepke.wireguardautotunnel.ui.navigation.Route$** { *; }

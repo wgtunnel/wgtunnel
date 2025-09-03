@@ -22,7 +22,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.WarningBanner
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
@@ -32,7 +31,6 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.AdvancedSettingsItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.networkTunnelingItems
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.wifiTunnelingItems
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.util.extensions.launchAppSettings
 import com.zaneschepke.wireguardautotunnel.util.extensions.launchLocationServicesSettings
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
@@ -41,21 +39,10 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 @Composable
 fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     val context = LocalContext.current
-    val sharedViewModel = LocalSharedVm.current
     val navController = LocalNavController.current
     val autoTunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     if (!autoTunnelState.stateInitialized) return
-
-    LaunchedEffect(Unit) {
-        sharedViewModel.updateNavbarState(
-            NavbarState(
-                showBottomItems = true,
-                topTitle = { Text(stringResource(R.string.auto_tunnel)) },
-            )
-        )
-    }
-
     var showLocationDialog by remember { mutableStateOf(false) }
 
     val showLocationServicesWarning by

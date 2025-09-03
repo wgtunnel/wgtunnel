@@ -11,12 +11,12 @@ import com.zaneschepke.wireguardautotunnel.domain.model.InstalledPackage
 import com.zaneschepke.wireguardautotunnel.domain.repository.InstalledPackageRepository
 import com.zaneschepke.wireguardautotunnel.util.extensions.getAllInternetCapablePackages
 import com.zaneschepke.wireguardautotunnel.util.extensions.getFriendlyAppName
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import javax.inject.Singleton
 
 @Singleton
 class InstalledAndroidPackageRepository(

@@ -8,32 +8,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.SettingsBackupRestore
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ActionIconButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.*
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.compoents.AppModeBottomSheet
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
+import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
+import org.orbitmvi.orbit.compose.collectSideEffect
 import xyz.teamgravity.pin_lock_compose.PinManager
 
 @Composable
@@ -47,10 +42,17 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
 
     val settingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
-    if (!settingsState.stateInitialized) return
-
     var showBackupSheet by rememberSaveable { mutableStateOf(false) }
     var showAppModeSheet by rememberSaveable { mutableStateOf(false) }
+
+    if (!settingsState.stateInitialized) return
+
+    sharedViewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            LocalSideEffect.Sheet.BackupApp -> showBackupSheet = true
+            else -> Unit
+        }
+    }
 
     val showProxySettings by
         remember(settingsState.settings.appMode) {
@@ -61,20 +63,6 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 }
             }
         }
-
-    LaunchedEffect(Unit) {
-        sharedViewModel.updateNavbarState(
-            NavbarState(
-                showBottomItems = true,
-                topTitle = { Text(stringResource(R.string.settings)) },
-                topTrailing = {
-                    ActionIconButton(Icons.Rounded.SettingsBackupRestore, R.string.quick_actions) {
-                        showBackupSheet = true
-                    }
-                },
-            )
-        )
-    }
 
     if (showBackupSheet) BackupBottomSheet() { showBackupSheet = false }
     if (showAppModeSheet)

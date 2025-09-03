@@ -6,37 +6,30 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Save
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SecureScreenFromRecording
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ActionIconButton
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.AuthorizationPromptWrapper
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components.AddPeerButton
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components.InterfaceSection
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components.PeersSection
+import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigProxy
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.ui.state.PeerProxy
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun ConfigScreen(tunnelId: Int? = null, viewModel: TunnelsViewModel = hiltViewModel()) {
-    val sharedViewModel = LocalSharedVm.current
     val isTv = LocalIsAndroidTV.current
-    val keyboardController = LocalSoftwareKeyboardController.current
+    val sharedViewModel = LocalSharedVm.current
 
     val tunnelsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
@@ -51,21 +44,6 @@ fun ConfigScreen(tunnelId: Int? = null, viewModel: TunnelsViewModel = hiltViewMo
 
     var tunnelName by remember { mutableStateOf(tunnelConf?.name ?: "") }
 
-    LaunchedEffect(key1 = Unit) {
-        sharedViewModel.updateNavbarState(
-            NavbarState(
-                showBottomItems = true,
-                topTitle = { Text(tunnelConf?.name ?: stringResource(R.string.new_tunnel)) },
-                topTrailing = {
-                    ActionIconButton(Icons.Rounded.Save, R.string.save) {
-                        keyboardController?.hide()
-                        viewModel.saveConfigProxy(tunnelId, configProxy, tunnelName)
-                    }
-                },
-            )
-        )
-    }
-
     val isTunnelNameTaken by
         remember(tunnelName, tunnelsState.tunnels) {
             derivedStateOf {
@@ -75,6 +53,11 @@ fun ConfigScreen(tunnelId: Int? = null, viewModel: TunnelsViewModel = hiltViewMo
 
     var showAuthPrompt by rememberSaveable { mutableStateOf(false) }
     var isAuthorized by rememberSaveable { mutableStateOf(isTv) }
+
+    sharedViewModel.collectSideEffect { sideEffect ->
+        if (sideEffect is LocalSideEffect.SaveChanges)
+            viewModel.saveConfigProxy(tunnelId, configProxy, tunnelName)
+    }
 
     SecureScreenFromRecording()
 

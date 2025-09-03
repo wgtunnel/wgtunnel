@@ -14,7 +14,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,25 +24,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
 import com.zaneschepke.wireguardautotunnel.data.model.DnsProvider
-import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 
 @Composable
 fun DnsSettingsScreen(viewModel: SettingsViewModel) {
     val context = LocalContext.current
-    val sharedViewModel = LocalSharedVm.current
     val settingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        sharedViewModel.updateNavbarState(
-            NavbarState(
-                showBottomItems = true,
-                topTitle = { Text(stringResource(R.string.dns_settings)) },
-            )
-        )
-    }
 
     Column(
         horizontalAlignment = Alignment.Start,

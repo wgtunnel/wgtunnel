@@ -10,20 +10,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.LocationDisclosureHeader
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.appSettingsItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.skipItem
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 
 @Composable
 fun LocationDisclosureScreen(viewModel: AutoTunnelViewModel) {
     val navController = LocalNavController.current
-    val sharedViewModel = LocalSharedVm.current
-
-    LaunchedEffect(Unit) { sharedViewModel.updateNavbarState(NavbarState(showBottomItems = true)) }
 
     LaunchedEffect(Unit) { viewModel.setLocationDisclosureShown() }
 

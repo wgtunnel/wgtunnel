@@ -50,6 +50,7 @@ import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.CustomSnackBar
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.navigation.components.BottomNavbar
 import com.zaneschepke.wireguardautotunnel.ui.navigation.components.DynamicTopAppBar
+import com.zaneschepke.wireguardautotunnel.ui.navigation.components.currentBackStackEntryAsNavbarState
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.AutoTunnelScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.advanced.AutoTunnelAdvancedScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.detection.WifiDetectionMethodScreen
@@ -79,10 +80,11 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.*
 import com.zaneschepke.wireguardautotunnel.viewmodel.*
 import dagger.hilt.android.AndroidEntryPoint
 import de.raphaelebner.roomdatabasebackup.core.RoomBackup
+import kotlinx.coroutines.launch
+import timber.log.Timber
+import xyz.teamgravity.pin_lock_compose.PinManager
 import java.util.*
 import javax.inject.Inject
-import kotlinx.coroutines.launch
-import xyz.teamgravity.pin_lock_compose.PinManager
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -132,12 +134,15 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+            val navState by navController.currentBackStackEntryAsNavbarState(viewModel)
             val snackbar = remember { SnackbarHostState() }
             var showVpnPermissionDialog by remember { mutableStateOf(false) }
             var vpnPermissionDenied by remember { mutableStateOf(false) }
             var requestingAppMode by remember {
                 mutableStateOf<Pair<AppMode?, TunnelConf?>>(Pair(null, null))
             }
+
+            LaunchedEffect(navState) { Timber.d("New navbar state $navState") }
 
             val vpnActivity =
                 rememberLauncherForActivityResult(
@@ -237,13 +242,9 @@ class MainActivity : AppCompatActivity() {
                                     )
                                 }
                             },
-                            topBar = { DynamicTopAppBar(appState.navBarState) },
+                            topBar = { DynamicTopAppBar(navState) },
                             bottomBar = {
-                                BottomNavbar(
-                                    appState.isAutoTunnelActive,
-                                    appState.navBarState,
-                                    navController,
-                                )
+                                BottomNavbar(appState.isAutoTunnelActive, navState, navController)
                             },
                         ) { padding ->
                             Box(

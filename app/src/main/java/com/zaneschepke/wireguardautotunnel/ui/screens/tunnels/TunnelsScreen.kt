@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Sort
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.CopyAll
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.SelectAll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,10 +32,11 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components.ExportT
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components.TunnelImportSheet
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components.TunnelList
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components.UrlImportDialog
-import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
+import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun TunnelsScreen(viewModel: TunnelsViewModel) {
@@ -48,70 +51,57 @@ fun TunnelsScreen(viewModel: TunnelsViewModel) {
     var showDeleteModal by rememberSaveable { mutableStateOf(false) }
     var showUrlDialog by rememberSaveable { mutableStateOf(false) }
 
-    if (!tunnelsState.stateInitialized) return
-
-    @Composable
-    fun TunnelActionBar() {
-        val selectedCount by
-            remember(tunnelsState.selectedTunnels) {
-                derivedStateOf { tunnelsState.selectedTunnels.size }
-            }
-        val disableDelete by
-            remember(tunnelsState.activeTunnels, tunnelsState.selectedTunnels) {
-                derivedStateOf {
-                    tunnelsState.activeTunnels.any { active ->
-                        tunnelsState.selectedTunnels.any { it.id == active.key.id }
-                    }
+    val disableDelete by
+        remember(tunnelsState.activeTunnels, tunnelsState.selectedTunnels) {
+            derivedStateOf {
+                tunnelsState.activeTunnels.any { active ->
+                    tunnelsState.selectedTunnels.any { it.id == active.key.id }
                 }
             }
+        }
 
-        Row {
-            if (selectedCount == 0) {
-                val showSort by
-                    remember(tunnelsState.tunnels) {
-                        derivedStateOf { tunnelsState.tunnels.size > 1 }
+    sharedViewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            LocalSideEffect.Sheet.ImportTunnels -> showImportSheet = true
+            else -> Unit
+        }
+    }
+
+    LaunchedEffect(tunnelsState.selectedTunnels) {
+        when (val count = tunnelsState.selectedTunnels.count()) {
+            0 -> sharedViewModel.updateTopNavActions(null)
+            else -> {
+                sharedViewModel.updateTopNavActions {
+                    Row {
+                        ActionIconButton(Icons.Rounded.SelectAll, R.string.select_all) {
+                            viewModel.toggleSelectAllTunnels()
+                        }
+                        // due to permissions, and SAF issues on TV, not support less than Android
+                        // 10
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            ActionIconButton(Icons.Rounded.Download, R.string.download) {
+                                showExportSheet = true
+                            }
+                        }
+
+                        if (count == 1) {
+                            ActionIconButton(Icons.Rounded.CopyAll, R.string.copy) {
+                                viewModel.copySelectedTunnel()
+                            }
+                        }
+
+                        if (!disableDelete) {
+                            ActionIconButton(Icons.Rounded.Delete, R.string.delete_tunnel) {
+                                showDeleteModal = true
+                            }
+                        }
                     }
-                if (showSort)
-                    ActionIconButton(Icons.AutoMirrored.Rounded.Sort, R.string.sort) {
-                        navController.navigate(Route.Sort)
-                    }
-                ActionIconButton(Icons.Rounded.Add, R.string.add_tunnel) { showImportSheet = true }
-                return@Row
-            }
-            ActionIconButton(Icons.Rounded.SelectAll, R.string.select_all) {
-                viewModel.toggleSelectAllTunnels()
-            }
-            // due to permissions, and SAF issues on TV, not support less than Android 10 on
-            // Android TV for file exports
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                ActionIconButton(Icons.Rounded.Download, R.string.download) {
-                    showExportSheet = true
-                }
-            }
-
-            if (selectedCount == 1) {
-                ActionIconButton(Icons.Rounded.CopyAll, R.string.copy) {
-                    viewModel.copySelectedTunnel()
-                }
-            }
-
-            if (!disableDelete) {
-                ActionIconButton(Icons.Rounded.Delete, R.string.delete_tunnel) {
-                    showDeleteModal = true
                 }
             }
         }
     }
 
-    LaunchedEffect(Unit) {
-        sharedViewModel.updateNavbarState(
-            NavbarState(
-                topTitle = { Text(stringResource(R.string.tunnels)) },
-                topTrailing = { TunnelActionBar() },
-                showBottomItems = true,
-            )
-        )
-    }
+    if (!tunnelsState.stateInitialized) return
 
     val tunnelFileImportResultLauncher =
         rememberFileImportLauncherForResult(
@@ -202,4 +192,10 @@ fun TunnelsScreen(viewModel: TunnelsViewModel) {
         sharedViewModel,
         navController,
     )
+}
+
+@Composable
+fun TunnelActionBar() {
+
+    Row {}
 }

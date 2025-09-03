@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.zaneschepke.wireguardautotunnel.R
@@ -25,7 +24,6 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.BottomNavItem
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
-import com.zaneschepke.wireguardautotunnel.util.extensions.debounce
 
 @Composable
 fun NavHostController.getCurrentGraph(): State<Route?> {
@@ -54,44 +52,32 @@ fun BottomNavbar(
 ) {
 
     val currentGraph by navController.getCurrentGraph()
-    val coroutineScope = rememberCoroutineScope()
-
-    val navigateToDebounced =
-        remember<(Route) -> Unit> {
-            debounce(scope = coroutineScope, 150L) { route ->
-                navController.navigate(route) {
-                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            }
-        }
 
     val items =
         listOf(
             BottomNavItem(
                 name = stringResource(R.string.tunnels),
                 icon = Icons.Rounded.Home,
-                onClick = { navigateToDebounced(Route.TunnelsGraph) },
+                onClick = { navController.navigate(Route.TunnelsGraph) },
                 route = Route.TunnelsGraph,
             ),
             BottomNavItem(
                 name = stringResource(R.string.auto_tunnel),
                 icon = Icons.Rounded.Bolt,
-                onClick = { navigateToDebounced(Route.AutoTunnelGraph) },
+                onClick = { navController.navigate(Route.AutoTunnelGraph) },
                 route = Route.AutoTunnelGraph,
                 active = isAutoTunnelActive,
             ),
             BottomNavItem(
                 name = stringResource(R.string.settings),
                 icon = Icons.Rounded.Settings,
-                onClick = { navigateToDebounced(Route.SettingsGraph) },
+                onClick = { navController.navigate(Route.SettingsGraph) },
                 route = Route.SettingsGraph,
             ),
             BottomNavItem(
                 name = stringResource(R.string.support),
                 icon = Icons.Rounded.QuestionMark,
-                onClick = { navigateToDebounced(Route.SupportGraph) },
+                onClick = { navController.navigate(Route.SupportGraph) },
                 route = Route.SupportGraph,
             ),
         )
