@@ -2,7 +2,6 @@ package com.zaneschepke.wireguardautotunnel.core.tunnel
 
 import com.wireguard.android.backend.Backend
 import com.wireguard.android.backend.BackendException
-import com.wireguard.android.backend.Tunnel
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.Kernel
@@ -13,50 +12,79 @@ import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.domain.state.WireGuardStatistics
+import com.zaneschepke.wireguardautotunnel.util.extensions.asTunnelState
 import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendCoreException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
+import com.wireguard.android.backend.Tunnel as WgTunnel
 
 class KernelTunnel
 @Inject
 constructor(
-    @ApplicationScope private val applicationScope: CoroutineScope,
+    @ApplicationScope applicationScope: CoroutineScope,
     serviceManager: ServiceManager,
     appDataRepository: AppDataRepository,
     @Kernel private val backend: Backend,
 ) : BaseTunnel(applicationScope, appDataRepository, serviceManager) {
 
+    private val runtimeTunnels = ConcurrentHashMap<Int, WgTunnel>()
+
+    // TODO Add DNS settings
+    override fun tunnelStateFlow(tunnelConf: TunnelConf): Flow<TunnelStatus> = callbackFlow {
+        if (!tunnelConf.isNameKernelCompatible) close(BackendCoreException.TunnelNameTooLong)
+
+        val stateChannel = Channel<WgTunnel.State>()
+
+        val runtimeTunnel = RuntimeWgTunnel(tunnelConf, stateChannel)
+        runtimeTunnels[tunnelConf.id] = runtimeTunnel
+
+        val consumerJob = launch {
+            stateChannel.consumeAsFlow().collect { state -> trySend(state.asTunnelState()) }
+        }
+
+        try {
+            updateTunnelStatus(tunnelConf, TunnelStatus.Starting)
+            backend.setState(runtimeTunnel, WgTunnel.State.UP, tunnelConf.toWgConfig())
+        } catch (e: BackendException) {
+            close(e.toBackendCoreException())
+        } catch (e: IllegalArgumentException) {
+            Timber.e(e, "Invalid backend arguments")
+            close(BackendCoreException.Config)
+        } catch (e: Exception) {
+            Timber.e(e, "Error while setting tunnel state")
+            close(BackendCoreException.Unknown)
+        }
+
+        awaitClose {
+            try {
+                backend.setState(runtimeTunnel, WgTunnel.State.DOWN, null)
+            } catch (e: BackendException) {
+                errors.tryEmit(tunnelConf to e.toBackendCoreException())
+            } finally {
+                consumerJob.cancel()
+                stateChannel.close()
+                runtimeTunnels.remove(tunnelConf.id)
+                trySend(TunnelStatus.Down)
+                close()
+            }
+        }
+    }
+
     override fun getStatistics(tunnelConf: TunnelConf): TunnelStatistics? {
         return try {
-            WireGuardStatistics(backend.getStatistics(tunnelConf))
+            val runtimeTunnel = runtimeTunnels[tunnelConf.id] ?: return null
+            WireGuardStatistics(backend.getStatistics(runtimeTunnel))
         } catch (e: Exception) {
-            Timber.e(e)
+            Timber.e(e, "Failed to get stats for ${tunnelConf.tunName}")
             null
-        }
-    }
-
-    override suspend fun startBackend(tunnel: TunnelConf) {
-        // name too long for kernel mode
-        if (!tunnel.isNameKernelCompatible) throw BackendCoreException.TunnelNameTooLong
-        try {
-            updateTunnelStatus(tunnel, TunnelStatus.Starting)
-            backend.setState(tunnel, Tunnel.State.UP, tunnel.toWgConfig())
-        } catch (e: BackendException) {
-            Timber.e(e, "Failed to start up backend for tunnel ${tunnel.name}")
-            throw e.toBackendCoreException()
-        } catch (e: IllegalArgumentException) {
-            Timber.e(e, "Failed to start up backend for tunnel ${tunnel.name}")
-            throw BackendCoreException.Config
-        }
-    }
-
-    override fun stopBackend(tunnel: TunnelConf) {
-        Timber.i("Stopping tunnel ${tunnel.id} kernel")
-        try {
-            backend.setState(tunnel, Tunnel.State.DOWN, tunnel.toWgConfig())
-        } catch (e: BackendException) {
-            throw e.toBackendCoreException()
         }
     }
 
@@ -69,6 +97,6 @@ constructor(
     }
 
     override suspend fun runningTunnelNames(): Set<String> {
-        return backend.runningTunnelNames
+        return super.runningTunnelNames() + backend.runningTunnelNames
     }
 }

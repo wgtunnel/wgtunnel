@@ -1,14 +1,12 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
-import android.os.Parcelable
-import com.wireguard.android.backend.Tunnel
 import com.wireguard.config.Config
-import com.zaneschepke.wireguardautotunnel.util.extensions.*
-import kotlinx.parcelize.Parcelize
+import com.zaneschepke.wireguardautotunnel.util.extensions.defaultName
+import com.zaneschepke.wireguardautotunnel.util.extensions.isValidIpv4orIpv6Address
+import com.zaneschepke.wireguardautotunnel.util.extensions.toWgQuickString
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
 
-@Parcelize
 data class TunnelConf(
     val id: Int = 0,
     val tunName: String,
@@ -23,14 +21,9 @@ data class TunnelConf(
     val isEthernetTunnel: Boolean = false,
     val isIpv4Preferred: Boolean = true,
     val position: Int = 0,
-    @Transient private var stateChangeCallback: ((Any) -> Unit)? = null,
-) : Tunnel, org.amnezia.awg.backend.Tunnel, Parcelable {
+) {
 
-    val isNameKernelCompatible: Boolean = (name.length <= 15)
-
-    fun setStateChangeCallback(callback: (Any) -> Unit) {
-        stateChangeCallback = callback
-    }
+    val isNameKernelCompatible: Boolean = (tunName.length <= 15)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -60,74 +53,12 @@ data class TunnelConf(
         return toAmConfig().peers.all { it.endpoint.get().host.isValidIpv4orIpv6Address() }
     }
 
-    fun copyWithCallback(
-        id: Int = this.id,
-        tunName: String = this.tunName,
-        wgQuick: String = this.wgQuick,
-        tunnelNetworks: Set<String> = this.tunnelNetworks,
-        isMobileDataTunnel: Boolean = this.isMobileDataTunnel,
-        isPrimaryTunnel: Boolean = this.isPrimaryTunnel,
-        amQuick: String = this.amQuick,
-        isActive: Boolean = this.isActive,
-        restartOnPingFailure: Boolean = this.restartOnPingFailure,
-        pingIp: String? = this.pingTarget,
-        isEthernetTunnel: Boolean = this.isEthernetTunnel,
-        isIpv4Preferred: Boolean = this.isIpv4Preferred,
-    ): TunnelConf {
-        return TunnelConf(
-                id,
-                tunName,
-                wgQuick,
-                tunnelNetworks,
-                isMobileDataTunnel,
-                isPrimaryTunnel,
-                amQuick,
-                isActive,
-                pingIp,
-                restartOnPingFailure,
-                isEthernetTunnel,
-                isIpv4Preferred,
-                position,
-            )
-            .apply { stateChangeCallback = this@TunnelConf.stateChangeCallback }
-    }
-
     fun toAmConfig(): org.amnezia.awg.config.Config {
         return configFromAmQuick(amQuick.ifBlank { wgQuick })
     }
 
     fun toWgConfig(): Config {
         return configFromWgQuick(wgQuick)
-    }
-
-    override fun getName(): String = tunName
-
-    override fun onStateChange(newState: org.amnezia.awg.backend.Tunnel.State) {
-        stateChangeCallback?.invoke(newState)
-    }
-
-    override fun onStateChange(newState: Tunnel.State) {
-        stateChangeCallback?.invoke(newState)
-    }
-
-    override fun isIpv4ResolutionPreferred(): Boolean {
-        return true
-    }
-
-    fun generateUniqueName(tunnelNames: List<String>): String {
-        var tunnelName = this.tunName
-        var num = 1
-        while (tunnelNames.any { it == tunnelName }) {
-            tunnelName =
-                if (!tunnelName.hasNumberInParentheses()) {
-                    "$name($num)"
-                } else {
-                    val pair = tunnelName.extractNameAndNumber()
-                    "${pair?.first}($num)"
-                }
-            num++
-        }
-        return tunnelName
     }
 
     companion object {

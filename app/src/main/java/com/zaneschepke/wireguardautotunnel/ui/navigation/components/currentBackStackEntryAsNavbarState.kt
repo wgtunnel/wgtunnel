@@ -91,7 +91,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                     NavbarState(
                         showBottomItems = true,
                         topTitle = {
-                            val title = tunnel?.name ?: stringResource(R.string.new_tunnel)
+                            val title = tunnel?.tunName ?: stringResource(R.string.new_tunnel)
                             Text(title)
                         },
                         topTrailing = {
@@ -177,7 +177,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                 is Route.SplitTunnel -> {
                     val tunnel = sharedState.tunnels.find { it.id == route.id }
                     NavbarState(
-                        topTitle = { Text(tunnel?.name ?: "") },
+                        topTitle = { Text(tunnel?.tunName ?: "") },
                         topTrailing = {
                             ActionIconButton(Icons.Rounded.Save, R.string.save) {
                                 sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
@@ -198,7 +198,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                     )
                 is Route.TunnelAutoTunnel -> {
                     val tunnel = sharedState.tunnels.find { it.id == route.id }
-                    NavbarState(showBottomItems = true, topTitle = { Text(tunnel?.name ?: "") })
+                    NavbarState(showBottomItems = true, topTitle = { Text(tunnel?.tunName ?: "") })
                 }
                 Route.TunnelMonitoring ->
                     NavbarState(
@@ -209,7 +209,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                     val tunnel = sharedState.tunnels.find { it.id == route.id }
                     NavbarState(
                         showBottomItems = true,
-                        topTitle = { Text(tunnel?.name ?: "") },
+                        topTitle = { Text(tunnel?.tunName ?: "") },
                         topTrailing = {
                             Row {
                                 ActionIconButton(Icons.Rounded.QrCode2, R.string.show_qr) {

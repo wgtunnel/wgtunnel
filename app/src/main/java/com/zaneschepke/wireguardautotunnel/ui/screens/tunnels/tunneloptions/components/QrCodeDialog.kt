@@ -51,7 +51,7 @@ private fun QrCodeAlertDialog(tunnelConf: TunnelConf, onDismiss: () -> Unit) {
             },
             title = {
                 Text(
-                    text = tunnelConf.name,
+                    text = tunnelConf.tunName,
                     color = Color.Black,
                     style = MaterialTheme.typography.titleLarge,
                 )

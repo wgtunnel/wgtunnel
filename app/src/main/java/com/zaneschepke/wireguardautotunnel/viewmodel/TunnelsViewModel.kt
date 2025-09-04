@@ -112,7 +112,7 @@ constructor(
         withContext(ioDispatcher) {
             tunnels.mapNotNull { config ->
                 if (config.wgQuick.isNotBlank()) {
-                    fileUtils.createFile(config.name, config.wgQuick)
+                    fileUtils.createFile(config.tunName, config.wgQuick)
                 } else null
             }
         }
@@ -123,13 +123,13 @@ constructor(
                 if (
                     config.amQuick != TunnelConfig.AM_QUICK_DEFAULT && config.amQuick.isNotBlank()
                 ) {
-                    fileUtils.createFile(config.name, config.amQuick)
+                    fileUtils.createFile(config.tunName, config.amQuick)
                 } else null
             }
         }
 
     fun saveConfigProxy(tunnelId: Int?, configProxy: ConfigProxy, tunnelName: String) = intent {
-        if (state.tunnels.any { it.name == tunnelName && it.id != tunnelId })
+        if (state.tunnels.any { it.tunName == tunnelName && it.id != tunnelId })
             return@intent postSideEffect(
                 GlobalSideEffect.Toast(StringValue.StringResource(R.string.tunnel_name_taken))
             )
@@ -252,7 +252,9 @@ constructor(
     fun toggleIpv4Preferred(tunnelId: Int) = intent {
         val latestTunnel = state.tunnels.find { it.id == tunnelId }
         if (latestTunnel != null) {
-            tunnelRepository.save(latestTunnel.copy(isIpv4Preferred = !latestTunnel.isIpv4Preferred))
+            tunnelRepository.save(
+                latestTunnel.copy(isIpv4Preferred = !latestTunnel.isIpv4Preferred)
+            )
         }
     }
 
@@ -322,7 +324,7 @@ constructor(
 
     fun copySelectedTunnel() = intent {
         val selected = state.selectedTunnels.firstOrNull() ?: return@intent
-        val copy = TunnelConf.tunnelConfFromQuick(selected.amQuick, selected.name)
+        val copy = TunnelConf.tunnelConfFromQuick(selected.amQuick, selected.tunName)
         tunnelRepository.saveTunnelsUniquely(listOf(copy), state.tunnels)
         clearSelectedTunnels()
     }

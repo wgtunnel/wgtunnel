@@ -42,12 +42,12 @@ fun ConfigScreen(tunnelId: Int? = null, viewModel: TunnelsViewModel = hiltViewMo
         mutableStateOf(tunnelConf?.let { ConfigProxy.from(it.toAmConfig()) } ?: ConfigProxy())
     }
 
-    var tunnelName by remember { mutableStateOf(tunnelConf?.name ?: "") }
+    var tunnelName by remember { mutableStateOf(tunnelConf?.tunName ?: "") }
 
     val isTunnelNameTaken by
         remember(tunnelName, tunnelsState.tunnels) {
             derivedStateOf {
-                tunnelsState.tunnels.any { it.name == tunnelName && it.id != tunnelConf?.id }
+                tunnelsState.tunnels.any { it.tunName == tunnelName && it.id != tunnelConf?.id }
             }
         }
 

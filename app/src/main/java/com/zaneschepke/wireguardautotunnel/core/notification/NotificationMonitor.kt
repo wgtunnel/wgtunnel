@@ -27,7 +27,7 @@ constructor(
                 val notification =
                     notificationManager.createNotification(
                         WireGuardNotification.NotificationChannels.VPN,
-                        title = StringValue.DynamicString(tunnelConf.name),
+                        title = StringValue.DynamicString(tunnelConf.tunName),
                         description =
                             when (error) {
                                 is BackendCoreException.BounceFailed -> error.toStringValue()
@@ -51,7 +51,7 @@ constructor(
                 val notification =
                     notificationManager.createNotification(
                         WireGuardNotification.NotificationChannels.VPN,
-                        title = StringValue.DynamicString(tunnelConf.name),
+                        title = StringValue.DynamicString(tunnelConf.tunName),
                         description = message.toStringValue(),
                     )
                 notificationManager.show(

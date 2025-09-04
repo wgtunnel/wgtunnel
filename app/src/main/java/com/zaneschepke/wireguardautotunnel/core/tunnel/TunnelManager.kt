@@ -138,7 +138,6 @@ constructor(
     override val messageEvents: SharedFlow<Pair<TunnelConf, BackendMessage>> =
         tunnelProviderFlow
             .flatMapLatest { it.messageEvents }
-            .filterNotNull()
             .shareIn(
                 scope = applicationScope.plus(ioDispatcher),
                 started = SharingStarted.Eagerly,

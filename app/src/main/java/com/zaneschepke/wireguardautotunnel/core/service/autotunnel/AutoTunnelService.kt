@@ -403,7 +403,7 @@ class AutoTunnelService : LifecycleService() {
             val lastTime = lastBounceTimes.getOrDefault(config.id, 0L)
             if (currentTime - lastTime >= backoffDelay) {
                 Timber.d(
-                    "Bouncing tunnel ${config.name} after detecting failure, with bounce count $bounceCount and calculated backoff delay $backoffDelay ms"
+                    "Bouncing tunnel ${config.tunName} after detecting failure, with bounce count $bounceCount and calculated backoff delay $backoffDelay ms"
                 )
                 tunnelManager.bounceTunnel(config, Ping(peerMap))
                 lastBounceTimes[config.id] = currentTime
@@ -412,7 +412,7 @@ class AutoTunnelService : LifecycleService() {
                 }
             } else {
                 Timber.d(
-                    "Backoff in progress for tunnel ${config.name}, skipping bounce (required delay: $backoffDelay ms)"
+                    "Backoff in progress for tunnel ${config.tunName}, skipping bounce (required delay: $backoffDelay ms)"
                 )
             }
         }
