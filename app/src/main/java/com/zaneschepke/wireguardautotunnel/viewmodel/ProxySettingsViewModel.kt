@@ -35,11 +35,34 @@ constructor(
     fun save(proxySettings: AppProxySettings) = intent {
         val updated =
             state.proxySettings.copy(
-                httpProxyBindAddress = proxySettings.httpProxyBindAddress?.ifBlank { null },
-                socks5ProxyBindAddress = proxySettings.socks5ProxyBindAddress?.ifBlank { null },
-                proxyUsername = proxySettings.proxyUsername?.ifBlank { null },
-                proxyPassword = proxySettings.proxyPassword?.ifBlank { null },
+                socks5ProxyEnabled = proxySettings.socks5ProxyEnabled,
+                httpProxyEnabled = proxySettings.httpProxyEnabled,
+                httpProxyBindAddress =
+                    if (proxySettings.httpProxyEnabled) {
+                        proxySettings.httpProxyBindAddress?.ifBlank { null }
+                    } else {
+                        null
+                    },
+                socks5ProxyBindAddress =
+                    if (proxySettings.socks5ProxyEnabled) {
+                        proxySettings.socks5ProxyBindAddress?.ifBlank { null }
+                    } else {
+                        null
+                    },
+                proxyUsername =
+                    if (proxySettings.socks5ProxyEnabled || proxySettings.httpProxyEnabled) {
+                        proxySettings.proxyUsername?.ifBlank { null }
+                    } else {
+                        null
+                    },
+                proxyPassword =
+                    if (proxySettings.socks5ProxyEnabled || proxySettings.httpProxyEnabled) {
+                        proxySettings.proxyPassword?.ifBlank { null }
+                    } else {
+                        null
+                    },
             )
+
         val isHttpDefault = updated.httpProxyBindAddress == null
         val isSocks5Default = updated.socks5ProxyBindAddress == null
 
@@ -86,17 +109,17 @@ constructor(
         postSideEffect(GlobalSideEffect.PopBackStack)
     }
 
+    fun clearHttpBindError() = intent { reduce { state.copy(isHttpBindAddressError = false) } }
+
+    fun clearSocks5BindError() = intent { reduce { state.copy(isSocks5BindAddressError = false) } }
+
+    fun clearUsernameError() = intent { reduce { state.copy(isPasswordError = false) } }
+
+    fun clearPasswordError() = intent { reduce { state.copy(isPasswordError = false) } }
+
     suspend fun postSideEffect(globalSideEffect: GlobalSideEffect) {
         globalEffectRepository.post(globalSideEffect)
     }
 
     private fun areBothNullOrBothNotNull(s1: String?, s2: String?) = (s1 == null) == (s2 == null)
-
-    fun setEnableSocks5(to: Boolean) = intent {
-        reduce { state.copy(proxySettings = state.proxySettings.copy(socks5ProxyEnabled = to)) }
-    }
-
-    fun setEnableHttp(to: Boolean) = intent {
-        reduce { state.copy(proxySettings = state.proxySettings.copy(httpProxyEnabled = to)) }
-    }
 }

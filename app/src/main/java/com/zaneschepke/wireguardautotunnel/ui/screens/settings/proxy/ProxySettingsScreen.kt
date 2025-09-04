@@ -1,4 +1,7 @@
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -38,29 +41,51 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
     val sharedViewModel = LocalSharedVm.current
     val proxySettingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
-    val proxySettings by remember { derivedStateOf { proxySettingsState.proxySettings } }
+    if (!proxySettingsState.stateInitialized) return
 
-    var socksBindAddress by remember { mutableStateOf(proxySettings.socks5ProxyBindAddress ?: "") }
-    var httpBindAddress by remember { mutableStateOf(proxySettings.httpProxyBindAddress ?: "") }
-    var proxyUsername by remember { mutableStateOf(proxySettings.proxyUsername ?: "") }
-    var proxyPassword by remember { mutableStateOf(proxySettings.proxyPassword ?: "") }
-    var passwordVisible by remember { mutableStateOf(proxySettingsState.passwordVisible) }
+    val proxySettings by
+        remember(proxySettingsState) { mutableStateOf(proxySettingsState.proxySettings) }
+
+    var socks5Enabled by
+        remember(proxySettings) {
+            mutableStateOf(proxySettingsState.proxySettings.socks5ProxyEnabled)
+        }
+    var httpEnabled by
+        remember(proxySettings) {
+            mutableStateOf(proxySettingsState.proxySettings.httpProxyEnabled)
+        }
+    var socksBindAddress by
+        remember(proxySettings) {
+            mutableStateOf(proxySettingsState.proxySettings.socks5ProxyBindAddress ?: "")
+        }
+    var httpBindAddress by
+        remember(proxySettings) {
+            mutableStateOf(proxySettingsState.proxySettings.httpProxyBindAddress ?: "")
+        }
+    var proxyUsername by
+        remember(proxySettings) {
+            mutableStateOf(proxySettingsState.proxySettings.proxyUsername ?: "")
+        }
+    var proxyPassword by
+        remember(proxySettings) {
+            mutableStateOf(proxySettingsState.proxySettings.proxyPassword ?: "")
+        }
+    var passwordVisible by
+        remember(proxySettings) { mutableStateOf(proxySettingsState.passwordVisible) }
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
     val keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
 
-    if (!proxySettingsState.stateInitialized) return
-
     sharedViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             LocalSideEffect.SaveChanges -> {
                 viewModel.save(
                     AppProxySettings(
-                        socks5ProxyEnabled = proxySettings.socks5ProxyEnabled,
+                        socks5ProxyEnabled = socks5Enabled,
                         socks5ProxyBindAddress = socksBindAddress,
-                        httpProxyEnabled = proxySettings.httpProxyEnabled,
+                        httpProxyEnabled = httpEnabled,
                         httpProxyBindAddress = httpBindAddress,
                         proxyUsername = proxyUsername,
                         proxyPassword = proxyPassword,
@@ -89,17 +114,15 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
                         )
                     },
                     trailing = {
-                        ScaledSwitch(
-                            checked = proxySettings.socks5ProxyEnabled,
-                            onClick = { viewModel.setEnableSocks5(it) },
-                        )
+                        ScaledSwitch(checked = socks5Enabled, onClick = { socks5Enabled = it })
                     },
-                    onClick = { viewModel.setEnableSocks5(!proxySettings.socks5ProxyEnabled) },
+                    onClick = { socks5Enabled = !socks5Enabled },
                 )
             )
         )
-        if (proxySettings.socks5ProxyEnabled) {
+        if (socks5Enabled) {
             ConfigurationTextBox(
+                modifier = Modifier.padding(horizontal = 12.dp),
                 hint =
                     stringResource(
                         R.string.defaults_to_template,
@@ -108,7 +131,11 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
                 label = stringResource(R.string.socks_5_bind_address),
                 value = socksBindAddress,
                 isError = proxySettingsState.isSocks5BindAddressError,
-                onValueChange = { socksBindAddress = it },
+                onValueChange = {
+                    if (proxySettingsState.isSocks5BindAddressError)
+                        viewModel.clearSocks5BindError()
+                    socksBindAddress = it
+                },
             )
         }
         SurfaceSelectionGroupButton(
@@ -122,16 +149,13 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
                         )
                     },
                     trailing = {
-                        ScaledSwitch(
-                            checked = proxySettings.httpProxyEnabled,
-                            onClick = { viewModel.setEnableHttp(it) },
-                        )
+                        ScaledSwitch(checked = httpEnabled, onClick = { httpEnabled = it })
                     },
-                    onClick = { viewModel.setEnableHttp(!proxySettings.httpProxyEnabled) },
+                    onClick = { httpEnabled = !httpEnabled },
                 )
             )
         )
-        if (proxySettings.httpProxyEnabled) {
+        if (httpEnabled) {
             ConfigurationTextBox(
                 hint =
                     stringResource(
@@ -141,14 +165,17 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
                 label = stringResource(R.string.http_bind_address),
                 value = httpBindAddress,
                 isError = proxySettingsState.isHttpBindAddressError,
-                onValueChange = { httpBindAddress = it },
+                onValueChange = {
+                    if (proxySettingsState.isSocks5BindAddressError) viewModel.clearHttpBindError()
+                    httpBindAddress = it
+                },
+                modifier = Modifier.padding(horizontal = 12.dp),
             )
         }
-        if (proxySettings.httpProxyEnabled || proxySettings.socks5ProxyEnabled) {
+        if (socks5Enabled || httpEnabled) {
             Column(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
-                modifier = Modifier.padding(horizontal = 12.dp),
             ) {
                 GroupLabel(
                     stringResource(
@@ -158,23 +185,29 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
                 )
                 ConfigurationTextBox(
                     value = proxyUsername,
-                    onValueChange = { proxyUsername = it },
+                    onValueChange = {
+                        if (proxySettingsState.isUserNameError) viewModel.clearUsernameError()
+                        proxyUsername = it
+                    },
                     label = stringResource(R.string.username),
                     isError = proxySettingsState.isUserNameError,
                     hint = "",
                     keyboardActions = keyboardActions,
                     keyboardOptions = keyboardOptions,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.padding(horizontal = 12.dp),
                 )
                 ConfigurationTextBox(
                     value = proxyPassword,
-                    onValueChange = { proxyPassword = it },
+                    onValueChange = {
+                        if (proxySettingsState.isUserNameError) viewModel.clearPasswordError()
+                        proxyPassword = it
+                    },
                     label = stringResource(R.string.password),
                     isError = proxySettingsState.isPasswordError,
                     hint = "",
                     keyboardActions = keyboardActions,
                     keyboardOptions = keyboardOptions,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.padding(horizontal = 12.dp),
                     trailing = {
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
                             Icon(
