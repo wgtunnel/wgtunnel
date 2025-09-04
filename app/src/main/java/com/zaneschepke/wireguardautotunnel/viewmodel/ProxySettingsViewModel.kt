@@ -34,7 +34,7 @@ constructor(
 
     fun save(proxySettings: AppProxySettings) = intent {
         val updated =
-            proxySettings.copy(
+            state.proxySettings.copy(
                 httpProxyBindAddress = proxySettings.httpProxyBindAddress?.ifBlank { null },
                 socks5ProxyBindAddress = proxySettings.socks5ProxyBindAddress?.ifBlank { null },
                 proxyUsername = proxySettings.proxyUsername?.ifBlank { null },
