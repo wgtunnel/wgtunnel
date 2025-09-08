@@ -60,7 +60,6 @@ fun wifiTunnelingItems(
                 },
                 trailing = {
                     ScaledSwitch(
-                        enabled = !autoTunnelState.generalSettings.isAlwaysOnVpnEnabled,
                         checked = autoTunnelState.generalSettings.isTunnelOnWifiEnabled,
                         onClick = { viewModel.setAutoTunnelOnWifiEnabled(it) },
                     )

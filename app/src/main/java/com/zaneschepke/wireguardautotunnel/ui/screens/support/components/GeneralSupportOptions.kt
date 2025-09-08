@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ForwardButton
+import com.zaneschepke.wireguardautotunnel.ui.common.button.LaunchButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItemLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionLabelType
@@ -34,7 +35,7 @@ fun GeneralSupportOptions(navController: NavController) {
                             )
                         },
                         trailing = {
-                            ForwardButton {
+                            LaunchButton {
                                 context.openWebUrl(context.getString(R.string.docs_url))
                             }
                         },
@@ -51,7 +52,7 @@ fun GeneralSupportOptions(navController: NavController) {
                             )
                         },
                         trailing = {
-                            ForwardButton {
+                            LaunchButton {
                                 context.openWebUrl(context.getString(R.string.privacy_policy_url))
                             }
                         },

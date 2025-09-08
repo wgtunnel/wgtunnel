@@ -13,6 +13,7 @@ import androidx.compose.ui.res.vectorResource
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ForwardButton
+import com.zaneschepke.wireguardautotunnel.ui.common.button.LaunchButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItemLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionLabelType
@@ -44,7 +45,7 @@ fun ContactSupportOptions(context: android.content.Context) {
                                 )
                             },
                             trailing = {
-                                ForwardButton {
+                                LaunchButton {
                                     context.openWebUrl(context.getString(R.string.matrix_url))
                                 }
                             },
@@ -65,7 +66,7 @@ fun ContactSupportOptions(context: android.content.Context) {
                                 )
                             },
                             trailing = {
-                                ForwardButton {
+                                LaunchButton {
                                     context.openWebUrl(context.getString(R.string.telegram_url))
                                 }
                             },
@@ -88,7 +89,7 @@ fun ContactSupportOptions(context: android.content.Context) {
                                 )
                             },
                             trailing = {
-                                ForwardButton {
+                                LaunchButton {
                                     context.openWebUrl(context.getString(R.string.github_url))
                                 }
                             },
@@ -102,7 +103,7 @@ fun ContactSupportOptions(context: android.content.Context) {
                                     SelectionLabelType.TITLE,
                                 )
                             },
-                            trailing = { ForwardButton { context.launchSupportEmail() } },
+                            trailing = { LaunchButton { context.launchSupportEmail() } },
                             onClick = { context.launchSupportEmail() },
                         ),
                     )

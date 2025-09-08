@@ -36,7 +36,6 @@ fun networkTunnelingItems(
             },
             trailing = {
                 ScaledSwitch(
-                    enabled = !autoTunnelState.generalSettings.isAlwaysOnVpnEnabled,
                     checked = autoTunnelState.generalSettings.isTunnelOnMobileDataEnabled,
                     onClick = { viewModel.setTunnelOnCellular(it) },
                 )
@@ -77,7 +76,6 @@ fun networkTunnelingItems(
             },
             trailing = {
                 ScaledSwitch(
-                    enabled = !autoTunnelState.generalSettings.isAlwaysOnVpnEnabled,
                     checked = autoTunnelState.generalSettings.isTunnelOnEthernetEnabled,
                     onClick = { viewModel.setTunnelOnEthernet(it) },
                 )
