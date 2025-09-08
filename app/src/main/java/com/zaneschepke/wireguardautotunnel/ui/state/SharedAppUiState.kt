@@ -1,6 +1,5 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
-import androidx.compose.runtime.Composable
 import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
@@ -15,6 +14,6 @@ data class SharedAppUiState(
     val isAutoTunnelActive: Boolean = false,
     val isLocationDisclosureShown: Boolean = false,
     val tunnels: List<TunnelConf> = emptyList(),
+    val selectedTunnels: Set<TunnelConf> = setOf(),
     val settings: GeneralSettings = GeneralSettings(),
-    val topNavActions: (@Composable () -> Unit)? = null,
 )

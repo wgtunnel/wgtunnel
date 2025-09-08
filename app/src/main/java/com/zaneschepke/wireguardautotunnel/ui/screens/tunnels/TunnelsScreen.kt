@@ -1,19 +1,15 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels
 
-import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CopyAll
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Download
-import androidx.compose.material.icons.rounded.SelectAll
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -23,7 +19,6 @@ import com.journeyapps.barcodescanner.ScanOptions
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ActionIconButton
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberFileImportLauncherForResult
@@ -44,6 +39,7 @@ fun TunnelsScreen(viewModel: TunnelsViewModel) {
     val navController = LocalNavController.current
     val clipboard = rememberClipboardHelper()
 
+    val sharedState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
     val tunnelsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     var showExportSheet by rememberSaveable { mutableStateOf(false) }
@@ -51,53 +47,12 @@ fun TunnelsScreen(viewModel: TunnelsViewModel) {
     var showDeleteModal by rememberSaveable { mutableStateOf(false) }
     var showUrlDialog by rememberSaveable { mutableStateOf(false) }
 
-    val disableDelete by
-        remember(tunnelsState.activeTunnels, tunnelsState.selectedTunnels) {
-            derivedStateOf {
-                tunnelsState.activeTunnels.any { active ->
-                    tunnelsState.selectedTunnels.any { it.id == active.key }
-                }
-            }
-        }
-
     sharedViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             LocalSideEffect.Sheet.ImportTunnels -> showImportSheet = true
+            LocalSideEffect.Modal.DeleteTunnels -> showDeleteModal = true
+            LocalSideEffect.Sheet.ExportTunnels -> showExportSheet = true
             else -> Unit
-        }
-    }
-
-    LaunchedEffect(tunnelsState.selectedTunnels) {
-        when (val count = tunnelsState.selectedTunnels.count()) {
-            0 -> sharedViewModel.updateTopNavActions(null)
-            else -> {
-                sharedViewModel.updateTopNavActions {
-                    Row {
-                        ActionIconButton(Icons.Rounded.SelectAll, R.string.select_all) {
-                            viewModel.toggleSelectAllTunnels()
-                        }
-                        // due to permissions, and SAF issues on TV, not support less than Android
-                        // 10
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            ActionIconButton(Icons.Rounded.Download, R.string.download) {
-                                showExportSheet = true
-                            }
-                        }
-
-                        if (count == 1) {
-                            ActionIconButton(Icons.Rounded.CopyAll, R.string.copy) {
-                                viewModel.copySelectedTunnel()
-                            }
-                        }
-
-                        if (!disableDelete) {
-                            ActionIconButton(Icons.Rounded.Delete, R.string.delete_tunnel) {
-                                showDeleteModal = true
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 
@@ -140,7 +95,7 @@ fun TunnelsScreen(viewModel: TunnelsViewModel) {
         InfoDialog(
             onDismiss = { showDeleteModal = false },
             onAttest = {
-                viewModel.deleteSelectedTunnels()
+                sharedViewModel.deleteSelectedTunnels()
                 showDeleteModal = false
             },
             title = { Text(text = stringResource(R.string.delete_tunnel)) },
@@ -151,10 +106,10 @@ fun TunnelsScreen(viewModel: TunnelsViewModel) {
 
     if (showExportSheet) {
         ExportTunnelsBottomSheet({ type, uri ->
-            viewModel.exportSelectedTunnels(type, uri, tunnelsState.selectedTunnels)
+            sharedViewModel.exportSelectedTunnels(type, uri)
         }) {
             showExportSheet = false
-            viewModel.clearSelectedTunnels()
+            sharedViewModel.clearSelectedTunnels()
         }
     }
 
@@ -187,15 +142,10 @@ fun TunnelsScreen(viewModel: TunnelsViewModel) {
 
     TunnelList(
         tunnelsState,
+        sharedState,
         modifier = Modifier.fillMaxSize().padding(vertical = 24.dp).padding(horizontal = 12.dp),
         viewModel,
         sharedViewModel,
         navController,
     )
-}
-
-@Composable
-fun TunnelActionBar() {
-
-    Row {}
 }

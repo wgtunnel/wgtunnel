@@ -1,11 +1,13 @@
 package com.zaneschepke.wireguardautotunnel.ui.navigation.components
 
+import android.os.Build
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -21,7 +23,8 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 
 @Composable
 fun NavHostController.currentBackStackEntryAsNavbarState(
-    sharedViewModel: SharedAppViewModel
+    sharedViewModel: SharedAppViewModel,
+    navController: NavHostController,
 ): State<NavbarState> {
     val sharedState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
     val backStackEntry by currentBackStackEntryAsState()
@@ -68,7 +71,21 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
             }
         }
 
-    return produceState(initialValue = NavbarState(), route, sharedState.topNavActions) {
+    val disableDelete by
+        rememberSaveable(sharedState.selectedTunnels, sharedState.tunnels) {
+            mutableStateOf(
+                sharedState.tunnels.any { tunnel ->
+                    tunnel.isActive &&
+                        sharedState.tunnels.any { selected -> selected.id == tunnel.id }
+                }
+            )
+        }
+    val selectedCount by
+        rememberSaveable(sharedState.selectedTunnels) {
+            mutableStateOf(sharedState.selectedTunnels.size)
+        }
+
+    return produceState(initialValue = NavbarState(), route, selectedCount, disableDelete) {
         value =
             when (route) {
                 Route.AdvancedAutoTunnel ->
@@ -222,28 +239,56 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                         },
                     )
                 }
-                Route.Tunnels ->
+                Route.Tunnels -> {
                     NavbarState(
                         topTitle = { Text(stringResource(R.string.tunnels)) },
-                        topTrailing =
-                            sharedState.topNavActions
-                                ?: {
+                        topTrailing = {
+                            when (selectedCount) {
+                                0 -> DefaultTunnelsActions(navController, sharedViewModel)
+                                else ->
                                     Row {
                                         ActionIconButton(
-                                            Icons.AutoMirrored.Rounded.Sort,
-                                            R.string.sort,
+                                            Icons.Rounded.SelectAll,
+                                            R.string.select_all,
                                         ) {
-                                            navigate(Route.Sort)
+                                            sharedViewModel.toggleSelectAllTunnels()
                                         }
-                                        ActionIconButton(Icons.Rounded.Add, R.string.add_tunnel) {
-                                            sharedViewModel.postSideEffect(
-                                                LocalSideEffect.Sheet.ImportTunnels
-                                            )
+                                        // due to permissions, and SAF issues on TV, not support
+                                        // less than Android
+                                        // 10
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                            ActionIconButton(
+                                                Icons.Rounded.Download,
+                                                R.string.download,
+                                            ) {
+                                                sharedViewModel.postSideEffect(
+                                                    LocalSideEffect.Sheet.ExportTunnels
+                                                )
+                                            }
+                                        }
+
+                                        if (selectedCount == 1) {
+                                            ActionIconButton(Icons.Rounded.CopyAll, R.string.copy) {
+                                                sharedViewModel.copySelectedTunnel()
+                                            }
+                                        }
+
+                                        if (!disableDelete) {
+                                            ActionIconButton(
+                                                Icons.Rounded.Delete,
+                                                R.string.delete_tunnel,
+                                            ) {
+                                                sharedViewModel.postSideEffect(
+                                                    LocalSideEffect.Modal.DeleteTunnels
+                                                )
+                                            }
                                         }
                                     }
-                                },
+                            }
+                        },
                         showBottomItems = true,
                     )
+                }
                 Route.WifiDetectionMethod ->
                     NavbarState(
                         topTitle = { Text(stringResource(R.string.wifi_detection_method)) },
@@ -255,5 +300,20 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                 Route.SupportGraph,
                 null -> NavbarState()
             }
+    }
+}
+
+@Composable
+private fun DefaultTunnelsActions(
+    navController: NavHostController,
+    sharedViewModel: SharedAppViewModel,
+) {
+    Row {
+        ActionIconButton(Icons.AutoMirrored.Rounded.Sort, R.string.sort) {
+            navController.navigate(Route.Sort)
+        }
+        ActionIconButton(Icons.Rounded.Add, R.string.add_tunnel) {
+            sharedViewModel.postSideEffect(LocalSideEffect.Sheet.ImportTunnels)
+        }
     }
 }

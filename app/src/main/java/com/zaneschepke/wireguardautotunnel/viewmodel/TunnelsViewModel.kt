@@ -5,9 +5,6 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
-import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
@@ -23,14 +20,10 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.TunnelName
 import com.zaneschepke.wireguardautotunnel.util.extensions.asStringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.saveTunnelsUniquely
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.File
 import java.io.IOException
 import java.net.URL
-import java.time.Instant
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.withContext
 import org.amnezia.awg.config.BadConfigException
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
@@ -43,7 +36,6 @@ constructor(
     private val tunnelRepository: TunnelRepository,
     private val generalSettingRepository: GeneralSettingRepository,
     private val appStateRepository: AppStateRepository,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val fileUtils: FileUtils,
     private val globalEffectRepository: GlobalEffectRepository,
     private val tunnelManager: TunnelManager,
@@ -60,7 +52,7 @@ constructor(
                     appStateRepository.flow,
                     tunnelManager.activeTunnels,
                 ) { tunnels, settings, appState, activeTunnels ->
-                    TunnelsUiState(
+                    state.copy(
                         tunnels = tunnels,
                         activeTunnels = activeTunnels,
                         appMode = settings.appMode,
@@ -76,57 +68,6 @@ constructor(
     suspend fun postSideEffect(globalSideEffect: GlobalSideEffect) {
         globalEffectRepository.post(globalSideEffect)
     }
-
-    fun exportSelectedTunnels(configType: ConfigType, uri: Uri?, selected: Set<TunnelConf>) =
-        intent {
-            val (files, shareFileName) =
-                when (configType) {
-                    ConfigType.AM ->
-                        Pair(createAmFiles(selected), "am-export_${Instant.now().epochSecond}.zip")
-                    ConfigType.WG ->
-                        Pair(createWgFiles(selected), "wg-export_${Instant.now().epochSecond}.zip")
-                }
-            val onFailure = { action: Throwable ->
-                intent {
-                    postSideEffect(
-                        GlobalSideEffect.Toast(
-                            StringValue.StringResource(
-                                R.string.export_failed,
-                                ": ${action.localizedMessage}",
-                            )
-                        )
-                    )
-                }
-                Unit
-            }
-            fileUtils
-                .createNewShareFile(shareFileName)
-                .onSuccess {
-                    fileUtils.zipAll(it, files).onFailure(onFailure)
-                    fileUtils.exportFile(it, uri, FileUtils.ZIP_FILE_MIME_TYPE).onFailure(onFailure)
-                }
-                .onFailure(onFailure)
-        }
-
-    suspend fun createWgFiles(tunnels: Collection<TunnelConf>): List<File> =
-        withContext(ioDispatcher) {
-            tunnels.mapNotNull { config ->
-                if (config.wgQuick.isNotBlank()) {
-                    fileUtils.createFile(config.tunName, config.wgQuick)
-                } else null
-            }
-        }
-
-    suspend fun createAmFiles(tunnels: Collection<TunnelConf>): List<File> =
-        withContext(ioDispatcher) {
-            tunnels.mapNotNull { config ->
-                if (
-                    config.amQuick != TunnelConfig.AM_QUICK_DEFAULT && config.amQuick.isNotBlank()
-                ) {
-                    fileUtils.createFile(config.tunName, config.amQuick)
-                } else null
-            }
-        }
 
     fun saveConfigProxy(tunnelId: Int?, configProxy: ConfigProxy, tunnelName: String) = intent {
         if (state.tunnels.any { it.tunName == tunnelName && it.id != tunnelId })
@@ -294,38 +235,5 @@ constructor(
                     }
                 postSideEffect(GlobalSideEffect.Toast(message))
             }
-    }
-
-    fun toggleSelectAllTunnels() = intent {
-        if (state.selectedTunnels.size != state.tunnels.size) {
-            return@intent reduce { state.copy(selectedTunnels = state.tunnels.toSet()) }
-        }
-        reduce { state.copy(selectedTunnels = emptySet()) }
-    }
-
-    fun clearSelectedTunnels() = intent { reduce { state.copy(selectedTunnels = emptySet()) } }
-
-    fun toggleSelectedTunnel(tunnelId: Int) = intent {
-        reduce {
-            state.copy(
-                selectedTunnels =
-                    state.selectedTunnels.toMutableSet().apply {
-                        val removed = removeIf { it.id == tunnelId }
-                        if (!removed) addAll(state.tunnels.filter { it.id == tunnelId })
-                    }
-            )
-        }
-    }
-
-    fun deleteSelectedTunnels() = intent {
-        tunnelRepository.delete(state.selectedTunnels.toList())
-        clearSelectedTunnels()
-    }
-
-    fun copySelectedTunnel() = intent {
-        val selected = state.selectedTunnels.firstOrNull() ?: return@intent
-        val copy = TunnelConf.tunnelConfFromQuick(selected.amQuick, selected.tunName)
-        tunnelRepository.saveTunnelsUniquely(listOf(copy), state.tunnels)
-        clearSelectedTunnels()
     }
 }

@@ -6,7 +6,6 @@ import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 
 data class TunnelsUiState(
     val tunnels: List<TunnelConf> = listOf(),
-    val selectedTunnels: Set<TunnelConf> = setOf(),
     val activeTunnels: Map<Int, TunnelState> = emptyMap(),
     val isPingEnabled: Boolean = false,
     val appMode: AppMode = AppMode.VPN,

@@ -1,4 +1,3 @@
-// BaseTunnel.kt (updated with bounce recovery and abstracts)
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
