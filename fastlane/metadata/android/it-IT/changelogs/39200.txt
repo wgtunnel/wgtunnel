@@ -1,0 +1,4 @@
+Novità:
+- Risolto bug scanner QR
+- Risolto bug del tracciamento della rete Wi-Fi attiva
+- Risolta riproducibilità Fdroid
