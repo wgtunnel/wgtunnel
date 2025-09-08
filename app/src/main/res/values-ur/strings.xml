@@ -142,7 +142,7 @@
     <string name="monitoring_state_changes">ریاستی تبدیلیوں کی نگرانی</string>
     <string name="set_custom_ping_internal">پنگ وقفہ (سیکنڈ)</string>
     <string name="wifi_name_via_shell">شیل کے ذریعے وائی فائی کا نام</string>
-    <string name="enter_pin">اپنا پن درج کریں</string>
+    <string name="enter_pin">پن درج کریں</string>
     <string name="getting_started_guide">شروع کرنے کی گائیڈ</string>
     <string name="set_custom_ping_cooldown">پنگ دوبارہ شروع کولڈاؤن (سیکنڈ)</string>
     <string name="handshake">ہینڈشیک</string>
@@ -343,4 +343,21 @@
     <string name="server_port">سرور:پورٹ</string>
     <string name="new_tunnel">نئی ٹنل</string>
     <string name="system_features">سسٹم کی خصوصیات</string>
+    <string name="read_failed">ڈیٹا پڑھنے میں ناکام۔</string>
+    <string name="invalid_key">غلط کلید</string>
+    <string name="invalid_number">غلط نمبر</string>
+    <string name="invalid_value">غلط مقدار</string>
+    <string name="missing_attribute">غائب وصف</string>
+    <string name="missing_section">غائب سیکشن</string>
+    <string name="syntax_error">نحو کی خرابی</string>
+    <string name="unknown_attribute">نامعلوم وصف</string>
+    <string name="unknown_section">نامعلوم سیکشن</string>
+    <string name="config_error_template">خراب ترتیب۔ %1$s مقام پر: %2$s۔</string>
+    <string name="ports_must_differ">ناکام۔ پراکسیوں کے پاس مختلف پورٹس ہونے چاہئیں۔</string>
+    <string name="password_no_spaces">پاس ورڈ میں خالی جگہیں نہیں ہوسکتی ہیں۔</string>
+    <string name="tunnel_name_taken">ٹنل کا نام پہلے ہی استعمال ہو چکا ہے۔</string>
+    <string name="range_hint">(%1$d–%2$d)</string>
+    <string name="mimic_quic">کیو‌یو‌آئی‌سی کی نقل کریں</string>
+    <string name="mimic_dns">ڈی‌این‌ایس کی نقل کریں</string>
+    <string name="mimic_sip">ایس‌آئی‌پی کی نقل کریں</string>
 </resources>
