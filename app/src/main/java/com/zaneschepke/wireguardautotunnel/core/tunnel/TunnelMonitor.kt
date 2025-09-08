@@ -7,6 +7,7 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.FailureReason
+import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
@@ -40,22 +41,26 @@ constructor(
     }
 
     private suspend fun startLogsMonitor(tunnelConf: TunnelConf) {
-        logReader.liveLogs.collect { log ->
-            if (!log.tag.contains(tunnelConf.tunName)) return@collect
-            val healthLogs =
+        logReader.liveLogs
+            .filter { log -> log.tag.contains(tunnelConf.tunName) }
+            .mapNotNull { log ->
+                val now = System.currentTimeMillis()
+
                 when {
-                    log.message.contains(HANDSHAKE_RESPONSE_TEXT, true) ||
-                        log.message.contains(KEEPALIVE_RESPONSE_TEXT, true) -> true
-                    log.message.contains(HANDSHAKE_INIT_FAILED_TEXT, true) ||
-                        log.message.contains(HANDSHAKE_NOT_COMPLETED_TEXT) ||
-                        log.message.contains(DATA_PACKET_FAILED_TEXT) -> false
+                    successLogRegex.containsMatchIn(log.message) ->
+                        LogHealthState(isHealthy = true, timestamp = now)
+
+                    failureLogRegex.containsMatchIn(log.message) ->
+                        LogHealthState(isHealthy = false, timestamp = now)
 
                     else -> null
                 }
-            healthLogs?.let { healthy ->
-                tunnelManager.updateTunnelStatus(tunnelConf.id, null, null, null, healthy)
             }
-        }
+            .distinctUntilChangedBy { it.isHealthy } // Only emit when health changes
+            .collect { logHealthState ->
+                Timber.d("Tunnel log health updated for ${tunnelConf.tunName}: $logHealthState")
+                tunnelManager.updateTunnelStatus(tunnelConf.id, logHealthState = logHealthState)
+            }
     }
 
     private suspend fun startPingMonitor(tunnelConf: TunnelConf) = coroutineScope {
@@ -242,6 +247,18 @@ constructor(
     }
 
     companion object {
+
+        private val successLogRegex =
+            Regex("Received handshake response|Receiving keepalive packet", RegexOption.IGNORE_CASE)
+
+        private val failureLogRegex =
+            Regex(
+                "Failed to send handshake initiation: write udp|" +
+                    "Handshake did not complete after 5 seconds, retrying|" +
+                    "Failed to send data packets",
+                RegexOption.IGNORE_CASE,
+            )
+
         const val CLOUDFLARE_IPV6_IP = "2606:4700:4700::1111"
         const val CLOUDFLARE_IPV4_IP = "1.1.1.1"
 

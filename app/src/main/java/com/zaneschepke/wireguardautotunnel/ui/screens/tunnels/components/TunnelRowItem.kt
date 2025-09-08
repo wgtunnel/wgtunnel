@@ -9,11 +9,9 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.minimumInteractiveComponentSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
@@ -41,10 +39,7 @@ fun TunnelRowItem(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val leadingIconColor =
-        remember(state) {
-            if (state.status.isUp()) tunnelState.statistics.asColor() else Color.Gray
-        }
+    var leadingIconColor by remember(state) { mutableStateOf(state.health().asColor()) }
 
     val (leadingIcon, size, typeDescription) =
         remember(tunnel) {
@@ -55,7 +50,7 @@ fun TunnelRowItem(
                     Triple(
                         Icons.Rounded.Smartphone,
                         16.dp,
-                        context.getString(R.string.mobile_data_tunnel),
+                        context.getString(R.string.mobile_tunnel),
                     )
                 tunnel.isEthernetTunnel ->
                     Triple(

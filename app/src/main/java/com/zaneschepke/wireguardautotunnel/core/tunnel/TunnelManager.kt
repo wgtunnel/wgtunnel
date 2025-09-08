@@ -10,6 +10,7 @@ import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
 import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
+import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
@@ -232,14 +233,14 @@ constructor(
         status: TunnelStatus?,
         stats: TunnelStatistics?,
         pingStates: Map<Key, PingState>?,
-        handshakeSuccessLogs: Boolean?,
+        logHealthState: LogHealthState?,
     ) {
         tunnelProviderFlow.value.updateTunnelStatus(
             tunnelId,
             status,
             stats,
             pingStates,
-            handshakeSuccessLogs,
+            logHealthState,
         )
     }
 
@@ -310,11 +311,7 @@ constructor(
             .filter { it.restartOnPingFailure && activeTuns.keys.contains(it.id) }
             .forEach { conf ->
                 val tunState = activeTuns[conf.id] ?: return@forEach
-                if (
-                    tunState.status.isUp() &&
-                        (tunState.pingStates?.any { !it.value.isReachable } == true ||
-                            tunState.handshakeSuccessLogs == false)
-                ) {
+                if (tunState.health() == TunnelState.Health.UNHEALTHY) {
                     runCatching {
                             val updated = handleDnsReresolve(conf)
                             // TODO user messages

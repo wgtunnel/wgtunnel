@@ -144,7 +144,6 @@ fun TunnelsScreen(viewModel: TunnelsViewModel) {
         tunnelsState,
         sharedState,
         modifier = Modifier.fillMaxSize().padding(vertical = 24.dp).padding(horizontal = 12.dp),
-        viewModel,
         sharedViewModel,
         navController,
     )

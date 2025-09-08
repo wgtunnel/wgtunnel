@@ -8,11 +8,10 @@ import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
+import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
-import java.util.concurrent.ConcurrentHashMap
-import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -21,6 +20,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.amnezia.awg.crypto.Key
 import timber.log.Timber
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.coroutines.cancellation.CancellationException
 
 abstract class BaseTunnel(
     @ApplicationScope protected val applicationScope: CoroutineScope,
@@ -60,7 +61,7 @@ abstract class BaseTunnel(
         status: TunnelStatus?,
         stats: TunnelStatistics?,
         pingStates: Map<Key, PingState>?,
-        handshakeSuccessLogs: Boolean?,
+        logHealthState: LogHealthState?,
     ) {
         tunStatusMutex.withLock {
             activeTuns.update { currentTuns ->
@@ -74,7 +75,7 @@ abstract class BaseTunnel(
                     existingState.status == newStatus &&
                         stats == null &&
                         pingStates == null &&
-                        handshakeSuccessLogs == null
+                        logHealthState == null
                 ) {
                     Timber.d("Skipping redundant state update for ${tunnelId}: $newStatus")
                     currentTuns
@@ -84,8 +85,7 @@ abstract class BaseTunnel(
                             status = newStatus,
                             statistics = stats ?: existingState.statistics,
                             pingStates = pingStates ?: existingState.pingStates,
-                            handshakeSuccessLogs =
-                                handshakeSuccessLogs ?: existingState.handshakeSuccessLogs,
+                            logHealthState = logHealthState ?: existingState.logHealthState,
                         )
                     currentTuns + (tunnelId to updated)
                 }

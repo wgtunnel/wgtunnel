@@ -8,6 +8,7 @@ import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -20,7 +21,11 @@ import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
+import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
+import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
+import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
+import com.zaneschepke.wireguardautotunnel.ui.theme.Straw
 import kotlin.reflect.KClass
 
 @SuppressLint("RestrictedApi")
@@ -82,5 +87,14 @@ fun AppMode.asIcon(): ImageVector {
         AppMode.PROXY -> ImageVector.vectorResource(R.drawable.proxy)
         AppMode.KERNEL -> Icons.Outlined.Terminal
         AppMode.LOCK_DOWN -> Icons.Outlined.Lock
+    }
+}
+
+fun TunnelState.Health.asColor(): Color {
+    return when (this) {
+        TunnelState.Health.UNKNOWN -> Color.Gray
+        TunnelState.Health.UNHEALTHY -> AlertRed
+        TunnelState.Health.HEALTHY -> SilverTree
+        TunnelState.Health.STALE -> Straw
     }
 }

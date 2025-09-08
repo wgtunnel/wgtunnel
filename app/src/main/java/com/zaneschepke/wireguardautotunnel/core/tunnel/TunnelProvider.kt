@@ -5,6 +5,7 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
@@ -49,6 +50,6 @@ interface TunnelProvider {
         status: TunnelStatus? = null,
         stats: TunnelStatistics? = null,
         pingStates: Map<Key, PingState>? = null,
-        handshakeSuccessLogs: Boolean? = null,
+        logHealthState: LogHealthState? = null,
     )
 }

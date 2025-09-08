@@ -25,7 +25,6 @@ import com.zaneschepke.wireguardautotunnel.ui.state.SharedAppUiState
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelsUiState
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -33,7 +32,6 @@ fun TunnelList(
     tunnelsState: TunnelsUiState,
     sharedState: SharedAppUiState,
     modifier: Modifier = Modifier,
-    viewModel: TunnelsViewModel,
     sharedViewModel: SharedAppViewModel,
     navController: NavController,
 ) {
