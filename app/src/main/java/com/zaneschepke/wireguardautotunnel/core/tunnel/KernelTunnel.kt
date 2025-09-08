@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.core.tunnel
 
 import com.wireguard.android.backend.Backend
 import com.wireguard.android.backend.BackendException
+import com.wireguard.android.backend.Tunnel as WgTunnel
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.Kernel
@@ -14,6 +15,8 @@ import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.domain.state.WireGuardStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTunnelState
 import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendCoreException
+import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
@@ -22,9 +25,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
-import com.wireguard.android.backend.Tunnel as WgTunnel
 
 class KernelTunnel
 @Inject

@@ -15,6 +15,10 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.asAmBackendMode
 import com.zaneschepke.wireguardautotunnel.util.extensions.asBackendMode
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTunnelState
 import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendCoreException
+import java.io.IOException
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
@@ -25,17 +29,13 @@ import kotlinx.coroutines.launch
 import org.amnezia.awg.backend.Backend
 import org.amnezia.awg.backend.BackendException
 import org.amnezia.awg.backend.ProxyGoBackend
+import org.amnezia.awg.backend.Tunnel as AwgTunnel
 import org.amnezia.awg.config.Config
 import org.amnezia.awg.config.DnsSettings
 import org.amnezia.awg.config.proxy.HttpProxy
 import org.amnezia.awg.config.proxy.Proxy
 import org.amnezia.awg.config.proxy.Socks5Proxy
 import timber.log.Timber
-import java.io.IOException
-import java.util.*
-import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
-import org.amnezia.awg.backend.Tunnel as AwgTunnel
 
 class UserspaceTunnel
 @Inject

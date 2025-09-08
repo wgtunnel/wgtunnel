@@ -12,11 +12,11 @@ import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.AutoTunnelUiState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
-import javax.inject.Inject
 
 @HiltViewModel
 class AutoTunnelViewModel

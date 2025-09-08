@@ -23,6 +23,11 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.TunnelName
 import com.zaneschepke.wireguardautotunnel.util.extensions.asStringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.saveTunnelsUniquely
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.File
+import java.io.IOException
+import java.net.URL
+import java.time.Instant
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.withContext
@@ -30,11 +35,6 @@ import org.amnezia.awg.config.BadConfigException
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import timber.log.Timber
-import java.io.File
-import java.io.IOException
-import java.net.URL
-import java.time.Instant
-import javax.inject.Inject
 
 @HiltViewModel
 class TunnelsViewModel

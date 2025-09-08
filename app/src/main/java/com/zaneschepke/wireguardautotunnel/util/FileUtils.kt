@@ -11,13 +11,13 @@ import androidx.annotation.RequiresApi
 import com.zaneschepke.wireguardautotunnel.util.extensions.QuickConfig
 import com.zaneschepke.wireguardautotunnel.util.extensions.TunnelName
 import com.zaneschepke.wireguardautotunnel.util.extensions.getInputStreamFromUri
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
-import timber.log.Timber
 import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class FileUtils(private val context: Context, private val ioDispatcher: CoroutineDispatcher) {
 

@@ -12,11 +12,11 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import dagger.hilt.android.scopes.ServiceScoped
 import io.ktor.util.collections.*
+import javax.inject.Inject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.amnezia.awg.crypto.Key
 import timber.log.Timber
-import javax.inject.Inject
 
 @ServiceScoped
 class TunnelMonitor

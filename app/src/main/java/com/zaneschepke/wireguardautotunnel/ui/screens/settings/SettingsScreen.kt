@@ -92,7 +92,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     ) {
         SurfaceSelectionGroupButton(
             buildList {
-                add(backendModeItem(settingsState.settings.appMode) { showAppModeSheet = true })
+                add(appModeItem(settingsState.settings.appMode) { showAppModeSheet = true })
             }
         )
         SectionDivider()
