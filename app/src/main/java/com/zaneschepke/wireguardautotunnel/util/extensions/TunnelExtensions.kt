@@ -168,6 +168,7 @@ fun org.amnezia.awg.backend.BackendException.toBackendCoreException(): BackendCo
             BackendCoreException.Unknown
         org.amnezia.awg.backend.BackendException.Reason.SERVICE_NOT_RUNNING ->
             BackendCoreException.ServiceNotRunning
+        org.amnezia.awg.backend.BackendException.Reason.UAPI_UPDATE_FAILED -> TODO()
     }
 }
 

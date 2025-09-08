@@ -17,10 +17,8 @@ import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
-import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus.StopReason.Ping
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
 import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.AutoTunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.NetworkState
@@ -36,7 +34,6 @@ import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Provider
-import kotlin.math.pow
 
 @AndroidEntryPoint
 class AutoTunnelService : LifecycleService() {
@@ -60,12 +57,6 @@ class AutoTunnelService : LifecycleService() {
     private val autoTunMutex = Mutex()
 
     private val autoTunnelStateFlow = MutableStateFlow(defaultState)
-
-    private val bounceCounts = MutableStateFlow<Map<Int, Int>>(emptyMap())
-
-    private var eventHandlerJob: Job? = null
-
-    private val lastBounceTimes = mutableMapOf<Int, Long>()
 
     class LocalBinder(val service: AutoTunnelService) : Binder()
 
@@ -143,20 +134,10 @@ class AutoTunnelService : LifecycleService() {
             val tunnelsFlow =
                 tunnelManager.activeTunnels.map { StateChange.ActiveTunnelsChange(it) }
 
-            val monitoringFlow =
-                tunnelManager.activeTunnels
-                    .map { map -> map.mapValues { (_, state) -> state.pingStates } }
-                    .distinctUntilChanged()
-                    .map { StateChange.MonitoringChange(it) }
-
             var reevaluationJob: Job? = null
 
             // get everything in sync before we use merge
-            combine(networkFlow, settingsFlow, tunnelsFlow, monitoringFlow) {
-                    network,
-                    settings,
-                    tunnels,
-                    monitoring ->
+            combine(networkFlow, settingsFlow, tunnelsFlow) { network, settings, tunnels ->
                     autoTunnelStateFlow.update {
                         it.copy(
                             activeTunnels = tunnels.activeTunnels,
@@ -170,7 +151,7 @@ class AutoTunnelService : LifecycleService() {
 
             // use merge to limit the noise of a combine and also increase the scalability of auto
             // tunnel handling new states
-            merge(networkFlow, settingsFlow, tunnelsFlow, monitoringFlow).collect { change ->
+            merge(networkFlow, settingsFlow, tunnelsFlow).collect { change ->
                 if (change !is StateChange.ActiveTunnelsChange) {
                     Timber.d("New state changed to ${change.javaClass.simpleName}")
                 }
@@ -200,22 +181,6 @@ class AutoTunnelService : LifecycleService() {
                     is StateChange.ActiveTunnelsChange -> {
                         autoTunnelStateFlow.update { it.copy(activeTunnels = change.activeTunnels) }
                         return@collect
-                    }
-                    is StateChange.MonitoringChange -> {
-                        change.pingStates.forEach { (config, pingState) ->
-                            Timber.d("Ping state $pingState")
-                            if (pingState?.all { it.value.isReachable } == true) {
-                                Timber.d("Clearing bounce count on success")
-                                bounceCounts.update { current ->
-                                    current.toMutableMap().apply { remove(config.id) }
-                                }
-                            }
-                        }
-                        return@collect handleAutoTunnelEvent(
-                            autoTunnelStateFlow.value.determineAutoTunnelEvent(
-                                StateChange.MonitoringChange(change.pingStates)
-                            )
-                        )
                     }
                 }
 
@@ -381,39 +346,8 @@ class AutoTunnelService : LifecycleService() {
                     (event.tunnelConf ?: appDataRepository.get().getPrimaryOrFirstTunnel())?.let {
                         tunnelManager.startTunnel(it)
                     }
-                is AutoTunnelEvent.Stop -> tunnelManager.stopTunnel()
+                is AutoTunnelEvent.Stop -> tunnelManager.stopActiveTunnels()
                 AutoTunnelEvent.DoNothing -> Timber.i("Auto-tunneling: nothing to do")
-                is AutoTunnelEvent.Bounce ->
-                    handleBounceWithBackoff(event.configsPeerKeyResolvedMap)
-            }
-        }
-    }
-
-    private suspend fun handleBounceWithBackoff(
-        configsPeerKeyResolvedMap: List<Pair<TunnelConf, Map<String, String?>>>
-    ) { // Simplified param: no failureCount
-        val settings = appDataRepository.get().settings.get()
-        val pingIntervalMillis = settings.tunnelPingIntervalSeconds.toMillis()
-        configsPeerKeyResolvedMap.forEach { (config, peerMap) ->
-            val bounceCount = bounceCounts.value.getOrDefault(config.id, 0)
-            val exponent = bounceCount.toDouble()
-            val backoffDelay =
-                (pingIntervalMillis * 2.0.pow(exponent)).toLong().coerceAtMost(MAX_BACKOFF_MS)
-            val currentTime = System.currentTimeMillis()
-            val lastTime = lastBounceTimes.getOrDefault(config.id, 0L)
-            if (currentTime - lastTime >= backoffDelay) {
-                Timber.d(
-                    "Bouncing tunnel ${config.tunName} after detecting failure, with bounce count $bounceCount and calculated backoff delay $backoffDelay ms"
-                )
-                tunnelManager.bounceTunnel(config, Ping(peerMap))
-                lastBounceTimes[config.id] = currentTime
-                bounceCounts.update { current ->
-                    current.toMutableMap().apply { this[config.id] = (this[config.id] ?: 0) + 1 }
-                }
-            } else {
-                Timber.d(
-                    "Backoff in progress for tunnel ${config.tunName}, skipping bounce (required delay: $backoffDelay ms)"
-                )
             }
         }
     }
@@ -434,6 +368,5 @@ class AutoTunnelService : LifecycleService() {
     companion object {
         // try to keep this window short as it will interrupt manual overrides
         const val REEVALUATE_CHECK_DELAY = 2_000L
-        const val MAX_BACKOFF_MS = 300_000L // 5 minutes
     }
 }

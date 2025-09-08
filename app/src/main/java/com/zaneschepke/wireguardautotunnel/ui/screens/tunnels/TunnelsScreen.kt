@@ -55,7 +55,7 @@ fun TunnelsScreen(viewModel: TunnelsViewModel) {
         remember(tunnelsState.activeTunnels, tunnelsState.selectedTunnels) {
             derivedStateOf {
                 tunnelsState.activeTunnels.any { active ->
-                    tunnelsState.selectedTunnels.any { it.id == active.key.id }
+                    tunnelsState.selectedTunnels.any { it.id == active.key }
                 }
             }
         }

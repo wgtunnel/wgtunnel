@@ -13,6 +13,9 @@ interface TunnelConfigDao {
 
     @Query("SELECT * FROM TunnelConfig WHERE id=:id") suspend fun getById(id: Long): TunnelConfig?
 
+    @Query("UPDATE TunnelConfig SET is_Active = 0 WHERE is_Active = 1")
+    suspend fun resetActiveTunnels()
+
     @Query("SELECT * FROM TunnelConfig WHERE name=:name")
     suspend fun getByName(name: String): TunnelConfig?
 

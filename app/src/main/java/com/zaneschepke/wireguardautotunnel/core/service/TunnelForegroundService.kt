@@ -16,7 +16,6 @@ import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
-import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.extensions.distinctByKeys
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,7 +43,7 @@ class TunnelForegroundService : LifecycleService() {
 
     class LocalBinder(val service: TunnelForegroundService) : Binder()
 
-    private val tunnelJobs = ConcurrentMap<TunnelConf, Job>()
+    private val tunnelJobs = ConcurrentMap<Int, Job>()
 
     private val binder = LocalBinder(this)
 
@@ -80,21 +79,23 @@ class TunnelForegroundService : LifecycleService() {
             tunnelManager.activeTunnels.distinctByKeys().collect { activeTunnels ->
                 val activeTunConfigs = activeTunnels.keys
                 val obsoleteJobs = tunnelJobs.keys - activeTunConfigs
-                obsoleteJobs.forEach { tunnelConf -> tunnelJobs[tunnelConf]?.cancel() }
-                activeTunConfigs.forEach { tun ->
-                    if (tunnelJobs.containsKey(tun)) return@forEach
-                    tunnelJobs[tun] = launch { tunnelMonitor.startMonitoring(tun, true) }
+                obsoleteJobs.forEach { tunId -> tunnelJobs[tunId]?.cancel() }
+                activeTunConfigs.forEach { tunId ->
+                    if (tunnelJobs.contains(tunId)) return@forEach
+                    tunnelJobs[tunId] = launch { tunnelMonitor.startMonitoring(tunId, true) }
                 }
-                updateServiceNotification(activeTunnels)
+                val tunnels = appDataRepository.tunnels.getAll()
+                val activeConfigs = tunnels.filter { activeTunConfigs.contains(it.id) }
+                updateServiceNotification(activeConfigs)
             }
         }
 
     // TODO Would be cool to have this include kill switch
-    private fun updateServiceNotification(activeTunnels: Map<TunnelConf, TunnelState>) {
+    private fun updateServiceNotification(activeConfigs: List<TunnelConf>) {
         val notification =
-            when (activeTunnels.size) {
+            when (activeConfigs.size) {
                 0 -> onCreateNotification()
-                1 -> createTunnelNotification(activeTunnels.keys.first())
+                1 -> createTunnelNotification(activeConfigs.first())
                 else -> createTunnelsNotification()
             }
         ServiceCompat.startForeground(

@@ -1,33 +1,35 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.tunneloptions.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.CallSplit
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ForwardButton
+import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
-import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 
 @Composable
-fun SplitTunnelingItem(tunnelConf: TunnelConf, navController: NavController): SelectionItem {
+fun primaryTunnelItem(tunnelConf: TunnelConf, onClick: () -> Unit): SelectionItem {
     return SelectionItem(
-        leading = { Icon(Icons.AutoMirrored.Outlined.CallSplit, contentDescription = null) },
+        leading = { Icon(Icons.Outlined.Star, contentDescription = null) },
         title = {
             Text(
-                text = stringResource(R.string.splt_tunneling),
+                text = stringResource(R.string.primary_tunnel),
                 style =
                     MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onSurface),
             )
         },
-        trailing = {
-            ForwardButton { navController.navigate(Route.SplitTunnel(id = tunnelConf.id)) }
+        description = {
+            Text(
+                text = stringResource(R.string.set_primary_tunnel),
+                style = MaterialTheme.typography.bodySmall.copy(MaterialTheme.colorScheme.outline),
+            )
         },
-        onClick = { navController.navigate(Route.SplitTunnel(id = tunnelConf.id)) },
+        trailing = { ScaledSwitch(checked = tunnelConf.isPrimaryTunnel, onClick = { onClick() }) },
+        onClick = onClick,
     )
 }

@@ -46,6 +46,10 @@ class RoomTunnelRepository(
         }
     }
 
+    override suspend fun resetActiveTunnels() {
+        withContext(ioDispatcher) { tunnelConfigDao.resetActiveTunnels() }
+    }
+
     override suspend fun updateMobileDataTunnel(tunnelConf: TunnelConf?) {
         withContext(ioDispatcher) {
             tunnelConfigDao.resetMobileDataTunnel()

@@ -44,7 +44,7 @@ class ShortcutsActivity : ComponentActivity() {
                         tunnelConfig?.let {
                             when (intent.action) {
                                 Action.START.name -> tunnelManager.startTunnel(it)
-                                Action.STOP.name -> tunnelManager.stopTunnel()
+                                Action.STOP.name -> tunnelManager.stopActiveTunnels()
                                 else -> Unit
                             }
                         }

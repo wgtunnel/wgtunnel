@@ -59,7 +59,7 @@ constructor(
         }
 
         try {
-            updateTunnelStatus(tunnelConf, TunnelStatus.Starting)
+            updateTunnelStatus(tunnelConf.id, TunnelStatus.Starting)
 
             val proxies: List<Proxy> =
                 when (backend) {
@@ -121,7 +121,7 @@ constructor(
             try {
                 backend.setState(runtimeTunnel, AwgTunnel.State.DOWN, null)
             } catch (e: BackendException) {
-                errors.tryEmit(tunnelConf to e.toBackendCoreException())
+                errors.tryEmit(tunnelConf.tunName to e.toBackendCoreException())
             } finally {
                 consumerJob.cancel()
                 stateChannel.close()
@@ -148,16 +148,22 @@ constructor(
         return backend.backendMode.asBackendMode()
     }
 
-    override suspend fun runningTunnelNames(): Set<String> {
-        return super.runningTunnelNames() + backend.runningTunnelNames
+    override fun handleDnsReresolve(tunnelConf: TunnelConf): Boolean {
+        val tunnel =
+            runtimeTunnels.get(tunnelConf.id) ?: throw BackendCoreException.ServiceNotRunning
+        return backend.resolveDDNS(tunnelConf.toAmConfig(), tunnel.isIpv4ResolutionPreferred)
     }
 
-    override fun getStatistics(tunnelConf: TunnelConf): TunnelStatistics? {
+    override suspend fun runningTunnelNames(): Set<String> {
+        return backend.runningTunnelNames
+    }
+
+    override fun getStatistics(tunnelId: Int): TunnelStatistics? {
         return try {
-            val runtimeTunnel = runtimeTunnels[tunnelConf.id] ?: return null
+            val runtimeTunnel = runtimeTunnels[tunnelId] ?: return null
             AmneziaStatistics(backend.getStatistics(runtimeTunnel))
         } catch (e: Exception) {
-            Timber.e(e, "Failed to get stats for ${tunnelConf.tunName}")
+            Timber.e(e, "Failed to get stats for $tunnelId")
             null
         }
     }

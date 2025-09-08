@@ -71,11 +71,11 @@ class RemoteControlReceiver : BroadcastReceiver() {
                 Action.STOP_TUNNEL -> {
                     val tunnelName =
                         intent.getStringExtra(EXTRA_TUN_NAME)
-                            ?: return@launch tunnelManager.stopTunnel()
+                            ?: return@launch tunnelManager.stopActiveTunnels()
                     val tunnel =
                         appDataRepository.tunnels.findByTunnelName(tunnelName)
-                            ?: return@launch tunnelManager.stopTunnel()
-                    tunnelManager.stopTunnel(tunnel)
+                            ?: return@launch tunnelManager.stopActiveTunnels()
+                    tunnelManager.stopTunnel(tunnel.id)
                 }
                 Action.START_AUTO_TUNNEL -> serviceManager.startAutoTunnel()
                 Action.STOP_AUTO_TUNNEL -> serviceManager.stopAutoTunnel()

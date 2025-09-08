@@ -381,4 +381,9 @@
     <string name="mimic_quic">Mimic QUIC</string>
     <string name="mimic_dns">Mimic DNS</string>
     <string name="mimic_sip">Mimic SIP</string>
+    <string name="active_tunnel_update_failed">Active tunnel update failed</string>
+    <string name="ddns_auto_update">Dynamic DNS auto-update</string>
+    <string name="ddns_auto_update_description">Auto-updates IP on DDNS changes</string>
+    <string name="prefer_ipv6_resolution">Prefer IPv6 peer resolution</string>
+    <string name="ipv4_auto_fallback">IPv4 peer auto-fallback</string>
 </resources>

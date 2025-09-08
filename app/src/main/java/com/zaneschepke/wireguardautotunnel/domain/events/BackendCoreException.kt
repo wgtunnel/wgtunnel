@@ -20,6 +20,8 @@ sealed class BackendCoreException : Exception() {
 
     data object TunnelNameTooLong : BackendCoreException()
 
+    data object UapiUpdateFailed : BackendCoreException()
+
     data class BounceFailed(val error: BackendCoreException) : BackendCoreException()
 
     fun toStringRes() =
@@ -33,6 +35,7 @@ sealed class BackendCoreException : Exception() {
             Unknown -> R.string.unknown_error
             TunnelNameTooLong -> R.string.error_tunnel_name
             is BounceFailed -> R.string.bounce_failed_template
+            UapiUpdateFailed -> R.string.active_tunnel_update_failed
         }
 
     fun toStringValue(): StringValue {

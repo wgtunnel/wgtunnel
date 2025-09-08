@@ -18,7 +18,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.zaneschepke.wireguardautotunnel.core.tunnel.getValueById
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
@@ -62,7 +61,7 @@ fun TunnelList(
         items(tunnelsState.tunnels, key = { it.id }) { tunnel ->
             val tunnelState =
                 remember(tunnelsState.activeTunnels) {
-                    tunnelsState.activeTunnels.getValueById(tunnel.id) ?: TunnelState()
+                    tunnelsState.activeTunnels[tunnel.id] ?: TunnelState()
                 }
             val selected =
                 remember(tunnelsState.selectedTunnels) {

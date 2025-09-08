@@ -116,7 +116,7 @@ constructor(
         appStateRepository.setPinLockEnabled(enabled)
     }
 
-    fun stopTunnel(tunnelConf: TunnelConf) = intent { tunnelManager.stopTunnel(tunnelConf) }
+    fun stopTunnel(tunnelConf: TunnelConf) = intent { tunnelManager.stopTunnel(tunnelConf.id) }
 
     fun setAppMode(appMode: AppMode) = intent {
         when (appMode) {

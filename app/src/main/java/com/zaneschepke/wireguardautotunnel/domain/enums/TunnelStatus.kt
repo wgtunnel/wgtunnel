@@ -6,17 +6,9 @@ sealed class TunnelStatus {
 
     data object Down : TunnelStatus()
 
-    data class Stopping(val reason: StopReason) : TunnelStatus()
+    data object Stopping : TunnelStatus()
 
     data object Starting : TunnelStatus()
-
-    sealed class StopReason {
-        data object User : StopReason()
-
-        data class Ping(val previouslyResolvedEndpoints: Map<String, String?>) : StopReason()
-
-        data object ConfigChanged : StopReason()
-    }
 
     fun isDown(): Boolean {
         return this == Down

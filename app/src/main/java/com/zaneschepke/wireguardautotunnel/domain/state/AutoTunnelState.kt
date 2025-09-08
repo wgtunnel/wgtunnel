@@ -2,20 +2,21 @@ package com.zaneschepke.wireguardautotunnel.domain.state
 
 import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.StateChange
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
-import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent.*
+import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent.DoNothing
+import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent.Start
 import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.util.extensions.isMatchingToWildcardList
 
 data class AutoTunnelState(
-    val activeTunnels: Map<TunnelConf, TunnelState> = emptyMap(),
+    val activeTunnels: Map<Int, TunnelState> = emptyMap(),
     val networkState: NetworkState = NetworkState(),
     val settings: GeneralSettings = GeneralSettings(),
     val tunnels: List<TunnelConf> = emptyList(),
 ) {
 
     fun determineAutoTunnelEvent(stateChange: StateChange): AutoTunnelEvent {
-        when (val change = stateChange) {
+        when (stateChange) {
             is StateChange.NetworkChange,
             is StateChange.SettingsChange -> {
                 // Compute desired tunnel based on network conditions
@@ -40,7 +41,7 @@ data class AutoTunnelState(
 
                 // Handle tunnel start/stop/change
                 if (desiredTunnel != null) {
-                    if (currentTunnel != desiredTunnel) {
+                    if (currentTunnel != desiredTunnel.id) {
                         // Start or switch to the desired tunnel (overrides any kill switch)
                         return Start(desiredTunnel)
                     }
@@ -52,12 +53,6 @@ data class AutoTunnelState(
                         // needed)
                         return AutoTunnelEvent.Stop
                     }
-                }
-            }
-            is StateChange.MonitoringChange -> {
-                val bounceTunnels = bounceOnPingFailed()
-                if (bounceTunnels.isNotEmpty()) {
-                    return Bounce(bounceTunnels)
                 }
             }
 
@@ -96,39 +91,10 @@ data class AutoTunnelState(
         return !networkState.isEthernetConnected && networkState.isWifiConnected
     }
 
-    private fun stopKillSwitchOnTrusted(): Boolean {
-        return networkState.isWifiConnected &&
-            settings.isVpnKillSwitchEnabled &&
-            settings.isDisableKillSwitchOnTrustedEnabled &&
-            isCurrentSSIDTrusted()
-    }
-
-    private fun startKillSwitch(): Boolean {
-        return settings.isVpnKillSwitchEnabled &&
-            (!settings.isDisableKillSwitchOnTrustedEnabled || !isCurrentSSIDTrusted())
-    }
-
     private fun isNoConnectivity(): Boolean {
         return !networkState.isEthernetConnected &&
             !networkState.isWifiConnected &&
             !networkState.isMobileDataConnected
-    }
-
-    private fun bounceOnPingFailed(): List<Pair<TunnelConf, Map<String, String?>>> {
-        return activeTunnels.entries
-            .filter { (tunnel, state) ->
-                tunnel.restartOnPingFailure &&
-                    (state.pingStates?.any { (key, pingState) ->
-                        pingState.failureReason == FailureReason.PingFailed
-                    } ?: false)
-            }
-            .map { (tunnel, state) ->
-                val peerMap =
-                    (state.statistics?.getPeers()?.associate { peerKey ->
-                        peerKey.toBase64() to state.statistics.peerStats(peerKey)?.resolvedEndpoint
-                    } ?: emptyMap())
-                Pair(tunnel, peerMap)
-            }
     }
 
     private fun isCurrentSSIDTrusted(): Boolean {

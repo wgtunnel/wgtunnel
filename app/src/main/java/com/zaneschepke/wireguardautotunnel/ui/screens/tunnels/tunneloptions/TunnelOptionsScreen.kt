@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
@@ -35,6 +36,9 @@ fun TunnelOptionsScreen(tunnelId: Int, viewModel: TunnelsViewModel) {
         remember(tunnelsState.tunnels) {
             derivedStateOf { tunnelsState.tunnels.find { it.id == tunnelId }!! }
         }
+
+    val ipv6Preferred by
+        remember(tunnelConf.isIpv4Preferred) { mutableStateOf(!tunnelConf.isIpv4Preferred) }
 
     var showAuthPrompt by rememberSaveable { mutableStateOf(!isTv) }
     var isAuthorized by rememberSaveable { mutableStateOf(isTv) }
@@ -75,12 +79,28 @@ fun TunnelOptionsScreen(tunnelId: Int, viewModel: TunnelsViewModel) {
     ) {
         SurfaceSelectionGroupButton(
             items =
-                listOf(
-                    PrimaryTunnelItem(tunnelConf) { viewModel.togglePrimaryTunnel(tunnelId) },
-                    AutoTunnelingItem(tunnelConf, navController),
-                    serverIpv4Item(tunnelConf) { viewModel.toggleIpv4Preferred(tunnelId) },
-                    SplitTunnelingItem(tunnelConf, navController),
-                )
+                buildList {
+                    add(primaryTunnelItem(tunnelConf) { viewModel.togglePrimaryTunnel(tunnelId) })
+                    add(autoTunnelingItem(tunnelConf, navController))
+                    add(splitTunnelingItem(tunnelConf, navController))
+                }
+        )
+        SectionDivider()
+        SurfaceSelectionGroupButton(
+            items =
+                buildList {
+                    add(
+                        dynamicDnsItem(tunnelConf.restartOnPingFailure) {
+                            viewModel.setRestartOnPing(tunnelId, it)
+                        }
+                    )
+                    if (tunnelsState.appMode != AppMode.KERNEL)
+                        add(
+                            preferIpv6Item(ipv6Preferred) {
+                                viewModel.toggleIpv4Preferred(tunnelId)
+                            }
+                        )
+                }
         )
         if (tunnelsState.isPingEnabled) {
             SectionDivider()

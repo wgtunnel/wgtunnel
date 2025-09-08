@@ -22,12 +22,12 @@ constructor(
     }
 
     private suspend fun handleTunnelErrors() =
-        tunnelManager.errorEvents.collectLatest { (tunnelConf, error) ->
+        tunnelManager.errorEvents.collectLatest { (tunName, error) ->
             if (!WireGuardAutoTunnel.uiActive.value) {
                 val notification =
                     notificationManager.createNotification(
                         WireGuardNotification.NotificationChannels.VPN,
-                        title = StringValue.DynamicString(tunnelConf.tunName),
+                        title = StringValue.DynamicString(tunName),
                         description =
                             when (error) {
                                 is BackendCoreException.BounceFailed -> error.toStringValue()
@@ -46,12 +46,12 @@ constructor(
         }
 
     private suspend fun handleTunnelMessages() =
-        tunnelManager.messageEvents.collectLatest { (tunnelConf, message) ->
+        tunnelManager.messageEvents.collectLatest { (tunName, message) ->
             if (!WireGuardAutoTunnel.uiActive.value) {
                 val notification =
                     notificationManager.createNotification(
                         WireGuardNotification.NotificationChannels.VPN,
-                        title = StringValue.DynamicString(tunnelConf.tunName),
+                        title = StringValue.DynamicString(tunName),
                         description = message.toStringValue(),
                     )
                 notificationManager.show(

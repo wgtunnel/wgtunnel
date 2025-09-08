@@ -13,9 +13,7 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.WireGuardAutoTunnel
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
-import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -65,12 +63,15 @@ class TunnelControlTile : TileService(), LifecycleOwner {
 
             when {
                 activeTunnels.isNotEmpty() -> {
-                    val activeIds = activeTunnels.map { it.key.id }
+                    val activeIds = activeTunnels.map { it.key }
                     // TODO improvements would be needed to make this work well with toggling
                     // multiple tunnels
                     // this would be better managed elsewhere
                     WireGuardAutoTunnel.setLastActiveTunnels(activeIds)
-                    updateTileForActiveTunnels(activeTunnels)
+                    val tunnels = appDataRepository.tunnels.getAll()
+                    val activeTunNames =
+                        tunnels.filter { activeTunnels.keys.contains(it.id) }.map { it.tunName }
+                    updateTileForActiveTunnels(activeTunNames)
                 }
                 else -> updateTileForLastActiveTunnels()
             }
@@ -79,10 +80,10 @@ class TunnelControlTile : TileService(), LifecycleOwner {
         }
     }
 
-    private fun updateTileForActiveTunnels(activeTunnels: Map<TunnelConf, TunnelState>) {
+    private fun updateTileForActiveTunnels(activeTunnelNames: List<String>) {
         val tileName =
-            when (activeTunnels.size) {
-                1 -> activeTunnels.keys.first().tunName
+            when (activeTunnelNames.size) {
+                1 -> activeTunnelNames[0]
                 else -> getString(R.string.multiple)
             }
         updateTile(tileName, true)
@@ -111,7 +112,7 @@ class TunnelControlTile : TileService(), LifecycleOwner {
         unlockAndRun {
             lifecycleScope.launch {
                 if (tunnelManager.activeTunnels.value.isNotEmpty())
-                    return@launch tunnelManager.stopTunnel()
+                    return@launch tunnelManager.stopActiveTunnels()
                 val lastActive = WireGuardAutoTunnel.getLastActiveTunnels()
                 if (lastActive.isEmpty()) {
                     appDataRepository.getStartTunnelConfig()?.let { tunnelManager.startTunnel(it) }

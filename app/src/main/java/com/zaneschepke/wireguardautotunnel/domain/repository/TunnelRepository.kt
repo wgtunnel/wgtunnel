@@ -15,6 +15,8 @@ interface TunnelRepository {
 
     suspend fun updatePrimaryTunnel(tunnelConf: TunnelConf?)
 
+    suspend fun resetActiveTunnels()
+
     suspend fun updateMobileDataTunnel(tunnelConf: TunnelConf?)
 
     suspend fun updateEthernetTunnel(tunnelConf: TunnelConf?)

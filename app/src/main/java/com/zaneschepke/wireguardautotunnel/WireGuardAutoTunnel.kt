@@ -5,7 +5,6 @@ import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import com.wireguard.android.backend.GoBackend
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationMonitor
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
@@ -24,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.amnezia.awg.backend.GoBackend
 import timber.log.Timber
 import javax.inject.Inject
 

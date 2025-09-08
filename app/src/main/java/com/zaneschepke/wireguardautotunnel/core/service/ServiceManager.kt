@@ -7,15 +7,15 @@ import android.content.ServiceConnection
 import android.net.VpnService
 import android.os.IBinder
 import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelService
+import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
+import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.util.extensions.requestAutoTunnelTileServiceUpdate
 import com.zaneschepke.wireguardautotunnel.util.extensions.requestTunnelTileServiceStateUpdate
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -26,17 +26,19 @@ class ServiceManager
 @Inject
 constructor(
     private val context: Context,
-    private val ioDispatcher: CoroutineDispatcher,
-    private val applicationScope: CoroutineScope,
+    @IoDispatcher ioDispatcher: CoroutineDispatcher,
+    @ApplicationScope applicationScope: CoroutineScope,
     private val mainDispatcher: CoroutineDispatcher,
     private val appDataRepository: AppDataRepository,
 ) {
 
     private val autoTunnelMutex = Mutex()
+    private val tunnelMutex = Mutex()
 
     private val _tunnelService = MutableStateFlow<TunnelForegroundService?>(null)
     private val _autoTunnelService = MutableStateFlow<AutoTunnelService?>(null)
     val autoTunnelService = _autoTunnelService.asStateFlow()
+    val tunnelService = _tunnelService.asStateFlow()
 
     private val tunnelServiceConnection =
         object : ServiceConnection {
@@ -66,72 +68,67 @@ constructor(
             }
         }
 
+    init {
+        // Observe changes to the AutoTunnelService and trigger side effects
+        applicationScope.launch(ioDispatcher) {
+            _autoTunnelService
+                .onEach { service ->
+                    withContext(mainDispatcher) { updateAutoTunnelTile() }
+                    if (service == null) {
+                        // The service is disconnected, update the DB state
+                        val settings = appDataRepository.settings.get()
+                        appDataRepository.settings.save(settings.copy(isAutoTunnelEnabled = false))
+                    }
+                }
+                .launchIn(this)
+        }
+    }
+
     fun hasVpnPermission(): Boolean {
         return VpnService.prepare(context) == null
     }
 
     suspend fun startAutoTunnel() {
         autoTunnelMutex.withLock {
-            val settings = appDataRepository.settings.get()
-            appDataRepository.settings.save(settings.copy(isAutoTunnelEnabled = true))
             if (_autoTunnelService.value != null) return
-            withContext(ioDispatcher) {
-                val intent = Intent(context, AutoTunnelService::class.java)
-                context.startForegroundService(intent)
-                context.bindService(intent, autoTunnelServiceConnection, Context.BIND_AUTO_CREATE)
-                withContext(mainDispatcher) { updateAutoTunnelTile() }
-            }
+            val intent = Intent(context, AutoTunnelService::class.java)
+            context.startForegroundService(intent)
+            context.bindService(intent, autoTunnelServiceConnection, Context.BIND_AUTO_CREATE)
         }
     }
 
-    suspend fun stopAutoTunnel() {
+    suspend fun stopAutoTunnel() =
         autoTunnelMutex.withLock {
-            val settings = appDataRepository.settings.get()
-            appDataRepository.settings.save(settings.copy(isAutoTunnelEnabled = false))
-            if (_autoTunnelService.value == null) return
+            if (_autoTunnelService.value == null) return@withLock
             _autoTunnelService.value?.let { service ->
                 service.stop()
                 try {
                     context.unbindService(autoTunnelServiceConnection)
                 } catch (e: Exception) {
                     Timber.e(e, "Failed to unbind AutoTunnelService")
-                } finally {
-                    _tunnelService.value = null
                 }
             }
-            withContext(mainDispatcher) { updateAutoTunnelTile() }
         }
-    }
 
-    suspend fun startTunnelForegroundService() {
-        if (_tunnelService.value != null) return
-        withContext(ioDispatcher) {
-            applicationScope.launch(ioDispatcher) {
-                val intent = Intent(context, TunnelForegroundService::class.java)
-                context.startForegroundService(intent)
-                context.bindService(intent, tunnelServiceConnection, Context.BIND_AUTO_CREATE)
+    suspend fun startTunnelForegroundService() =
+        tunnelMutex.withLock {
+            if (_tunnelService.value != null) return@withLock
+            val intent = Intent(context, TunnelForegroundService::class.java)
+            context.startForegroundService(intent)
+            context.bindService(intent, tunnelServiceConnection, Context.BIND_AUTO_CREATE)
+        }
+
+    suspend fun stopTunnelForegroundService() =
+        tunnelMutex.withLock {
+            _tunnelService.value?.let { service ->
+                service.stop()
+                try {
+                    context.unbindService(tunnelServiceConnection)
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to stop TunnelForegroundService")
+                }
             }
         }
-    }
-
-    fun stopTunnelForegroundService() {
-        _tunnelService.value?.let { service ->
-            service.stop()
-            try {
-                context.unbindService(tunnelServiceConnection)
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to stop TunnelForegroundService")
-            } finally {
-                _tunnelService.value = null
-            }
-        }
-    }
-
-    fun toggleAutoTunnel() {
-        applicationScope.launch(ioDispatcher) {
-            if (_autoTunnelService.value != null) stopAutoTunnel() else startAutoTunnel()
-        }
-    }
 
     fun updateAutoTunnelTile() {
         context.requestAutoTunnelTileServiceUpdate()

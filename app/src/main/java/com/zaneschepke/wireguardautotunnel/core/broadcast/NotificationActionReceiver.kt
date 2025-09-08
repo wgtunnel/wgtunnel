@@ -31,9 +31,9 @@ class NotificationActionReceiver : BroadcastReceiver() {
                 NotificationAction.AUTO_TUNNEL_OFF.name -> serviceManager.stopAutoTunnel()
                 NotificationAction.TUNNEL_OFF.name -> {
                     val tunnelId = intent.getIntExtra(NotificationManager.EXTRA_ID, 0)
-                    if (tunnelId == STOP_ALL_TUNNELS_ID) return@launch tunnelManager.stopTunnel()
-                    val tunnel = tunnelRepository.getById(tunnelId)
-                    tunnelManager.stopTunnel(tunnel)
+                    if (tunnelId == STOP_ALL_TUNNELS_ID)
+                        return@launch tunnelManager.stopActiveTunnels()
+                    tunnelRepository.getById(tunnelId)?.let { tunnelManager.stopTunnel(it.id) }
                 }
             }
         }

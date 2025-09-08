@@ -11,35 +11,20 @@ import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.amnezia.awg.crypto.Key
-import java.util.concurrent.ConcurrentHashMap
 
 interface TunnelProvider {
     /** Starts the specified tunnel configuration. */
     suspend fun startTunnel(tunnelConf: TunnelConf)
 
     /**
-     * Stops the specified tunnel, or all tunnels if none is provided.
+     * Stops the specified tunnel.
      *
-     * @param tunnelConf The tunnel to stop, or null to stop all active tunnels.
-     * @param reason The reason for stopping, defaults to USER for manual stops. Callers should
-     *   override with specific reasons (e.g., PING, CONFIG_CHANGED) when applicable.
+     * @param tunnelId The tunnelConf to stop.
      */
-    suspend fun stopTunnel(
-        tunnelConf: TunnelConf? = null,
-        reason: TunnelStatus.StopReason = TunnelStatus.StopReason.User,
-    )
+    suspend fun stopTunnel(tunnelId: Int)
 
-    /**
-     * Bounces (stops and restarts) the specified tunnel.
-     *
-     * @param tunnelConf The tunnel to bounce.
-     * @param reason The reason for bouncing, defaults to User for manual actions. Callers should
-     *   override with specific reasons (e.g., Ping, ConfigChanged) when applicable.
-     */
-    suspend fun bounceTunnel(
-        tunnelConf: TunnelConf,
-        reason: TunnelStatus.StopReason = TunnelStatus.StopReason.User,
-    )
+    /** Stops all active tunnels. */
+    suspend fun stopActiveTunnels()
 
     fun setBackendMode(backendMode: BackendMode)
 
@@ -47,20 +32,20 @@ interface TunnelProvider {
 
     suspend fun runningTunnelNames(): Set<String>
 
-    fun getStatistics(tunnelConf: TunnelConf): TunnelStatistics?
+    fun handleDnsReresolve(tunnelConf: TunnelConf): Boolean
 
-    val activeTunnels: StateFlow<Map<TunnelConf, TunnelState>>
+    fun getStatistics(tunnelId: Int): TunnelStatistics?
 
-    val errorEvents: SharedFlow<Pair<TunnelConf, BackendCoreException>>
+    val activeTunnels: StateFlow<Map<Int, TunnelState>>
 
-    val messageEvents: SharedFlow<Pair<TunnelConf, BackendMessage>>
+    val errorEvents: SharedFlow<Pair<String, BackendCoreException>>
 
-    val bouncingTunnelIds: ConcurrentHashMap<Int, TunnelStatus.StopReason>
+    val messageEvents: SharedFlow<Pair<String, BackendMessage>>
 
     fun hasVpnPermission(): Boolean
 
     suspend fun updateTunnelStatus(
-        tunnelConf: TunnelConf,
+        tunnelId: Int,
         status: TunnelStatus? = null,
         stats: TunnelStatistics? = null,
         pingStates: Map<Key, PingState>? = null,

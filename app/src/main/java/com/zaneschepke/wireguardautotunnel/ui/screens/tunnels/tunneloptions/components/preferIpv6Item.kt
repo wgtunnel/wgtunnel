@@ -1,35 +1,28 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.tunneloptions.components
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
 
 @Composable
-fun PrimaryTunnelItem(tunnelConf: TunnelConf, onClick: () -> Unit): SelectionItem {
+fun preferIpv6Item(checked: Boolean, onClick: () -> Unit): SelectionItem {
     return SelectionItem(
-        leading = { Icon(Icons.Outlined.Star, contentDescription = null) },
+        leading = { Icon(ImageVector.vectorResource(R.drawable.host), contentDescription = null) },
         title = {
             Text(
-                text = stringResource(R.string.primary_tunnel),
+                text = stringResource(R.string.prefer_ipv6_resolution),
                 style =
                     MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onSurface),
             )
         },
-        description = {
-            Text(
-                text = stringResource(R.string.set_primary_tunnel),
-                style = MaterialTheme.typography.bodySmall.copy(MaterialTheme.colorScheme.outline),
-            )
-        },
-        trailing = { ScaledSwitch(checked = tunnelConf.isPrimaryTunnel, onClick = { onClick() }) },
+        trailing = { ScaledSwitch(checked = checked, onClick = { onClick() }) },
         onClick = onClick,
     )
 }
