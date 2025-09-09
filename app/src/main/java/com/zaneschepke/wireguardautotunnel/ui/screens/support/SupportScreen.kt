@@ -26,7 +26,9 @@ import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.ContactSupportOptions
+import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.DonateSection
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.GeneralSupportOptions
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.UpdateSection
 import com.zaneschepke.wireguardautotunnel.util.Constants
@@ -134,7 +136,9 @@ fun SupportScreen(viewModel: SupportViewModel) {
             stringResource(R.string.thank_you),
             modifier = Modifier.padding(horizontal = 12.dp).padding(bottom = 12.dp),
         )
-        UpdateSection() { viewModel.checkForUpdate() }
+        UpdateSection { viewModel.checkForUpdate() }
+        SectionDivider()
+        DonateSection { navController.navigate(Route.Donate) }
         SectionDivider()
         GeneralSupportOptions(navController)
         SectionDivider()

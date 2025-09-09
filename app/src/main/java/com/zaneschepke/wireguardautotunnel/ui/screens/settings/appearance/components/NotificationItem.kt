@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ForwardButton
+import com.zaneschepke.wireguardautotunnel.ui.common.button.LaunchButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
 import com.zaneschepke.wireguardautotunnel.util.extensions.launchNotificationSettings
 
@@ -25,7 +25,7 @@ fun NotificationsItem(): SelectionItem {
                     MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onSurface),
             )
         },
-        trailing = { ForwardButton { context.launchNotificationSettings() } },
+        trailing = { LaunchButton { context.launchNotificationSettings() } },
         onClick = { context.launchNotificationSettings() },
     )
 }

@@ -58,4 +58,8 @@ sealed class Route {
     @Keep @Serializable data object WifiDetectionMethod : Route()
 
     @Keep @Serializable data object LocationDisclosure : Route()
+
+    @Keep @Serializable data object Donate : Route()
+
+    @Keep @Serializable data object Addresses : Route()
 }

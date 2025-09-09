@@ -17,6 +17,7 @@ import androidx.navigation.toRoute
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ActionIconButton
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Config
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
@@ -66,6 +67,8 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                         backStackEntry?.toRoute<Route.WifiDetectionMethod>()
                     Route.LocationDisclosure::class.simpleName ->
                         backStackEntry?.toRoute<Route.LocationDisclosure>()
+                    Route.Donate::class.simpleName -> backStackEntry?.toRoute<Route.Donate>()
+                    Route.Addresses::class.simpleName -> backStackEntry?.toRoute<Route.Addresses>()
                     else -> null
                 }
             }
@@ -233,7 +236,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                                     sharedViewModel.postSideEffect(LocalSideEffect.Modal.QR)
                                 }
                                 ActionIconButton(Icons.Rounded.Edit, R.string.edit_tunnel) {
-                                    navigate(Route.Config(route.id))
+                                    navigate(Config(route.id))
                                 }
                             }
                         },
@@ -294,6 +297,18 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                         topTitle = { Text(stringResource(R.string.wifi_detection_method)) },
                         showBottomItems = true,
                     )
+                Route.Donate -> {
+                    NavbarState(
+                        topTitle = { Text(stringResource(R.string.donate_title)) },
+                        showBottomItems = true,
+                    )
+                }
+                Route.Addresses -> {
+                    NavbarState(
+                        topTitle = { Text(stringResource(R.string.addresses)) },
+                        showBottomItems = true,
+                    )
+                }
                 Route.TunnelsGraph,
                 Route.SettingsGraph,
                 Route.AutoTunnelGraph,

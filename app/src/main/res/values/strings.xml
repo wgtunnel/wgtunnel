@@ -5,6 +5,9 @@
     <string name="vpn_channel_id" translatable="false">VPN Channel</string>
     <string name="vpn_channel_name">VPN Notification Channel</string>
 	<string name="github_url" translatable="false">https://github.com/wgtunnel/wgtunnel/issues</string>
+    <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
+    <string name="kofi_url" translatable="false">https://ko-fi.com/zaneschepke</string>
+    <string name="liberapay_url" translatable="false">https://liberapay.com/zaneschepke</string>
     <string name="docs_url" translatable="false">https://wgtunnel.com/docs/</string>
     <string name="getting_started_url" translatable="false">https://wgtunnel.com/docs/getting-started</string>
     <string name="privacy_policy_url" translatable="false">https://wgtunnel.com/docs/privacy-policy/</string>
@@ -389,4 +392,45 @@
     <string name="disabled">Disabled</string>
     <string name="mode_disabled_template">Feature unavailable in %1$s mode.</string>
     <string name="lockdown">Lockdown</string>
+    <string name="donate_title">Donate</string>
+    <string name="crypto">Cryptocurrency addresses</string>
+    <string name="github_sponsors">GitHub Sponsors</string>
+    <string name="liberapay">Liberapay</string>
+    <string name="kofi">Ko-fi</string>
+    <string name="bitcoin_address" translatable="false">sp1qqt0lyj230963nudpq550fhgah5yeghlhsm3x8ev2zhrqsz77mhmk7qedks8hh9pyj85ljzl3rcjrznf8v24ytfrv0p3exzprvdyfrvc3ws8wsrk2</string>
+    <string name="litecoin_mweb_address" translatable="false">ltcmweb1qqtykdawtseq80pvxaksann0p30j0cce3chxd708msyv3t2dc0p8suq75ud38kmmpdwgx2n2am99ly45nc5wpqz6rerhn6a35cxgwr60fg5ln0hqn</string>
+    <string name="litecoin_address" translatable="false">ltc1q08kck658kalgsz0exzjlnf02fmnmdknuy4dj3s</string>
+    <string name="ethereum_address" translatable="false">0x68fC6E808a9c54e0E1ac1AC58D94D22677cF1d32</string>
+    <string name="bitcoin_cash_address" translatable="false">bitcoincash:qrc53zat8xgwjrxmf6qrhtcd3vxghemxfvdrzp0fd2</string>
+    <string name="nano_address" translatable="false">nano_33j1bhzbttrcd5o7hcsejeg9ud7pym9yfcguuyia3zrjd8oa15t4s5aegqkr</string>
+    <string name="solana_address" translatable="false">3kA2yhXixyiTEJ8Z3W4sNNoVaTryRh7off6U6Gkp6HWi</string>
+    <string name="doge_address" translatable="false">DFoH9ZvTNH5FyWj9eACRndfNxYHT2WjEZ1</string>
+    <string name="polygon_address" translatable="false">0x68fC6E808a9c54e0E1ac1AC58D94D22677cF1d32</string>
+    <string name="tron_address" translatable="false">TRUMaqeD2xvAJhbkSS6ukk4dhBemzn9S7T</string>
+    <string name="monero_address" translatable="false">475Ed2RuwdJHFsb9xRRa9EUG2P1eEmEQ3iXMxHS1Aft9LBFVVr1RWaJctGNrfa591hgU9uoqPfkyp3Bmfgcunijf6HN6RC1</string>
+    <string name="zano_address" translatable="false">ZxCf8vqktThRZr1j2XnBD642PSdxa89ebj75ed6wiBDDeqe2XsKA2xbCnRfGEohtreJSDoJH8yD1Ybww49bnSQm129hA2T2aB</string>
+    <string name="decred_address" translatable="false">DsU5jf8Hw1UPzCsq9pnyTkoxhEBHpF3jeUQ</string>
+    <string name="wownero_address" translatable="false">WW49juDFehq8VoBBVtjoHzYoFJzXdwThDf6v7LVNkMdVTAKCqjtnk9DB5PFt7S8596KET4i195zJu92xbZu6ZLYk1nVEh4n22</string>
+    <string name="bitcoin" translatable="false">Bitcoin Mainnet</string>
+    <string name="monero" translatable="false">Monero Mainnet</string>
+    <string name="ethereum" translatable="false">Ethereum Mainnet (ETH/ERC-20)</string>
+    <string name="litecoin_mweb" formatted="false">Litecoin MWEB</string>
+    <string name="litecoin" translatable="false">Litecoin Mainnet</string>
+    <string name="doge" translatable="false">Dogecoin Mainnet</string>
+    <string name="polygon" translatable="false">Polygon Mainnet (POL/ERC-20)</string>
+    <string name="solana" translatable="false">Solana Mainnet (SOL/SPL)</string>
+    <string name="tron" translatable="false">Tron Mainnet (TRX/TRC-20)</string>
+    <string name="bitcoin_cash" translatable="false">Bitcoin Cash Mainnet</string>
+    <string name="nano" translatable="false">Nano Mainnet</string>
+    <string name="zano" translatable="false">Zano Mainnet</string>
+    <string name="decred" translatable="false">Decred Mainnet</string>
+    <string name="wownero" translatable="false">Wownero Mainnet</string>
+    <string name="donation_thanks_intro">Thank you for considering donating to this project!</string>
+    <string name="donation_dev_message">As the sole developer, I work tirelessly to make WG Tunnel the best free and open-source WireGuard client for Android, but this is only possible with your support.</string>
+    <string name="donation_closing">It\'s my dream to work for you on this project full-time.</string>
+    <string name="donation_signoff">Gratefully,</string>
+    <string name="dev_name" translatable="false">Zane</string>
+    <string name="google_donation_message">Unfortunately, due to Google\'s policies, donation links are not allowed in
+        the Play Store version of this app. Please browse the project\'s webpages to find where to donate.
+    </string>
 </resources>

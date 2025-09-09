@@ -67,6 +67,8 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.LogsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.TunnelMonitoringScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.system.SystemFeaturesScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.SupportScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.DonateScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.crypto.AddressesScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.license.LicenseScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.TunnelsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.autotunnel.TunnelAutoTunnelScreen
@@ -388,6 +390,8 @@ class MainActivity : AppCompatActivity() {
                                             SupportScreen(viewModel)
                                         }
                                         composable<Route.License> { LicenseScreen() }
+                                        composable<Route.Donate> { DonateScreen(navController) }
+                                        composable<Route.Addresses> { AddressesScreen() }
                                     }
                                 }
                             }
