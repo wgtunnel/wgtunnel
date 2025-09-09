@@ -271,7 +271,7 @@
     <string name="drag_handle">Verschiebegriff</string>
     <string name="error_tunnel_name">Tunnelname muss im Kernelmodus 15 Zeichen oder weniger betragen</string>
     <string name="tunnel">Tunnel</string>
-    <string name="tunnel_item_description">1$s, %2$s, %3$s</string>
+    <string name="tunnel_item_description">%1$s, %2$s, %3$s</string>
     <string name="warning">Warnung</string>
     <string name="location_permissions">Standortberechtigungen</string>
     <string name="location_justification">Um Wi-Fi-Namen im Hintergrund mit deiner aktuellen Erkennungsmethode lesen zu können, benötigt Android, dass Apps die Berechtigung \'Allow all the time\' und \'Precise\' (Background Location auf älteren Geräten) erhalten. Bitte aktiviere diese Berechtigungen in deinen Android-App-Einstellungen.</string>
@@ -360,4 +360,12 @@
     <string name="mimic_quic">Mimic QUIC</string>
     <string name="mimic_dns">Mimic DNS</string>
     <string name="mimic_sip">Mimic SIP</string>
+    <string name="ddns_auto_update">Dynamisches DNS Auto-Update</string>
+    <string name="ddns_auto_update_description">Aktualisiert IP bei DDNS Änderungen</string>
+    <string name="prefer_ipv6_resolution">IPv6 Gegenstellen-Auflösung bevorzugen</string>
+    <string name="ipv4_auto_fallback">Automatischer IPv4-Gegenstellen-Fallback</string>
+    <string name="disabled">Deaktiviert</string>
+    <string name="mode_disabled_template">Funktion im %1$s Modus nicht verfügbar.</string>
+    <string name="lockdown">Abriegelung</string>
+    <string name="active_tunnel_update_failed">Update des laufenden Tunnels fehlgeschlagen</string>
 </resources>
