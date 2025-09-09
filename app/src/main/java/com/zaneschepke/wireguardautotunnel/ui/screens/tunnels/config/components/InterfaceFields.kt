@@ -1,19 +1,15 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.RemoveRedEye
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -29,11 +25,10 @@ import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBo
 import com.zaneschepke.wireguardautotunnel.ui.state.InterfaceProxy
 import java.util.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InterfaceFields(
     interfaceState: InterfaceProxy,
-    showAuthPrompt: () -> Unit,
-    isAuthorized: Boolean,
     showScripts: Boolean,
     showAmneziaValues: Boolean,
     onInterfaceChange: (InterfaceProxy) -> Unit,
@@ -43,6 +38,7 @@ fun InterfaceFields(
     val keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
     val keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
     val locale = Locale.getDefault()
+    var showPrivateKey by rememberSaveable { mutableStateOf(false) }
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         ConfigurationTextBox(
@@ -52,33 +48,40 @@ fun InterfaceFields(
                     .lowercase(Locale.getDefault()),
             onValueChange = { onInterfaceChange(interfaceState.copy(privateKey = it)) },
             label = stringResource(R.string.private_key),
-            modifier = Modifier.fillMaxWidth().clickable { if (!isAuthorized) showAuthPrompt() },
+            modifier = Modifier.fillMaxWidth(),
             visualTransformation =
-                if (isAuthorized) VisualTransformation.None else PasswordVisualTransformation(),
+                if (showPrivateKey) VisualTransformation.None else PasswordVisualTransformation(),
             trailing = {
-                IconButton(
-                    enabled = true,
-                    onClick = {
-                        if (!isAuthorized) return@IconButton showAuthPrompt()
-                        val keypair = KeyPair()
-                        onInterfaceChange(
-                            interfaceState.copy(
-                                privateKey = keypair.privateKey.toBase64(),
-                                publicKey = keypair.publicKey.toBase64(),
+                CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 4.dp) {
+                    Row(modifier = Modifier.padding(end = 4.dp)) {
+                        IconButton(onClick = { showPrivateKey = !showPrivateKey }) {
+                            Icon(
+                                Icons.Outlined.RemoveRedEye,
+                                stringResource(R.string.show_password),
                             )
-                        )
-                    },
-                ) {
-                    Icon(
-                        Icons.Rounded.Refresh,
-                        stringResource(R.string.rotate_keys),
-                        tint =
-                            if (isAuthorized) MaterialTheme.colorScheme.onSurface
-                            else MaterialTheme.colorScheme.outline,
-                    )
+                        }
+                        IconButton(
+                            enabled = true,
+                            onClick = {
+                                val keypair = KeyPair()
+                                onInterfaceChange(
+                                    interfaceState.copy(
+                                        privateKey = keypair.privateKey.toBase64(),
+                                        publicKey = keypair.publicKey.toBase64(),
+                                    )
+                                )
+                            },
+                        ) {
+                            Icon(
+                                Icons.Rounded.Refresh,
+                                stringResource(R.string.rotate_keys),
+                                tint = MaterialTheme.colorScheme.onSurface,
+                            )
+                        }
+                    }
                 }
             },
-            enabled = isAuthorized,
+            enabled = true,
             singleLine = true,
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,

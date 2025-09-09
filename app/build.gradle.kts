@@ -201,7 +201,6 @@ dependencies {
     implementation(libs.material.icons.core)
     implementation(libs.material.icons.extended)
 
-    implementation(libs.androidx.biometric.ktx)
     implementation(libs.pin.lock.compose)
 
     implementation(libs.androidx.core)

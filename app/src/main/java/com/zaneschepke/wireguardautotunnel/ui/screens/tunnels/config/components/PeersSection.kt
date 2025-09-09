@@ -23,11 +23,9 @@ import com.zaneschepke.wireguardautotunnel.ui.theme.iconSize
 @Composable
 fun PeersSection(
     configProxy: ConfigProxy,
-    isAuthorized: Boolean,
     onRemove: (index: Int) -> Unit,
     onToggleLan: (index: Int) -> Unit,
     onUpdatePeer: (PeerProxy, index: Int) -> Unit,
-    showAuth: () -> Unit,
 ) {
     configProxy.peers.forEachIndexed { index, peer ->
         var isDropDownExpanded by remember { mutableStateOf(false) }
@@ -90,12 +88,7 @@ fun PeersSection(
                         }
                     }
                 }
-                PeerFields(
-                    peer = peer,
-                    onPeerChange = { onUpdatePeer(it, index) },
-                    showAuthPrompt = showAuth,
-                    isAuthenticated = isAuthorized,
-                )
+                PeerFields(peer = peer, onPeerChange = { onUpdatePeer(it, index) })
             }
         }
     }

@@ -23,8 +23,6 @@ fun InterfaceSection(
     configProxy: ConfigProxy,
     tunnelName: String,
     isTunnelNameTaken: Boolean,
-    isAuthorized: Boolean,
-    toggleAuthPrompt: () -> Unit,
     onInterfaceChange: (InterfaceProxy) -> Unit,
     onTunnelNameChange: (String) -> Unit,
     onMimicQuic: () -> Unit,
@@ -96,11 +94,9 @@ fun InterfaceSection(
             )
             InterfaceFields(
                 interfaceState = configProxy.`interface`,
-                showAuthPrompt = toggleAuthPrompt,
                 showScripts = showScripts,
                 showAmneziaValues = showAmneziaValues,
                 onInterfaceChange = onInterfaceChange,
-                isAuthorized = isAuthorized,
             )
         }
     }

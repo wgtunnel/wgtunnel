@@ -7,16 +7,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SecureScreenFromRecording
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.AuthorizationPromptWrapper
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components.AddPeerButton
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components.InterfaceSection
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components.PeersSection
@@ -28,7 +25,6 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun ConfigScreen(tunnelId: Int? = null, viewModel: TunnelsViewModel = hiltViewModel()) {
-    val isTv = LocalIsAndroidTV.current
     val sharedViewModel = LocalSharedVm.current
 
     val tunnelsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
@@ -51,25 +47,12 @@ fun ConfigScreen(tunnelId: Int? = null, viewModel: TunnelsViewModel = hiltViewMo
             }
         }
 
-    var showAuthPrompt by rememberSaveable { mutableStateOf(false) }
-    var isAuthorized by rememberSaveable { mutableStateOf(isTv) }
-
     sharedViewModel.collectSideEffect { sideEffect ->
         if (sideEffect is LocalSideEffect.SaveChanges)
             viewModel.saveConfigProxy(tunnelId, configProxy, tunnelName)
     }
 
     SecureScreenFromRecording()
-
-    if (showAuthPrompt) {
-        AuthorizationPromptWrapper(
-            onDismiss = { showAuthPrompt = false },
-            onSuccess = {
-                showAuthPrompt = false
-                isAuthorized = true
-            },
-        )
-    }
 
     Column(
         horizontalAlignment = Alignment.Start,
@@ -84,8 +67,6 @@ fun ConfigScreen(tunnelId: Int? = null, viewModel: TunnelsViewModel = hiltViewMo
             configProxy = configProxy,
             tunnelName,
             isTunnelNameTaken,
-            isAuthorized,
-            toggleAuthPrompt = { showAuthPrompt = !showAuthPrompt },
             onInterfaceChange = { configProxy = configProxy.copy(`interface` = it) },
             onTunnelNameChange = { tunnelName = it },
             onMimicQuic = {
@@ -100,7 +81,6 @@ fun ConfigScreen(tunnelId: Int? = null, viewModel: TunnelsViewModel = hiltViewMo
         )
         PeersSection(
             configProxy,
-            isAuthorized,
             onRemove = {
                 configProxy =
                     configProxy.copy(
@@ -126,7 +106,6 @@ fun ConfigScreen(tunnelId: Int? = null, viewModel: TunnelsViewModel = hiltViewMo
                         peers = configProxy.peers.toMutableList().apply { set(index, peer) }
                     )
             },
-            showAuth = { showAuthPrompt = true },
         )
         AddPeerButton() { configProxy = configProxy.copy(peers = configProxy.peers + PeerProxy()) }
     }

@@ -13,12 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
-import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.AuthorizationPromptWrapper
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.tunneloptions.components.*
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
@@ -26,7 +24,6 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun TunnelOptionsScreen(tunnelId: Int, viewModel: TunnelsViewModel) {
-    val isTv = LocalIsAndroidTV.current
     val navController = LocalNavController.current
     val sharedViewModel = LocalSharedVm.current
 
@@ -40,8 +37,6 @@ fun TunnelOptionsScreen(tunnelId: Int, viewModel: TunnelsViewModel) {
     val ipv6Preferred by
         remember(tunnelConf.isIpv4Preferred) { mutableStateOf(!tunnelConf.isIpv4Preferred) }
 
-    var showAuthPrompt by rememberSaveable { mutableStateOf(!isTv) }
-    var isAuthorized by rememberSaveable { mutableStateOf(isTv) }
     var showQrModal by rememberSaveable { mutableStateOf(false) }
 
     sharedViewModel.collectSideEffect { sideEffect ->
@@ -49,23 +44,7 @@ fun TunnelOptionsScreen(tunnelId: Int, viewModel: TunnelsViewModel) {
     }
 
     if (showQrModal) {
-
-        // Show authorization prompt if needed
-        if (showAuthPrompt) {
-            AuthorizationPromptWrapper(
-                onDismiss = {
-                    showAuthPrompt = false
-                    showQrModal = false
-                },
-                onSuccess = {
-                    showAuthPrompt = false
-                    isAuthorized = true
-                },
-            )
-        }
-        if (isAuthorized) {
-            QrCodeDialog(tunnelConf = tunnelConf, onDismiss = { showQrModal = false })
-        }
+        QrCodeDialog(tunnelConf = tunnelConf, onDismiss = { showQrModal = false })
     }
 
     Column(

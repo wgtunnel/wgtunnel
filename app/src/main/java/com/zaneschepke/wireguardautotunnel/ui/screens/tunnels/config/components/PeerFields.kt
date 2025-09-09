@@ -1,13 +1,20 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.RemoveRedEye
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -21,15 +28,11 @@ import com.zaneschepke.wireguardautotunnel.ui.state.PeerProxy
 import java.util.*
 
 @Composable
-fun PeerFields(
-    peer: PeerProxy,
-    onPeerChange: (PeerProxy) -> Unit,
-    showAuthPrompt: () -> Unit,
-    isAuthenticated: Boolean,
-) {
+fun PeerFields(peer: PeerProxy, onPeerChange: (PeerProxy) -> Unit) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
     val keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+    var showPresharedKey by rememberSaveable { mutableStateOf(false) }
 
     ConfigurationTextBox(
         value = peer.publicKey,
@@ -42,16 +45,21 @@ fun PeerFields(
     )
     ConfigurationTextBox(
         visualTransformation =
-            if (isAuthenticated) VisualTransformation.None else PasswordVisualTransformation(),
+            if (showPresharedKey) VisualTransformation.None else PasswordVisualTransformation(),
         value = peer.preSharedKey,
-        enabled = isAuthenticated,
+        enabled = true,
         hint = stringResource(R.string.optional),
         onValueChange = { onPeerChange(peer.copy(preSharedKey = it)) },
         label = stringResource(R.string.preshared_key),
-        modifier = Modifier.fillMaxWidth().clickable { if (!isAuthenticated) showAuthPrompt() },
+        modifier = Modifier.fillMaxWidth(),
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
         singleLine = true,
+        trailing = {
+            IconButton(onClick = { showPresharedKey = !showPresharedKey }) {
+                Icon(Icons.Outlined.RemoveRedEye, stringResource(R.string.show_password))
+            }
+        },
     )
     ConfigurationTextBox(
         value = peer.persistentKeepalive,
