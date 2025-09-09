@@ -272,7 +272,7 @@
     <string name="drag_handle">Uchwyt do przeciągania</string>
     <string name="error_tunnel_name">Nazwa tunelu musi mieć maksymalnie 15 znaków w trybie jądra</string>
     <string name="tunnel">Tunel</string>
-    <string name="tunnel_item_description">1$s, %2$s, %3$s</string>
+    <string name="tunnel_item_description">%1$s, %2$s, %3$s</string>
     <string name="warning">Ostrzeżenie</string>
     <string name="location_permissions">Uprawnienia dotyczące lokalizacji</string>
     <string name="location_justification">Aby móc odczytywać nazwy sieci Wi-Fi w tle za pomocą obecnej metody wykrywania, system Android wymaga od aplikacji uprawnień „Zawsze zezwalaj” i „Używaj dokładnej lokalizacji” („Lokalizacja w tle” na starszych urządzeniach). Włącz te uprawnienia w ustawieniach aplikacji systemu Android.</string>
@@ -361,4 +361,12 @@
     <string name="mimic_quic">Imituj QUIC</string>
     <string name="mimic_dns">Imituj DNS</string>
     <string name="mimic_sip">Imituj SIP</string>
+    <string name="ddns_auto_update">Automatyczna aktualizacja dynamicznego DNS</string>
+    <string name="ddns_auto_update_description">Automatyczna aktualizacja adresu IP po zmianach DDNS</string>
+    <string name="prefer_ipv6_resolution">Preferuj rozwiązywanie peerów IPv6</string>
+    <string name="ipv4_auto_fallback">Automatyczne przełączanie peerów IPv4</string>
+    <string name="disabled">Wyłączone</string>
+    <string name="mode_disabled_template">Funkcja niedostępna w trybie %1$s.</string>
+    <string name="lockdown">Zablokowane</string>
+    <string name="active_tunnel_update_failed">Aktualizacja aktywnego tunelu się nie powiodła</string>
 </resources>
