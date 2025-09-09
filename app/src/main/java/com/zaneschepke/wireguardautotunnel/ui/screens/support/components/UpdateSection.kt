@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CloudDownload
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
@@ -12,9 +13,15 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionIte
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItemLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionLabelType
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
+import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
 
 @Composable
-fun UpdateSection(onUpdateCheck: () -> Unit = {}) {
+fun UpdateSection(onUpdateCheck: () -> Unit) {
+    val clipboardManager = rememberClipboardHelper()
+    val version = remember {
+        "v${BuildConfig.VERSION_NAME +
+            if(BuildConfig.DEBUG) "-debug" else "" }"
+    }
     SurfaceSelectionGroupButton(
         listOf(
             SelectionItem(
@@ -28,11 +35,7 @@ fun UpdateSection(onUpdateCheck: () -> Unit = {}) {
                 description = {
                     Column {
                         SelectionItemLabel(
-                            stringResource(
-                                R.string.version_template,
-                                "v${BuildConfig.VERSION_NAME + 
-                                    if(BuildConfig.DEBUG) "-debug" else "" }",
-                            ),
+                            stringResource(R.string.version_template, version),
                             SelectionLabelType.DESCRIPTION,
                         )
                         SelectionItemLabel(
@@ -42,6 +45,7 @@ fun UpdateSection(onUpdateCheck: () -> Unit = {}) {
                     }
                 },
                 onClick = onUpdateCheck,
+                onLongPress = { clipboardManager.copy(version) },
             )
         )
     )

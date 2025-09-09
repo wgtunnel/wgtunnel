@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
@@ -27,6 +28,8 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.*
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.compoents.AppModeBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
+import com.zaneschepke.wireguardautotunnel.util.StringValue
+import com.zaneschepke.wireguardautotunnel.util.extensions.asString
 import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 import xyz.teamgravity.pin_lock_compose.PinManager
@@ -44,6 +47,11 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
 
     var showBackupSheet by rememberSaveable { mutableStateOf(false) }
     var showAppModeSheet by rememberSaveable { mutableStateOf(false) }
+
+    val appMode by
+        rememberSaveable(settingsState.settings.appMode) {
+            mutableStateOf(settingsState.settings.appMode)
+        }
 
     if (!settingsState.stateInitialized) return
 
@@ -91,40 +99,62 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 ),
     ) {
         SurfaceSelectionGroupButton(
-            buildList {
-                add(appModeItem(settingsState.settings.appMode) { showAppModeSheet = true })
-            }
+            listOf(appModeItem(settingsState.settings.appMode) { showAppModeSheet = true })
         )
         SectionDivider()
         SurfaceSelectionGroupButton(
             items =
                 buildList {
-                    if (settingsState.settings.appMode == AppMode.LOCK_DOWN) {
+                    if (appMode == AppMode.LOCK_DOWN) {
                         add(
                             lanTrafficItem(settingsState.settings.isLanOnKillSwitchEnabled) {
                                 viewModel.setLanKillSwitchEnabled(it)
                             }
                         )
                     }
-                    add(tunnelMonitoringItem(navController))
-                    add(dnsSettingsItem(navController))
-                    // TODO changing these settings won't work in certain app states
-                    if (showProxySettings) add(proxYSettingsItem(navController))
+                    add(
+                        tunnelMonitoringItem(
+                            appMode,
+                            onClick = { navController.navigate(Route.TunnelMonitoring) },
+                        ) {
+                            sharedViewModel.showSnackMessage(
+                                StringValue.StringResource(
+                                    R.string.mode_disabled_template,
+                                    appMode.asString(context),
+                                )
+                            )
+                        }
+                    )
+                    add(
+                        dnsSettingsItem(appMode, onClick = { navController.navigate(Route.Dns) }) {
+                            sharedViewModel.showSnackMessage(
+                                StringValue.StringResource(
+                                    R.string.mode_disabled_template,
+                                    appMode.asString(context),
+                                )
+                            )
+                        }
+                    )
+                    if (showProxySettings)
+                        add(proxYSettingsItem() { navController.navigate(Route.ProxySettings) })
                 }
         )
         SectionDivider()
-        SurfaceSelectionGroupButton(listOf(systemFeaturesItem(navController)))
+        SurfaceSelectionGroupButton(
+            listOf(systemFeaturesItem() { navController.navigate(Route.SystemFeatures) })
+        )
         SectionDivider()
         SurfaceSelectionGroupButton(
             items =
                 buildList {
-                    add(appearanceItem(navController))
+                    add(appearanceItem() { navController.navigate(Route.Appearance) })
                     add(
                         localLoggingItem(settingsState.isLocalLoggingEnabled) {
                             viewModel.setLocalLogging(it)
                         }
                     )
-                    if (settingsState.isLocalLoggingEnabled) add(readLogsItem(navController))
+                    if (settingsState.isLocalLoggingEnabled)
+                        add(readLogsItem() { navController.navigate(Route.Logs) })
                     add(
                         pinLockItem(settingsState.isPinLockEnabled) { enabled ->
                             if (enabled) {

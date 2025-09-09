@@ -291,7 +291,7 @@
     <string name="move_down">Move Down</string>
     <string name="error_tunnel_name">Tunnel name must be 15 characters or fewer in kernel mode</string>
     <string name="tunnel">tunnel</string>
-    <string name="tunnel_item_description">1$s, %2$s, %3$s</string>
+    <string name="tunnel_item_description">%1$s, %2$s, %3$s</string>
     <string name="warning">Warning</string>
     <string name="location_permissions">Location Permissions</string>
     <string name="location_justification">In order to read Wi-Fi names in the background with your current detection
@@ -386,4 +386,7 @@
     <string name="ddns_auto_update_description">Auto-updates IP on DDNS changes</string>
     <string name="prefer_ipv6_resolution">Prefer IPv6 peer resolution</string>
     <string name="ipv4_auto_fallback">IPv4 peer auto-fallback</string>
+    <string name="disabled">Disabled</string>
+    <string name="mode_disabled_template">Feature unavailable in %1$s mode.</string>
+    <string name="lockdown">Lockdown</string>
 </resources>

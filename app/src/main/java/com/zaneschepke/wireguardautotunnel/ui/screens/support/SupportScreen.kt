@@ -134,7 +134,7 @@ fun SupportScreen(viewModel: SupportViewModel) {
             stringResource(R.string.thank_you),
             modifier = Modifier.padding(horizontal = 12.dp).padding(bottom = 12.dp),
         )
-        UpdateSection(onUpdateCheck = { viewModel.checkForUpdate() })
+        UpdateSection() { viewModel.checkForUpdate() }
         SectionDivider()
         GeneralSupportOptions(navController)
         SectionDivider()

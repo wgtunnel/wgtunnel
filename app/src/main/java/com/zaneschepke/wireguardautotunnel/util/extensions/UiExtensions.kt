@@ -71,12 +71,19 @@ fun WifiDetectionMethod.asDescriptionString(context: Context): String? {
 
 fun AppMode.asTitleString(context: Context): String {
     return when (this) {
+        AppMode.VPN -> asString(context)
+        AppMode.PROXY -> context.getString(R.string.expiremental_template, asString(context))
+        AppMode.KERNEL -> context.getString(R.string.root_required_template, asString(context))
+        AppMode.LOCK_DOWN -> context.getString(R.string.expiremental_template, asString(context))
+    }
+}
+
+fun AppMode.asString(context: Context): String {
+    return when (this) {
         AppMode.VPN -> context.getString(R.string.vpn)
-        AppMode.PROXY ->
-            context.getString(R.string.expiremental_template, context.getString(R.string.proxy))
-        AppMode.KERNEL ->
-            context.getString(R.string.root_required_template, context.getString(R.string.kernel))
-        AppMode.LOCK_DOWN -> context.getString(R.string.expiremental_template, "Lockdown")
+        AppMode.PROXY -> context.getString(R.string.proxy)
+        AppMode.KERNEL -> context.getString(R.string.kernel)
+        AppMode.LOCK_DOWN -> context.getString(R.string.lockdown)
     }
 }
 

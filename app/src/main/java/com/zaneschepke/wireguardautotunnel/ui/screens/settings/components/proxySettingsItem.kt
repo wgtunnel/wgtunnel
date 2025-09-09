@@ -7,17 +7,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.navigation.NavController
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ForwardButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
-import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 
 @Composable
-fun proxYSettingsItem(navController: NavController): SelectionItem {
+fun proxYSettingsItem(onClick: () -> Unit): SelectionItem {
     return SelectionItem(
         leading = { Icon(ImageVector.vectorResource(R.drawable.proxy), null) },
-        trailing = { ForwardButton { navController.navigate(Route.ProxySettings) } },
+        trailing = { ForwardButton { onClick() } },
         title = {
             Text(
                 text = stringResource(R.string.proxy_settings),
@@ -25,6 +23,6 @@ fun proxYSettingsItem(navController: NavController): SelectionItem {
                     MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onSurface),
             )
         },
-        onClick = { navController.navigate(Route.ProxySettings) },
+        onClick = onClick,
     )
 }
