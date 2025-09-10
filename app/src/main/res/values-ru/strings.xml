@@ -31,9 +31,9 @@
     <string name="restart_on_ping">Перезапуск при сбое пинга (бета)</string>
     <string name="settings">Настройки</string>
     <string name="support">Поддержка</string>
-    <string name="init_packet_junk_size">Количество \"мусора\" в пакете инициализации</string>
-    <string name="response_packet_junk_size">Количество \"мусора\" в пакете ответа</string>
-    <string name="init_packet_magic_header">Заголовок пакета инициализации</string>
+    <string name="init_packet_junk_size">[S1] Количество «мусора» в пакете инициализации</string>
+    <string name="response_packet_junk_size">[S2] Количество «мусора» в пакете ответа</string>
+    <string name="init_packet_magic_header">[H1] Заголовок пакета инициализации</string>
     <string name="see_the">Смотрите</string>
     <string name="tunnel_mobile_data">Туннелировать через мобильный интернет</string>
     <string name="tunnel_on_ethernet">Туннелировать через Ethernet</string>
@@ -85,8 +85,8 @@
     <string name="create_pin">Создать PIN-код</string>
     <string name="mobile_data_tunnel">Назначить как туннель для мобильного интернета</string>
     <string name="edit_tunnel">Редактировать туннель</string>
-    <string name="junk_packet_count">Количество \"мусорных\" пакетов</string>
-    <string name="junk_packet_maximum_size">Максимальный размер \"мусорного\" пакета</string>
+    <string name="junk_packet_count">[Jc] Количество «мусорных» пакетов</string>
+    <string name="junk_packet_maximum_size">[Jmax] Максимальный размер «мусорного» пакета</string>
     <string name="error_file_format">некорректный формат конфигурации туннеля</string>
     <string name="email_subject">Поддержка WG Tunnel</string>
     <string name="email_description">Отправить письмо автору</string>
@@ -96,12 +96,12 @@
     <string name="auto">(авто)</string>
     <string name="set_primary_tunnel">Назначить как главный туннель</string>
     <string name="kernel">Модуль ядра</string>
-    <string name="junk_packet_minimum_size">Минимальный размер \"мусорного\" пакета</string>
-    <string name="response_packet_magic_header">Заголовок пакета ответа</string>
-    <string name="transport_packet_magic_header">Заголовок транспортного пакета</string>
+    <string name="junk_packet_minimum_size">[Jmin] Минимальный размер «мусорного» пакета</string>
+    <string name="response_packet_magic_header">[H2] Заголовок пакета ответа</string>
+    <string name="transport_packet_magic_header">[H4] Заголовок транспортного пакета</string>
     <string name="getting_started_guide">руководство по началу работы</string>
     <string name="unsure_how">, если не уверены, что делать дальше</string>
-    <string name="underload_packet_magic_header">Заголовок пакета поддержки соединения</string>
+    <string name="underload_packet_magic_header">[H3] Заголовок пакета поддержки соединения</string>
     <string name="root_accepted">Root-доступ разрешён</string>
     <string name="always_on_message">Разрешение на VPN-соединение было отклонено, проверьте</string>
     <string name="set_custom_ping_cooldown">Время ожидания перезапуска пинга (сек.)</string>
@@ -271,7 +271,7 @@
     <string name="move_down">Переместить вниз</string>
     <string name="error_tunnel_name">В режиме ядра имя туннеля должно содержать не более 15 символов</string>
     <string name="tunnel">туннель</string>
-    <string name="tunnel_item_description">1$s, %2$s, %3$s</string>
+    <string name="tunnel_item_description">%1$s, %2$s, %3$s</string>
     <string name="warning">Внимание</string>
     <string name="location_permissions">Разрешения на доступ к местоположению</string>
     <string name="location_justification">Чтобы получать имена сетей Wi-Fi в фоновом режиме с помощью выбранного метода обнаружения, приложению необходимо предоставить разрешения на доступ к местоположению «Разрешить всегда» и «Точное определение местоположения» («Фоновое определение местоположения» на старых устройствах). Включите эти разрешения в настройках приложения.</string>
@@ -360,4 +360,12 @@
     <string name="unknown_section">Неизвестный раздел</string>
     <string name="tunnel_name_taken">Имя туннеля уже используется.</string>
     <string name="range_hint">(%1$d–%2$d)</string>
+    <string name="active_tunnel_update_failed">Невозможно обновить активный туннель</string>
+    <string name="ddns_auto_update">Автообновление динамического DNS</string>
+    <string name="ddns_auto_update_description">Автоматическое обновление IP при изменении DDNS</string>
+    <string name="disabled">Отключено</string>
+    <string name="mode_disabled_template">Функция недоступна в режиме %1$s.</string>
+    <string name="lockdown">Заблокировано</string>
+    <string name="prefer_ipv6_resolution">Предпочитать получение IPv6 пиров</string>
+    <string name="ipv4_auto_fallback">Автовозврат IPv4 пиров</string>
 </resources>
