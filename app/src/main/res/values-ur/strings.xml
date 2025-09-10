@@ -271,7 +271,7 @@
     <string name="move_down">نیچے منتقل کریں</string>
     <string name="error_tunnel_name">کرنل موڈ میں ٹنل کا نام 15 حروف یا اس سے کم ہونا چاہیے</string>
     <string name="tunnel">ٹنل</string>
-    <string name="tunnel_item_description">1$s, %2$s, %3$s</string>
+    <string name="tunnel_item_description">%1$s, %2$s, %3$s</string>
     <string name="warning">وارننگ</string>
     <string name="location_permissions">مقام کی اجازت</string>
     <string name="location_justification">آپ کے موجودہ پتہ لگانے کے طریقے کے ساتھ پس منظر میں وائی فائی کے ناموں کو پڑھنے کے لیے، اینڈرائیڈ کو ایپس کو \'ہر وقت اجازت دیں\' اور \'عین مطابق\' (پرانے آلات پر پس منظر کی جگہ) کی اجازت دینے کی ضرورت ہے۔ براہ کرم اپنی اینڈرائیڈ ایپ کی ترتیبات میں ان اجازتوں کو فعال کریں۔</string>
@@ -360,4 +360,12 @@
     <string name="mimic_quic">کیو‌یو‌آئی‌سی کی نقل کریں</string>
     <string name="mimic_dns">ڈی‌این‌ایس کی نقل کریں</string>
     <string name="mimic_sip">ایس‌آئی‌پی کی نقل کریں</string>
+    <string name="active_tunnel_update_failed">فعال ٹنل کی تازہ کاری ناکام ہو گئی</string>
+    <string name="ddns_auto_update">متحرک ڈی‌این‌ایس خودکار تازہ کاری</string>
+    <string name="ddns_auto_update_description">ڈی‌ڈی‌این‌ایس تبدیلیوں پر آئی‌پی کی خودکار تازہ کاری کرتا ہے</string>
+    <string name="prefer_ipv6_resolution">آئی‌پی‌وی6 ہم مرتبہ ریزولوشن کو ترجیح دیں</string>
+    <string name="ipv4_auto_fallback">آئی‌پی‌وی4 پیر آٹو فال بیک</string>
+    <string name="disabled">معذور</string>
+    <string name="mode_disabled_template">فیچر %1$s موڈ میں دستیاب نہیں ہے۔</string>
+    <string name="lockdown">لاک ڈاؤن</string>
 </resources>
