@@ -7,7 +7,8 @@ object Constants {
 
     const val BATTERY_SAVER_WATCHER_WAKE_LOCK_TIMEOUT = 10 * 60 * 1_000L // 10 minutes
     const val VPN_SETTINGS_PACKAGE = "android.net.vpn.SETTINGS"
-    const val SYSTEM_EXEMPT_SERVICE_TYPE_ID = 1024
+    const val SYSTEM_EXEMPT_SERVICE_TYPE_ID = 1 shl 10
+    const val SPECIAL_USE_SERVICE_TYPE_ID = 1 shl 30
 
     const val DEFAULT_EXPORT_FILE_NAME = "wgtunnel-export.zip"
 

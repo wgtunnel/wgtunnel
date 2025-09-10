@@ -108,7 +108,9 @@ constructor(
                 val sideEffects =
                     listOf(
                         SideEffectWithCondition(
-                            effect = { s -> handleTunnelServiceChange(s.activeTuns) },
+                            effect = { s ->
+                                handleTunnelServiceChange(s.settings.appMode, s.activeTuns)
+                            },
                             condition = { s -> s.activeTuns.size != s.previouslyActive.size },
                         ),
                         SideEffectWithCondition(
@@ -244,14 +246,16 @@ constructor(
         )
     }
 
-    private suspend fun handleTunnelServiceChange(activeTuns: Map<Int, TunnelState>) {
-        if (activeTuns.isEmpty()) serviceManager.stopTunnelForegroundService()
+    private suspend fun handleTunnelServiceChange(
+        appMode: AppMode,
+        activeTuns: Map<Int, TunnelState>,
+    ) {
+        if (activeTuns.isEmpty()) serviceManager.stopTunnelService()
         if (activeTuns.isNotEmpty() && serviceManager.tunnelService.value == null)
-            serviceManager.startTunnelForegroundService()
+            serviceManager.startTunnelService(appMode)
     }
 
     private fun handleLockDownModeInit(withLanBypass: Boolean) {
-        // kill switch will always catch all ipv6, just add ipv4 networks for allowsIps
         val allowedIps = if (withLanBypass) TunnelConf.IPV4_PUBLIC_NETWORKS else emptySet()
         try {
             // TODO handle situation where they don't have vpn permission, request it

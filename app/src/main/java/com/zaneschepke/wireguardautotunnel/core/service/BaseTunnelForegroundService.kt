@@ -1,0 +1,153 @@
+package com.zaneschepke.wireguardautotunnel.core.service
+
+import android.app.Notification
+import android.content.Intent
+import android.os.IBinder
+import androidx.core.app.ServiceCompat
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
+import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
+import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotification
+import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
+import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor
+import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
+import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
+import com.zaneschepke.wireguardautotunnel.util.extensions.distinctByKeys
+import dagger.hilt.android.AndroidEntryPoint
+import io.ktor.util.collections.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import timber.log.Timber
+import javax.inject.Inject
+
+@AndroidEntryPoint
+abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
+
+    @Inject lateinit var notificationManager: NotificationManager
+
+    @Inject lateinit var serviceManager: ServiceManager
+
+    @Inject lateinit var tunnelManager: TunnelManager
+
+    @Inject lateinit var tunnelMonitor: TunnelMonitor
+
+    @Inject @IoDispatcher lateinit var ioDispatcher: CoroutineDispatcher
+
+    @Inject lateinit var appDataRepository: AppDataRepository
+
+    private val tunnelJobs = ConcurrentMap<Int, Job>()
+
+    protected abstract val fgsType: Int
+
+    override fun onBind(intent: Intent): IBinder {
+        super.onBind(intent)
+        return LocalBinder(this)
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        ServiceCompat.startForeground(
+            this,
+            NotificationManager.VPN_NOTIFICATION_ID,
+            onCreateNotification(),
+            fgsType,
+        )
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
+        ServiceCompat.startForeground(
+            this,
+            NotificationManager.VPN_NOTIFICATION_ID,
+            onCreateNotification(),
+            fgsType,
+        )
+        start()
+        return START_STICKY
+    }
+
+    override fun start() {
+        lifecycleScope.launch(ioDispatcher) {
+            tunnelManager.activeTunnels.distinctByKeys().collect { activeTunnels ->
+                val activeTunConfigs = activeTunnels.keys
+                val obsoleteJobs = tunnelJobs.keys - activeTunConfigs
+                obsoleteJobs.forEach { tunId -> tunnelJobs[tunId]?.cancel() }
+                activeTunConfigs.forEach { tunId ->
+                    if (tunnelJobs.contains(tunId)) return@forEach
+                    tunnelJobs[tunId] = launch { tunnelMonitor.startMonitoring(tunId, true) }
+                }
+                val tunnels = appDataRepository.tunnels.getAll()
+                val activeConfigs = tunnels.filter { activeTunConfigs.contains(it.id) }
+                updateServiceNotification(activeConfigs)
+            }
+        }
+    }
+
+    // TODO Would be cool to have this include kill switch
+    private fun updateServiceNotification(activeConfigs: List<TunnelConf>) {
+        val notification =
+            when (activeConfigs.size) {
+                0 -> onCreateNotification()
+                1 -> createTunnelNotification(activeConfigs.first())
+                else -> createTunnelsNotification()
+            }
+        ServiceCompat.startForeground(
+            this,
+            NotificationManager.VPN_NOTIFICATION_ID,
+            notification,
+            fgsType,
+        )
+    }
+
+    override fun stop() {
+        Timber.d("Stop called")
+        tunnelJobs.forEach { it.value.cancel() }
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        stopSelf()
+    }
+
+    override fun onDestroy() {
+        tunnelJobs.forEach { it.value.cancel() }
+        serviceManager.handleTunnelServiceDestroy()
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        Timber.d("onDestroy")
+        super.onDestroy()
+    }
+
+    private fun createTunnelNotification(tunnelConf: TunnelConf): Notification {
+        return notificationManager.createNotification(
+            WireGuardNotification.NotificationChannels.VPN,
+            title = "${getString(R.string.tunnel_running)} - ${tunnelConf.tunName}",
+            actions =
+                listOf(
+                    notificationManager.createNotificationAction(
+                        NotificationAction.TUNNEL_OFF,
+                        tunnelConf.id,
+                    )
+                ),
+            onGoing = true,
+        )
+    }
+
+    private fun createTunnelsNotification(): Notification {
+        return notificationManager.createNotification(
+            WireGuardNotification.NotificationChannels.VPN,
+            title = "${getString(R.string.tunnel_running)} - ${getString(R.string.multiple)}",
+            actions =
+                listOf(
+                    notificationManager.createNotificationAction(NotificationAction.TUNNEL_OFF, 0)
+                ),
+        )
+    }
+
+    private fun onCreateNotification(): Notification {
+        return notificationManager.createNotification(
+            WireGuardNotification.NotificationChannels.VPN,
+            title = getString(R.string.tunnel_starting),
+        )
+    }
+}

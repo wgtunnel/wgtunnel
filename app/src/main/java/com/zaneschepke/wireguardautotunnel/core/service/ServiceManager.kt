@@ -7,6 +7,7 @@ import android.content.ServiceConnection
 import android.net.VpnService
 import android.os.IBinder
 import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelService
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
@@ -35,7 +36,7 @@ constructor(
     private val autoTunnelMutex = Mutex()
     private val tunnelMutex = Mutex()
 
-    private val _tunnelService = MutableStateFlow<TunnelForegroundService?>(null)
+    private val _tunnelService = MutableStateFlow<TunnelService?>(null)
     private val _autoTunnelService = MutableStateFlow<AutoTunnelService?>(null)
     val autoTunnelService = _autoTunnelService.asStateFlow()
     val tunnelService = _tunnelService.asStateFlow()
@@ -43,14 +44,28 @@ constructor(
     private val tunnelServiceConnection =
         object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName, service: IBinder) {
-                val binder = service as? TunnelForegroundService.LocalBinder
+                val binder = service as? LocalBinder
                 _tunnelService.value = binder?.service
-                Timber.d("TunnelForegroundService connected")
+                val serviceClass =
+                    when {
+                        name.className.contains("VpnForegroundService") -> "VpnForegroundService"
+                        name.className.contains("TunnelForegroundService") ->
+                            "TunnelForegroundService"
+                        else -> "Unknown"
+                    }
+                Timber.d("$serviceClass connected")
             }
 
             override fun onServiceDisconnected(name: ComponentName) {
                 _tunnelService.value = null
-                Timber.d("TunnelForegroundService disconnected")
+                val serviceClass =
+                    when {
+                        name.className.contains("VpnForegroundService") -> "VpnForegroundService"
+                        name.className.contains("TunnelForegroundService") ->
+                            "TunnelForegroundService"
+                        else -> "Unknown"
+                    }
+                Timber.d("$serviceClass disconnected")
             }
         }
 
@@ -110,22 +125,29 @@ constructor(
             }
         }
 
-    suspend fun startTunnelForegroundService() =
+    suspend fun startTunnelService(appMode: AppMode) =
         tunnelMutex.withLock {
             if (_tunnelService.value != null) return@withLock
-            val intent = Intent(context, TunnelForegroundService::class.java)
+            val serviceClass =
+                when (appMode) {
+                    AppMode.VPN,
+                    AppMode.LOCK_DOWN -> VpnForegroundService::class.java
+                    AppMode.KERNEL,
+                    AppMode.PROXY -> TunnelForegroundService::class.java
+                }
+            val intent = Intent(context, serviceClass)
             context.startForegroundService(intent)
             context.bindService(intent, tunnelServiceConnection, Context.BIND_AUTO_CREATE)
         }
 
-    suspend fun stopTunnelForegroundService() =
+    suspend fun stopTunnelService() =
         tunnelMutex.withLock {
             _tunnelService.value?.let { service ->
                 service.stop()
                 try {
                     context.unbindService(tunnelServiceConnection)
                 } catch (e: Exception) {
-                    Timber.e(e, "Failed to stop TunnelForegroundService")
+                    Timber.e(e, "Failed to stop Tunnel Service")
                 }
             }
         }

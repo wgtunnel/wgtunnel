@@ -4,5 +4,5 @@ import com.zaneschepke.wireguardautotunnel.util.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TunnelForegroundService(override val fgsType: Int = Constants.SPECIAL_USE_SERVICE_TYPE_ID) :
+class VpnForegroundService(override val fgsType: Int = Constants.SYSTEM_EXEMPT_SERVICE_TYPE_ID) :
     BaseTunnelForegroundService()

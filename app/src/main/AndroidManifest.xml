@@ -5,10 +5,11 @@
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!--foreground service exempt android 14-->
+    <!--foreground service special use for non VPN service tunnels, android 14-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!--foreground service special use for VPN service tunnels, android 14-->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"
-		tools:ignore="ProtectedPermissions" />
 
     <!--foreground service permissions-->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -151,21 +152,45 @@
             android:name=".core.service.autotunnel.AutoTunnelService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="systemExempted"
+            android:foregroundServiceType="specialUse"
             android:persistent="true"
             android:stopWithTask="false"
-            tools:node="merge" />
+            tools:node="merge">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                      android:value="This service monitors network changes to automatically
+                      establish and maintain WireGuard VPN tunnels on demand, ensuring seamless connectivity.
+                      It requires persistent foreground execution to detect real-time events,
+                      which cannot be achieved with standard background APIs due to timing and reliability needs for
+                      network connectivity monitoring."/>
+        </service>
+
+        <service
+                android:name=".core.service.TunnelForegroundService"
+                android:enabled="true"
+                android:exported="false"
+                android:foregroundServiceType="specialUse"
+                android:persistent="true"
+                android:stopWithTask="false"
+                tools:node="merge">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                      android:value="This service sustains non-VpnService virtual tunnels (using gVisor/netstack for
+                      isolated networking), keeping connections alive for continuous secure data routing.
+                      Persistent foreground operation is essential to handle
+                      low-level tunnel maintenance and avoid interruptions, beyond the capabilities of other
+                      service types or background work."/>
+        </service>
 
 		<service
-			android:name=".core.service.TunnelForegroundService"
+			android:name=".core.service.VpnForegroundService"
 			android:exported="false"
 			android:persistent="true"
-			android:foregroundServiceType="systemExempted"
+            android:foregroundServiceType="systemExempted"
 			android:permission="android.permission.BIND_VPN_SERVICE">
 			<intent-filter>
 				<action android:name="android.net.VpnService" />
 			</intent-filter>
 		</service>
+
         <receiver
             android:name=".core.broadcast.RestartReceiver"
             android:enabled="true"
