@@ -411,6 +411,12 @@
     <string name="zano_address" translatable="false">ZxCf8vqktThRZr1j2XnBD642PSdxa89ebj75ed6wiBDDeqe2XsKA2xbCnRfGEohtreJSDoJH8yD1Ybww49bnSQm129hA2T2aB</string>
     <string name="decred_address" translatable="false">DsU5jf8Hw1UPzCsq9pnyTkoxhEBHpF3jeUQ</string>
     <string name="wownero_address" translatable="false">WW49juDFehq8VoBBVtjoHzYoFJzXdwThDf6v7LVNkMdVTAKCqjtnk9DB5PFt7S8596KET4i195zJu92xbZu6ZLYk1nVEh4n22</string>
+    <string name="ecash_address" translatable="false">ecash:qrnnvzhezgm9unazue2mw7np5qhdk2874g996nd2zw</string>
+    <string name="zcash_address" translatable="false">
+        u1fkx80l0mr7cgzmj5xusnf4fa0hlvttaedlqjzl657dyyfqq4tzq49v4ru53u8re0kfnlah7s363msewcva43v8a2rn8zqs56jeeu6m7snrfljs343kfkgv7gsa76xg005wz95855uwlrvgan0er8n3sp75mmmj44n3fnjar5y7jy0pd2k5yw33lgwpuectuknkwstdkkfyqvxh9xq6c
+    </string>
+    <string name="stellar_address" translatable="false">GAOHREIPAOKSTD4ELXCMM7LDZPRGKJ2DNHEIXLU752PJS6CDPBAEM75B</string>
+    <string name="avalanche_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
     <string name="bitcoin" translatable="false">Bitcoin Mainnet</string>
     <string name="monero" translatable="false">Monero Mainnet</string>
     <string name="ethereum" translatable="false">Ethereum Mainnet (ETH/ERC-20)</string>
@@ -425,6 +431,10 @@
     <string name="zano" translatable="false">Zano Mainnet</string>
     <string name="decred" translatable="false">Decred Mainnet</string>
     <string name="wownero" translatable="false">Wownero Mainnet</string>
+    <string name="avalanche" translatable="false">Avalanche Mainnet</string>
+    <string name="zcash" translatable="false">Zcash Mainnet</string>
+    <string name="stellar" translatable="false">Stellar Mainnet</string>
+    <string name="ecash" translatable="false">eCash Mainnet</string>
     <string name="donation_thanks_intro">Thank you for considering donating to this project!</string>
     <string name="donation_dev_message">As the sole developer, I work tirelessly to make WG Tunnel the best free and open-source WireGuard client for Android, but this is only possible with your support.</string>
     <string name="donation_closing">It\'s my dream to work for you on this project full-time.</string>

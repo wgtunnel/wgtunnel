@@ -28,6 +28,11 @@ data class Address(
                     icon = R.drawable.eth,
                 ),
                 Address(
+                    name = R.string.zcash,
+                    address = R.string.zcash_address,
+                    icon = R.drawable.zcash,
+                ),
+                Address(
                     name = R.string.litecoin_mweb,
                     address = R.string.litecoin_mweb_address,
                     icon = R.drawable.ltc,
@@ -38,19 +43,24 @@ data class Address(
                     icon = R.drawable.ltc,
                 ),
                 Address(
-                    name = R.string.doge,
-                    address = R.string.doge_address,
-                    icon = R.drawable.doge,
-                ),
-                Address(
                     name = R.string.polygon,
                     address = R.string.polygon_address,
                     icon = R.drawable.polygon,
                 ),
                 Address(
+                    name = R.string.avalanche,
+                    address = R.string.avalanche_address,
+                    icon = R.drawable.avalanche,
+                ),
+                Address(
                     name = R.string.solana,
                     address = R.string.solana_address,
                     icon = R.drawable.solana,
+                ),
+                Address(
+                    name = R.string.stellar,
+                    address = R.string.stellar_address,
+                    icon = R.drawable.stellar,
                 ),
                 Address(
                     name = R.string.tron,
@@ -61,6 +71,11 @@ data class Address(
                     name = R.string.bitcoin_cash,
                     address = R.string.bitcoin_cash_address,
                     icon = R.drawable.bitcoin_cash,
+                ),
+                Address(
+                    name = R.string.ecash,
+                    address = R.string.ecash_address,
+                    icon = R.drawable.ecash,
                 ),
                 Address(
                     name = R.string.nano,
@@ -81,6 +96,11 @@ data class Address(
                     name = R.string.wownero,
                     address = R.string.wownero_address,
                     icon = R.drawable.wownero,
+                ),
+                Address(
+                    name = R.string.doge,
+                    address = R.string.doge_address,
+                    icon = R.drawable.doge,
                 ),
             )
     }

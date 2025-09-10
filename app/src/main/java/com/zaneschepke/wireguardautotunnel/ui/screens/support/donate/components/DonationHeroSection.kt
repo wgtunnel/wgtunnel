@@ -32,31 +32,46 @@ fun DonationHeroSection() {
         ) {
             Text(
                 text = stringResource(R.string.donation_thanks_intro),
-                style = MaterialTheme.typography.bodySmall,
+                style =
+                    MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSurface
+                    ),
                 textAlign = TextAlign.Start,
             )
 
             Text(
                 text = stringResource(R.string.donation_dev_message),
-                style = MaterialTheme.typography.bodySmall,
+                style =
+                    MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSurface
+                    ),
                 textAlign = TextAlign.Start,
             )
 
             Text(
                 text = stringResource(R.string.donation_closing),
-                style = MaterialTheme.typography.bodySmall,
+                style =
+                    MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSurface
+                    ),
                 textAlign = TextAlign.Start,
             )
 
             Text(
                 text = stringResource(R.string.donation_signoff),
-                style = MaterialTheme.typography.bodySmall,
+                style =
+                    MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSurface
+                    ),
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start,
             )
             Text(
                 text = stringResource(R.string.dev_name),
-                style = MaterialTheme.typography.bodySmall,
+                style =
+                    MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSurface
+                    ),
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start,
             )
