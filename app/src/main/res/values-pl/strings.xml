@@ -369,4 +369,15 @@
     <string name="mode_disabled_template">Funkcja niedostępna w trybie %1$s.</string>
     <string name="lockdown">Zablokowane</string>
     <string name="active_tunnel_update_failed">Aktualizacja aktywnego tunelu się nie powiodła</string>
+    <string name="donate_title">Wspomóż</string>
+    <string name="crypto">Adresy kryptowalut</string>
+    <string name="github_sponsors">Sponsorzy GitHub</string>
+    <string name="liberapay">Liberapay</string>
+    <string name="kofi">Ko-fi</string>
+    <string name="litecoin_mweb" formatted="false">Litecoin MWEB</string>
+    <string name="donation_thanks_intro">Dziękuję za rozważenie przekazania darowizny na rzecz tego projektu!</string>
+    <string name="donation_dev_message">Jako jedyny programista nieustannie pracuję nad tym, aby WG Tunnel stał się najlepszym darmowym i otwartoźródłowym klientem WireGuard na Androida, ale jest to możliwe tylko dzięki Twojemu wsparciu.</string>
+    <string name="donation_closing">Moim marzeniem jest praca nad tym projektem na pełen etat.</string>
+    <string name="donation_signoff">Z wdzięcznością,</string>
+    <string name="google_donation_message">Niestety, ze względu na politykę Google, linki do darowizn nie są dozwolone w wersji tej aplikacji dostępnej w Google Play. Aby dowiedzieć się, gdzie można przekazać darowiznę, odwiedź strony projektu.</string>
 </resources>
