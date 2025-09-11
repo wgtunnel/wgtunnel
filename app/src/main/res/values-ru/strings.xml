@@ -368,4 +368,15 @@
     <string name="lockdown">Заблокировано</string>
     <string name="prefer_ipv6_resolution">Предпочитать получение IPv6 пиров</string>
     <string name="ipv4_auto_fallback">Автовозврат IPv4 пиров</string>
+    <string name="kofi">Ko-fi</string>
+    <string name="litecoin_mweb" formatted="false">Litecoin MWEB</string>
+    <string name="donation_thanks_intro">Благодарим вас за желание сделать пожертвование!</string>
+    <string name="donation_closing">Моя мечта — работать для вас над этим проектом полный рабочий день.</string>
+    <string name="donation_signoff">С благодарностью,</string>
+    <string name="google_donation_message">К сожалению, правила Google не позволяют разместить ссылку для пожертвования в версии приложения для Play Store. Пожалуйста, перейдите на сайт приложения, чтобы узнать, как сделать пожертвование.</string>
+    <string name="donate_title">Сделать пожертвование</string>
+    <string name="crypto">Криптовалютные адреса</string>
+    <string name="github_sponsors">GitHub Sponsors</string>
+    <string name="liberapay">Liberapay</string>
+    <string name="donation_dev_message">Будучи единственным разработчиком, я неустанно работаю, чтобы сделать WG Tunnel лучшим бесплатным и открытым клиентом WireGuard для Android, но это возможно только с вашей поддержкой.</string>
 </resources>
