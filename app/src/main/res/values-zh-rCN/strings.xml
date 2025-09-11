@@ -368,4 +368,15 @@
     <string name="disabled">已停用</string>
     <string name="mode_disabled_template">功能在 %1$s 模式下不可用。</string>
     <string name="lockdown">锁定</string>
+    <string name="donate_title">捐赠</string>
+    <string name="crypto">加密货币地址</string>
+    <string name="github_sponsors">GitHub Sponsors</string>
+    <string name="liberapay">Liberapay</string>
+    <string name="kofi">Ko-fi</string>
+    <string name="litecoin_mweb" formatted="false">Litecoin MWEB</string>
+    <string name="donation_thanks_intro">感谢您考虑向本项目捐款！</string>
+    <string name="donation_dev_message">作为唯一开发者，我不知疲倦地让 WG Tunnel 成为 Android 上最佳的自由开源 WireGuard 客户端，但没有您的支持这无法实现。</string>
+    <string name="donation_closing">我的梦想是为您全职开发本项目。</string>
+    <string name="donation_signoff">再次感谢，</string>
+    <string name="google_donation_message">不幸的是，由于 Google 的政策，本应用的 Play Store 版本不允许出现捐赠链接。请浏览本项目网页寻找捐赠地址。</string>
 </resources>
