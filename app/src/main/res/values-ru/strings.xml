@@ -365,7 +365,7 @@
     <string name="ddns_auto_update_description">Автоматическое обновление IP при изменении DDNS</string>
     <string name="disabled">Отключено</string>
     <string name="mode_disabled_template">Функция недоступна в режиме %1$s.</string>
-    <string name="lockdown">Заблокировано</string>
+    <string name="lockdown">Блокировка</string>
     <string name="prefer_ipv6_resolution">Предпочитать получение IPv6 пиров</string>
     <string name="ipv4_auto_fallback">Автовозврат IPv4 пиров</string>
     <string name="kofi">Ko-fi</string>
