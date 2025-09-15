@@ -74,9 +74,9 @@ constructor(
             if (!state.isBatteryOptimizationShown) {
                 return@intent postSideEffect(GlobalSideEffect.RequestBatteryOptimizationDisabled)
             }
-            serviceManager.startAutoTunnel()
+            settingsRepository.updateAutoTunnelEnabled(true)
         } else {
-            serviceManager.stopAutoTunnel()
+            settingsRepository.updateAutoTunnelEnabled(false)
         }
     }
 

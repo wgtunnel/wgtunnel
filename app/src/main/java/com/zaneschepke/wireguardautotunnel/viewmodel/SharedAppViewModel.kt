@@ -27,10 +27,6 @@ import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.saveTunnelsUniquely
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.File
-import java.time.Instant
-import javax.inject.Inject
-import javax.inject.Provider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -39,6 +35,10 @@ import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import rikka.shizuku.Shizuku
 import xyz.teamgravity.pin_lock_compose.PinManager
+import java.io.File
+import java.time.Instant
+import javax.inject.Inject
+import javax.inject.Provider
 
 @HiltViewModel
 class SharedAppViewModel
@@ -98,7 +98,7 @@ constructor(
 
     fun startTunnel(tunnelConf: TunnelConf) = intent {
         if (state.settings.appMode == AppMode.VPN) {
-            if (!tunnelManager.hasVpnPermission())
+            if (!serviceManager.hasVpnPermission())
                 return@intent postSideEffect(
                     GlobalSideEffect.RequestVpnPermission(AppMode.VPN, tunnelConf)
                 )

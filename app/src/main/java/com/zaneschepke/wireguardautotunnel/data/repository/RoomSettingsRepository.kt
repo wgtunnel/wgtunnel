@@ -29,4 +29,8 @@ class RoomSettingsRepository(
             (settingsDoa.getAll().firstOrNull() ?: Settings()).toAppSettings()
         }
     }
+
+    override suspend fun updateAutoTunnelEnabled(enabled: Boolean) {
+        withContext(ioDispatcher) { settingsDoa.updateAutoTunnelEnabled(enabled) }
+    }
 }

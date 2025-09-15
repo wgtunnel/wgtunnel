@@ -5,7 +5,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.*
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.util.concurrent.TimeUnit
@@ -20,7 +20,7 @@ constructor(
     @Assisted private val context: Context,
     @Assisted private val params: WorkerParameters,
     private val serviceManager: ServiceManager,
-    private val appDataRepository: AppDataRepository,
+    private val settingsRepository: GeneralSettingRepository,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : CoroutineWorker(context, params) {
 
@@ -50,11 +50,11 @@ constructor(
     override suspend fun doWork(): Result =
         withContext(ioDispatcher) {
             Timber.i("Service worker started")
-            with(appDataRepository.settings.get()) {
+            with(settingsRepository.get()) {
                 Timber.i("Checking to see if auto-tunnel has been killed by system")
                 if (isAutoTunnelEnabled && serviceManager.autoTunnelService.value == null) {
                     Timber.i("Service has been killed by system, restoring.")
-                    serviceManager.startAutoTunnel()
+                    settingsRepository.updateAutoTunnelEnabled(true)
                 }
             }
             Result.success()

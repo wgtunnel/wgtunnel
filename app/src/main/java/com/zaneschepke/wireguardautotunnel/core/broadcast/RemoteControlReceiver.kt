@@ -3,10 +3,11 @@ package com.zaneschepke.wireguardautotunnel.core.broadcast
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -19,9 +20,9 @@ class RemoteControlReceiver : BroadcastReceiver() {
 
     @Inject @ApplicationScope lateinit var applicationScope: CoroutineScope
 
-    @Inject lateinit var appDataRepository: AppDataRepository
-
-    @Inject lateinit var serviceManager: ServiceManager
+    @Inject lateinit var appStateRepository: AppStateRepository
+    @Inject lateinit var settingsRepository: GeneralSettingRepository
+    @Inject lateinit var tunnelsRepository: TunnelRepository
 
     @Inject lateinit var tunnelManager: TunnelManager
 
@@ -52,10 +53,10 @@ class RemoteControlReceiver : BroadcastReceiver() {
         val action = intent.action ?: return
         val appAction = Action.fromAction(action) ?: return Timber.w("Unknown action $action")
         applicationScope.launch {
-            if (!appDataRepository.appState.isRemoteControlEnabled())
+            if (!appStateRepository.isRemoteControlEnabled())
                 return@launch Timber.w("Remote control disabled")
             val key =
-                appDataRepository.appState.getRemoteKey()
+                appStateRepository.getRemoteKey()
                     ?: return@launch Timber.w("Remote control key missing")
             if (key != intent.getStringExtra(EXTRA_KEY)?.trim())
                 return@launch Timber.w("Invalid remote control key")
@@ -64,7 +65,7 @@ class RemoteControlReceiver : BroadcastReceiver() {
                     val tunnelName =
                         intent.getStringExtra(EXTRA_TUN_NAME) ?: return@launch startDefaultTunnel()
                     val tunnel =
-                        appDataRepository.tunnels.findByTunnelName(tunnelName)
+                        tunnelsRepository.findByTunnelName(tunnelName)
                             ?: return@launch startDefaultTunnel()
                     tunnelManager.startTunnel(tunnel)
                 }
@@ -73,20 +74,18 @@ class RemoteControlReceiver : BroadcastReceiver() {
                         intent.getStringExtra(EXTRA_TUN_NAME)
                             ?: return@launch tunnelManager.stopActiveTunnels()
                     val tunnel =
-                        appDataRepository.tunnels.findByTunnelName(tunnelName)
+                        tunnelsRepository.findByTunnelName(tunnelName)
                             ?: return@launch tunnelManager.stopActiveTunnels()
                     tunnelManager.stopTunnel(tunnel.id)
                 }
-                Action.START_AUTO_TUNNEL -> serviceManager.startAutoTunnel()
-                Action.STOP_AUTO_TUNNEL -> serviceManager.stopAutoTunnel()
+                Action.START_AUTO_TUNNEL -> settingsRepository.updateAutoTunnelEnabled(true)
+                Action.STOP_AUTO_TUNNEL -> settingsRepository.updateAutoTunnelEnabled(false)
             }
         }
     }
 
     private suspend fun startDefaultTunnel() {
-        appDataRepository.getPrimaryOrFirstTunnel()?.let { tunnel ->
-            tunnelManager.startTunnel(tunnel)
-        }
+        tunnelsRepository.getDefaultTunnel()?.let { tunnel -> tunnelManager.startTunnel(tunnel) }
     }
 
     companion object {

@@ -43,8 +43,6 @@ interface TunnelProvider {
 
     val messageEvents: SharedFlow<Pair<String, BackendMessage>>
 
-    fun hasVpnPermission(): Boolean
-
     suspend fun updateTunnelStatus(
         tunnelId: Int,
         status: TunnelStatus? = null,

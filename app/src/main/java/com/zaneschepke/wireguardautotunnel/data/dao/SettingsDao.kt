@@ -21,4 +21,7 @@ interface SettingsDao {
     @Delete suspend fun delete(t: Settings)
 
     @Query("SELECT COUNT('id') FROM settings") suspend fun count(): Long
+
+    @Query("UPDATE settings SET is_tunnel_enabled = :enabled")
+    suspend fun updateAutoTunnelEnabled(enabled: Boolean)
 }

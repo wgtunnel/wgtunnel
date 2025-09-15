@@ -14,7 +14,7 @@ import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.util.extensions.distinctByKeys
 import dagger.hilt.android.AndroidEntryPoint
 import io.ktor.util.collections.*
@@ -37,7 +37,7 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
 
     @Inject @IoDispatcher lateinit var ioDispatcher: CoroutineDispatcher
 
-    @Inject lateinit var appDataRepository: AppDataRepository
+    @Inject lateinit var tunnelsRepository: TunnelRepository
 
     private val tunnelJobs = ConcurrentMap<Int, Job>()
 
@@ -80,7 +80,7 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
                     if (tunnelJobs.contains(tunId)) return@forEach
                     tunnelJobs[tunId] = launch { tunnelMonitor.startMonitoring(tunId, true) }
                 }
-                val tunnels = appDataRepository.tunnels.getAll()
+                val tunnels = tunnelsRepository.getAll()
                 val activeConfigs = tunnels.filter { activeTunConfigs.contains(it.id) }
                 updateServiceNotification(activeConfigs)
             }

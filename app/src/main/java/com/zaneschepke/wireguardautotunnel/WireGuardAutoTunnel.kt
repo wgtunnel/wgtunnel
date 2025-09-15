@@ -11,9 +11,10 @@ import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.core.worker.ServiceWorker
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
-import com.zaneschepke.wireguardautotunnel.di.MainDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.util.ReleaseTree
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
@@ -39,11 +40,11 @@ class WireGuardAutoTunnel : Application(), Configuration.Provider {
 
     @Inject lateinit var logReader: LogReader
 
-    @Inject lateinit var appDataRepository: AppDataRepository
-
     @Inject @IoDispatcher lateinit var ioDispatcher: CoroutineDispatcher
 
-    @Inject @MainDispatcher lateinit var mainDispatcher: CoroutineDispatcher
+    @Inject lateinit var settingsRepository: GeneralSettingRepository
+    @Inject lateinit var tunnelsRepository: TunnelRepository
+    @Inject lateinit var appStateRepository: AppStateRepository
 
     @Inject lateinit var notificationMonitor: NotificationMonitor
 
@@ -67,15 +68,15 @@ class WireGuardAutoTunnel : Application(), Configuration.Provider {
         }
 
         applicationScope.launch(ioDispatcher) {
-            launch { if (appDataRepository.appState.isLocalLogsEnabled()) logReader.start() }
+            launch { if (appStateRepository.isLocalLogsEnabled()) logReader.start() }
             launch { notificationMonitor.handleApplicationNotifications() }
         }
 
         GoBackend.setAlwaysOnCallback {
             applicationScope.launch {
-                val settings = appDataRepository.settings.get()
+                val settings = settingsRepository.get()
                 if (settings.isAlwaysOnVpnEnabled) {
-                    val tunnel = appDataRepository.getPrimaryOrFirstTunnel()
+                    val tunnel = tunnelsRepository.getDefaultTunnel()
                     tunnel?.let { tunnelManager.startTunnel(it) }
                 } else {
                     Timber.w("Always-on VPN is not enabled in app settings")

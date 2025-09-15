@@ -9,4 +9,6 @@ interface GeneralSettingRepository {
     val flow: Flow<GeneralSettings>
 
     suspend fun get(): GeneralSettings
+
+    suspend fun updateAutoTunnelEnabled(enabled: Boolean)
 }

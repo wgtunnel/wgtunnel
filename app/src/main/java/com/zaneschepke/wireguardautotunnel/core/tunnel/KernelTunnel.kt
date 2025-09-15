@@ -3,14 +3,12 @@ package com.zaneschepke.wireguardautotunnel.core.tunnel
 import com.wireguard.android.backend.Backend
 import com.wireguard.android.backend.BackendException
 import com.wireguard.android.backend.Tunnel as WgTunnel
-import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.Kernel
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.domain.state.WireGuardStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTunnelState
@@ -30,10 +28,8 @@ class KernelTunnel
 @Inject
 constructor(
     @ApplicationScope applicationScope: CoroutineScope,
-    serviceManager: ServiceManager,
-    appDataRepository: AppDataRepository,
     @Kernel private val backend: Backend,
-) : BaseTunnel(applicationScope, appDataRepository, serviceManager) {
+) : BaseTunnel(applicationScope) {
 
     private val runtimeTunnels = ConcurrentHashMap<Int, WgTunnel>()
 

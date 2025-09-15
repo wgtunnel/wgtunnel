@@ -5,7 +5,8 @@ import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.FailureReason
 import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
@@ -23,7 +24,8 @@ import timber.log.Timber
 class TunnelMonitor
 @Inject
 constructor(
-    private val appDataRepository: AppDataRepository,
+    private val settingsRepository: GeneralSettingRepository,
+    private val tunnelsRepository: TunnelRepository,
     private val tunnelManager: TunnelManager,
     private val networkMonitor: NetworkMonitor,
     private val networkUtils: NetworkUtils,
@@ -33,7 +35,7 @@ constructor(
     @OptIn(FlowPreview::class)
     suspend fun startMonitoring(tunnelId: Int, withLogs: Boolean): Job = coroutineScope {
         launch {
-            val config = appDataRepository.tunnels.getById(tunnelId) ?: return@launch
+            val config = tunnelsRepository.getById(tunnelId) ?: return@launch
             launch { startPingMonitor(config) }
             launch { startWgStatsPoll(config.id) }
             if (withLogs) launch { startLogsMonitor(config) }
@@ -92,7 +94,7 @@ constructor(
             .distinctUntilChanged()
             .stateIn(this)
 
-        appDataRepository.settings.flow
+        settingsRepository.flow
             .distinctUntilChanged { old, new ->
                 old.isPingEnabled == new.isPingEnabled &&
                     old.tunnelPingIntervalSeconds == new.tunnelPingIntervalSeconds &&
@@ -263,12 +265,5 @@ constructor(
         const val CLOUDFLARE_IPV4_IP = "1.1.1.1"
 
         const val STATS_DELAY = 1_000L
-
-        const val KEEPALIVE_RESPONSE_TEXT = "Receiving keepalive packet"
-        const val HANDSHAKE_RESPONSE_TEXT = "Received handshake response"
-        const val HANDSHAKE_INIT_FAILED_TEXT = "Failed to send handshake initiation: write udp"
-        const val DATA_PACKET_FAILED_TEXT = "Failed to send data packets"
-        const val HANDSHAKE_NOT_COMPLETED_TEXT =
-            "Handshake did not complete after 5 seconds, retrying"
     }
 }

@@ -126,22 +126,6 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideAppDataRepository(
-        settingsRepository: GeneralSettingRepository,
-        tunnelRepository: TunnelRepository,
-        appStateRepository: AppStateRepository,
-        proxySettingsRepository: ProxySettingsRepository,
-    ): AppDataRepository {
-        return AppDataRoomRepository(
-            settingsRepository,
-            tunnelRepository,
-            appStateRepository,
-            proxySettingsRepository,
-        )
-    }
-
-    @Provides
-    @Singleton
     fun provideHttpClient(): HttpClient {
         return KtorClient.create()
     }

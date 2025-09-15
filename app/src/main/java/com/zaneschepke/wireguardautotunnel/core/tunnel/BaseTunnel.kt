@@ -1,13 +1,11 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
-import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
@@ -23,11 +21,8 @@ import kotlinx.coroutines.sync.withLock
 import org.amnezia.awg.crypto.Key
 import timber.log.Timber
 
-abstract class BaseTunnel(
-    @ApplicationScope protected val applicationScope: CoroutineScope,
-    protected val appDataRepository: AppDataRepository,
-    protected val serviceManager: ServiceManager,
-) : TunnelProvider {
+abstract class BaseTunnel(@ApplicationScope protected val applicationScope: CoroutineScope) :
+    TunnelProvider {
 
     protected val errors = MutableSharedFlow<Pair<String, BackendCoreException>>()
     override val errorEvents = errors.asSharedFlow()
@@ -51,10 +46,6 @@ abstract class BaseTunnel(
     abstract override fun handleDnsReresolve(tunnelConf: TunnelConf): Boolean
 
     abstract override fun getStatistics(tunnelId: Int): TunnelStatistics?
-
-    override fun hasVpnPermission(): Boolean {
-        return serviceManager.hasVpnPermission()
-    }
 
     override suspend fun updateTunnelStatus(
         tunnelId: Int,
@@ -114,7 +105,6 @@ abstract class BaseTunnel(
                     try {
                         tunnelStateFlow(tunnelConf).collect { status ->
                             updateTunnelStatus(tunnelConf.id, status)
-                            serviceManager.updateTunnelTile()
                         }
                     } catch (e: BackendCoreException) {
                         errors.emit(tunnelConf.tunName to e)

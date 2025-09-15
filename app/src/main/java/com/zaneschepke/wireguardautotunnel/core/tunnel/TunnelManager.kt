@@ -9,7 +9,8 @@ import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
 import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
@@ -32,7 +33,8 @@ constructor(
     @Userspace private val userspaceTunnel: TunnelProvider,
     @ProxyUserspace private val proxyUserspaceTunnel: TunnelProvider,
     private val serviceManager: ServiceManager,
-    private val appDataRepository: AppDataRepository,
+    private val settingsRepository: GeneralSettingRepository,
+    private val tunnelsRepository: TunnelRepository,
     @ApplicationScope applicationScope: CoroutineScope,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
 ) : TunnelProvider {
@@ -57,7 +59,7 @@ constructor(
         val currentSettings = AtomicReference(GeneralSettings())
         val initialEmit = AtomicBoolean(true)
 
-        appDataRepository.settings.flow
+        settingsRepository.flow
             .filterNotNull()
             // ignore default state
             .filterNot { it == GeneralSettings() }
@@ -115,7 +117,7 @@ constructor(
                         ),
                         SideEffectWithCondition(
                             effect = { s ->
-                                handleActiveTunnelsChange(s.previouslyActive, s.activeTuns, s.tuns)
+                                handleTunnelsActiveChange(s.previouslyActive, s.activeTuns, s.tuns)
                             },
                             condition = { s -> s.activeTuns.size != s.previouslyActive.size },
                         ),
@@ -150,8 +152,8 @@ constructor(
 
                 combine(
                     backend.activeTunnels,
-                    appDataRepository.tunnels.flow,
-                    appDataRepository.settings.flow.filterNotNull(),
+                    tunnelsRepository.flow,
+                    settingsRepository.flow.filterNotNull(),
                 ) { activeTuns, tuns, settings ->
                     Triple(activeTuns, tuns, settings)
                 }
@@ -190,10 +192,6 @@ constructor(
                 started = SharingStarted.Eagerly,
                 replay = 0,
             )
-
-    override fun hasVpnPermission(): Boolean {
-        return userspaceTunnel.hasVpnPermission()
-    }
 
     override fun getStatistics(tunnelId: Int): TunnelStatistics? {
         return tunnelProviderFlow.value.getStatistics(tunnelId)
@@ -253,13 +251,14 @@ constructor(
         if (activeTuns.isEmpty()) serviceManager.stopTunnelService()
         if (activeTuns.isNotEmpty() && serviceManager.tunnelService.value == null)
             serviceManager.startTunnelService(appMode)
+        serviceManager.updateTunnelTile()
     }
 
     private fun handleLockDownModeInit(withLanBypass: Boolean) {
         val allowedIps = if (withLanBypass) TunnelConf.IPV4_PUBLIC_NETWORKS else emptySet()
         try {
             // TODO handle situation where they don't have vpn permission, request it
-            if (hasVpnPermission()) {
+            if (serviceManager.hasVpnPermission()) {
                 proxyUserspaceTunnel.setBackendMode(BackendMode.KillSwitch(allowedIps))
             }
         } catch (e: BackendCoreException) {
@@ -279,15 +278,13 @@ constructor(
     }
 
     private suspend fun handleStateRestore() {
-        val settings = appDataRepository.settings.flow.first()
+        val settings = settingsRepository.flow.first()
         if (settings.isRestoreOnBootEnabled) {
-            // if auto tun enabled, reset active and restore auto tun, letting it start appropriate
-            // tuns
             if (settings.isAutoTunnelEnabled) {
-                appDataRepository.tunnels.resetActiveTunnels()
-                return serviceManager.startAutoTunnel()
+                tunnelsRepository.resetActiveTunnels()
+                return settingsRepository.updateAutoTunnelEnabled(true)
             }
-            val tunnels = appDataRepository.tunnels.flow.first()
+            val tunnels = tunnelsRepository.flow.first()
             when (settings.appMode) {
                 // TODO eventually, lockdown/proxy can support multi
                 AppMode.VPN,
@@ -297,7 +294,7 @@ constructor(
                         .firstOrNull { it.isActive }
                         ?.let {
                             // clear any duplicates
-                            appDataRepository.tunnels.resetActiveTunnels()
+                            tunnelsRepository.resetActiveTunnels()
                             startTunnel(it)
                         }
                 // kernel supports multi
@@ -334,7 +331,7 @@ constructor(
             }
     }
 
-    private suspend fun handleActiveTunnelsChange(
+    private suspend fun handleTunnelsActiveChange(
         previousActiveTuns: Map<Int, TunnelState>,
         activeTuns: Map<Int, TunnelState>,
         tuns: List<TunnelConf>,
@@ -350,14 +347,14 @@ constructor(
                     tuns
                         .find { it.id == tunnelId }
                         ?.let { dbTunnelConf ->
-                            appDataRepository.tunnels.save(dbTunnelConf.copy(isActive = true))
+                            tunnelsRepository.save(dbTunnelConf.copy(isActive = true))
                         }
                 }
                 wasActive && !isActiveNow -> {
                     tuns
                         .find { it.id == tunnelId }
                         ?.let { dbTunnelConf ->
-                            appDataRepository.tunnels.save(dbTunnelConf.copy(isActive = false))
+                            tunnelsRepository.save(dbTunnelConf.copy(isActive = false))
                         }
                 }
             }

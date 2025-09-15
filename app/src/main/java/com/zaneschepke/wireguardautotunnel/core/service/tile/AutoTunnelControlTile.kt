@@ -9,7 +9,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -17,7 +18,9 @@ import timber.log.Timber
 
 @AndroidEntryPoint
 class AutoTunnelControlTile : TileService(), LifecycleOwner {
-    @Inject lateinit var appDataRepository: AppDataRepository
+
+    @Inject lateinit var settingsRepository: GeneralSettingRepository
+    @Inject lateinit var tunnelsRepository: TunnelRepository
 
     @Inject lateinit var serviceManager: ServiceManager
 
@@ -44,7 +47,7 @@ class AutoTunnelControlTile : TileService(), LifecycleOwner {
             }
         }
         lifecycleScope.launch {
-            appDataRepository.tunnels.flow.collect {
+            tunnelsRepository.flow.collect {
                 if (it.isEmpty()) {
                     setUnavailable()
                 }
@@ -57,10 +60,10 @@ class AutoTunnelControlTile : TileService(), LifecycleOwner {
         unlockAndRun {
             lifecycleScope.launch {
                 if (serviceManager.autoTunnelService.value != null) {
-                    serviceManager.stopAutoTunnel()
+                    settingsRepository.updateAutoTunnelEnabled(false)
                     setInactive()
                 } else {
-                    serviceManager.startAutoTunnel()
+                    settingsRepository.updateAutoTunnelEnabled(true)
                     setActive()
                 }
             }

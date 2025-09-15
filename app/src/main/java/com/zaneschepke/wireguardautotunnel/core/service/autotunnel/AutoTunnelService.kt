@@ -14,12 +14,12 @@ import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotification
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
 import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.AutoTunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.NetworkState
 import com.zaneschepke.wireguardautotunnel.util.Constants
@@ -40,8 +40,6 @@ class AutoTunnelService : LifecycleService() {
 
     @Inject lateinit var networkMonitor: NetworkMonitor
 
-    @Inject lateinit var appDataRepository: Provider<AppDataRepository>
-
     @Inject lateinit var notificationManager: NotificationManager
 
     @Inject @IoDispatcher lateinit var ioDispatcher: CoroutineDispatcher
@@ -50,7 +48,8 @@ class AutoTunnelService : LifecycleService() {
 
     @Inject lateinit var tunnelManager: TunnelManager
 
-    @Inject lateinit var tunnelMonitor: TunnelMonitor
+    @Inject lateinit var settingsRepository: Provider<GeneralSettingRepository>
+    @Inject lateinit var tunnelsRepository: TunnelRepository
 
     private val defaultState = AutoTunnelState()
 
@@ -115,7 +114,7 @@ class AutoTunnelService : LifecycleService() {
             this,
             NotificationManager.AUTO_TUNNEL_NOTIFICATION_ID,
             notification,
-            Constants.SYSTEM_EXEMPT_SERVICE_TYPE_ID,
+            Constants.SPECIAL_USE_SERVICE_TYPE_ID,
         )
     }
 
@@ -223,12 +222,8 @@ class AutoTunnelService : LifecycleService() {
 
     private fun combineSettings(): Flow<Pair<GeneralSettings, Tunnels>> {
         return combine(
-                appDataRepository
-                    .get()
-                    .settings
-                    .flow
-                    .distinctUntilChanged(::areAutoTunnelSettingsTheSame),
-                appDataRepository.get().tunnels.flow.map { tunnels ->
+                settingsRepository.get().flow.distinctUntilChanged(::areAutoTunnelSettingsTheSame),
+                tunnelsRepository.flow.map { tunnels ->
                     // isActive is ignored for equality checks so user can manually toggle off
                     // tunnel with auto-tunnel
                     tunnels.map { it.copy(isActive = false) }
@@ -343,7 +338,7 @@ class AutoTunnelService : LifecycleService() {
                     }
             ) {
                 is AutoTunnelEvent.Start ->
-                    (event.tunnelConf ?: appDataRepository.get().getPrimaryOrFirstTunnel())?.let {
+                    (event.tunnelConf ?: tunnelsRepository.getDefaultTunnel())?.let {
                         tunnelManager.startTunnel(it)
                     }
                 is AutoTunnelEvent.Stop -> tunnelManager.stopActiveTunnels()
@@ -354,9 +349,8 @@ class AutoTunnelService : LifecycleService() {
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private val debouncedConnectivityStateFlow: Flow<ConnectivityState> by lazy {
-        appDataRepository
+        settingsRepository
             .get()
-            .settings
             .flow
             .map { it.debounceDelaySeconds.toMillis() }
             .distinctUntilChanged()

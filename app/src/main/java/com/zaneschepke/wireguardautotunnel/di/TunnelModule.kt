@@ -9,8 +9,9 @@ import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.*
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.util.extensions.to
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import dagger.Module
@@ -84,11 +85,9 @@ class TunnelModule {
     @Kernel
     fun provideKernelProvider(
         @ApplicationScope applicationScope: CoroutineScope,
-        serviceManager: ServiceManager,
-        appDataRepository: AppDataRepository,
         backend: com.wireguard.android.backend.Backend,
     ): TunnelProvider {
-        return KernelTunnel(applicationScope, serviceManager, appDataRepository, backend)
+        return KernelTunnel(applicationScope, backend)
     }
 
     @Provides
@@ -96,11 +95,16 @@ class TunnelModule {
     @Userspace
     fun provideUserspaceProvider(
         @ApplicationScope applicationScope: CoroutineScope,
-        serviceManager: ServiceManager,
-        appDataRepository: AppDataRepository,
+        proxySettingsRepository: ProxySettingsRepository,
+        settingsRepository: GeneralSettingRepository,
         @Userspace backend: Backend,
     ): TunnelProvider {
-        return UserspaceTunnel(applicationScope, serviceManager, appDataRepository, backend)
+        return UserspaceTunnel(
+            applicationScope,
+            proxySettingsRepository,
+            settingsRepository,
+            backend,
+        )
     }
 
     @Provides
@@ -108,11 +112,16 @@ class TunnelModule {
     @ProxyUserspace
     fun provideProxyUserspaceProvider(
         @ApplicationScope applicationScope: CoroutineScope,
-        serviceManager: ServiceManager,
-        appDataRepository: AppDataRepository,
+        settingsRepository: GeneralSettingRepository,
+        proxySettingsRepository: ProxySettingsRepository,
         @ProxyUserspace backend: Backend,
     ): TunnelProvider {
-        return UserspaceTunnel(applicationScope, serviceManager, appDataRepository, backend)
+        return UserspaceTunnel(
+            applicationScope,
+            proxySettingsRepository,
+            settingsRepository,
+            backend,
+        )
     }
 
     @Provides
@@ -122,7 +131,8 @@ class TunnelModule {
         @Userspace userspaceTunnel: TunnelProvider,
         @ProxyUserspace proxyTunnel: TunnelProvider,
         serviceManager: ServiceManager,
-        appDataRepository: AppDataRepository,
+        tunnelRepository: TunnelRepository,
+        settingsRepository: GeneralSettingRepository,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
         @ApplicationScope applicationScope: CoroutineScope,
     ): TunnelManager {
@@ -131,7 +141,8 @@ class TunnelModule {
             userspaceTunnel,
             proxyTunnel,
             serviceManager,
-            appDataRepository,
+            settingsRepository,
+            tunnelRepository,
             applicationScope,
             ioDispatcher,
         )
@@ -168,14 +179,14 @@ class TunnelModule {
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
         @MainDispatcher mainCoroutineDispatcher: CoroutineDispatcher,
         @ApplicationScope applicationScope: CoroutineScope,
-        appDataRepository: AppDataRepository,
+        settingsRepository: GeneralSettingRepository,
     ): ServiceManager {
         return ServiceManager(
             context,
             ioDispatcher,
             applicationScope,
             mainCoroutineDispatcher,
-            appDataRepository,
+            settingsRepository,
         )
     }
 
@@ -187,10 +198,12 @@ class TunnelModule {
         networkMonitor: NetworkMonitor,
         networkUtils: NetworkUtils,
         logReader: LogReader,
-        appDataRepository: AppDataRepository,
+        tunnelsRepository: TunnelRepository,
+        settingsRepository: GeneralSettingRepository,
     ): TunnelMonitor {
         return TunnelMonitor(
-            appDataRepository,
+            settingsRepository,
+            tunnelsRepository,
             tunnelManager,
             networkMonitor,
             networkUtils,

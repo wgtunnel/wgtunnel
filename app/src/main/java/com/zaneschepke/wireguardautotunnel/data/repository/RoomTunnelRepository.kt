@@ -82,6 +82,18 @@ class RoomTunnelRepository(
         }
     }
 
+    override suspend fun getDefaultTunnel(): TunnelConf? {
+        return withContext(ioDispatcher) {
+            tunnelConfigDao.getDefaultTunnel()?.let(TunnelConfigMapper::toTunnelConf)
+        }
+    }
+
+    override suspend fun getStartTunnel(): TunnelConf? {
+        return withContext(ioDispatcher) {
+            tunnelConfigDao.getStartTunnel()?.let(TunnelConfigMapper::toTunnelConf)
+        }
+    }
+
     override suspend fun count(): Int {
         return withContext(ioDispatcher) { tunnelConfigDao.count().toInt() }
     }

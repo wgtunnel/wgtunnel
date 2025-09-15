@@ -1,6 +1,5 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
-import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
@@ -8,7 +7,8 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.model.AppProxySettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppDataRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.AmneziaStatistics
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.asAmBackendMode
@@ -41,10 +41,10 @@ class UserspaceTunnel
 @Inject
 constructor(
     @ApplicationScope applicationScope: CoroutineScope,
-    serviceManager: ServiceManager,
-    appDataRepository: AppDataRepository,
+    private val proxySettingsRepository: ProxySettingsRepository,
+    private val settingsRepository: GeneralSettingRepository,
     private val backend: Backend,
-) : BaseTunnel(applicationScope, appDataRepository, serviceManager) {
+) : BaseTunnel(applicationScope) {
 
     private val runtimeTunnels = ConcurrentHashMap<Int, AwgTunnel>()
 
@@ -64,7 +64,7 @@ constructor(
             val proxies: List<Proxy> =
                 when (backend) {
                     is ProxyGoBackend -> {
-                        val proxySettings = appDataRepository.proxySettings.get()
+                        val proxySettings = proxySettingsRepository.get()
                         Timber.d("Adding proxy configs")
                         buildList {
                             if (proxySettings.socks5ProxyEnabled) {
@@ -91,7 +91,7 @@ constructor(
                     }
                     else -> emptyList()
                 }
-            val setting = appDataRepository.settings.get()
+            val setting = settingsRepository.get()
             val config = tunnelConf.toAmConfig()
             val updatedConfig =
                 Config.Builder()
