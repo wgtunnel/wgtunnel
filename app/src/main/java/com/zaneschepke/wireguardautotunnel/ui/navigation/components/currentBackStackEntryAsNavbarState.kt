@@ -75,17 +75,13 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
         }
 
     val disableDelete by
-        rememberSaveable(sharedState.selectedTunnels, sharedState.tunnels) {
-            mutableStateOf(
-                sharedState.tunnels.any { tunnel ->
-                    tunnel.isActive &&
-                        sharedState.tunnels.any { selected -> selected.id == tunnel.id }
-                }
-            )
+        rememberSaveable(sharedState.selectedTunnels) {
+            mutableStateOf(sharedState.selectedTunnels.any { it.isActive })
         }
+
     val selectedCount by
         rememberSaveable(sharedState.selectedTunnels) {
-            mutableStateOf(sharedState.selectedTunnels.size)
+            mutableIntStateOf(sharedState.selectedTunnels.size)
         }
 
     return produceState(initialValue = NavbarState(), route, selectedCount, disableDelete) {
