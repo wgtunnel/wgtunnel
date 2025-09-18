@@ -359,4 +359,9 @@
     <string name="latency_template">Latence: %1$s</string>
     <string name="ping_target_template">Cíl pingu: %1$s</string>
     <string name="backup_success">Úspěšně zazálohováno. %1$s</string>
+    <string name="config_error_template">Špatná konfigurace. %1$s v umístění: %2$s.</string>
+    <string name="donation_dev_message">Jako jediný vývojář neúnavně pracuji na tom, aby se WG Tunnel stal nejlepším bezplatným a open-source WireGuard klientem pro Android, ale to je možné pouze s vaší podporou.</string>
+    <string name="google_donation_message">Bohužel, kvůli pravidlům společnosti Google nejsou odkazy na darování povoleny ve verzi této aplikace z Obchodu Play. Projděte si prosím webové stránky projektu, abyste zjistili, kde můžete přispět.</string>
+    <string name="pinger_bounce_recovery">Restartování pingera se nezdařilo. Tunel byl obnoven se starými adresami.</string>
+    <string name="bounce_failed_template">Pinger nemohl obnovit tunel kvůli následující chybě: %1$s</string>
 </resources>
