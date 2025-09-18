@@ -39,7 +39,10 @@ fun TunnelRowItem(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    var leadingIconColor by remember(state) { mutableStateOf(state.health().asColor()) }
+    var leadingIconColor by
+        remember(state.status, state.logHealthState, state.pingStates, state.statistics) {
+            mutableStateOf(state.health().asColor())
+        }
 
     val (leadingIcon, size, typeDescription) =
         remember(tunnel) {

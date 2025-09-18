@@ -18,29 +18,26 @@ data class TunnelState(
         if (pingStates == null && logHealthState == null && statistics == null)
             return Health.UNKNOWN
 
-        if (logHealthState?.isHealthy == false) return Health.UNHEALTHY
-
-        val healthLogs =
-            logHealthState?.isHealthy == true &&
-                (now - logHealthState.timestamp) <= LOG_HEALTH_SUCCESS_TIMEOUT_MS
-
-        if (pingStates?.any { !it.value.isReachable } == true) return Health.UNHEALTHY
-
-        if (statistics != null) {
-            if (statistics.isTunnelStale()) {
-                return Health.STALE
-            }
-            if ((logHealthState == null || !healthLogs) && pingStates == null) {
+        // Logs check take precedent
+        logHealthState?.let { log ->
+            if (!log.isHealthy) return Health.UNHEALTHY
+            val recent = (now - log.timestamp) <= LOG_HEALTH_SUCCESS_TIMEOUT_MS
+            if (recent) {
+                // Logs healthy but override if pings are unhealthy
+                if (pingStates?.any { !it.value.isReachable } == true) return Health.UNHEALTHY
                 return Health.HEALTHY
-            }
-        } else {
-            if (!healthLogs) {
-                return Health.UNKNOWN
             }
         }
 
-        if (healthLogs) {
+        // Ping health if no logs
+        pingStates?.let { pings ->
+            if (pings.any { !it.value.isReachable }) return Health.UNHEALTHY
             return Health.HEALTHY
+        }
+
+        // Stats health if no logs or pings
+        statistics?.let { stats ->
+            return if (stats.isTunnelStale()) Health.STALE else Health.HEALTHY
         }
 
         return Health.UNKNOWN
