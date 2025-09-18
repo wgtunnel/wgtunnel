@@ -82,7 +82,7 @@
     <string name="location_services_missing_message">The app is not detecting any location services enabled on your device. Depending on the device, this could cause the untrusted wifi feature to fail to read the wifi name. Would you like to continue anyways?</string>
     <string name="auto_tunnel_title">Auto-tunnel service</string>
     <string name="delete_tunnel">Delete tunnel</string>
-    <string name="delete_tunnel_message">Are you sure you would like to delete this tunnel?</string>
+    <string name="delete_tunnel_message">Are you sure you would like to delete the selected tunnels?</string>
     <string name="yes">Yes</string>
     <string name="all">All</string>
     <string name="no_email_detected">No email app detected</string>
@@ -432,4 +432,5 @@
     <string name="google_donation_message">Unfortunately, due to Google\'s policies, donation links are not allowed in
         the Play Store version of this app. Please browse the project\'s webpages to find where to donate.
     </string>
+    <string name="delete_active_message">Cannot delete active tunnel.</string>
 </resources>

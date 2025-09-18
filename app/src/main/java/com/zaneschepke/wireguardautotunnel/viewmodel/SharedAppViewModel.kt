@@ -27,18 +27,19 @@ import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.saveTunnelsUniquely
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.File
+import java.time.Instant
+import javax.inject.Inject
+import javax.inject.Provider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import rikka.shizuku.Shizuku
 import xyz.teamgravity.pin_lock_compose.PinManager
-import java.io.File
-import java.time.Instant
-import javax.inject.Inject
-import javax.inject.Provider
 
 @HiltViewModel
 class SharedAppViewModel
@@ -227,6 +228,13 @@ constructor(
     }
 
     fun deleteSelectedTunnels() = intent {
+        val activeTunIds = tunnelManager.activeTunnels.firstOrNull()?.map { it.key }
+        if (state.selectedTunnels.any { activeTunIds?.contains(it.id) == true })
+            return@intent postSideEffect(
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.delete_active_message)
+                )
+            )
         tunnelRepository.delete(state.selectedTunnels.toList())
         clearSelectedTunnels()
     }

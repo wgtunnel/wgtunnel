@@ -17,7 +17,6 @@ import androidx.navigation.toRoute
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ActionIconButton
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
-import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Config
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
@@ -74,17 +73,12 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
             }
         }
 
-    val disableDelete by
-        rememberSaveable(sharedState.selectedTunnels) {
-            mutableStateOf(sharedState.selectedTunnels.any { it.isActive })
-        }
-
     val selectedCount by
         rememberSaveable(sharedState.selectedTunnels) {
             mutableIntStateOf(sharedState.selectedTunnels.size)
         }
 
-    return produceState(initialValue = NavbarState(), route, selectedCount, disableDelete) {
+    return produceState(initialValue = NavbarState(), route, selectedCount) {
         value =
             when (route) {
                 Route.AdvancedAutoTunnel ->
@@ -232,7 +226,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                                     sharedViewModel.postSideEffect(LocalSideEffect.Modal.QR)
                                 }
                                 ActionIconButton(Icons.Rounded.Edit, R.string.edit_tunnel) {
-                                    navigate(Config(route.id))
+                                    navigate(Route.Config(route.id))
                                 }
                             }
                         },
@@ -271,16 +265,13 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                                                 sharedViewModel.copySelectedTunnel()
                                             }
                                         }
-
-                                        if (!disableDelete) {
-                                            ActionIconButton(
-                                                Icons.Rounded.Delete,
-                                                R.string.delete_tunnel,
-                                            ) {
-                                                sharedViewModel.postSideEffect(
-                                                    LocalSideEffect.Modal.DeleteTunnels
-                                                )
-                                            }
+                                        ActionIconButton(
+                                            Icons.Rounded.Delete,
+                                            R.string.delete_tunnel,
+                                        ) {
+                                            sharedViewModel.postSideEffect(
+                                                LocalSideEffect.Modal.DeleteTunnels
+                                            )
                                         }
                                     }
                             }
