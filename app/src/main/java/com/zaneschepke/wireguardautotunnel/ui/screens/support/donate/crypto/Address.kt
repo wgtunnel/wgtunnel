@@ -33,14 +33,14 @@ data class Address(
                     icon = R.drawable.zcash,
                 ),
                 Address(
-                    name = R.string.litecoin_mweb,
-                    address = R.string.litecoin_mweb_address,
-                    icon = R.drawable.ltc,
-                ),
-                Address(
                     name = R.string.litecoin,
                     address = R.string.litecoin_address,
                     icon = R.drawable.ltc,
+                ),
+                Address(
+                    name = R.string.ecash,
+                    address = R.string.ecash_address,
+                    icon = R.drawable.ecash,
                 ),
                 Address(
                     name = R.string.polygon,
@@ -71,36 +71,6 @@ data class Address(
                     name = R.string.bitcoin_cash,
                     address = R.string.bitcoin_cash_address,
                     icon = R.drawable.bitcoin_cash,
-                ),
-                Address(
-                    name = R.string.ecash,
-                    address = R.string.ecash_address,
-                    icon = R.drawable.ecash,
-                ),
-                Address(
-                    name = R.string.nano,
-                    address = R.string.nano_address,
-                    icon = R.drawable.nano,
-                ),
-                Address(
-                    name = R.string.zano,
-                    address = R.string.zano_address,
-                    icon = R.drawable.zano,
-                ),
-                Address(
-                    name = R.string.decred,
-                    address = R.string.decred_address,
-                    icon = R.drawable.decred,
-                ),
-                Address(
-                    name = R.string.wownero,
-                    address = R.string.wownero_address,
-                    icon = R.drawable.wownero,
-                ),
-                Address(
-                    name = R.string.doge,
-                    address = R.string.doge_address,
-                    icon = R.drawable.doge,
                 ),
             )
     }
