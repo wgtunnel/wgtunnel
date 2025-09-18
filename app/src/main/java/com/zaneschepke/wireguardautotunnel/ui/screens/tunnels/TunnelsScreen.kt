@@ -107,6 +107,7 @@ fun TunnelsScreen(viewModel: TunnelsViewModel) {
     if (showExportSheet) {
         ExportTunnelsBottomSheet({ type, uri ->
             sharedViewModel.exportSelectedTunnels(type, uri)
+            showExportSheet = false
         }) {
             showExportSheet = false
             sharedViewModel.clearSelectedTunnels()

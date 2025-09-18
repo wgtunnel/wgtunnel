@@ -30,7 +30,7 @@ fun ExportTunnelsBottomSheet(
             mimeType = FileUtils.ZIP_FILE_MIME_TYPE,
             onResult = { file ->
                 if (file != null) {
-                    onExport(ConfigType.WG, file)
+                    onExport(exportConfigType, file)
                 } else onDismiss()
             },
         )

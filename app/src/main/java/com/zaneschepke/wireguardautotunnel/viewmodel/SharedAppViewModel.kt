@@ -270,6 +270,10 @@ constructor(
             .onSuccess {
                 fileUtils.zipAll(it, files).onFailure(onFailure)
                 fileUtils.exportFile(it, uri, FileUtils.ZIP_FILE_MIME_TYPE).onFailure(onFailure)
+                postSideEffect(
+                    GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.export_success))
+                )
+                clearSelectedTunnels()
             }
             .onFailure(onFailure)
     }
