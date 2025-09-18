@@ -374,7 +374,6 @@
     <string name="github_sponsors">Sponsorzy GitHub</string>
     <string name="liberapay">Liberapay</string>
     <string name="kofi">Ko-fi</string>
-    <string name="litecoin_mweb" formatted="false">Litecoin MWEB</string>
     <string name="donation_thanks_intro">Dziękuję za rozważenie przekazania darowizny na rzecz tego projektu!</string>
     <string name="donation_dev_message">Jako jedyny programista nieustannie pracuję nad tym, aby WG Tunnel stał się najlepszym darmowym i otwartoźródłowym klientem WireGuard na Androida, ale jest to możliwe tylko dzięki Twojemu wsparciu.</string>
     <string name="donation_closing">Moim marzeniem jest praca nad tym projektem na pełen etat.</string>
