@@ -9,7 +9,6 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.grgit)
     alias(libs.plugins.licensee)
-    id("kotlin-parcelize")
 }
 
 android {
