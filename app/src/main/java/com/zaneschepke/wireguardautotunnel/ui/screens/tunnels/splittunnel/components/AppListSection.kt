@@ -31,6 +31,7 @@ fun AppListSection(
 ) {
 
     var query by remember { mutableStateOf("") }
+    val locale = remember { Locale.getDefault() }
 
     val filteredAndSortedPackages by remember {
         derivedStateOf {
@@ -40,7 +41,12 @@ fun AppListSection(
                         pkg.name.contains(query, ignoreCase = true) ||
                         pkg.packageName.contains(query, ignoreCase = true)
                 }
-                .sortedBy { pkg -> pkg.name.lowercase(Locale.getDefault()) }
+                .sortedWith(
+                    compareByDescending<InstalledPackage> {
+                            splitConfig.second.contains(it.packageName)
+                        }
+                        .thenBy { it.name.lowercase(locale) }
+                )
         }
     }
 

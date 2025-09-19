@@ -36,13 +36,13 @@ fun SplitTunnelScreen(tunnelId: Int, viewModel: SplitTunnelViewModel = hiltViewM
     val conf by remember { derivedStateOf { tunnelConf.toAmConfig() } }
 
     var splitConfig by remember {
-        mutableStateOf<Pair<SplitOption, Set<String>>>(
+        mutableStateOf(
             when {
                 conf.`interface`.excludedApplications.isNotEmpty() ->
                     Pair(SplitOption.EXCLUDE, conf.`interface`.excludedApplications.toSet())
                 conf.`interface`.includedApplications.isNotEmpty() ->
                     Pair(SplitOption.INCLUDE, conf.`interface`.includedApplications.toSet())
-                else -> Pair(SplitOption.ALL, emptySet())
+                else -> Pair(SplitOption.ALL, emptySet<String>())
             }
         )
     }
