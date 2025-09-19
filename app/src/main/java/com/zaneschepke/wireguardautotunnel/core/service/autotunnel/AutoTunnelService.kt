@@ -217,7 +217,8 @@ class AutoTunnelService : LifecycleService() {
             old.isVpnKillSwitchEnabled == new.isVpnKillSwitchEnabled &&
             old.isLanOnKillSwitchEnabled == new.isLanOnKillSwitchEnabled &&
             old.isDisableKillSwitchOnTrustedEnabled == new.isDisableKillSwitchOnTrustedEnabled &&
-            old.isStopOnNoInternetEnabled == new.isStopOnNoInternetEnabled)
+            old.isStopOnNoInternetEnabled == new.isStopOnNoInternetEnabled &&
+            old.appMode == new.appMode)
     }
 
     private fun combineSettings(): Flow<Pair<GeneralSettings, Tunnels>> {
