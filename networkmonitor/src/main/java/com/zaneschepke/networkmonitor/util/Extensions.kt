@@ -11,8 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-const val WIFI_SSID_SHELL_COMMAND =
-    "dumpsys wifi | grep 'Supplicant state: COMPLETED' | grep -o 'SSID: \"[^\"]*\"' | cut -d '\"' -f2"
+const val WIFI_SSID_SHELL_COMMAND = "cmd wifi status | grep -i 'connected to' | cut -d'\"' -f2"
 
 fun RootShell.getCurrentWifiName(): String {
     val response = mutableListOf<String>()

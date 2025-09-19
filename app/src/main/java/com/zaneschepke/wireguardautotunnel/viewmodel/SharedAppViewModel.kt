@@ -164,29 +164,35 @@ constructor(
     fun setWifiDetectionMethod(method: WifiDetectionMethod) = intent {
         when (method) {
             WifiDetectionMethod.ROOT -> if (!requestRoot()) return@intent
-            WifiDetectionMethod.SHIZUKU -> return@intent requestShizuku()
+            WifiDetectionMethod.SHIZUKU -> {
+                requestShizuku()
+                return@intent
+            }
             else -> Unit
         }
         settingsRepository.save(state.settings.copy(wifiDetectionMethod = method))
     }
 
-    private fun requestShizuku() {
+    private fun requestShizuku() = intent {
         Shizuku.addRequestPermissionResultListener(
             Shizuku.OnRequestPermissionResultListener { requestCode: Int, grantResult: Int ->
                 if (grantResult != PERMISSION_GRANTED) return@OnRequestPermissionResultListener
-                setWifiDetectionMethod(WifiDetectionMethod.SHIZUKU)
+                intent {
+                    settingsRepository.save(
+                        state.settings.copy(wifiDetectionMethod = WifiDetectionMethod.SHIZUKU)
+                    )
+                }
             }
         )
         try {
             if (Shizuku.checkSelfPermission() != PERMISSION_GRANTED) Shizuku.requestPermission(123)
+            settingsRepository.save(
+                state.settings.copy(wifiDetectionMethod = WifiDetectionMethod.SHIZUKU)
+            )
         } catch (_: Exception) {
-            intent {
-                postSideEffect(
-                    GlobalSideEffect.Snackbar(
-                        StringValue.StringResource(R.string.shizuku_not_detected)
-                    )
-                )
-            }
+            postSideEffect(
+                GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.shizuku_not_detected))
+            )
         }
     }
 
