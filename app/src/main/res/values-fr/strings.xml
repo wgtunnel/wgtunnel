@@ -63,7 +63,7 @@
     <string name="error_no_file_explorer">Aucun explorateur de fichier n\'est installé</string>
     <string name="auto_tunnel_title">Service de tunnel automatique</string>
     <string name="delete_tunnel">Supprimer un tunnel</string>
-    <string name="delete_tunnel_message">Êtes-vous sûr de vouloir supprimer ce tunnel ?</string>
+    <string name="delete_tunnel_message">Êtes-vous sûr de vouloir supprimer ce tunnel ?</string>
     <string name="no_email_detected">Aucune application de mail détectée</string>
     <string name="no_browser_detected">Aucun navigateur détecté</string>
     <string name="open_issue">Signaler un problème</string>
