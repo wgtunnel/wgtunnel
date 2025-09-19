@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.zaneschepke.wireguardautotunnel.R
@@ -58,26 +59,50 @@ fun BottomNavbar(
             BottomNavItem(
                 name = stringResource(R.string.tunnels),
                 icon = Icons.Rounded.Home,
-                onClick = { navController.navigate(Route.TunnelsGraph) },
+                onClick = { navController.navigate(Route.TunnelsGraph) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                } },
                 route = Route.TunnelsGraph,
             ),
             BottomNavItem(
                 name = stringResource(R.string.auto_tunnel),
                 icon = Icons.Rounded.Bolt,
-                onClick = { navController.navigate(Route.AutoTunnelGraph) },
+                onClick = { navController.navigate(Route.AutoTunnelGraph) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                } },
                 route = Route.AutoTunnelGraph,
                 active = isAutoTunnelActive,
             ),
             BottomNavItem(
                 name = stringResource(R.string.settings),
                 icon = Icons.Rounded.Settings,
-                onClick = { navController.navigate(Route.SettingsGraph) },
+                onClick = { navController.navigate(Route.SettingsGraph) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                } },
                 route = Route.SettingsGraph,
             ),
             BottomNavItem(
                 name = stringResource(R.string.support),
                 icon = Icons.Rounded.QuestionMark,
-                onClick = { navController.navigate(Route.SupportGraph) },
+                onClick = { navController.navigate(Route.SupportGraph) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                } },
                 route = Route.SupportGraph,
             ),
         )
