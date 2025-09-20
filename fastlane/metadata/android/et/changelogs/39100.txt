@@ -1,6 +1,0 @@
-Mida on meil uut:
-- nimelahenduse kontekstis tunneli ühenduvuse puudumise vea parandus
-- tunneli lõputu käivitamise vea parandus
-- tunneli infovaates on nüüd QR-kood
-- otspunkt on nüüd leitav statistikast
-- erinevad muud veaparandused

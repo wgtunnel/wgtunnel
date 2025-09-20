@@ -1,8 +1,0 @@
-Was ist neu?
-- Neues App-Symbol und kleinere UI-Verbesserungen
-- Behebung eines Fehlers beim Umschalten des lokalen Loggers
-- Fix für den Neustart von AndroidTV beim Neustart
-- Fix für die AndroidTV-Sprachauswahl
-- Fix für die standardmäßig laufende Ping-Funktion
-- Fix für Fehler beim Herunterfahren des Kernel-Modus
-- Fix für den Fehler beim automatischen Tunneln des Notschalters
