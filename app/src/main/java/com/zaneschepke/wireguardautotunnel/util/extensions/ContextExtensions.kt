@@ -95,7 +95,7 @@ fun Context.hasSAFSupport(mimeType: String): Boolean {
 }
 
 fun Context.launchShareFile(file: File) {
-    val uri = FileProvider.getUriForFile(this, getString(R.string.provider), file)
+    FileProvider.getUriForFile(this, getString(R.string.provider), file)
     val shareIntent =
         Intent().apply {
             action = Intent.ACTION_SEND

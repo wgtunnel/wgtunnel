@@ -72,7 +72,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             }
         }
 
-    if (showBackupSheet) BackupBottomSheet() { showBackupSheet = false }
+    if (showBackupSheet) BackupBottomSheet { showBackupSheet = false }
     if (showAppModeSheet)
         AppModeBottomSheet(sharedViewModel::setAppMode, settingsState.settings.appMode) {
             showAppModeSheet = false
@@ -136,25 +136,25 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                         }
                     )
                     if (showProxySettings)
-                        add(proxYSettingsItem() { navController.navigate(Route.ProxySettings) })
+                        add(proxYSettingsItem { navController.navigate(Route.ProxySettings) })
                 }
         )
         SectionDivider()
         SurfaceSelectionGroupButton(
-            listOf(systemFeaturesItem() { navController.navigate(Route.SystemFeatures) })
+            listOf(systemFeaturesItem { navController.navigate(Route.SystemFeatures) })
         )
         SectionDivider()
         SurfaceSelectionGroupButton(
             items =
                 buildList {
-                    add(appearanceItem() { navController.navigate(Route.Appearance) })
+                    add(appearanceItem { navController.navigate(Route.Appearance) })
                     add(
                         localLoggingItem(settingsState.isLocalLoggingEnabled) {
                             viewModel.setLocalLogging(it)
                         }
                     )
                     if (settingsState.isLocalLoggingEnabled)
-                        add(readLogsItem() { navController.navigate(Route.Logs) })
+                        add(readLogsItem { navController.navigate(Route.Logs) })
                     add(
                         pinLockItem(settingsState.isPinLockEnabled) { enabled ->
                             if (enabled) {

@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="turn_off_tunnel">请先关闭连接再操作</string>
     <string name="no_tunnels">您还没有添加隧道！</string>
     <string name="tunnels">隧道列表</string>
     <string name="privacy_policy">查看隐私政策</string>
@@ -11,7 +10,6 @@
     <string name="trusted_ssid_value_description">确认修改 SSID</string>
     <string name="add_tunnels_text">从文件或 zip 添加</string>
     <string name="add_from_qr">从二维码添加</string>
-    <string name="qr_scan">扫描二维码</string>
     <string name="tunnel_name">隧道名称</string>
     <string name="include">包含</string>
     <string name="public_key">公钥</string>
@@ -28,7 +26,6 @@
     <string name="private_key">私钥</string>
     <string name="listen_port">监听端口</string>
     <string name="optional">(可选)</string>
-    <string name="error_authorization_failed">验证失败</string>
     <string name="enabled_app_shortcuts">创建桌面快捷方式</string>
     <string name="docs_description">阅读文档</string>
     <string name="email_description">给作者发邮件</string>
@@ -37,12 +34,9 @@
     <string name="copy_public_key">复制公钥</string>
     <string name="email_chooser">发送邮件…</string>
     <string name="persistent_keepalive">连接保活</string>
-    <string name="turn_on_tunnel">此操作需要一个已建立的隧道</string>
     <string name="tunnel_on_wifi">在不受信任的 WiFi 上建立隧道</string>
     <string name="exclude">排除</string>
-    <string name="comma_separated_list">逗号分隔列表</string>
     <string name="base64_key">Base64 编码</string>
-    <string name="use_kernel">使用内核模块</string>
     <string name="endpoint">端点</string>
     <string name="thank_you">谢谢您使用 WG Tunnel!</string>
     <string name="prominent_background_location_message">此功能是在应用关闭时，后台自动扫描 Wi-Fi SSID，需要开启后台位置信息访问权限。更多信息，请在支持页面查看隐私政策。</string>
@@ -54,10 +48,8 @@
     <string name="seconds">秒</string>
     <string name="cancel">取消</string>
     <string name="preshared_key">预共享密钥</string>
-    <string name="error_authentication_failed">身份验证失败</string>
     <string name="unknown_error">发生了未知错误</string>
     <string name="error_ssid_exists">SSID 已经存在</string>
-    <string name="open_file">打开文件</string>
     <string name="config_changes_saved">设置已保存。</string>
     <string name="interface_">接口</string>
     <string name="email_subject">WG Tunnel 支持</string>
@@ -70,20 +62,14 @@
     <string name="no_email_detected">未安装邮件应用</string>
     <string name="enable_app_lock">锁定应用</string>
     <string name="use_tunnel_on_wifi_name">在指定的 WiFi 上使用此隧道</string>
-    <string name="version">版本</string>
     <string name="settings">设置</string>
     <string name="support">支持</string>
     <string name="kernel">内核</string>
     <string name="junk_packet_minimum_size">无效包最小值</string>
     <string name="root_accepted">已获取 root 权限</string>
-    <string name="default_ping_ip">(可选，默认选择节点)</string>
-    <string name="set_custom_ping_internal">Ping 间隔(秒)</string>
-    <string name="optional_default">"可选，默认： "</string>
-    <string name="set_custom_ping_cooldown">Ping 重启间隔(秒)</string>
     <string name="show_amnezia_properties">显示 Amnezia 属性</string>
     <string name="no_browser_detected">没有安装浏览器</string>
     <string name="incorrect_pin">密码不正确</string>
-    <string name="set_custom_ping_ip">自定义 Ping 的目标 ip</string>
     <string name="junk_packet_count">无效包计数</string>
     <string name="app_name">WG Tunnel</string>
     <string name="vpn_channel_name">VPN 通知频道</string>
@@ -100,18 +86,14 @@
     <string name="response_packet_magic_header">响应包的 magic header</string>
     <string name="response_packet_junk_size">无效的响应包大小</string>
     <string name="vpn_denied_dialog_title">拒绝访问</string>
-    <string name="app_settings">应用设置</string>
-    <string name="background_location_message2">请确保这些权限已开启</string>
     <string name="logs">日志</string>
     <string name="restart_on_ping">Ping 失败之后自动重启隧道(beta)</string>
     <string name="edit_tunnel">编辑隧道</string>
     <string name="init_packet_magic_header">初始化数据包的 magic header</string>
-    <string name="error_file_format">无效的隧道配置文件格式</string>
     <string name="always_on_message">VPN 连接被拒绝，请检查</string>
     <string name="vpn_settings">系统 VPN 设置</string>
     <string name="always_on_message2">确保始终开启 VPN 功能已关闭，然后再尝试连接</string>
     <string name="never">从不</string>
-    <string name="sec">秒</string>
     <string name="handshake">握手</string>
     <string name="light">亮色</string>
     <string name="dark">暗色</string>
@@ -119,7 +101,6 @@
     <string name="prominent_background_location_title">后台定位披露</string>
     <string name="dynamic">动态颜色</string>
     <string name="display_theme">主题</string>
-    <string name="kill_switch">系统 VPN 设置</string>
     <string name="appearance">外观</string>
     <string name="notifications">通知</string>
     <string name="automatic">跟随系统</string>
@@ -131,7 +112,6 @@
     <string name="transport_packet_magic_header">传输包的 magic header</string>
     <string name="underload_packet_magic_header">欠载数据包 magic header</string>
     <string name="restart_at_boot">开机时重新启动</string>
-    <string name="background_location_message">需要允许所有时间位置权限和/或精确位置才能使用此功能。请参阅</string>
     <string name="learn_more">了解更多</string>
     <string name="unsure_how">如果您不确定如何进行</string>
     <string name="see_the">请查阅</string>
@@ -140,9 +120,7 @@
     <string name="launch_app_settings">打开应用设置</string>
     <string name="use_wildcards">使用 SSID 通配符</string>
     <string name="wildcards_active">启用通配符</string>
-    <string name="wifi_name_via_shell">通过 shell 获取 WiFi 名称</string>
     <string name="use_root_shell_for_wifi">使用 root 权限的 shell 来获取 WiFi 信息，以防需要位置权限</string>
-    <string name="kernel_not_supported">内核不支持</string>
     <string name="start_auto">开启自动隧道</string>
     <string name="monitoring_state_changes">监控状态变化</string>
     <string name="stop_auto">停止自动隧道</string>
@@ -177,17 +155,10 @@
     <string name="ethernet_tunnel">以太网隧道</string>
     <string name="set_ethernet_tunnel">设置为以太网隧道</string>
     <string name="native_kill_switch">系统 VPN 开关</string>
-    <string name="vpn_kill_switch">VPN 开关</string>
-    <string name="kill_switch_options">开关选项</string>
     <string name="allow_lan_traffic">允许局域网流量</string>
     <string name="vpn_channel_description">VPN 状态通知频道</string>
-    <string name="kill_switch_off">在受信任网络上停止 Kill Switch</string>
-    <string name="prefer_ipv4">首选 IPv4 连接</string>
     <string name="multiple">多个</string>
-    <string name="server_ipv4">IPv4 主机名解析</string>
     <string name="auth_error">未授权</string>
-    <string name="status">状态</string>
-    <string name="bio_not_created">生物特征未创建</string>
     <string name="export_failed">导出失败了</string>
     <string name="delete">删除</string>
     <string name="dns_resolve_error">DNS 解析失败</string>
@@ -204,7 +175,6 @@
     <string name="add_tunnel">添加隧道</string>
     <string name="delete_logs">删除并清除日志</string>
     <string name="copy">复制</string>
-    <string name="info">信息</string>
     <string name="export_tunnels_amnezia">将隧道导出为 Amnezia</string>
     <string name="export_tunnels_wireguard">将隧道导出为 WireGuard</string>
     <string name="tunnel_error_template">隧道失败，原因：%1$s</string>
@@ -213,9 +183,6 @@
     <string name="kernel_name_error">内核模块名称错误</string>
     <string name="service_running_error">服务未运行</string>
     <string name="active">活跃</string>
-    <string name="bio_auth_title">生物特征认证</string>
-    <string name="invalid_config_error">无效配置</string>
-    <string name="bio_update_required">需要生物特征安全更新</string>
     <string name="tunnel_starting">隧道启动中</string>
     <string name="enable_remote_app_control">开启远程应用控制</string>
     <string name="join_matrix">加入 Matrix 社区</string>
@@ -223,12 +190,9 @@
     <string name="app_permission_description">控制隧道和自动隧道功能.</string>
     <string name="app_permission_title">WG 隧道控制桥</string>
     <string name="inactive">不活跃</string>
-    <string name="bio_subtitle">使用你的生物特征凭据登录</string>
     <string name="export_logs">导出已保存的日志</string>
-    <string name="bio_not_supported">生物特征不受支持</string>
     <string name="nothing_here_yet">此处还什么都没有！</string>
     <string name="select_all">全选</string>
-    <string name="share">分享</string>
     <string name="version_template">当前版本：%1$s</string>
     <string name="export_success">导出成功</string>
     <string name="download">下载</string>
@@ -253,8 +217,6 @@
     <string name="wireguard">WireGuard</string>
     <string name="done">完成</string>
     <string name="current_template">当前：%1$s</string>
-    <string name="use_deprecated_wifi_api">使用废弃的 Wi-Fi API</string>
-    <string name="app_restart_required">需要重启应用</string>
     <string name="wifi_detection_method">Wi-Fi 检测方式</string>
     <string name="_default">默认</string>
     <string name="legacy">旧式</string>
@@ -317,7 +279,6 @@
     <string name="root_required_template">%1$s （需 root）</string>
     <string name="recommended_template">%1$s （推荐）</string>
     <string name="hint_template">（%1$s）</string>
-    <string name="userspace">Userspace</string>
     <string name="proxy">代理</string>
     <string name="backend_mode">应用模式</string>
     <string name="selected">选中的</string>
@@ -364,7 +325,6 @@
     <string name="ddns_auto_update">动态 DNS 自动更新</string>
     <string name="ddns_auto_update_description">DDNS 更改时自动更新 IP</string>
     <string name="prefer_ipv6_resolution">偏好 IPv6 对端解析</string>
-    <string name="ipv4_auto_fallback">IPv4 对端自动回退</string>
     <string name="disabled">已停用</string>
     <string name="mode_disabled_template">功能在 %1$s 模式下不可用。</string>
     <string name="lockdown">锁定</string>

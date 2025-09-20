@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="error_file_extension">Il file non è .conf o .zip</string>
     <string name="allowed_ips">IP consentiti</string>
@@ -7,13 +7,10 @@
     <string name="rotate_keys">Ruota chiavi</string>
     <string name="private_key">Chiave privata</string>
     <string name="base64_key">Chiave base64</string>
-    <string name="comma_separated_list">elenco separato da virgola</string>
     <string name="listen_port">Porta d\'ascolto</string>
-    <string name="error_authorization_failed">Autorizzazione fallita</string>
     <string name="error_no_file_explorer">Nessun gestore file installato</string>
     <string name="app_name">Tunnel WG</string>
     <string name="vpn_channel_name">Canale di notifica VPN</string>
-    <string name="turn_off_tunnel">L\'operaz. richiede la disatt. del tunnel</string>
     <string name="public_key">Chiave pubblica</string>
     <string name="addresses">Indirizzi</string>
     <string name="dns_servers">Server DNS</string>
@@ -28,7 +25,6 @@
     <string name="random">(casuale)</string>
     <string name="optional">(opzionale)</string>
     <string name="preshared_key">Chiave pre-condivisa</string>
-    <string name="error_authentication_failed">Autenticazione fallita</string>
     <string name="tunnels">Tunnel</string>
     <string name="tunnel_mobile_data">Tunnel su dati mobili</string>
     <string name="privacy_policy">Guarda la policy sulla privacy</string>
@@ -41,7 +37,6 @@
     <string name="vpn_on">VPN on</string>
     <string name="vpn_off">VPN off</string>
     <string name="create_import">Crea da zero</string>
-    <string name="turn_on_tunnel">L\'operazione richiede un tunnel attivo</string>
     <string name="add_peer">Aggiungi peer</string>
     <string name="copy_public_key">Copia chiave pubblica</string>
     <string name="seconds">Secondi</string>
@@ -49,7 +44,6 @@
     <string name="cancel">Annulla</string>
     <string name="unknown_error">Avvenuto errore sconosciuto</string>
     <string name="tunnel_on_wifi">Tunnel su wifi non fidato</string>
-    <string name="use_kernel">Usa modulo kernel</string>
     <string name="error_ssid_exists">L\'SSID esiste già</string>
     <string name="error_root_denied">Shell di root negata</string>
     <string name="prominent_background_location_title">Permesso localizzazione in background</string>
@@ -64,7 +58,6 @@
     <string name="delete_tunnel">Cancella tunnel</string>
     <string name="init_packet_junk_size">Inizializza la dimensione dei pacchetti indesiderati</string>
     <string name="always_on_message2">per essere sicuro che la VPN Always-on sia spenta per tutte le altre app e riprova</string>
-    <string name="background_location_message">Permetti i permessi per la localizzazione durante tutto il tempo e/o la localizzazione precisa è richiesta per questa funzione. Vedi la</string>
     <string name="config_changes_saved">Salvate modifiche configurazione.</string>
     <string name="delete_tunnel_message">Sei certo di voler cancellare questo tunnel?</string>
     <string name="thank_you">Grazie per usare WG Tunnel!</string>
@@ -83,7 +76,6 @@
     <string name="set_primary_tunnel">Imposta come tunnel principale</string>
     <string name="use_tunnel_on_wifi_name">Usa tunnel su nome wifi</string>
     <string name="edit_tunnel">Modifica tunnel</string>
-    <string name="version">Versione</string>
     <string name="settings">Impostazioni</string>
     <string name="support">Supporto</string>
     <string name="kernel">Kernel</string>
@@ -94,37 +86,23 @@
     <string name="response_packet_magic_header">Magic header pacchetto risposta</string>
     <string name="getting_started_guide">guida di avvio rapido</string>
     <string name="see_the">Vedi la</string>
-    <string name="error_file_format">Formato configurazione tunnel non valido</string>
     <string name="restart_at_boot">Riavvia al boot</string>
     <string name="vpn_denied_dialog_title">Permesso Negato</string>
-    <string name="app_settings">impostazioni app</string>
-    <string name="background_location_message2">per assicurarti che questi permessi siano abilitati</string>
     <string name="root_accepted">Accesso alla shell root accettata</string>
-    <string name="set_custom_ping_ip">Imposta ip ping personalizzato</string>
-    <string name="default_ping_ip">(opzionale, default ai peers)</string>
-    <string name="set_custom_ping_internal">Intervallo ping (sec)</string>
-    <string name="optional_default">"opzionale, default: "</string>
-    <string name="set_custom_ping_cooldown">Tempo attesa prima della ripartenza ping (sec)</string>
     <string name="show_amnezia_properties">Mostra proprietà Amnezia</string>
     <string name="add_tunnels_text">Aggiungi da file o zip</string>
-    <string name="open_file">Apri file</string>
     <string name="add_from_qr">Aggiungi da codice QR</string>
-    <string name="qr_scan">Scansione QR</string>
     <string name="tunnel_name">Nome Tunnel</string>
     <string name="open_issue">Apri un problema</string>
     <string name="enter_pin">Inserisci PIN</string>
     <string name="create_pin">Crea PIN</string>
     <string name="transport_packet_magic_header">Magic header pacchetto trasporto</string>
-    <string name="kill_switch_off">Arresta kill switch su fidate</string>
     <string name="prominent_background_location_message">Questa caratteristica richiede il permesso di localizzazione in background per abilitare il monitoraggio dell\'SSID Wi-fi anche quando l\'applicazione è chiusa. Per più dettagli, verifica la Privacy Policy linkata nella schermata di supporto.</string>
     <string name="auto_tunnel_title">Servizio tunnel automatico</string>
     <string name="mobile_tunnel">Tunnel dati mobili</string>
-    <string name="wifi_name_via_shell">Nome wifi via shell</string>
     <string name="use_root_shell_for_wifi">Utilizzare una shell root per ottenere le informazioni Wi-Fi, evitando la necessità dell\'autorizzazioni della posizione</string>
     <string name="stop_on_internet_loss">Ferma il tunnel in caso di perdita di collegamento internet</string>
     <string name="ethernet_tunnel">Tunnel ethernet</string>
-    <string name="vpn_kill_switch">Kill switch VPN</string>
-    <string name="kill_switch_options">Opzioni kill switch</string>
     <string name="allow_lan_traffic">Abilita traffico LAN</string>
     <string name="tunnel_control">Controllo tunnel</string>
     <string name="include_lan">Includi la LAN</string>
@@ -148,7 +126,6 @@
     <string name="enable_amnezia_compatibility">Abilita compatibilità Amnezia</string>
     <string name="remove_amnezia_compatibility">Disabilita compatibilità Amnezia</string>
     <string name="exclude_lan">Escludi la LAN</string>
-    <string name="share">Condividi</string>
     <string name="select_all">Seleziona tutto</string>
     <string name="never">Mai</string>
     <string name="use_wildcards">Usa nomi jolly</string>
@@ -156,12 +133,10 @@
     <string name="trusted_wifi_names">Nomi wifi di fiducia</string>
     <string name="add_wifi_name">Aggiungi un nome wifi</string>
     <string name="primary_tunnel">Tunnel primario</string>
-    <string name="sec">sec</string>
     <string name="post_down">Dopo essersi arrestato</string>
     <string name="pre_down">Prima di arrestarsi</string>
     <string name="light">Chiaro</string>
     <string name="dark">Scuro</string>
-    <string name="bio_not_created">Biometria non creata</string>
     <string name="search">Cerca</string>
     <string name="app_permission_description">Controllo tunnel e funzionalità automatiche.</string>
     <string name="enter_config_url">Inserisci un URL di configurazione</string>
@@ -174,11 +149,9 @@
     <string name="logs">Logs</string>
     <string name="notifications">Notifiche</string>
     <string name="automatic">Automatico</string>
-    <string name="kill_switch">Kill switch</string>
     <string name="dynamic">Dinamico</string>
     <string name="language">Lingua</string>
     <string name="display_theme">Tema schermo</string>
-    <string name="kernel_not_supported">Kernel non supportato</string>
     <string name="tunnel_running">Tunnel avviato</string>
     <string name="stop_on_no_internet">Ferma se non c\'è internet</string>
     <string name="start_auto">Avvia tunnel automatico</string>
@@ -202,7 +175,6 @@
     <string name="export_logs">Esporta i log salvati</string>
     <string name="delete_logs">Cancella e pulisci i logs</string>
     <string name="copy">Copia</string>
-    <string name="info">Informazioni</string>
     <string name="export_tunnels_amnezia">Esporta i tunnel in modalità Amnezia</string>
     <string name="export_tunnels_wireguard">Esporta i tunnel in modalità WireGuard</string>
     <string name="delete">Cancella</string>
@@ -216,16 +188,10 @@
     <string name="remote_key_template">Chiave: %1$s</string>
     <string name="config_error">Configurazione non valida</string>
     <string name="dns_resolve_error">Risoluzione DNS fallita</string>
-    <string name="invalid_config_error">invalid_config_error</string>
-    <string name="bio_not_supported">Biometria non supportata</string>
-    <string name="bio_subtitle">Il log sta usando la tua autenticazione biometrica</string>
     <string name="enable_remote_app_control">Abilita controllo remoto app</string>
     <string name="version_template">Versione: %1$s</string>
     <string name="flavor_template">Caratteristica: %1$s</string>
     <string name="kernel_name_error">Nome modulo kernel errato</string>
-    <string name="status">Stato</string>
-    <string name="bio_auth_title">Autenticazione Biometrica</string>
-    <string name="bio_update_required">Aggiornamento richiesto sicurezza biometrica</string>
     <string name="tunnel_starting">Il tunnel si sta avviando</string>
     <string name="update_available">Aggiornamento disponibile!</string>
     <string name="permission_required">Permessi Richiesti</string>
@@ -244,8 +210,6 @@
     <string name="update_check_failed">Controllo aggiornamenti fallito.</string>
     <string name="checking_for_update">Controllo gli aggiornamenti</string>
     <string name="amoled">AMOLED</string>
-    <string name="server_ipv4">Risoluzione nomi IPv4</string>
-    <string name="prefer_ipv4">Preferisci connessioni IPv4</string>
     <string name="nothing_here_yet">Non c\'è ancora nulla qui!</string>
     <string name="range_hint">(%1$d–%2$d)</string>
     <string name="tunnel_name_taken">Nome tunnel già in uso.</string>
@@ -313,8 +277,6 @@
     <string name="amnezia">Amnezia</string>
     <string name="wireguard">WireGuard</string>
     <string name="done">Fatto</string>
-    <string name="use_deprecated_wifi_api">Usa API Wi-Fi deprecate</string>
-    <string name="app_restart_required">Riavvio app richiesto</string>
     <string name="wifi_detection_method">Metodo di rilevamento Wi-Fi</string>
     <string name="_default">Default</string>
     <string name="legacy">Legacy</string>

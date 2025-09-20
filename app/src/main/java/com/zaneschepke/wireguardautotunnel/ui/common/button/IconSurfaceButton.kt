@@ -46,12 +46,12 @@ fun IconSurfaceButton(
                 horizontalAlignment = Alignment.Start,
             ) {
                 Row(
-                    verticalAlignment = Alignment.Companion.CenterVertically,
+                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalAlignment = Alignment.Companion.CenterVertically,
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier =
                             Modifier.padding(vertical = if (description == null) 10.dp else 0.dp),
                     ) {

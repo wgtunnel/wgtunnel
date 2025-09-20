@@ -93,7 +93,7 @@ fun Config.defaultName(): String {
     return try {
         this.peers[0].endpoint.get().host
     } catch (e: Exception) {
-        Timber.Forest.e(e)
+        Timber.e(e)
         NumberUtils.generateRandomTunnelName()
     }
 }

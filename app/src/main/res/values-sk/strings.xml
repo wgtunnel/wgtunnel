@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">Tunel WG</string>
     <string name="app_permission_description">Ovládanie tunelov a funkcie automatického tunela.</string>
     <string name="vpn_channel_name">Notifikačný kanál VPN</string>
     <string name="error_file_extension">Súbor nie je typu .conf ani .zip</string>
-    <string name="turn_off_tunnel">Akcia vyžaduje vypnutie tunela</string>
     <string name="no_tunnels">Zatiaľ neboli pridané žiadne tunely!</string>
     <string name="tunnels">Tunely</string>
     <string name="privacy_policy">Zobraziť zásady ochrany osobných údajov</string>
@@ -14,9 +13,7 @@
     <string name="thank_you">Ďakujeme, že používate WG Tunnel!</string>
     <string name="trusted_ssid_value_description">Potvrdiť SSID</string>
     <string name="add_tunnels_text">Pridať zo súboru alebo zip</string>
-    <string name="open_file">Otvoriť súbor</string>
     <string name="add_from_qr">Pridať z QR kódu</string>
-    <string name="qr_scan">Skenovanie QR</string>
     <string name="tunnel_name">Názov tunela</string>
     <string name="exclude">Vylúčiť</string>
     <string name="include">Zahrnúť</string>
@@ -35,14 +32,12 @@
     <string name="vpn_on">VPN zapnuté</string>
     <string name="vpn_off">VPN vypnuté</string>
     <string name="create_import">Vytvoriť od začiatku</string>
-    <string name="turn_on_tunnel">Akcia vyžaduje aktívny tunel</string>
     <string name="add_peer">Pridať peer</string>
     <string name="interface_">Rozhranie</string>
     <string name="rotate_keys">Otočiť kľúče</string>
     <string name="private_key">Súkromný kľúč</string>
     <string name="copy_public_key">Skopírovať verejný kľúč</string>
     <string name="base64_key">Kľúč Base64</string>
-    <string name="comma_separated_list">zoznam oddelený čiarkami</string>
     <string name="listen_port">Prístupový port</string>
     <string name="random">(náhodný)</string>
     <string name="optional">(voliteľné)</string>
@@ -50,8 +45,6 @@
     <string name="seconds">Sekundy</string>
     <string name="persistent_keepalive">Trvalé udržanie spojenia</string>
     <string name="cancel">Zrušiť</string>
-    <string name="error_authentication_failed">Overenie zlyhalo</string>
-    <string name="error_authorization_failed">Autorizácia sa nepodarila</string>
     <string name="enabled_app_shortcuts">Povoliť skratky aplikácií</string>
     <string name="unknown_error">Došlo k neznámej chybe</string>
     <string name="tunnel_on_wifi">Tunel na nedôveryhodnej wifi</string>
@@ -59,7 +52,6 @@
     <string name="email_chooser">Poslať e-mail…</string>
     <string name="docs_description">Prečítajte si dokumentáciu</string>
     <string name="email_description">Pošlite mi e-mail</string>
-    <string name="use_kernel">Použiť modul kernelu</string>
     <string name="error_ssid_exists">SSID už existuje</string>
     <string name="error_no_file_explorer">Nie je nainštalovaný žiadny prehliadač súborov</string>
     <string name="location_services_missing_message">Aplikácia nezistila žiadne lokalizačné služby povolené vo vašom zariadení. V závislosti od zariadenia to môže spôsobiť, že funkcia nedôveryhodnej wifi nebude môcť prečítať názov wifi. Chcete aj tak pokračovať?</string>

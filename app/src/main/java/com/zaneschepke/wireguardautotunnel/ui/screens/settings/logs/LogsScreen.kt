@@ -30,7 +30,7 @@ fun LogsScreen(viewModel: LoggerViewModel = hiltViewModel()) {
 
     val lazyColumnListState = rememberLazyListState()
     var isAutoScrolling by rememberSaveable { mutableStateOf(true) }
-    var lastScrollPosition by rememberSaveable() { mutableIntStateOf(0) }
+    var lastScrollPosition by rememberSaveable { mutableIntStateOf(0) }
     var showLogsSheet by rememberSaveable { mutableStateOf(false) }
 
     sharedAppViewModel.collectSideEffect { sideEffect ->

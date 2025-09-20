@@ -24,6 +24,9 @@ android {
 
     ksp { arg("room.schemaLocation", "$projectDir/schemas") }
 
+    // fix okhttp proguard issue
+    packaging { resources { pickFirsts.add("okhttp3/internal/publicsuffix/publicsuffixes.gz") } }
+
     defaultConfig {
         applicationId = Constants.APP_ID
         minSdk = Constants.MIN_SDK

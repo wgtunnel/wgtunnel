@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="tunnel_on_ethernet">Túnel na ethernet</string>
     <string name="public_key">Chave pública</string>
@@ -17,7 +17,6 @@
     <string name="all">todos</string>
     <string name="enter_pin">Digite o seu pin</string>
     <string name="use_tunnel_on_wifi_name">Usar túnel em wifi com nome</string>
-    <string name="version">Versão</string>
     <string name="junk_packet_count">Quantidade de pacotes-lixo</string>
     <string name="junk_packet_minimum_size">Tamanho mínimo de pacote-lixo</string>
     <string name="junk_packet_maximum_size">Tamanho máximo de pacote-lixo</string>
@@ -27,7 +26,6 @@
     <string name="no_tunnels">Nenhum túnel foi adicionado!</string>
     <string name="error_file_extension">O ficheiro não é .conf ou .zip</string>
     <string name="prominent_background_location_message">Este recurso precisa de permissões de localização em segundo plano para ativar o monitoramento do SSID da rede Wi-Fi mesmo quando a aplicação está fechado. Para mais pormenores, por favor veja a Política de Privacidade no ecrã de Suporte.</string>
-    <string name="turn_off_tunnel">Esta ação só é possível com o túnel inativo</string>
     <string name="enabled_app_shortcuts">Ativar atalhos de aplicações</string>
     <string name="tunnels">Túneis</string>
     <string name="privacy_policy">Ver a Política de Privacidade</string>
@@ -36,10 +34,8 @@
     <string name="prominent_background_location_title">Revelar a localização em segundo plano</string>
     <string name="thank_you">Obrigado por usar o WG Tunnel!</string>
     <string name="trusted_ssid_value_description">Envie o SSID</string>
-    <string name="open_file">Abrir Ficheiro</string>
     <string name="add_from_qr">Adicionar a partir de código QR</string>
     <string name="add_tunnels_text">Adicionar a partir de ficheiro ou zip</string>
-    <string name="qr_scan">Escanear o código QR</string>
     <string name="tunnel_name">Nome do Túnel</string>
     <string name="config_changes_saved">Mudanças nas configurações gravadas.</string>
     <string name="exclude">Excluir</string>
@@ -53,17 +49,13 @@
     <string name="vpn_on">VPN ligada</string>
     <string name="vpn_off">VPN desligada</string>
     <string name="listen_port">Porta de escuta</string>
-    <string name="turn_on_tunnel">Esta ação precisa um túnel ativo</string>
     <string name="add_peer">Adicionar par</string>
     <string name="interface_">Interface</string>
     <string name="copy_public_key">Copiar chave pública</string>
-    <string name="comma_separated_list">Lista separada por vírgulas</string>
     <string name="optional">(opcional)</string>
     <string name="random">(aleatório)</string>
     <string name="persistent_keepalive">Manter a conexão persistente (keepalive)</string>
     <string name="cancel">Cancelar</string>
-    <string name="error_authentication_failed">Autenticação falhou</string>
-    <string name="error_authorization_failed">Autorização falhou</string>
     <string name="restart_on_ping">Reiniciar em falha de ping (beta)</string>
     <string name="email_description">Me envie um email</string>
     <string name="error_ssid_exists">SSID já existe</string>
@@ -74,7 +66,6 @@
     <string name="tunnel_on_wifi">Túnel em Wi-Fi não confiável</string>
     <string name="delete_tunnel">Apagar túnel</string>
     <string name="email_chooser">Enviar um email…</string>
-    <string name="use_kernel">Usar o módulo do kernel</string>
     <string name="docs_description">Ler a documentação</string>
     <string name="error_root_denied">Shell Root negado</string>
     <string name="location_services_missing_message">A aplicação não detetou o serviço de localização ativado no seu dispositivo. Dependendo do dispositivo, isto pode causar que a função de Wi-Fi não confiável falhe em ler o nome do Wi-Fi. Quer continuar mesmo assim?</string>
@@ -96,23 +87,14 @@
     <string name="unsure_how">se não tiver certeza em como continuar</string>
     <string name="see_the">Veja o</string>
     <string name="getting_started_guide">guia de início rápido</string>
-    <string name="error_file_format">Formato de configuração inválido</string>
     <string name="vpn_channel_name">Canal de notificações VPN</string>
-    <string name="set_custom_ping_ip">Definir ip ping personalizado</string>
     <string name="vpn_denied_dialog_title">Permissão negada</string>
     <string name="vpn_settings">Configurações do sistema VPN</string>
     <string name="always_on_message">A permissão de conexão VPN foi negada. Por favor, verifique</string>
-    <string name="app_settings">configurações da app</string>
-    <string name="background_location_message2">para garantir que essas permissões estejam ativadas.</string>
     <string name="root_accepted">Shell root aceito</string>
-    <string name="optional_default">"opcional, padrão: "</string>
     <string name="show_amnezia_properties">Mostrar propriedades de Amnezia</string>
     <string name="never">nunca</string>
-    <string name="default_ping_ip">(opcional, padrão para pares)</string>
-    <string name="set_custom_ping_internal">Intervalo de Ping (seg)</string>
     <string name="handshake">handshake</string>
-    <string name="background_location_message">Permitir que toda a permissão de localização do tempo e/ou localização precisa é necessária para este recurso. Por favor, veja</string>
-    <string name="sec">seg</string>
     <string name="notifications">Notificações</string>
     <string name="exclude_lan">Excluir LAN</string>
     <string name="hide_scripts">Ocultar scripts</string>
@@ -135,7 +117,6 @@
     <string name="wildcards_active">Wildcards ativos</string>
     <string name="learn_more">Saber mais</string>
     <string name="use_wildcards">Usar nomes coringas</string>
-    <string name="wifi_name_via_shell">Nome do Wi-Fi por shell</string>
     <string name="use_root_shell_for_wifi">Obter o nome do Wi-Fi através do shell root</string>
     <string name="start_auto">Iniciar túnel automático</string>
     <string name="stop_auto">Pausar túnel automático</string>
@@ -149,8 +130,6 @@
     <string name="ethernet_tunnel">Túnel ethernet</string>
     <string name="set_ethernet_tunnel">Definir como túnel ethernet</string>
     <string name="native_kill_switch">Interruptor de desligamento padrão</string>
-    <string name="vpn_kill_switch">Interruptor de desligamento VPN</string>
-    <string name="kill_switch_options">Opções do interruptor de desligamento</string>
     <string name="allow_lan_traffic">Permitir tráfego LAN</string>
     <string name="bypass_lan_for_kill_switch">Ignorar LAN no interruptor de desligamento</string>
     <string name="splt_tunneling">Tunelamento dividido</string>
@@ -158,7 +137,6 @@
     <string name="tunnel_specific_settings">Configurações específicas no túnel</string>
     <string name="show_scripts">Mostrar scripts</string>
     <string name="quick_actions">Ações rápidas</string>
-    <string name="kernel_not_supported">Kernel não suportado</string>
     <string name="advanced_settings">Configurações avançadas</string>
     <string name="enable_amnezia_compatibility">Ativar compatibilidade Amnezia</string>
 </resources>

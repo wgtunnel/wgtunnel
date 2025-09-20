@@ -1,13 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="version">Versi</string>
     <string name="settings">Pengaturan</string>
     <string name="support">Support</string>
     <string name="kernel">Kernel</string>
     <string name="init_packet_junk_size">Ukuran sampah paket init</string>
     <string name="app_name">WG Tunnel</string>
     <string name="error_file_extension">File bukan .conf atau .zip</string>
-    <string name="turn_off_tunnel">Aksi memerlukan tunnel mati</string>
     <string name="no_tunnels">Belum ada tunnel yang ditambahkan!</string>
     <string name="tunnels">Tunnel</string>
     <string name="tunnel_mobile_data">Tunnel pada data seluler</string>
@@ -18,18 +16,15 @@
     <string name="thank_you">Terima kasih telah menggunakan WG Tunnel!</string>
     <string name="trusted_ssid_value_description">Kirim SSID</string>
     <string name="add_tunnels_text">Tambah dari file atau zip</string>
-    <string name="open_file">Buka File</string>
     <string name="add_from_qr">Tambahkan dari kode QR</string>
     <string name="auto_tunneling">Tunnel-otomatis</string>
     <string name="vpn_off">VPN mati</string>
     <string name="vpn_on">VPN aktif</string>
     <string name="create_import">Buat dari awal</string>
-    <string name="turn_on_tunnel">Tindakan memerlukan tunnel aktif</string>
     <string name="add_peer">Tambahkan rekan</string>
     <string name="interface_">Interface</string>
     <string name="rotate_keys">Putar tombol</string>
     <string name="private_key">Kunci privat</string>
-    <string name="comma_separated_list">Daftar yang dipisahkan koma</string>
     <string name="listen_port">Dengarkan port</string>
     <string name="random">(acak)</string>
     <string name="optional">(opsional)</string>
@@ -37,7 +32,6 @@
     <string name="seconds">detik</string>
     <string name="persistent_keepalive">Tetap hidup</string>
     <string name="cancel">Batal</string>
-    <string name="error_authorization_failed">Gagal mengotorisasi</string>
     <string name="enabled_app_shortcuts">Mengaktifkan pintasan aplikasi</string>
     <string name="unknown_error">Terjadi kesalahan yang tidak diketahui</string>
     <string name="tunnel_on_wifi">Tunnel di wifi yang tidak tepercaya</string>
@@ -45,7 +39,6 @@
     <string name="email_chooser">Kirim email…</string>
     <string name="docs_description">Baca dokumentasi</string>
     <string name="email_description">Kirimkan email kepada saya</string>
-    <string name="use_kernel">Gunakan modul kernel</string>
     <string name="error_ssid_exists">SSID sudah ada</string>
     <string name="error_root_denied">Root shell ditolak</string>
     <string name="error_no_file_explorer">Tidak ada file explorer yang diinstal</string>
@@ -69,30 +62,19 @@
     <string name="unsure_how">Jika Anda tidak yakin bagaimana melanjutkannya</string>
     <string name="see_the">Lihat</string>
     <string name="getting_started_guide">Panduan Memulai</string>
-    <string name="error_file_format">Format konfigurasi tunnel tidak valid</string>
     <string name="restart_at_boot">Mulai ulang saat boot</string>
     <string name="vpn_denied_dialog_title">Izin Ditolak</string>
     <string name="vpn_settings">Pengaturan sistem VPN</string>
     <string name="always_on_message">Izin koneksi VPN telah ditolak. Silakan periksa</string>
     <string name="always_on_message2">untuk memastikan VPN Selalu aktif dimatikan untuk semua aplikasi lain dan coba lagi</string>
-    <string name="background_location_message">Izinkan izin lokasi sepanjang waktu dan/atau lokasi yang tepat diperlukan untuk fitur ini. Silakan lihat</string>
-    <string name="app_settings">pengaturan aplikasi</string>
-    <string name="background_location_message2">untuk memastikan izin ini diaktifkan.</string>
     <string name="root_accepted">Shell root diterima</string>
-    <string name="set_custom_ping_ip">Atur ip ping kustom</string>
-    <string name="default_ping_ip">(optional, default ke peers)</string>
-    <string name="set_custom_ping_internal">Interval ping (detik)</string>
-    <string name="optional_default">"opsional, default: "</string>
-    <string name="set_custom_ping_cooldown">Cooldown Ping restart (detik)</string>
     <string name="show_amnezia_properties">Tampilkan properti Amnezia</string>
     <string name="never">tidak pernah</string>
-    <string name="sec">dtk</string>
     <string name="handshake">handshake</string>
     <string name="vpn_channel_name">Notifikasi Saluran VPN</string>
     <string name="prominent_background_location_message">Fitur ini memerlukan izin lokasi latar belakang untuk mengaktifkan pemantauan SSID Wi-Fi bahkan saat aplikasi ditutup. Untuk detail lebih lanjut, silakan lihat Kebijakan Privasi yang ditautkan di layar Dukungan.</string>
     <string name="copy_public_key">Salin kunci publik</string>
     <string name="base64_key">kunci base64</string>
-    <string name="error_authentication_failed">Autentikasi gagal</string>
     <string name="enable_app_lock">Aktifkan kunci aplikasi</string>
     <string name="delete_tunnel">Hapus tunnel</string>
     <string name="delete_tunnel_message">Apakah Anda yakin ingin menghapus tunnel ini?</string>

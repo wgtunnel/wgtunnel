@@ -102,12 +102,7 @@ fun SortScreen(viewModel: TunnelsViewModel) {
                     text = tunnel.tunName,
                     trailing = {
                         if (!isTv)
-                            Icon(
-                                Icons.Default.DragHandle,
-                                stringResource(
-                                    com.zaneschepke.wireguardautotunnel.R.string.drag_handle
-                                ),
-                            )
+                            Icon(Icons.Default.DragHandle, stringResource(R.string.drag_handle))
                         else
                             Row {
                                 IconButton(
@@ -121,9 +116,7 @@ fun SortScreen(viewModel: TunnelsViewModel) {
                                 ) {
                                     Icon(
                                         Icons.Default.ArrowUpward,
-                                        stringResource(
-                                            com.zaneschepke.wireguardautotunnel.R.string.move_up
-                                        ),
+                                        stringResource(R.string.move_up),
                                     )
                                 }
                                 IconButton(

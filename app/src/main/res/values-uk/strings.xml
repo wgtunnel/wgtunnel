@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="comma_separated_list">список розділений комами</string>
     <string name="no_tunnels">Тунелі ще не додані!</string>
     <string name="app_name">WG Tunnel</string>
     <string name="tunnels">Тунелі</string>
@@ -8,11 +7,9 @@
     <string name="tunnel_on_ethernet">Тунелювати Ethernet</string>
     <string name="prominent_background_location_title">Фонова передача місцезнаходження</string>
     <string name="trusted_ssid_value_description">Підтвердити SSID</string>
-    <string name="qr_scan">Сканувати QR</string>
     <string name="tunnel_name">Ім\'я тунелю</string>
     <string name="include">Включити</string>
     <string name="config_changes_saved">Зміни налаштувань збережено.</string>
-    <string name="turn_on_tunnel">Дія потребує активного тунелю</string>
     <string name="rotate_keys">Оновити ключі</string>
     <string name="private_key">Закритий ключ</string>
     <string name="base64_key">Ключ в base64</string>
@@ -23,19 +20,15 @@
     <string name="error_root_denied">Root доступ заборонено</string>
     <string name="incorrect_pin">Невірний PIN-код</string>
     <string name="use_tunnel_on_wifi_name">Використовувати тунель в мережі Wi-Fi</string>
-    <string name="version">Версія</string>
     <string name="transport_packet_magic_header">Заголовок транспортного пакету</string>
     <string name="getting_started_guide">інструкція щодо початку роботи</string>
-    <string name="error_file_format">некоректний формат конфігурації тунелю</string>
     <string name="vpn_channel_name">Канал сповіщення VPN</string>
     <string name="error_file_extension">Файл не є .conf або .zip файлом</string>
-    <string name="turn_off_tunnel">Дія потребує вимкнення тунелю</string>
     <string name="tunnel_mobile_data">Тунелювати мобільні дані</string>
     <string name="privacy_policy">Переглянути політику конфіденційності</string>
     <string name="thank_you">Спасибі за використання WG Tunnel!</string>
     <string name="prominent_background_location_message">Дана функція потребує фоновий доступ до служби місцезнаходження для моніторингу назви мереж Wi-Fi навіть коли додаток закрито. Для отримання додаткової інформації прочитайте політику приватності на екрані Підтримки.</string>
     <string name="add_tunnels_text">Додати з файлу або архіву</string>
-    <string name="open_file">Відкрити файл</string>
     <string name="exclude">Виключити</string>
     <string name="add_from_qr">Додати з QR коду</string>
     <string name="public_key">Публічний ключ</string>
@@ -59,15 +52,12 @@
     <string name="preshared_key">Загальний ключ</string>
     <string name="seconds">секунд</string>
     <string name="persistent_keepalive">Підтримка роботи тунелю (keepalive)</string>
-    <string name="error_authorization_failed">Не вдалося авторизуватися</string>
     <string name="enabled_app_shortcuts">Дозволити ярлики</string>
-    <string name="error_authentication_failed">Помилка автентифікації</string>
     <string name="unknown_error">Невідома помилка</string>
     <string name="tunnel_on_wifi">Тунелювати недовірені мережі Wi-Fi</string>
     <string name="email_subject">Підтримка WG-Tunnel</string>
     <string name="docs_description">Переглянути документацію</string>
     <string name="email_description">Відправити email автору</string>
-    <string name="use_kernel">Використовувати модуль режиму ядра</string>
     <string name="error_ssid_exists">SSID вже існує</string>
     <string name="error_no_file_explorer">Не знайдено файловий менеджер</string>
     <string name="auto_tunnel_title">Сервіс автотунелювання</string>
@@ -105,13 +95,7 @@
     <string name="skip">Пропустити</string>
     <string name="trusted_wifi_names">Довірені мережі Wi-Fi</string>
     <string name="vpn_denied_dialog_title">Немає дозволу</string>
-    <string name="app_settings">налаштування програми</string>
-    <string name="background_location_message2">, щоб переконатися, що ці дозволи надано</string>
-    <string name="default_ping_ip">(необов\'язково, за замовчуванням для пірів)</string>
-    <string name="set_custom_ping_internal">Інтервал пінгу (сек.)</string>
-    <string name="set_custom_ping_cooldown">Час очікування перезапуску пінгу (сек.)</string>
     <string name="show_amnezia_properties">Показати налаштування Amnezia</string>
-    <string name="sec">сек.</string>
     <string name="handshake">з\'єднання</string>
     <string name="notifications">Сповіщення</string>
     <string name="light">Світла</string>
@@ -122,13 +106,10 @@
     <string name="launch_app_settings">Налаштування запуску програми</string>
     <string name="learn_more">Дізнатись більше</string>
     <string name="wildcards_active">Підстановочні знаки використовуються</string>
-    <string name="wifi_name_via_shell">Ім\'я Wi-Fi через root</string>
-    <string name="kill_switch">Екстрене відключення</string>
     <string name="restart_at_boot">Перезапуск під час завантаження</string>
     <string name="vpn_settings">Системні налаштування VPN</string>
     <string name="always_on_message">Дозвіл на VPN-з\'єднання було відхилено, перевірте</string>
     <string name="root_accepted">Root-доступ дозволено</string>
-    <string name="set_custom_ping_ip">Призначити свій IP для пінгу</string>
     <string name="logs">Журнали</string>
     <string name="mobile_tunnel">Тунель для мобільних даних</string>
     <string name="display_theme">Тема</string>
@@ -138,9 +119,7 @@
     <string name="dynamic">Динамічна</string>
     <string name="use_root_shell_for_wifi">Використовувати root-доступ для отримання імені мережі Wi-Fi</string>
     <string name="use_wildcards">Використовувати підстановочні знаки в імені</string>
-    <string name="optional_default">"необов\'язково, за замовчуванням: "</string>
     <string name="always_on_message2">, щоб переконатися, що функція «Постійний VPN» вимкнена для всіх інших програм, і спробуйте ще раз</string>
-    <string name="background_location_message">Дозволяти весь час, доки для роботи цієї функції потрібен доступ на місцезнаходження та/або точне місцезнаходження. Дивіться</string>
     <string name="advanced_settings">Додаткові налаштування</string>
     <string name="quick_actions">Швидкі дії</string>
     <string name="tunnel_running">Тунель працює</string>
@@ -149,8 +128,6 @@
     <string name="add_from_clipboard">Додати з буфера обміну</string>
     <string name="stop_on_no_internet">Зупинити без інтернету</string>
     <string name="native_kill_switch">Штатне екстрене відключення</string>
-    <string name="vpn_kill_switch">Екстрене відключення VPN</string>
-    <string name="kill_switch_options">Налаштування екстреного вимкнення</string>
     <string name="allow_lan_traffic">Обхід LAN</string>
     <string name="bypass_lan_for_kill_switch">Дозволяти трафік LAN при екстреному вимкненні</string>
     <string name="auto_tunnel_channel_name">Канал сповіщень автотунелю</string>
@@ -171,7 +148,6 @@
     <string name="tunnel_control">Управління тунелем</string>
     <string name="auto_tunnel">Автотунель</string>
     <string name="local_logging">Локальне ведення журналу</string>
-    <string name="kernel_not_supported">Ядро не підтримується</string>
     <string name="start_auto">Запустити автотунель</string>
     <string name="stop_auto">Зупинити автотунель</string>
     <string name="enable_local_logging">Увімкнути ведення журналу</string>
@@ -181,8 +157,5 @@
     <string name="tunnel_specific_settings">Спеціальні налаштування тунелю</string>
     <string name="vpn_channel_description">Канал сповіщень про стан VPN</string>
     <string name="enable_amnezia_compatibility">Включити сумісність із Amnezia</string>
-    <string name="kill_switch_off">Без екстреного вимкнення у довірених</string>
-    <string name="server_ipv4">Отримання імені вузла IPv4</string>
-    <string name="prefer_ipv4">Віддавати перевагу з\'єднанню IPv4</string>
     <string name="multiple">Декілька</string>
 </resources>

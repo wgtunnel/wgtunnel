@@ -107,6 +107,6 @@ fun ConfigScreen(tunnelId: Int? = null, viewModel: TunnelsViewModel = hiltViewMo
                     )
             },
         )
-        AddPeerButton() { configProxy = configProxy.copy(peers = configProxy.peers + PeerProxy()) }
+        AddPeerButton { configProxy = configProxy.copy(peers = configProxy.peers + PeerProxy()) }
     }
 }

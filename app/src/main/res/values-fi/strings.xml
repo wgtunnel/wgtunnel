@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="optional">(valinnainen)</string>
     <string name="exclude">Poissulje</string>
@@ -10,7 +10,6 @@
     <string name="appearance">Ulkoasu</string>
     <string name="tunnel_specific_settings">Tunnelikohtaiset asetukset</string>
     <string name="dns_servers">DNS-palvelimet</string>
-    <string name="background_location_message2">varmistaaksesi, että käyttöoikeudet ovat myönnetty</string>
     <string name="app_name">WG Tunnel</string>
     <string name="vpn_channel_name">VPN-ilmoituskanava</string>
     <string name="delete_tunnel_message">Haluatko varmasti poistaa tämän tunnelin?</string>
@@ -22,7 +21,6 @@
     <string name="thank_you">Kiitos WG Tunnelin käyttämisestä!</string>
     <string name="trusted_ssid_value_description">Tallenna SSID</string>
     <string name="add_tunnels_text">Lisää tiedostosta tai zip-arkistosta</string>
-    <string name="open_file">Avaa tiedosto</string>
     <string name="add_from_qr">Lisää QR-koodilla</string>
     <string name="config_changes_saved">Asetusten muutokset tallennettu.</string>
     <string name="public_key">Julkinen avain</string>
@@ -33,11 +31,9 @@
     <string name="auto_tunneling">Automaattinen tunnelointi</string>
     <string name="vpn_on">VPN päällä</string>
     <string name="vpn_off">VPN pois päältä</string>
-    <string name="turn_on_tunnel">Toiminto vaatii aktiivisen tunnelin</string>
     <string name="private_key">Yksityinen avain</string>
     <string name="copy_public_key">Kopioi julkinen avain</string>
     <string name="base64_key">base64-avain</string>
-    <string name="comma_separated_list">pilkulla eroteltu lista</string>
     <string name="random">(satunnainen)</string>
     <string name="unknown_error">Tapahtui tuntematon virhe</string>
     <string name="tunnel_on_wifi">Tunneloi epäluotettavilla wifi-yhteyksillä</string>
@@ -59,25 +55,21 @@
     <string name="enable_app_lock">Ota käyttöön sovelluksen lukitus</string>
     <string name="set_primary_tunnel">Aseta ensisijaiseksi tunneliksi</string>
     <string name="edit_tunnel">Muokkaa tunnelia</string>
-    <string name="version">Versio</string>
     <string name="settings">Asetukset</string>
     <string name="support">Tuki</string>
     <string name="unsure_how">jos et tiedä, miten jatkaa</string>
     <string name="see_the">katso</string>
     <string name="getting_started_guide">aloitusopas</string>
-    <string name="error_file_format">Virheellinen tunneliasetusten tiedostomuoto</string>
     <string name="vpn_denied_dialog_title">Ei käyttöoikeutta</string>
     <string name="vpn_settings">VPN järjestelmäasetukset</string>
     <string name="always_on_message">VPN-yhteyden käyttöoikeus on evätty. Tarkista</string>
     <string name="prominent_background_location_message">Tämä toiminto vaatii taustapaikannusoikeuden, jotta Wi-Fi SSID:n seuranta on mahdollista myös sovelluksen ollessa suljettuna. Lisätietoja löydät Tuki-näkymään linkatusta tietosuojakäytännöstä.</string>
-    <string name="optional_default">"valinnainen, oletus: "</string>
     <string name="donate">Lahjoita projektille</string>
     <string name="add_from_clipboard">Lisää leikepöydältä</string>
     <string name="ethernet_tunnel">Ethernet-tunneli</string>
     <string name="quick_actions">Pikatoiminnot</string>
     <string name="advanced_settings">Lisäasetukset</string>
     <string name="hide_scripts">Piilota skriptit</string>
-    <string name="qr_scan">QR-skannaus</string>
     <string name="notifications">Ilmoitukset</string>
     <string name="error_file_extension">Tiedosto ei ole .conf tai .zip-tiedosto</string>
     <string name="tunnel_mobile_data">Tunneloi mobiilidatalla</string>
@@ -102,8 +94,6 @@
     <string name="start_auto">Käynnistä automaattinen tunnelointi</string>
     <string name="stop_auto">Kytke automaattinen tunnelointi pois päältä</string>
     <string name="allow_lan_traffic">Salli LAN-tietoliikenne</string>
-    <string name="turn_off_tunnel">Toiminto vaatii, että tunneli on pois päältä</string>
-    <string name="error_authentication_failed">Tunnistautuminen epäonnistui</string>
     <string name="display_theme">Teema</string>
     <string name="skip">Ohita</string>
     <string name="add_wifi_name">Lisää WIFI:n nimi</string>
@@ -112,16 +102,11 @@
     <string name="enabled_app_shortcuts">Salli sovelluksen pikakuvakkeet</string>
     <string name="automatic">Automaattinen</string>
     <string name="tunnel_name">Tunnelin nimi</string>
-    <string name="sec">sek</string>
     <string name="read_logs">Lue lokitiedot</string>
     <string name="mobile_tunnel">Mobiilidatatunneli</string>
     <string name="restart_at_boot">Käynnistä laitteen käynnistyksen yhteydessä</string>
     <string name="always_on_message2">varmistaaksesi, että Aina päällä oleva VPN on kytketty pois päältä kaikkien muiden sovellusten osalta ja yritä uudelleen</string>
-    <string name="background_location_message">Tätä toimintoa varten tulee sijainnin käyttölupa olla aina sallittuna ja/tai tarkka sijainti käytössä. Katso</string>
-    <string name="app_settings">sovelluksen asetukset</string>
     <string name="root_accepted">Root hyväksytty</string>
-    <string name="set_custom_ping_ip">Määrittele pingin ip-osoite</string>
-    <string name="set_custom_ping_internal">Pingin aikaväli (sek)</string>
     <string name="show_amnezia_properties">Näytä Amnezia-asetukset</string>
     <string name="launch_app_settings">Käynnistä sovelluksen asetukset</string>
     <string name="use_wildcards">Käytä jokerimerkkiä nimissä</string>

@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="error_file_extension">See pole .conf või .zip fail</string>
     <string name="vpn_channel_name">VPN-i teavituskanal</string>
-    <string name="turn_off_tunnel">See toiming eeldab, et tunnel pole töös</string>
     <string name="prominent_background_location_message">See funktsionaalsus eeldab, et rakendusel on õigus asukoha ja WiFi SSID tuvastamiseks taustal, seda ka siis, kui rakendus on suletud. Lisateavet leiad Privaatsusreeglite lehelt, mille leiad Kasutajatoe vaatest.</string>
     <string name="no_tunnels">Ühtegi tunnelit pole veel lisatud!</string>
     <string name="tunnels">Tunnelid</string>
@@ -12,9 +11,7 @@
     <string name="okay">Sobib</string>
     <string name="tunnel_on_ethernet">Loo tunnel kohtvõrgus</string>
     <string name="add_tunnels_text">Lisa conf- või zip-failist</string>
-    <string name="open_file">Ava fail</string>
     <string name="add_from_qr">Lisa QR-koodist</string>
-    <string name="qr_scan">Skaneeri QR-koodi</string>
     <string name="tunnel_name">Tunneli nimi</string>
     <string name="exclude">Välista</string>
     <string name="include">Kaasa</string>
@@ -34,7 +31,6 @@
     <string name="vpn_on">VPN on kasutusel</string>
     <string name="vpn_off">VPN pole kasutusel</string>
     <string name="create_import">Loo nullist</string>
-    <string name="turn_on_tunnel">Toiming eeldab aktiivse tunneli olemasolu</string>
     <string name="licenses">Litsentsid</string>
     <string name="update_check_unsupported">Selle rakenduse versiooni puhul pole uuenduste kontrollimine toetatud.</string>
     <string name="darker">Tumedam kujundus</string>
@@ -55,17 +51,10 @@
     <string name="install_updated_permission">See rakendus vajab uuenduse paigaldamiseks õigusi.</string>
     <string name="allow">Luba</string>
     <string name="nothing_here_yet">Siin pole veel midagi!</string>
-    <string name="share">Jaga</string>
     <string name="select_all">Vali kõik</string>
     <string name="export_success">Eksportimine õnnestus</string>
     <string name="inactive">Pole aktiivne</string>
     <string name="active">Aktiivne</string>
-    <string name="status">Olek</string>
-    <string name="bio_auth_title">Biomeetriline autentimine</string>
-    <string name="bio_subtitle">Logi sisse kasutades biomeetrilist autentimist</string>
-    <string name="bio_not_supported">Biomeetriline tuvastamine pole toetatud</string>
-    <string name="bio_not_created">Biomeetriline tuvastamine pole seadistatud</string>
-    <string name="bio_update_required">Vajalik on biomeetrilise tuvastamise turvauuendus</string>
     <string name="tunnel_starting">Tunnel käivitub</string>
     <string name="enable_remote_app_control">Luba rakenduse kaugjuhtimine</string>
     <string name="add_from_url">Lisa võrguaadressilt</string>
@@ -80,7 +69,6 @@
     <string name="export_logs">Ekspordi salvestatud logid</string>
     <string name="delete_logs">Kustuta ja eemalda logid</string>
     <string name="copy">Kopeeri</string>
-    <string name="info">Teave</string>
     <string name="export_tunnels_amnezia">Ekspordi tunnelid Amnezia jaoks</string>
     <string name="export_tunnels_wireguard">Ekspordi tunnelid WireGuardi jaoks</string>
     <string name="advanced_settings">Täiendavad seadistused</string>
@@ -110,7 +98,6 @@
     <string name="private_key">Privaatvõti</string>
     <string name="copy_public_key">Kopeeri avalik võti</string>
     <string name="base64_key">base64-kodeeringus võti</string>
-    <string name="comma_separated_list">komadega eraldatud loend</string>
     <string name="listen_port">Kuulatav port</string>
     <string name="random">(juhuslik)</string>
     <string name="optional">(valikuline)</string>
@@ -118,13 +105,11 @@
     <string name="seconds">sekundit</string>
     <string name="persistent_keepalive">Pidev elumärksõnum</string>
     <string name="cancel">Katkesta</string>
-    <string name="error_authentication_failed">Autentimine ei õnnestunud</string>
     <string name="exclude_lan">Välista kohtvõrgud</string>
     <string name="include_lan">Kaasa kohtvõrgud</string>
     <string name="dns_resolve_error">Nimelahendus ei toiminud</string>
     <string name="peer">Partner</string>
     <string name="add_peer">Lisa partner</string>
-    <string name="default_ping_ip">(valikuline, vaikimisi partneri otspunkt)</string>
     <string name="rotate_keys">Vaheta võtmeid</string>
     <string name="delete_tunnel">Kustuta tunnel</string>
     <string name="delete_tunnel_message">Kas sa oled kindel, et soovid selle tunneli kustutada?</string>
@@ -140,7 +125,6 @@
     <string name="enter_pin">Sisesta oma PIN-kood</string>
     <string name="create_pin">Loo PIN-kood</string>
     <string name="edit_tunnel">Muuda tunnelit</string>
-    <string name="version">Versioon</string>
     <string name="settings">Seadistused</string>
     <string name="support">Kasutajatugi</string>
     <string name="unknown_error">Tekkis tundmatu viga</string>
@@ -149,7 +133,6 @@
     <string name="email_chooser">Saada e-kiri…</string>
     <string name="docs_description">Loe dokumentatsiooni</string>
     <string name="email_description">Saada mulle e-kiri</string>
-    <string name="use_kernel">Kasuta kernelimoodulit</string>
     <string name="error_ssid_exists">SSID on juba olemas</string>
     <string name="error_root_denied">Juurkasutaja õigustes kest on keelatud</string>
     <string name="error_no_file_explorer">Failihaldurit pole paigaldatud</string>
@@ -163,7 +146,6 @@
     <string name="security_template">Turvalisus: %1$s</string>
     <string name="flavor_template">Levitusviis: %1$s</string>
     <string name="config_error">Vigane seadistus</string>
-    <string name="invalid_config_error">vigane_seadistus_viga</string>
     <string name="kernel_name_error">Viga kerneli mooduli nimes</string>
     <string name="auth_error">Pole lubatud</string>
     <string name="service_running_error">Teenus ei tööta</string>
@@ -172,25 +154,17 @@
     <string name="getting_started_guide">esimeste toimingute juhendit</string>
     <string name="restart_at_boot">Käivita alglaadimisel uuesti</string>
     <string name="vpn_denied_dialog_title">Õigused on puudu</string>
-    <string name="set_custom_ping_internal">Pingi välp (sekundites)</string>
-    <string name="optional_default">"valikuline, vaikimisi: "</string>
     <string name="never">mitte kunagi</string>
-    <string name="sec">sek</string>
     <string name="handshake">kätlus</string>
     <string name="logs">Logid</string>
-    <string name="kill_switch">Kiirpeatamine</string>
     <string name="trusted_wifi_names">Usaldusväärsete WiFi-võrkude nimed</string>
     <string name="add_wifi_name">Lisa WiFi võrgunimi</string>
     <string name="primary_tunnel">Põhiline tunnel</string>
-    <string name="app_settings">rakenduse seadistused</string>
-    <string name="background_location_message2">tagamaks, et need õigused on lubatud</string>
     <string name="root_accepted">Juurkasutaja kest on lubatud</string>
-    <string name="set_custom_ping_ip">Sisesta muu ip-aadress</string>
     <string name="learn_more">Lisateave</string>
     <string name="monitoring_state_changes">Jälgin oleku muudatusi</string>
     <string name="tunnel_running">Tunnel töötab</string>
     <string name="tunnel_specific_settings">Tunnelikohased seadistused</string>
-    <string name="kernel_not_supported">Kernel pole toetatud</string>
     <string name="start_auto">Käivita automaatne tunneldus</string>
     <string name="stop_auto">Peata automaatne tunneldus</string>
     <string name="quick_actions">Kiirtoimingud</string>
@@ -208,13 +182,10 @@
     <string name="mobile_data_tunnel">Määra mobiilse andmeside tunneliks</string>
     <string name="use_tunnel_on_wifi_name">Kasuta tunnelit WiFi nime puhul</string>
     <string name="kernel">Tuum/Kernel</string>
-    <string name="error_file_format">Vigane tunneli seadistuste vorming</string>
     <string name="mobile_tunnel">Mobiilside andmetunnel</string>
     <string name="launch_app_settings">Käivita rakenduse seadistused</string>
     <string name="use_wildcards">Kasuta nimedes metamärke</string>
     <string name="wildcards_active">Metamärgid on kasutusel</string>
-    <string name="prefer_ipv4">Eelista IPv4 ühendust</string>
-    <string name="server_ipv4">IPv4 hostinime nimelahendus</string>
     <string name="junk_packet_count">Rämpspakettide arv</string>
     <string name="junk_packet_minimum_size">Rämpspaketi miinimumsuurus</string>
     <string name="junk_packet_maximum_size">Rämpspaketi maksimumsuurus</string>
@@ -239,8 +210,6 @@
     <string name="legacy">Aegunud meetod</string>
     <string name="_default">Vaikimisi meetod</string>
     <string name="wifi_detection_method">WiFi tuvastamise meetod</string>
-    <string name="app_restart_required">Palun käivita rakendus uuesti</string>
-    <string name="use_deprecated_wifi_api">Kasuta aegunud WiFi API-t</string>
     <string name="current_template">Praegune: %1$s</string>
     <string name="multiple">Mitmikvalik</string>
     <string name="enabled_app_shortcuts">Kasuta rakenduse otseteid</string>

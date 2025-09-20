@@ -42,7 +42,7 @@ class DataStoreManager(
             try {
                 context.dataStore.data.first()
             } catch (e: IOException) {
-                Timber.Forest.e(e)
+                Timber.e(e)
             }
         }
     }
@@ -52,9 +52,9 @@ class DataStoreManager(
             try {
                 context.dataStore.edit { it[key] = value }
             } catch (e: IOException) {
-                Timber.Forest.e(e)
+                Timber.e(e)
             } catch (e: Exception) {
-                Timber.Forest.e(e)
+                Timber.e(e)
             }
         }
     }
@@ -64,9 +64,9 @@ class DataStoreManager(
             try {
                 context.dataStore.edit { it.remove(key) }
             } catch (e: IOException) {
-                Timber.Forest.e(e)
+                Timber.e(e)
             } catch (e: Exception) {
-                Timber.Forest.e(e)
+                Timber.e(e)
             }
         }
     }
@@ -78,7 +78,7 @@ class DataStoreManager(
             try {
                 context.dataStore.data.map { it[key] }.first()
             } catch (e: IOException) {
-                Timber.Forest.e(e)
+                Timber.e(e)
                 null
             }
         }

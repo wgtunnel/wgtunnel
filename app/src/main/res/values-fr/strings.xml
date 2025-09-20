@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="turn_off_tunnel">Cette action nécessite la désactivation du tunnel</string>
     <string name="no_tunnels">Aucun tunnel n\'a été ajouté pour le moment !</string>
     <string name="tunnels">Tunnels</string>
     <string name="tunnel_mobile_data">Tunnel sur données mobiles</string>
@@ -9,8 +8,6 @@
     <string name="prominent_background_location_title">Divulgation de la localisation en arrière-plan</string>
     <string name="thank_you">Merci d\'utiliser WG Tunnel !</string>
     <string name="add_tunnels_text">Ajouter depuis un fichier ou un zip</string>
-    <string name="open_file">Fichier ouvert</string>
-    <string name="qr_scan">Scan du code QR</string>
     <string name="exclude">Exclure</string>
     <string name="dns_servers">Serveurs DNS</string>
     <string name="mtu">MTU</string>
@@ -22,7 +19,6 @@
     <string name="location_services_not_detected">Services de localisation non détectés</string>
     <string name="auto_tunneling">Tunnel automatique</string>
     <string name="vpn_off">VPN éteint</string>
-    <string name="turn_on_tunnel">Cette action nécessite un tunnel actif</string>
     <string name="add_peer">Ajouter un pair</string>
     <string name="rotate_keys">Rotation des clés</string>
     <string name="error_file_extension">Le fichier n\'est pas un .conf ou .zip</string>
@@ -43,7 +39,6 @@
     <string name="interface_">Interface</string>
     <string name="copy_public_key">Copier la clé publique</string>
     <string name="base64_key">clé base64</string>
-    <string name="comma_separated_list">liste séparée par des virgules</string>
     <string name="listen_port">Port d\'écoute</string>
     <string name="random">(aléatoire)</string>
     <string name="persistent_keepalive">Keepalive persistant</string>
@@ -51,13 +46,10 @@
     <string name="preshared_key">Clé pré-partagée</string>
     <string name="cancel">Annuler</string>
     <string name="seconds">secondes</string>
-    <string name="error_authentication_failed">Échec de l\'authentification</string>
-    <string name="error_authorization_failed">Autorisation échouée</string>
     <string name="tunnel_on_wifi">Tunnel sur wifi non approuvé</string>
     <string name="email_chooser">Envoyer un mail…</string>
     <string name="docs_description">Lire la documentation</string>
     <string name="email_description">Envoyer un mail</string>
-    <string name="use_kernel">Utiliser le module noyau</string>
     <string name="error_ssid_exists">Le SSID existe déjà</string>
     <string name="error_root_denied">Accès au shell en tant que root interdit</string>
     <string name="error_no_file_explorer">Aucun explorateur de fichier n\'est installé</string>
@@ -72,7 +64,6 @@
     <string name="create_pin">Créer un NIP</string>
     <string name="restart_on_ping">Redémarrer après l\'échec du ping (beta)</string>
     <string name="mobile_data_tunnel">Définir comme tunnel de données mobiles</string>
-    <string name="version">Version</string>
     <string name="support">Support</string>
     <string name="junk_packet_minimum_size">Taille minimum des paquets indésirables</string>
     <string name="init_packet_junk_size">Initialiser la taille des paquets indésirables</string>
@@ -81,14 +72,9 @@
     <string name="underload_packet_magic_header">En-tête magique des paquets indésirables de sous-charge</string>
     <string name="unsure_how">si vous n\'êtes pas sûr de comment procéder</string>
     <string name="see_the">Voir le</string>
-    <string name="error_file_format">Format de configuration du tunnel invalide</string>
     <string name="restart_at_boot">Redémarrer au démarrage du système</string>
     <string name="vpn_settings">paramètres système des VPN</string>
-    <string name="app_settings">les réglages de l\'application</string>
-    <string name="background_location_message2">afin de s\'assurer que ces permissions soient actives</string>
     <string name="root_accepted">Accès au shell root autorisé</string>
-    <string name="set_custom_ping_ip">Personnaliser l\'ip à pinguer</string>
-    <string name="optional_default">"optionnel, par défaut : "</string>
     <string name="show_amnezia_properties">Voir les propriétés d\'Amnezia</string>
     <string name="never">jamais</string>
     <string name="handshake">handshake</string>
@@ -116,15 +102,9 @@
     <string name="vpn_denied_dialog_title">Permission Refusée</string>
     <string name="always_on_message">Connexion au VPN interdite. Merci de vérifier les</string>
     <string name="always_on_message2">afin de s\'assurer que le VPN permanent est désactivé pour toutes les autres applis puis réessayer</string>
-    <string name="background_location_message">L\'accès à la permission de localisation permanente et/ou la localisation précise est nécessaire pour cette fonctionnalité. Veuillez vérifier dans</string>
-    <string name="default_ping_ip">(facultatif, par défaut les pairs)</string>
-    <string name="set_custom_ping_internal">Intervalle de ping (sec)</string>
-    <string name="set_custom_ping_cooldown">Temps d\'attente avant redémarrage du ping (sec)</string>
-    <string name="sec">sec</string>
     <string name="add_from_clipboard">Ajouter depuis le presse-papiers</string>
     <string name="primary_tunnel">Tunnel principal</string>
     <string name="stop_auto">Arrêter l\'auto-tunnel</string>
-    <string name="kill_switch">Arrêt d\'urgence</string>
     <string name="appearance">Apparence</string>
     <string name="notifications">Notifications</string>
     <string name="automatic">Automatique</string>
@@ -141,14 +121,12 @@
     <string name="learn_more">En savoir plus</string>
     <string name="use_wildcards">Utiliser les wildcards</string>
     <string name="wildcards_active">Wildcards activé</string>
-    <string name="wifi_name_via_shell">Nom du Wifi via le shell</string>
     <string name="use_root_shell_for_wifi">Utiliser un shell root pour obtenir le nom du wifi</string>
     <string name="tunnel_running">Tunnel en cours d\'exécution</string>
     <string name="monitoring_state_changes">Surveille les changements d’état</string>
     <string name="donate">Faire un don au projet</string>
     <string name="local_logging">Journalisation locale</string>
     <string name="enable_local_logging">Activer la journalisation locale</string>
-    <string name="kernel_not_supported">Noyau non supporté</string>
     <string name="start_auto">Démarrer l\'auto-tunnel</string>
     <string name="exclude_lan">Exclure le LAN</string>
     <string name="tunnel_specific_settings">Réglages spécifiques du tunnel</string>
@@ -162,8 +140,6 @@
     <string name="ethernet_tunnel">Tunnel ethernet</string>
     <string name="set_ethernet_tunnel">Définir comme tunnel ethernet</string>
     <string name="native_kill_switch">Arrêt d\'urgence natif</string>
-    <string name="vpn_kill_switch">Arrêt d\'urgence VPN</string>
-    <string name="kill_switch_options">Options d\'arrêt d\'urgence</string>
     <string name="allow_lan_traffic">Autoriser le trafic LAN</string>
     <string name="bypass_lan_for_kill_switch">Contourner le LAN en cas d\'arêt d\'urgence</string>
     <string name="stop">arrêter</string>
@@ -185,8 +161,6 @@
     <string name="search">Rechercher</string>
     <string name="save">Sauvegarder</string>
     <string name="copy">Copier</string>
-    <string name="info">Informations</string>
-    <string name="prefer_ipv4">Préférer une connexion IPv4</string>
     <string name="allow">Autoriser</string>
     <string name="app_permission_title">Pont de contrôle du tunnel WG</string>
     <string name="app_permission_description">Contrôler les tunnels et les fonctions automatiques des tunnels.</string>

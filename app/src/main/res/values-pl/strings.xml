@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="tunnels">Tunele</string>
     <string name="app_name">WG Tunnel</string>
     <string name="unsure_how">jeśli nie masz pewności, jak postępować</string>
     <string name="getting_started_guide">przewodnik wprowadzający,</string>
     <string name="peer">Peer</string>
-    <string name="background_location_message2">w celu upewnienia się, że uprawnienia te są włączone</string>
     <string name="rotate_keys">Rotuj klucze</string>
     <string name="tunnel_on_ethernet">Tunel przez sieć ethernetową</string>
     <string name="public_key">Klucz publiczny</string>
@@ -14,7 +13,6 @@
     <string name="auto_tunneling">Autotunelowanie</string>
     <string name="vpn_on">Włącz VPN</string>
     <string name="vpn_off">Wyłącz VPN</string>
-    <string name="turn_on_tunnel">Czynność wymaga aktywnego tunelu</string>
     <string name="interface_">Interfejs</string>
     <string name="enabled_app_shortcuts">Włącz skróty aplikacji</string>
     <string name="privacy_policy">Wyświetl politykę prywatności</string>
@@ -28,10 +26,8 @@
     <string name="transport_packet_magic_header">Nagłówek magicznego pakietu transportowego</string>
     <string name="underload_packet_magic_header">Nagłówek magicznego pakietu niedociążenia</string>
     <string name="see_the">Zobacz</string>
-    <string name="error_file_format">Nieprawidłowy format konfiguracji tunelu</string>
     <string name="restart_at_boot">Uruchom ponownie przy rozruchu</string>
     <string name="never">Nigdy</string>
-    <string name="sec">sek.</string>
     <string name="handshake">Uzgadnianie</string>
     <string name="show_amnezia_properties">Pokaż właściwości protokołu Amnezia</string>
     <string name="seconds">sek.</string>
@@ -55,7 +51,6 @@
     <string name="prominent_background_location_title">Ujawnienie lokalizacji w tle</string>
     <string name="email_subject">Obsługa aplikacji WG Tunnel</string>
     <string name="auto">(Automatycznie)</string>
-    <string name="error_authorization_failed">Nie udało się autoryzować</string>
     <string name="add_from_clipboard">Dodaj ze schowka</string>
     <string name="delete_tunnel_message">Czy na pewno chcesz usunąć ten tunel?</string>
     <string name="tunnel_on_wifi">Tunel przez niezaufaną sieć Wi-Fi</string>
@@ -66,7 +61,6 @@
     <string name="junk_packet_minimum_size">Minimalny rozmiar pakietu śmieciowego</string>
     <string name="open_issue">Otwórz zagadnienie</string>
     <string name="thank_you">Dziękujemy za korzystanie z aplikacji WG Tunnel!</string>
-    <string name="error_authentication_failed">Uwierzytelnianie nie powiodło się</string>
     <string name="use_wildcards">Użyj symboli wieloznacznych nazw</string>
     <string name="yes">Tak</string>
     <string name="add_peer">Dodaj peera</string>
@@ -76,20 +70,16 @@
     <string name="junk_packet_maximum_size">Maksymalny rozmiar pakietu śmieciowego</string>
     <string name="local_logging">Lokalne rejestrowanie</string>
     <string name="monitoring_state_changes">Monitorowanie zmian stanu</string>
-    <string name="version">Wersja</string>
     <string name="add_tunnels_text">Dodaj z pliku lub archiwum ZIP</string>
     <string name="unknown_error">Wystąpił nieznany błąd</string>
     <string name="start_auto">Uruchom autotunel</string>
     <string name="location_services_not_detected">Nie wykryto usług lokalizacyjnych</string>
-    <string name="background_location_message">Ta funkcja wymaga zezwolenia na określenie lokalizacji w dowolnym momencie i/lub dokładnej lokalizacji. Sprawdź</string>
     <string name="auto_tunnel_title">Usługa autotunelu</string>
     <string name="donate">Przekaż darowiznę na rzecz projektu</string>
     <string name="trusted_ssid_value_description">Prześlij SSID</string>
     <string name="all">Wszystkie</string>
     <string name="no_email_detected">Nie wykryto aplikacji pocztowej</string>
-    <string name="turn_off_tunnel">Czynność wymaga wyłączenia tunelu</string>
     <string name="add_from_qr">Dodaj z kodu QR</string>
-    <string name="qr_scan">Skanuj kod QR</string>
     <string name="tunnel_name">Nazwa tunelu</string>
     <string name="include">Uwzględnij</string>
     <string name="config_changes_saved">Zmiany konfiguracji zostały zapisane.</string>
@@ -97,11 +87,9 @@
     <string name="endpoint">Punkt końcowy</string>
     <string name="name">Nazwa</string>
     <string name="private_key">Klucz prywatny</string>
-    <string name="comma_separated_list">lista rozdzielona przecinkami</string>
     <string name="listen_port">Port nasłuchu</string>
     <string name="always_on_vpn_support">Zezwalaj na stały VPN</string>
     <string name="base64_key">Klucz Base64</string>
-    <string name="use_kernel">Użyj modułu jądra</string>
     <string name="error_ssid_exists">SSID już istnieje</string>
     <string name="error_no_file_explorer">Eksplorator plików nie jest zainstalowany</string>
     <string name="error_root_denied">Odmowa powłoki użytkownika root</string>
@@ -112,13 +100,7 @@
     <string name="junk_packet_count">Liczba pakietów śmieciowych</string>
     <string name="init_packet_junk_size">Rozmiar śmieciowego pakietu początkowego</string>
     <string name="vpn_denied_dialog_title">Odmowa zezwolenia</string>
-    <string name="app_settings">ustawienia aplikacji</string>
-    <string name="set_custom_ping_ip">Ustaw niestandardowy adres IP pingowania</string>
-    <string name="default_ping_ip">(opcjonalnie, domyślnie do peerów)</string>
-    <string name="set_custom_ping_internal">Interwał pingowania (sek.)</string>
-    <string name="optional_default">"opcjonalnie, domyślnie: "</string>
     <string name="logs">Dzienniki</string>
-    <string name="kill_switch">Wyłącznik awaryjny</string>
     <string name="appearance">Wygląd</string>
     <string name="notifications">Powiadomienia</string>
     <string name="automatic">Automatyczny</string>
@@ -134,15 +116,11 @@
     <string name="skip">Pomiń</string>
     <string name="launch_app_settings">Uruchom ustawienia aplikacji</string>
     <string name="learn_more">Dowiedz się więcej</string>
-    <string name="wifi_name_via_shell">Nazwa sieci Wi-Fi poprzez powłokę</string>
     <string name="use_root_shell_for_wifi">Użyj powłoki użytkownika root, aby uzyskać informacje o sieci Wi-Fi, dzięki czemu nie będzie potrzeby uzyskiwania uprawnień do lokalizacji</string>
-    <string name="kernel_not_supported">Jądro nie jest obsługiwane</string>
     <string name="stop_auto">Zatrzymaj autotunel</string>
     <string name="tunnel_running">Tunel jest uruchomiony</string>
     <string name="enable_local_logging">Włącz lokalne rejestrowanie</string>
     <string name="email_chooser">Wyślij wiadomość e-mail…</string>
-    <string name="set_custom_ping_cooldown">Czas odnowienia pingowania (sek.)</string>
-    <string name="open_file">Otwórz plik</string>
     <string name="okay">OK</string>
     <string name="no_tunnels">Nie dodano jeszcze żadnych tuneli!</string>
     <string name="exclude">Wyklucz</string>
@@ -169,8 +147,6 @@
     <string name="post_down">Po dezaktywacji</string>
     <string name="quick_actions">Szybkie czynności</string>
     <string name="native_kill_switch">Natywny wyłącznik awaryjny</string>
-    <string name="vpn_kill_switch">Wyłącznik awaryjny VPN</string>
-    <string name="kill_switch_options">Opcje wyłącznika awaryjnego</string>
     <string name="show_scripts">Pokaż skrypty</string>
     <string name="hide_scripts">Ukryj skrypty</string>
     <string name="debounce_delay">Opóźnienie odbicia</string>
@@ -182,13 +158,8 @@
     <string name="hide_amnezia_properties">Ukryj właściwości protokołu Amnezia</string>
     <string name="tunnel_control">Kontrola tunelu</string>
     <string name="auto_tunnel">Autotunel</string>
-    <string name="kill_switch_off">Zatrzymaj wyłącznik awaryjny w zaufanej</string>
-    <string name="server_ipv4">Rozpoznawanie nazw hostów IPv6</string>
-    <string name="prefer_ipv4">Preferuj połączenie IPv4</string>
     <string name="multiple">Wiele</string>
-    <string name="bio_auth_title">Uwierzytelnianie biometryczne</string>
     <string name="active">Aktywny</string>
-    <string name="status">Stan</string>
     <string name="app_permission_description">Sterowanie tunelami i funkcjami autotunelowania.</string>
     <string name="kernel_name_error">Błąd nazwy modułu jądra</string>
     <string name="add_from_url">Dodaj z adresu URL</string>
@@ -207,7 +178,6 @@
     <string name="matrix_url">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
     <string name="export_logs">Eksportuj zapisane dzienniki</string>
     <string name="copy">Skopiuj</string>
-    <string name="info">Informacje</string>
     <string name="export_tunnels_wireguard">Eksportuj tunele jako WireGuard</string>
     <string name="delete">Usuń</string>
     <string name="camera_permission_required">Wymagane zezwolenie na dostęp do aparatu</string>
@@ -216,20 +186,14 @@
     <string name="config_error">Nieprawidłowa konfiguracja</string>
     <string name="dropdown">Rozwijane</string>
     <string name="auth_error">Brak autoryzacji</string>
-    <string name="bio_not_supported">Dane biometryczne nie są obsługiwane</string>
     <string name="tunnel_starting">Uruchamianie tunelu</string>
     <string name="enable_remote_app_control">Włącz zdalne sterowanie aplikacją</string>
-    <string name="bio_not_created">Dane biometryczne nie zostały utworzone</string>
-    <string name="bio_update_required">Wymagana aktualizacja zabezpieczeń biometrycznych</string>
     <string name="add_tunnel">Dodaj tunel</string>
-    <string name="bio_subtitle">Zaloguj się przy użyciu danych biometrycznych</string>
     <string name="select">Wybierz</string>
     <string name="export_tunnels_amnezia">Eksportuj tunele jako Amnezia</string>
-    <string name="invalid_config_error">błąd nieprawidłowej konfiguracji</string>
     <string name="dns_resolve_error">Rozwiązywanie DNS się nie powiodło</string>
     <string name="nothing_here_yet">Jeszcze nic tu nie ma!</string>
     <string name="select_all">Wybierz wszystkie</string>
-    <string name="share">Udostępnij</string>
     <string name="download">Pobierz</string>
     <string name="version_template">Wersja: %1$s</string>
     <string name="check_for_update">Sprawdź aktualizację</string>
@@ -254,8 +218,6 @@
     <string name="wireguard">WireGuard</string>
     <string name="done">Gotowe</string>
     <string name="current_template">Bieżące: %1$s</string>
-    <string name="use_deprecated_wifi_api">Użyj przestarzałego interfejsu API Wi-Fi</string>
-    <string name="app_restart_required">Wymagane ponowne uruchomienie aplikacji</string>
     <string name="wifi_detection_method">Metoda wykrywania Wi-Fi</string>
     <string name="_default">Domyślna</string>
     <string name="legacy">Przestarzała</string>
@@ -318,7 +280,6 @@
     <string name="root_required_template">%1$s (wymagany root)</string>
     <string name="recommended_template">%1$s (zalecane)</string>
     <string name="hint_template">(%1$s)</string>
-    <string name="userspace">Przestrzeń użytkownika</string>
     <string name="proxy">Proxy</string>
     <string name="backend_mode">Tryb aplikacji</string>
     <string name="selected">Wybrane</string>
@@ -364,7 +325,6 @@
     <string name="ddns_auto_update">Automatyczna aktualizacja dynamicznego DNS</string>
     <string name="ddns_auto_update_description">Automatyczna aktualizacja adresu IP po zmianach DDNS</string>
     <string name="prefer_ipv6_resolution">Preferuj rozwiązywanie peerów IPv6</string>
-    <string name="ipv4_auto_fallback">Automatyczne przełączanie peerów IPv4</string>
     <string name="disabled">Wyłączone</string>
     <string name="mode_disabled_template">Funkcja niedostępna w trybie %1$s.</string>
     <string name="lockdown">Zablokowane</string>

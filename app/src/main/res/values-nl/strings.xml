@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="error_file_extension">Bestand is geen .conf of .zip</string>
-    <string name="turn_off_tunnel">Actie vereist uitgeschakelde tunnel</string>
     <string name="tunnel_mobile_data">Tunnel bij mobiele data</string>
     <string name="app_name">WG Tunnel</string>
     <string name="vpn_channel_name">VPN Notificatiekanaal</string>
@@ -10,7 +9,6 @@
     <string name="tunnel_on_ethernet">Tunnel bij ethernet</string>
     <string name="no_tunnels">Nog geen tunnels geconfigureerd!</string>
     <string name="okay">Oke</string>
-    <string name="error_authentication_failed">Authenticatie mislukt</string>
     <string name="include">Meenemen</string>
     <string name="addresses">Adres</string>
     <string name="peer">Peer (extern systeem)</string>
@@ -20,21 +18,16 @@
     <string name="endpoint">Endpoint</string>
     <string name="name">Naam</string>
     <string name="auto_tunneling">Auto-tunnelen</string>
-    <string name="turn_on_tunnel">Actie vereist actieve tunnel</string>
     <string name="seconds">seconden</string>
     <string name="persistent_keepalive">Persistent keepalive</string>
-    <string name="error_authorization_failed">Autorisatie mislukt</string>
     <string name="enabled_app_shortcuts">App snelkoppelingen inschakelen</string>
     <string name="random">(willekeurig)</string>
     <string name="thank_you">Bedankt voor het gebruiken van WG Tunnel!</string>
     <string name="trusted_ssid_value_description">Verstuur SSID</string>
     <string name="add_tunnels_text">Toevoegen uit bestand of zip</string>
     <string name="add_from_qr">Toevoegen met QR code</string>
-    <string name="qr_scan">QR scannen</string>
     <string name="exclude">Uitsluiten</string>
     <string name="config_changes_saved">Configuratiewijzigingen opgeslagen.</string>
-    <string name="comma_separated_list">Komma-gescheiden lijst</string>
-    <string name="open_file">Bestand openen</string>
     <string name="public_key">Publieke sleutel</string>
     <string name="tunnel_name">Tunnelnaam</string>
     <string name="dns_servers">DNS servers</string>
@@ -67,7 +60,6 @@
     <string name="mobile_data_tunnel">Stel in als mobiele datatunnel</string>
     <string name="set_primary_tunnel">Stel in als primaire tunnel</string>
     <string name="edit_tunnel">Tunnel bewerken</string>
-    <string name="version">Versie</string>
     <string name="settings">Instellingen</string>
     <string name="support">Ondersteuning</string>
     <string name="junk_packet_minimum_size">Junk packet minimum grootte</string>
@@ -80,8 +72,6 @@
     <string name="enter_pin">Vul PIN in</string>
     <string name="pin_created">PIN aangemaakt</string>
     <string name="use_tunnel_on_wifi_name">Gebruik tunnel bij WiFi naam</string>
-    <string name="error_file_format">Ongeldige tunnelconfiguratie</string>
-    <string name="set_custom_ping_ip">Stel eigen ping IP in</string>
     <string name="add_peer">Peer toevoegen</string>
     <string name="init_packet_magic_header">Initiële packet magic header</string>
     <string name="prominent_background_location_title">Achtergrondlocatievrijgave</string>
@@ -89,7 +79,6 @@
     <string name="email_subject">WG Tunnel ondersteuning</string>
     <string name="email_chooser">Stuur een email…</string>
     <string name="docs_description">Lees de documentatie</string>
-    <string name="use_kernel">Gebruik kernelmodus</string>
     <string name="error_ssid_exists">SSID bestaat al</string>
     <string name="error_root_denied">Root toegang geweigerd</string>
     <string name="tunnel_on_wifi">Tunnelen bij onvertrouwde WiFi</string>
@@ -100,12 +89,8 @@
     <string name="restart_at_boot">Herstart na systeemstart</string>
     <string name="always_on_message">VPN verbindingstoegang geweigerd. Controleer aub de</string>
     <string name="always_on_message2">om zeker te zijn dat Altijd-aan VPN is uitgeschakeld voor alle andere apps, en probeer dan opnieuw</string>
-    <string name="default_ping_ip">(optioneel, standaard op peers)</string>
-    <string name="set_custom_ping_cooldown">Ping herstart afkoelperiode (sec)</string>
-    <string name="background_location_message2">om te controleren of toegang is verleend</string>
     <string name="show_amnezia_properties">Amnezia instellingen weergeven</string>
     <string name="never">nooit</string>
-    <string name="sec">sec</string>
     <string name="handshake">handshake</string>
     <string name="logs">Logboeken</string>
     <string name="email_description">Stuur mij een email</string>
@@ -113,15 +98,10 @@
     <string name="getting_started_guide">\"aan de slag\" handleiding</string>
     <string name="vpn_denied_dialog_title">Toegang geweigerd</string>
     <string name="vpn_settings">VPN systeeminstellingen</string>
-    <string name="app_settings">app instellingen</string>
     <string name="root_accepted">Root toegang verleend</string>
-    <string name="set_custom_ping_internal">Ping interval (sec)</string>
-    <string name="optional_default">"optioneel, standaard "</string>
     <string name="prominent_background_location_message">Deze functie vereist locatierechten om het WiFi SSID te kunnen bepalen. Ook als de applicatie is gesloten. Lees het privacybeleid op het scherm Ondersteuning voor meer informatie.</string>
     <string name="location_services_missing_message">De app kan geen ingeschakelde locatieservices op je apparaat vinden. Afhankelijk van het type apparaat kan dit leiden tot een niet functionerende herkenning van het verbonden WiFi netwerk. De niet-vertrouwde WiFi functionaliteit werkt daardoor mogelijk niet. Toch doorgaan?</string>
-    <string name="background_location_message">Permanente achtergrondtoegang tot exacte locatie is vereist voor deze functie. Bekijk aub de</string>
     <string name="transport_packet_magic_header">Transport packet magic header</string>
-    <string name="kill_switch">Kill-switch</string>
     <string name="appearance">Uiterlijk</string>
     <string name="light">Licht</string>
     <string name="dynamic">Dynamisch</string>
@@ -152,11 +132,7 @@
     <string name="stop_on_internet_loss">Stop tunnel bij verlies van internet</string>
     <string name="mobile_tunnel">Mobiele datatunnel</string>
     <string name="wildcards_active">Wildcards actief</string>
-    <string name="wifi_name_via_shell">Wifi naam via shell</string>
-    <string name="vpn_kill_switch">VPN kill switch</string>
-    <string name="kill_switch_options">Kill switch opties</string>
     <string name="use_root_shell_for_wifi">Gebruik root shell om wifi naam te bepalen, zodat locatie toestemmingen niet nodig zijn</string>
-    <string name="kernel_not_supported">Kernel niet ondersteund</string>
     <string name="start_auto">Start auto-tunnel</string>
     <string name="stop_auto">Stop auto-tunnel</string>
     <string name="tunnel_running">Tunnel actief</string>
@@ -180,8 +156,6 @@
     <string name="amnezia">Amnezia</string>
     <string name="wireguard">WireGuard</string>
     <string name="done">Klaar</string>
-    <string name="use_deprecated_wifi_api">Gebruik oude Wi-Fi API</string>
-    <string name="app_restart_required">Herstart van applicatie vereist</string>
     <string name="wifi_detection_method">Wi-Fi detectie methode</string>
     <string name="_default">Standaard</string>
     <string name="legacy_api_description">Gebruik een oude Android 12 methode om Wi-Fi informatie te verzamelen die locatie aanvragen beperkt, maar mogelijk niet goed werkt op nieuwe toestellen.</string>
@@ -206,16 +180,9 @@
     <string name="service_running_error">Service niet actief</string>
     <string name="inactive">Niet actief</string>
     <string name="active">Actief</string>
-    <string name="status">Status</string>
-    <string name="bio_auth_title">Biometrische authenticatie</string>
-    <string name="bio_subtitle">Log in met biometrische authenticatie</string>
-    <string name="bio_not_supported">Biometrische authenticatie niet ondersteund</string>
-    <string name="bio_not_created">Biometrische authenticatie niet aangemaakt</string>
-    <string name="bio_update_required">Biometrische authenticatie veiligheidsupdate nodig</string>
     <string name="tunnel_starting">Tunnel wordt gestart</string>
     <string name="enable_remote_app_control">Activeer applicatie controle vanop afstand</string>
     <string name="nothing_here_yet">Nog niets hier!</string>
-    <string name="share">Deel</string>
     <string name="select_all">Selecteer alles</string>
     <string name="export_success">Export gelukt</string>
     <string name="download">Download</string>
@@ -235,8 +202,6 @@
     <string name="include_lan">Inclusief LAN</string>
     <string name="tunnel_control">Tunnel controle</string>
     <string name="auto_tunnel">Auto-tunnel</string>
-    <string name="server_ipv4">IPv4 hostname opzoeking</string>
-    <string name="prefer_ipv4">Voorkeur voor IPv4 connectie</string>
     <string name="multiple">Meerdere</string>
     <string name="enter_config_url">Voeg configuratie URL in</string>
     <string name="error_download_failed">Downloaden configuratie mislukt</string>
@@ -250,7 +215,6 @@
     <string name="export_logs">Exporteer bewaarde logs</string>
     <string name="delete_logs">Verwijder en maak logs leeg</string>
     <string name="copy">Kopieer</string>
-    <string name="info">Info</string>
     <string name="export_tunnels_amnezia">Exporteer tunnels als Amnezia</string>
     <string name="export_tunnels_wireguard">Exporteer tunnels als WireGuard</string>
     <string name="delete">Verwijder</string>
@@ -265,7 +229,6 @@
     <string name="flavor_template">Smaak: %1$s</string>
     <string name="config_error">Configuratie ongeldig</string>
     <string name="dns_resolve_error">DNS opzoeking niet gelukt</string>
-    <string name="invalid_config_error">niet_geldige_configuratie_fout</string>
     <string name="kernel_name_error">Kernel module naam fout</string>
     <string name="legacy">Verouderd</string>
     <string name="root">Root</string>
@@ -275,7 +238,6 @@
     <string name="post_up">Na op</string>
     <string name="pre_down">Vooraleer neer</string>
     <string name="post_down">Na neer</string>
-    <string name="kill_switch_off">Schakel stop knop uit bij vertrouwde</string>
     <string name="use_shell_via_shizuku">Gebruik schil via Shizuku om Wi-Fi informatie te verkrijgen, zodat locatie toestemming niet nodig is op toestellen die niet geroot zijn</string>
     <string name="drag_handle">Sleep Handle</string>
     <string name="tunnel_item_description">1$s, %2$s, %3$s</string>

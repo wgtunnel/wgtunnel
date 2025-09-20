@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="vpn_channel_id" translatable="false">VPN Channel</string>
@@ -7,9 +7,7 @@
     <string name="docs_url" translatable="false">https://zaneschepke.com/wgtunnel-docs/overview.html</string>
     <string name="privacy_policy_url" translatable="false">https://zaneschepke.com/wgtunnel-docs/privacypolicy.html</string>
     <string name="docs_wildcards" translatable="false">https://zaneschepke.com/wgtunnel-docs/features.html#wildcard-wi-fi-name-support</string>
-    <string name="donate_url" translatable="false">https://zaneschepke.com/donate/</string>
     <string name="error_file_extension">Dosya .conf veya .zip değil</string>
-    <string name="turn_off_tunnel">Bu işlem tünelin kapalı olmasını gerektirir</string>
     <string name="no_tunnels">Henüz tünel eklenmedi!</string>
     <string name="tunnels">Tüneller</string>
     <string name="tunnel_mobile_data">Mobil veride tünel</string>
@@ -21,9 +19,7 @@
     <string name="thank_you">WG Tunnel’i kullandığınız için teşekkürler!</string>
     <string name="trusted_ssid_value_description">SSID Gönder</string>
     <string name="add_tunnels_text">Dosyadan veya zip’ten ekle</string>
-    <string name="open_file">Dosya Aç</string>
     <string name="add_from_qr">QR kodundan ekle</string>
-    <string name="qr_scan">QR Tara</string>
     <string name="tunnel_name">Tünel Adı</string>
     <string name="exclude">Hariç Tut</string>
     <string name="include">Dahil Et</string>
@@ -43,14 +39,12 @@
     <string name="vpn_on">VPN açık</string>
     <string name="vpn_off">VPN kapalı</string>
     <string name="create_import">Sıfırdan oluştur</string>
-    <string name="turn_on_tunnel">Bu işlem aktif bir tünel gerektirir</string>
     <string name="add_peer">Eş ekle</string>
     <string name="interface_">Arayüz</string>
     <string name="rotate_keys">Anahtarları döndür</string>
     <string name="private_key">Özel anahtar</string>
     <string name="copy_public_key">Genel anahtarı kopyala</string>
     <string name="base64_key">Base64 anahtarı</string>
-    <string name="comma_separated_list">virgülle ayrılmış liste</string>
     <string name="listen_port">Dinleme portu</string>
     <string name="random">(rastgele)</string>
     <string name="optional">(isteğe bağlı)</string>
@@ -58,8 +52,6 @@
     <string name="seconds">Saniye</string>
     <string name="persistent_keepalive">Kalıcı canlı tutma</string>
     <string name="cancel">İptal</string>
-    <string name="error_authentication_failed">Kimlik doğrulama başarısız</string>
-    <string name="error_authorization_failed">Yetkilendirme başarısız</string>
     <string name="enabled_app_shortcuts">Uygulama kısayollarını etkinleştir</string>
     <string name="unknown_error">Bilinmeyen bir hata oluştu</string>
     <string name="tunnel_on_wifi">Güvenilmeyen wifi’da tünel</string>
@@ -68,7 +60,6 @@
     <string name="email_chooser">E-posta gönder…</string>
     <string name="docs_description">Belgeleri oku</string>
     <string name="email_description">Bana e-posta gönder</string>
-    <string name="use_kernel">Çekirdek modülünü kullan</string>
     <string name="error_ssid_exists">SSID zaten mevcut</string>
     <string name="error_root_denied">Root kabuğu reddedildi</string>
     <string name="error_no_file_explorer">Dosya gezgini yüklü değil</string>
@@ -93,7 +84,6 @@
     <string name="set_primary_tunnel">Birincil tünel olarak ayarla</string>
     <string name="use_tunnel_on_wifi_name">Wifi adında tünel kullan</string>
     <string name="edit_tunnel">Tüneli düzenle</string>
-    <string name="version">Sürüm</string>
     <string name="settings">Ayarlar</string>
     <string name="support">Destek</string>
     <string name="kernel">Çekirdek</string>
@@ -111,27 +101,16 @@
     <string name="see_the">Bakınız</string>
     <string name="getting_started_url" translatable="false">https://zaneschepke.com/wgtunnel-docs/getting-started.html</string>
     <string name="getting_started_guide">başlangıç kılavuzu</string>
-    <string name="error_file_format">Geçersiz tünel yapılandırma formatı</string>
     <string name="restart_at_boot">Başlangıçta yeniden başlat</string>
     <string name="vpn_denied_dialog_title">İzin Reddedildi</string>
     <string name="vpn_settings">VPN sistem ayarları</string>
     <string name="always_on_message">VPN bağlantı izni reddedildi. Lütfen</string>
     <string name="always_on_message2">diğer tüm uygulamalar için Her Zaman Açık VPN’in kapalı olduğundan emin olun ve tekrar deneyin</string>
-    <string name="background_location_message">Bu özellik için her zaman konum izni ve/veya hassas konum gereklidir. Lütfen</string>
-    <string name="app_settings">uygulama ayarları</string>
-    <string name="background_location_message2">bu izinlerin etkin olduğundan emin olun</string>
     <string name="root_accepted">Root kabuğu kabul edildi</string>
-    <string name="set_custom_ping_ip">Özel ping IP’si ayarla</string>
-    <string name="default_ping_ip">(isteğe bağlı, varsayılan eşler)</string>
-    <string name="set_custom_ping_internal">Ping aralığı (saniye)</string>
-    <string name="optional_default">"isteğe bağlı, varsayılan: "</string>
-    <string name="set_custom_ping_cooldown">Ping yeniden başlatma bekleme süresi (saniye)</string>
     <string name="show_amnezia_properties">Amnezia özelliklerini göster</string>
     <string name="never">Asla</string>
-    <string name="sec">sn</string>
     <string name="handshake">el sıkışma</string>
     <string name="logs">Günlükler</string>
-    <string name="kill_switch">Kill Switch</string>
     <string name="appearance">Görünüm</string>
     <string name="notifications">Bildirimler</string>
     <string name="automatic">Otomatik</string>
@@ -149,9 +128,7 @@
     <string name="use_wildcards">İsim jokerlerini kullan</string>
     <string name="learn_more">Daha fazla bilgi</string>
     <string name="wildcards_active">Jokerler etkin</string>
-    <string name="wifi_name_via_shell">Kabuk üzerinden wifi adı</string>
     <string name="use_root_shell_for_wifi">Wifi adını almak için root kabuğunu kullan</string>
-    <string name="kernel_not_supported">Çekirdek desteklenmiyor</string>
     <string name="start_auto">Otomatik tüneli başlat</string>
     <string name="stop_auto">Otomatik tüneli durdur</string>
     <string name="tunnel_running">Tünel çalışıyor</string>
@@ -165,8 +142,6 @@
     <string name="ethernet_tunnel">Ethernet tüneli</string>
     <string name="set_ethernet_tunnel">Ethernet tüneli olarak ayarla</string>
     <string name="native_kill_switch">Yerel kill switch</string>
-    <string name="vpn_kill_switch">VPN kill switch</string>
-    <string name="kill_switch_options">Kill switch seçenekleri</string>
     <string name="allow_lan_traffic">LAN trafiğine izin ver</string>
     <string name="bypass_lan_for_kill_switch">Kill switch için LAN’ı atla</string>
     <string name="vpn_channel_description">VPN durum bildirimleri için bir kanal</string>
@@ -192,9 +167,6 @@
     <string name="include_lan">LAN’ı dahil et</string>
     <string name="tunnel_control">Tünel kontrolü</string>
     <string name="auto_tunnel">Otomatik tünel</string>
-    <string name="kill_switch_off">Güvenilirde kill switch’i durdur</string>
-    <string name="server_ipv4">IPv4 ana makine çözünürlüğü</string>
-    <string name="prefer_ipv4">IPv4 bağlantısını tercih et</string>
     <string name="multiple">Çoklu</string>
     <string name="app_permission_title">WG Tunnel Kontrol Köprüsü</string>
     <string name="app_permission_description">Kontrol tünelleri ve oto-tünel özellikleri.</string>

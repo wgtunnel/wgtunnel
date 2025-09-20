@@ -12,11 +12,9 @@
     <string name="getting_started_url" translatable="false">https://wgtunnel.com/docs/getting-started</string>
     <string name="privacy_policy_url" translatable="false">https://wgtunnel.com/docs/privacy-policy/</string>
 	<string name="docs_wildcards" translatable="false" >https://wgtunnel.com/docs/auto-tunneling/#use-name-wildcards</string>
-	<string name="donate_url" translatable="false">https://zaneschepke.com/donate/</string>
     <string name="matrix_url" translatable="false">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
     <string name="telegram_url" translatable="false">https://t.me/wgtunnel</string>
     <string name="error_file_extension">File is not a .conf or .zip</string>
-    <string name="turn_off_tunnel">Action requires tunnel off</string>
     <string name="no_tunnels">No tunnels added yet!</string>
     <string name="tunnels">Tunnels</string>
     <string name="tunnel_mobile_data">Tunnel on mobile data</string>
@@ -28,9 +26,7 @@
     <string name="thank_you">Thank you for using WG Tunnel!</string>
     <string name="trusted_ssid_value_description">Submit SSID</string>
     <string name="add_tunnels_text">Add from file or zip</string>
-    <string name="open_file">File Open</string>
     <string name="add_from_qr">Add from QR code</string>
-    <string name="qr_scan">QR Scan</string>
     <string name="tunnel_name">Tunnel Name</string>
     <string name="exclude">Exclude</string>
     <string name="include">Include</string>
@@ -50,14 +46,12 @@
     <string name="vpn_on">VPN on</string>
     <string name="vpn_off">VPN off</string>
     <string name="create_import">Create from scratch</string>
-    <string name="turn_on_tunnel">Action requires active tunnel</string>
     <string name="add_peer">Add peer</string>
 	<string name="interface_">Interface</string>
     <string name="rotate_keys">Rotate keys</string>
     <string name="private_key">Private key</string>
     <string name="copy_public_key">Copy public key</string>
     <string name="base64_key">Base64 key</string>
-    <string name="comma_separated_list">comma separated list</string>
     <string name="listen_port">Listen port</string>
     <string name="random">(random)</string>
     <string name="optional">(optional)</string>
@@ -65,8 +59,6 @@
     <string name="seconds">Seconds</string>
     <string name="persistent_keepalive">Persistent keepalive</string>
     <string name="cancel">Cancel</string>
-    <string name="error_authentication_failed">Authentication failed</string>
-    <string name="error_authorization_failed">Failed to authorize</string>
     <string name="enabled_app_shortcuts">Enable app shortcuts</string>
     <string name="unknown_error">Unknown error occurred</string>
     <string name="tunnel_on_wifi">Tunnel on untrusted wifi</string>
@@ -75,7 +67,6 @@
     <string name="email_chooser">Send an email…</string>
     <string name="docs_description">Read the docs</string>
 	<string name="email_description">Send me an email</string>
-    <string name="use_kernel">Use kernel module</string>
     <string name="error_ssid_exists">SSID already exists</string>
     <string name="error_root_denied">Root shell denied</string>
     <string name="error_no_file_explorer">No file explorer installed</string>
@@ -100,7 +91,6 @@
     <string name="set_primary_tunnel">Set as primary tunnel</string>
     <string name="use_tunnel_on_wifi_name">Use tunnel on wifi name</string>
     <string name="edit_tunnel">Edit tunnel</string>
-    <string name="version">Version</string>
     <string name="settings">Settings</string>
     <string name="support">Support</string>
     <string name="kernel">Kernel</string>
@@ -116,28 +106,17 @@
     <string name="unsure_how">if you are unsure how to proceed</string>
     <string name="see_the">See the</string>
     <string name="getting_started_guide">getting started guide</string>
-    <string name="error_file_format">Invalid tunnel config format</string>
     <string name="restart_at_boot">Restart on boot</string>
     <string name="vpn_denied_dialog_title">Permission Denied</string>
 	<string name="vpn_settings">VPN system settings</string>
 	<string name="always_on_message">VPN connection permission has been denied. Please check the</string>
 	<string name="always_on_message2">to make sure Always-on VPN is turned off for all other apps and try again</string>
-    <string name="background_location_message">Allow all the time location permission and/or precise location is required for this feature. Please see</string>
-	<string name="app_settings">app settings</string>
-	<string name="background_location_message2">to make sure these permissions are enabled</string>
-	<string name="root_accepted">Root shell accepted</string>
-	<string name="set_custom_ping_ip">Set custom ping ip</string>
-	<string name="default_ping_ip">(optional, defaults to peers)</string>
-	<string name="set_custom_ping_internal">Ping interval (sec)</string>
-	<string name="optional_default">"optional, default: "</string>
-	<string name="set_custom_ping_cooldown">Ping restart cooldown (sec)</string>
+    <string name="root_accepted">Root shell accepted</string>
     <string name="show_amnezia_properties">Show Amnezia properties</string>
 	<string name="never">Never</string>
-	<string name="sec">sec</string>
-	<string name="handshake">Handshake</string>
+    <string name="handshake">Handshake</string>
     <string name="logs">Logs</string>
-    <string name="kill_switch">Kill switch</string>
-	<string name="appearance">Appearance</string>
+    <string name="appearance">Appearance</string>
 	<string name="notifications">Notifications</string>
 	<string name="automatic">Automatic</string>
 	<string name="light">Light</string>
@@ -154,10 +133,8 @@
 	<string name="use_wildcards">Use name wildcards</string>
 	<string name="learn_more">Learn more</string>
 	<string name="wildcards_active">Wildcards active</string>
-    <string name="wifi_name_via_shell">Wifi name via shell</string>
-	<string name="use_root_shell_for_wifi">Use a root shell to get Wi-Fi information, preventing the need for location permissions</string>
-	<string name="kernel_not_supported">Kernel not supported</string>
-	<string name="start_auto">Start auto-tunnel</string>
+    <string name="use_root_shell_for_wifi">Use a root shell to get Wi-Fi information, preventing the need for location permissions</string>
+    <string name="start_auto">Start auto-tunnel</string>
 	<string name="stop_auto">Stop auto-tunnel</string>
     <string name="tunnel_running">Tunnel running</string>
 	<string name="monitoring_state_changes">Monitoring state changes</string>
@@ -170,9 +147,7 @@
 	<string name="ethernet_tunnel">Ethernet tunnel</string>
 	<string name="set_ethernet_tunnel">Set as ethernet tunnel</string>
 	<string name="native_kill_switch">Native kill switch</string>
-	<string name="vpn_kill_switch">VPN kill switch</string>
-	<string name="kill_switch_options">Kill switch options</string>
-	<string name="allow_lan_traffic">Allow LAN traffic</string>
+    <string name="allow_lan_traffic">Allow LAN traffic</string>
 	<string name="bypass_lan_for_kill_switch">Bypass LAN for kill switch</string>
 	<string name="vpn_channel_description">A channel for VPN state notifications</string>
 	<string name="auto_tunnel_channel_id" translatable="false">Auto-tunnel Channel</string>
@@ -197,9 +172,6 @@
 	<string name="include_lan">Include LAN</string>
     <string name="tunnel_control">Tunnel control</string>
 	<string name="auto_tunnel">Auto-tunnel</string>
-    <string name="kill_switch_off">Stop kill switch on trusted</string>
-	<string name="server_ipv4">IPv4 hostname resolution</string>
-	<string name="prefer_ipv4">Prefer IPv4 connection</string>
     <string name="multiple">Multiple</string>
     <string name="add_from_url">Add from URL</string>
     <string name="enter_config_url">Enter config URL</string>
@@ -214,8 +186,7 @@
     <string name="export_logs">Export stored logs</string>
 	<string name="delete_logs">Delete and clear logs</string>
 	<string name="copy">Copy</string>
-	<string name="info">Info</string>
-	<string name="export_tunnels_amnezia">Export tunnels as Amnezia</string>
+    <string name="export_tunnels_amnezia">Export tunnels as Amnezia</string>
 	<string name="export_tunnels_wireguard">Export tunnels as WireGuard</string>
 	<string name="delete">Delete</string>
     <string name="camera_permission_required">Camera permission required</string>
@@ -233,22 +204,14 @@
     <string name="hint_template">(%1$s)</string>
 	<string name="config_error">Invalid config</string>
 	<string name="dns_resolve_error">DNS resolution failed</string>
-	<string name="invalid_config_error">invalid_config_error</string>
-	<string name="kernel_name_error">Kernel module name error</string>
+    <string name="kernel_name_error">Kernel module name error</string>
 	<string name="auth_error">Unauthorized</string>
 	<string name="service_running_error">Service not running</string>
     <string name="inactive">Inactive</string>
 	<string name="active">Active</string>
-	<string name="status">Status</string>
-    <string name="bio_auth_title">Biometric Authentication</string>
-	<string name="bio_subtitle">Log in using your biometric credential</string>
-	<string name="bio_not_supported">Biometrics not supported</string>
-	<string name="bio_not_created">Biometrics not created</string>
-	<string name="bio_update_required">Biometric security update required</string>
-	<string name="tunnel_starting">Tunnel starting</string>
+    <string name="tunnel_starting">Tunnel starting</string>
 	<string name="enable_remote_app_control">Enable remote app control</string>
     <string name="nothing_here_yet">Nothing here yet!</string>
-    <string name="share">Share</string>
     <string name="select_all">Select all</string>
     <string name="export_success">Export success</string>
     <string name="download">Download</string>
@@ -270,8 +233,6 @@
     <string name="amnezia">Amnezia</string>
     <string name="wireguard">WireGuard</string>
     <string name="done">Done</string>
-    <string name="use_deprecated_wifi_api">Use deprecated Wi-Fi API</string>
-    <string name="app_restart_required">App restart required</string>
     <string name="wifi_detection_method">Wi-Fi detection method</string>
     <string name="_default">Default</string>
     <string name="legacy">Legacy</string>
@@ -341,7 +302,6 @@
     <string name="backup_failed">Failed to create backup.</string>
     <string name="backup_application">Backup application data</string>
     <string name="restore_application">Restore from backup</string>
-    <string name="userspace">Userspace</string>
     <string name="proxy">Proxy</string>
     <string name="backend_mode">App mode</string>
     <string name="selected">Selected</string>
@@ -388,7 +348,6 @@
     <string name="ddns_auto_update">Dynamic DNS auto-update</string>
     <string name="ddns_auto_update_description">Auto-updates IP on DDNS changes</string>
     <string name="prefer_ipv6_resolution">Prefer IPv6 peer resolution</string>
-    <string name="ipv4_auto_fallback">IPv4 peer auto-fallback</string>
     <string name="disabled">Disabled</string>
     <string name="mode_disabled_template">Feature unavailable in %1$s mode.</string>
     <string name="lockdown">Lockdown</string>
@@ -398,7 +357,6 @@
     <string name="liberapay">Liberapay</string>
     <string name="kofi">Ko-fi</string>
     <string name="bitcoin_address" translatable="false">bc1qu6dwlwhav7cwp5gv3kyv3cpwrjrra80p75js6u</string>
-    <string name="litecoin_mweb_address" translatable="false">ltcmweb1qqtykdawtseq80pvxaksann0p30j0cce3chxd708msyv3t2dc0p8suq75ud38kmmpdwgx2n2am99ly45nc5wpqz6rerhn6a35cxgwr60fg5ln0hqn</string>
     <string name="litecoin_address" translatable="false">ltc1q983jnz3n2zshp2xyme8ant45aah5hv337k8nm7</string>
     <string name="ethereum_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
     <string name="bitcoin_cash_address" translatable="false">bitcoincash:qp6xacvswha2tjfp2rscguq3gd4eecxeuvcgtyjv58</string>

@@ -22,7 +22,7 @@ fun RootShell.getCurrentWifiName(): String {
 @Suppress("DEPRECATION")
 fun WifiManager.getCurrentSecurityType(): WifiSecurityType? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        WifiSecurityType.Companion.from(connectionInfo.currentSecurityType)
+        WifiSecurityType.from(connectionInfo.currentSecurityType)
     } else {
         null
     }
