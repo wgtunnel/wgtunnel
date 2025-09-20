@@ -1,6 +1,0 @@
-Cosa c'è di nuovo:
-- Nuova integrazione app per gestione remota.
-- Copia il nome wifi attivo negli appunti
-- Correzione problema interruzione tunnel
-- Correzione problema server DNS di deault, il DNS del telefono preferenziale
-- Correzione problema configurazione peer host statici IPV6

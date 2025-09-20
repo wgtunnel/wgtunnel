@@ -1,6 +1,0 @@
-Co nowego:
-- Naprawiono błąd DNS braku połączenia tunelu
-- Naprawiono błąd tunelu zablokowanego przy uruchamianiu
-- Dodano widok kodu QR tunelu
-- Dodano rozwiązany punkt końcowy do statystyk
-- Różne inne poprawki błędów

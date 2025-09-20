@@ -1,8 +1,0 @@
-Cosa c'è di nuovo:
-- Nuova icona app e miglioramenti UI
-- Correzione problema attivazione log locale
-- Correzione problema AndroidTV riavvio sevizio su riavvio dispositivo
-- Correzione problema AndroidTV sulla selezione della lingua
-- Correzione funzionalità ping attiva di default
-- Correzione problema interruzione modalità kernel
-- Correzione problema kill switch per il tunnel automatico

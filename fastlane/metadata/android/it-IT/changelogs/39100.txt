@@ -1,6 +1,0 @@
-Cosa c'è di nuovo:
-- Correzione problema Tunnel di connettività DNS
-- Correzione problema Tunnel bloccato in fase di avvio
-- Aggiunta la visualizzazione QR code del tunnel
-- Aggiunti gli endpoint risolti alle statistiche
-- Vari bug fix

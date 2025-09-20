@@ -1,6 +1,0 @@
-Cosa c'è di nuovo:
-- Corretto problema banner AndroidTV
-- Aggiunta la selezione multipla per i tunnel
-- Aggiunta la ricerca degli aggiornamenti
-- Aggiunto la schermata di licenza
-- Vari bug fix

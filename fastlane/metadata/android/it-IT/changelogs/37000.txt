@@ -1,6 +1,0 @@
-Cosa c'è di nuovo:
-- Supporto tunnel multipli in modalità kermel.
-- Possibilità di ignorare le preferenze Ipv4 di default per WG.
-- Disabilitare kill switch su dispositivi fidati.
-- Limitazione richieste di localizzazione dalla funzione tunnel automatica.
-- Vari bug fix e miglioramenti

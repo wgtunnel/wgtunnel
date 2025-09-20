@@ -1,6 +1,0 @@
-What's new:
-- Fix Android TV Banners
-- Add multi-select for tunnels
-- Add in-app update checker
-- Add license screen
-- Various bug fixes

@@ -1,5 +1,0 @@
-Co nowego:
-- Naprawa błędu punktu końcowego statycznego IPv6
-- Naprawa błędu dynamicznych skrótów
-- Tłumaczenia
-- Naprawienie błędu dodawania peerów

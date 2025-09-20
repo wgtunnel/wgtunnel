@@ -1,5 +1,0 @@
-Nouveautés :
-- Correction de la régression du tunnel automatique
-- Amélioration de la synchronisation des tuiles
-- Optimisation de l'interrogation du nom du wifi
-- Amélioration des vérifications de permission pour la surveillance du réseau

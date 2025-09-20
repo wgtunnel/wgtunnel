@@ -1,6 +1,0 @@
-Cosa c'è di nuovo:
-- Correzione problema risoluzione DNS
-- Miglioramenti AndroidTV quando si esce dalla modalità sospensione
-- Correzione bug ricerca split tunnel
-- Aggiornamenti localizzazione
-- Aggiornamento link documentazione e nuovo sito web app

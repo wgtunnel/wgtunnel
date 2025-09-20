@@ -1,6 +1,0 @@
-Nouveautés :
-- Support de plusieurs tunnels pour le mode noyau
-- Remplacement de la préférence DNS Ipv4 par défaut de WG
-- Arrêter le kill switch sur le support de confiance
-- Limitation de l'interrogation de l'emplacement par tunnel automatique
-- Diverses corrections de bogues et améliorations

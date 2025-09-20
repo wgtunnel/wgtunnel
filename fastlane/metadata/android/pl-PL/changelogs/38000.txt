@@ -1,8 +1,0 @@
-Co nowego:
-- Aktualizacja interfejsu użytkownika
-- Dodawanie tunelu przez adres URL
-- Naprawiono błąd wyłącznika awaryjnego VPN
-- Naprawiono awarię usługi tunelowania
-- Naprawiono ping i ponowne uruchomienie zmiany konfiguracji
-- Informacje o sieci w interfejsie użytkownika
-- Różne inne poprawki i ulepszenia

@@ -1,8 +1,0 @@
-Co nowego:
-- Nowa ikona aplikacji i drobne ulepszenia interfejsu użytkownika
-- Naprawiono błąd przełączania lokalnego rejestratora
-- Naprawiono restart AndroidTV po ponownym uruchomieniu
-- Naprawiono wybór języka AndroidTV
-- Naprawiono funkcję ping działającą domyślnie
-- Naprawiono błąd wyłączania trybu jądra
-- Naprawiono błąd wyłącznika awaryjnego autotunelowania

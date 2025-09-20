@@ -1,5 +1,0 @@
-Cosa c'è di nuovo:
-- Correzione regressione tunnel automatico
-- Miglioramenti nella sincronizzazione delle tile.
-- Ottimizzazione nelle query dei nomi wifi.
-- Miglioramento controllo dei permessi per il monitoraggio della rete

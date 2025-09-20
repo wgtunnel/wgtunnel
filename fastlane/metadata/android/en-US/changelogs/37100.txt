@@ -1,5 +1,0 @@
-What's new:
-- Static IPv6 peer endpoint bug fix
-- Dynamic shortcuts bug fix
-- Localizations
-- Add peer bug fix

@@ -1,8 +1,0 @@
-What's new:
-- UI update
-- Add tunnel via URL
-- VPN kill switch bug fixes
-- Tunnel service crash fixes
-- Ping and config change restart fixes
-- Network information in UI
-- Various other fixes and improvements

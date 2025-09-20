@@ -1,5 +1,0 @@
-Cosa c'è di nuovo:
-- Correzione bug configurazione endpoint peer IPV6 statico
-- Correzione bug scorciatoie dinamiche
-- Localizzazione
-- Correzione bug peer

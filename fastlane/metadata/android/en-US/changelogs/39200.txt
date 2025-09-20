@@ -1,4 +1,0 @@
-What's new:
-- Fixes QR scanner bug
-- Fixes active Wi-Fi network tracking bug
-- Fixes Fdroid reproducibility

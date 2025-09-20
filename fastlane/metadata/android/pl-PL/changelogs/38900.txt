@@ -1,6 +1,0 @@
-Co nowego:
-- Naprawiono banery Android TV
-- Dodano wielokrotny wybór tuneli
-- Dodano sprawdzanie aktualizacji aplikacji
-- Dodano ekran licencji
-- Różne poprawki błędów

@@ -1,6 +1,0 @@
-What's new:
-- Fix tunnel no connectivity DNS bug
-- Fix tunnel stuck starting bug
-- Add view tunnel QR code
-- Add resolved endpoint to statistics
-- Various other bug fixes

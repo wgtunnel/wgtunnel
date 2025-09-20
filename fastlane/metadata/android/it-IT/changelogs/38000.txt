@@ -1,8 +1,0 @@
-Cosa c'è di nuovo:
-- Aggiornamento UI
-- Aggiunta tunnel via URL
-- Correzione bug kill switch VPN
-- Correzione blocchi improvvisi nel sevizio di tunnel
-- Correzioni ping e configurazione modifiche di riavvio
-- Miglioramento UI informazioni di rete
-- Vari miglioramenti e bug fix

@@ -1,5 +1,0 @@
-What's new:
-- Auto tunnel regression fix
-- Tile sync improvements
-- Optimize wifi name querying
-- Improve network monitoring permission checks

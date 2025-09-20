@@ -1,6 +1,0 @@
-What's new:
-- New remote app intent integration
-- Copy active wifi name to clipboard
-- Fix for tunnel shutdown bug
-- Fix for DNS default server bug, preferring phone DNS
-- Fix for Ipv6 static peer host configs

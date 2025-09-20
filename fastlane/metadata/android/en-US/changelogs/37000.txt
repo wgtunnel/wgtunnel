@@ -1,6 +1,0 @@
-What's new:
-- Multiple tunnel support for kernel mode
-- Override for WG default DNS Ipv4 preference
-- Stop kill switch on trusted support
-- Limit location querying by auto tunnel
-- Various bug fixes and improvements

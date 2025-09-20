@@ -1,5 +1,0 @@
-Nouveautés :
-- Correction d'un bogue concernant le point d'extrémité du pair IPv6 statique
-- Correction du bogue des raccourcis dynamiques
-- Localisations
-- Correction du bogue de l'ajout d'un pair

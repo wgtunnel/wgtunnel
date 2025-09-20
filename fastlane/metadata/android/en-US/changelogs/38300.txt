@@ -1,6 +1,0 @@
-What's new:
-- Fix DNS resolution issues
-- Improve Android TV restore on sleep
-- Fix split tunnel search bug
-- Localization updates
-- Update docs links for new app website

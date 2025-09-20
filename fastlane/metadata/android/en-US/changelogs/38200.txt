@@ -1,8 +1,0 @@
-What's new:
-- New app icon and minor UI improvements
-- Fix for local logger toggle bug
-- Fix for AndroidTV restart on reboot
-- Fix for AndroidTV language selection
-- Fix for ping feature running by default
-- Fix for kernel mode shutdown bug
-- Fix for kill switch auto tunneling bug
