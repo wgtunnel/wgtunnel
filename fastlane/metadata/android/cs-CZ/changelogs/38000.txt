@@ -1,8 +1,0 @@
-Co je nového:
-- Aktualizace uživatelského rozhraní
-- Přidání tunelu prostřednictvím adresy URL
-- Opravy chyb funkce VPN kill switch
-- Opravy pádů služby tunelu
-- Opravy pingu a restartu při změně konfigurace
-- Informace o síti v uživatelském rozhraní
-- Různé další opravy a vylepšení
