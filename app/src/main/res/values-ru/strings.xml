@@ -45,7 +45,7 @@
     <string name="private_key">Закрытый ключ</string>
     <string name="base64_key">Ключ в base64</string>
     <string name="error_no_file_explorer">Не найден файловый менеджер</string>
-    <string name="delete_tunnel_message">Вы действительно хотите удалить этот туннель?</string>
+    <string name="delete_tunnel_message">Удалить выбранные туннели?</string>
     <string name="version">Версия</string>
     <string name="unknown_error">Неизвестная ошибка</string>
     <string name="tunnel_on_wifi">Туннель в недоверенных сетях Wi-Fi</string>
@@ -378,4 +378,5 @@
     <string name="github_sponsors">GitHub Sponsors</string>
     <string name="liberapay">Liberapay</string>
     <string name="donation_dev_message">Будучи единственным разработчиком, я неустанно работаю, чтобы сделать WG Tunnel лучшим бесплатным и открытым клиентом WireGuard для Android, но это возможно только с вашей поддержкой.</string>
+    <string name="delete_active_message">Невозможно удалить активный туннель.</string>
 </resources>
