@@ -37,7 +37,7 @@
     <string name="endpoint">Uç Nokta</string>
     <string name="name">Ad</string>
     <string name="always_on_vpn_support">Her Zaman Açık VPN’e İzin Ver</string>
-    <string name="location_services_not_detected">Konum Servisleri Algılanmadı</string>
+    <string name="location_services_not_detected">Konum Servisleri Algılanamadı</string>
     <string name="db_name" translatable="false">wg-tunnel-db</string>
     <string name="auto_tunneling">Otomatik tünelleme</string>
     <string name="vpn_on">VPN açık</string>
@@ -49,13 +49,13 @@
     <string name="rotate_keys">Anahtarları döndür</string>
     <string name="private_key">Özel anahtar</string>
     <string name="copy_public_key">Genel anahtarı kopyala</string>
-    <string name="base64_key">base64 anahtar</string>
+    <string name="base64_key">Base64 anahtarı</string>
     <string name="comma_separated_list">virgülle ayrılmış liste</string>
     <string name="listen_port">Dinleme portu</string>
     <string name="random">(rastgele)</string>
     <string name="optional">(isteğe bağlı)</string>
     <string name="preshared_key">Ön paylaşımlı anahtar</string>
-    <string name="seconds">saniye</string>
+    <string name="seconds">Saniye</string>
     <string name="persistent_keepalive">Kalıcı canlı tutma</string>
     <string name="cancel">İptal</string>
     <string name="error_authentication_failed">Kimlik doğrulama başarısız</string>
@@ -77,12 +77,12 @@
     <string name="delete_tunnel">Tüneli sil</string>
     <string name="delete_tunnel_message">Bu tüneli silmek istediğinizden emin misiniz?</string>
     <string name="yes">Evet</string>
-    <string name="all">tümü</string>
+    <string name="all">Tümü</string>
     <string name="no_email_detected">E-posta uygulaması algılanmadı</string>
     <string name="no_browser_detected">Tarayıcı algılanmadı</string>
     <string name="open_issue">Bir sorun aç</string>
     <string name="read_logs">Günlükleri oku</string>
-    <string name="auto">(otomatik)</string>
+    <string name="auto">(Otomatik)</string>
     <string name="incorrect_pin">Pin yanlış</string>
     <string name="pin_created">Pin başarıyla oluşturuldu</string>
     <string name="enter_pin">Pin’inizi girin</string>
@@ -127,7 +127,7 @@
     <string name="optional_default">"isteğe bağlı, varsayılan: "</string>
     <string name="set_custom_ping_cooldown">Ping yeniden başlatma bekleme süresi (saniye)</string>
     <string name="show_amnezia_properties">Amnezia özelliklerini göster</string>
-    <string name="never">asla</string>
+    <string name="never">Asla</string>
     <string name="sec">sn</string>
     <string name="handshake">el sıkışma</string>
     <string name="logs">Günlükler</string>
@@ -196,4 +196,6 @@
     <string name="server_ipv4">IPv4 ana makine çözünürlüğü</string>
     <string name="prefer_ipv4">IPv4 bağlantısını tercih et</string>
     <string name="multiple">Çoklu</string>
+    <string name="app_permission_title">WG Tunnel Kontrol Köprüsü</string>
+    <string name="app_permission_description">Kontrol tünelleri ve oto-tünel özellikleri.</string>
 </resources>

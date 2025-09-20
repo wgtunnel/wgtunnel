@@ -1,0 +1,4 @@
+Co nowego:
+- Naprawiono błąd skanera kodów QR
+- Naprawiono błąd śledzenia aktywnej sieci Wi-Fi
+- Naprawiono powtarzalność F-Droid
