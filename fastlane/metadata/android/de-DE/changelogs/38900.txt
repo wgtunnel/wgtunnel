@@ -1,6 +1,0 @@
-Was ist neu?
-- Android TV-Banner korrigiert
-- Mehrfachauswahl für Tunnel hinzugefügt
-- In-App-Update-Prüfung hinzugefügt
-- Lizenzbildschirm hinzugefügt
-- Verschiedene Fehlerbehebungen

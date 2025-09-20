@@ -1,6 +1,0 @@
-Co je nového:
-- Podpora více tunelů pro režim jádra
-- Přepsání WG výchozí preference DNS IPv4
-- Zastavení funkce kill switch na důvěryhodných
-- Omezení dotazů na polohu automatickým tunelem
-- Různé opravy chyb a vylepšení

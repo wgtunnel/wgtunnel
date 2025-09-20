@@ -1,8 +1,0 @@
-Was ist neu?
-- UI-Aktualisierung
-- Tunnel über URL hinzufügen
-- Fehlerbehebung beim VPN-Notschalter
-- Behebung von Abstürzen des Tunneldienstes
-- Ping und Neustart bei Konfigurationsänderungen behoben
-- Netzwerkinformationen in der Benutzeroberfläche
-- Verschiedene andere Korrekturen und Verbesserungen

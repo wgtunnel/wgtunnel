@@ -1,6 +1,0 @@
-Was ist neu?
-- Behebung von Problemen mit der DNS-Auflösung
-- Verbesserte Wiederherstellung von Android TV im Ruhezustand
-- Fehler bei der geteilten Tunnelsuche behoben
-- Aktualisierungen der Lokalisierung
-- Aktualisierung der Dokumentationslinks für die neue App-Website

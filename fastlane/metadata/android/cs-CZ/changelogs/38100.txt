@@ -1,6 +1,0 @@
-Co je nového:
-- Nová integrace záměrů vzdálených aplikací
-- Kopírování názvu aktivní sítě Wi-Fi do schránky
-- Oprava chyby při vypínání tunelu
-- Oprava chyby výchozího serveru DNS, která upřednostňovala DNS telefonu
-- Oprava konfigurací statických peer hostitelů IPv6
