@@ -1,7 +1,7 @@
 [versions]
 accompanist = "0.37.3"
 activityCompose = "1.11.0"
-amneziawgAndroid = "2.1.4"
+amneziawgAndroid = "2.1.6"
 androidx-junit = "1.3.0"
 icmp4a = "1.0.0"
 orbitCompose = "10.0.0"
