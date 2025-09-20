@@ -1,6 +1,0 @@
-Co je nového:
-- Opraveny bannery v Android TV
-- Přidán vícenásobný výběr tunelů
-- Přidána kontrola aktualizací v aplikaci
-- Přidána obrazovka s licencí
-- Opravy různých chyb
