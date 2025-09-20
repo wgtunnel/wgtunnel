@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.zaneschepke.wireguardautotunnel.R
@@ -41,6 +41,12 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val navController = LocalNavController.current
     val autoTunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+
+    LaunchedEffect(autoTunnelState.stateInitialized) {
+        if (!autoTunnelState.isLocationDisclosureShown && autoTunnelState.stateInitialized) {
+            navController.navigate(Route.LocationDisclosure)
+        }
+    }
 
     if (!autoTunnelState.stateInitialized) return
     var showLocationDialog by remember { mutableStateOf(false) }

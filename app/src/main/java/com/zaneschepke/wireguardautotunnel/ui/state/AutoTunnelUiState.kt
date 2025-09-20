@@ -8,5 +8,6 @@ data class AutoTunnelUiState(
     val connectivityState: ConnectivityState? = null,
     val generalSettings: GeneralSettings = GeneralSettings(),
     val isBatteryOptimizationShown: Boolean = false,
+    val isLocationDisclosureShown: Boolean = false,
     val stateInitialized: Boolean = false,
 )

@@ -317,9 +317,7 @@ class MainActivity : AppCompatActivity() {
                                     }
 
                                     navigation<Route.AutoTunnelGraph>(
-                                        startDestination =
-                                            if (appState.isLocationDisclosureShown) Route.AutoTunnel
-                                            else Route.LocationDisclosure
+                                        startDestination = Route.AutoTunnel
                                     ) {
                                         composable<Route.LocationDisclosure> {
                                             val viewModel =

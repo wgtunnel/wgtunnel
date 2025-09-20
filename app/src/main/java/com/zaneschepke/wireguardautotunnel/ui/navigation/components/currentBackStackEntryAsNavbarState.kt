@@ -94,7 +94,11 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                 Route.AutoTunnel ->
                     NavbarState(
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.auto_tunnel)) },
+                        topTitle =
+                            if (!sharedState.isLocationDisclosureShown) null
+                            else {
+                                { Text(stringResource(R.string.auto_tunnel)) }
+                            },
                     )
                 is Route.Config -> {
                     val tunnel = sharedState.tunnels.find { it.id == route.id }

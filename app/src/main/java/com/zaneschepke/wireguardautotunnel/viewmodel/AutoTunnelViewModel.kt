@@ -46,6 +46,7 @@ constructor(
                             connectivityState = connectivity,
                             generalSettings = settings,
                             isBatteryOptimizationShown = appState.isBatteryOptimizationDisableShown,
+                            isLocationDisclosureShown = appState.isLocationDisclosureShown,
                             stateInitialized = true,
                         )
                     }
