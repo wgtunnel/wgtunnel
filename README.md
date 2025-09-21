@@ -4,7 +4,7 @@ WG Tunnel
 
 <div align="center">
 
-An alternative Android client app for [WireGuard](https://www.wireguard.com/)
+An alternative FOSS Android client for [WireGuard](https://www.wireguard.com/)
 and [AmneziaWG](https://docs.amnezia.org/documentation/amnezia-wg/)
 <br />
 <br />
@@ -37,11 +37,11 @@ and [AmneziaWG](https://docs.amnezia.org/documentation/amnezia-wg/)
 <summary>Table of Contents</summary>
 
 - [About](#about)
-- [Acknowledgements](#acknowledgements)
 - [Screenshots](#screenshots)
 - [Features](#features)
 - [Building](#building)
 - [Translation](#translation)
+- [Acknowledgements](#acknowledgements)
 - [Contributing](#contributing)
 
 </details>
@@ -49,21 +49,12 @@ and [AmneziaWG](https://docs.amnezia.org/documentation/amnezia-wg/)
 <div style="text-align: left;">
 
 ## About
-Inspired by the official [wireguard-android](https://github.com/WireGuard/wireguard-android) app, WG Tunnel was created to address features and support missing from the official app. This app combines support for both [WireGuard](https://www.wireguard.com/)
-and [AmneziaWG](https://docs.amnezia.org/documentation/amnezia-wg/), with its primary feature of auto-tunneling (on-demand tunneling).
+
+WG Tunnel is an alternative Android client for WireGuard and AmneziaWG, inspired by the official WireGuard Android app. It fills gaps in the official client by adding advanced features like auto-tunneling (on-demand VPN activation), while seamlessly supporting both protocols across app modes—including Kernel (for direct WireGuard kernel integration; AmneziaWG not supported), VPN (standard system-level tunneling), Lockdown (a custom kill switch for leak prevention), and Proxy (built-in HTTP/SOCKS5 forwarding)—for enhanced privacy, censorship resistance, and flexibility.
 
 </div>
 
 <div style="text-align: left;">
-
-## Acknowledgements
-
-Thank you to the following:
-
-- All of the users that have helped contribute to the project with ideas, translations, feedback, bug reports, testing, and donations.
-- [WireGuard](https://www.wireguard.com/) - Jason A. Donenfeld (https://github.com/WireGuard/wireguard-android)
-
-- [AmneziaWG](https://docs.amnezia.org/documentation/amnezia-wg/) - Amnezia Team (https://github.com/amnezia-vpn/amneziawg-android)
 
 ## Screenshots
 
@@ -79,26 +70,26 @@ Thank you to the following:
 
 ## Features
 
-* Add tunnels via .conf file, zip, manual entry, clipboard, or QR code
-* Auto-tunnel based on Wi-Fi SSID, ethernet, or mobile data
-* Split tunneling by application with search
-* Support for kernel and userspace modes
-* Amnezia support for userspace mode for DPI/censorship protection
-* Pre/Post Up/Down scripts support for all modes on a rooted device
-* Always-On VPN support
-* Export tunnels to zip
-* Quick tile support for tunnel toggling, auto-tunneling
-* Shortcuts support for tunnel toggling, auto-tunneling
-* Intent automation support for all tunnels
-* In app VPN kill switch with LAN bypass
-* Automatic auto-tunneling service and/or tunnel restart after reboot or app update
-* Battery preservation measures
-* Restart tunnel on ping failure
+- **Tunnel Import Methods**: Easily add tunnels using .conf files, ZIP archives, manual entry, or QR code scanning.
+- **Auto-Tunneling**: Automatically activate tunnels based on Wi-Fi SSID, Ethernet connections, or mobile data networks.
+- **Split Tunneling**: Flexible support for routing specific apps or traffic through the VPN.
+- **WireGuard Modes**: Full compatibility with WireGuard in both kernel and userspace implementations.
+- **AmneziaWG Integration**: Userspace mode for AmneziaWG, providing robust censorship evasion.
+- **Always-On VPN**: Ensures continuous protection with Android's Always-On VPN feature.
+- **Quick Controls**: Quick Settings tile and home screen shortcuts for easy VPN toggling.
+- **Automation Support**: Intent-based automation for controlling tunnels.
+- **Auto-Restore**: Seamlessly restores auto-tunneling and active tunnels after device restarts or app updates.
+- **Proxying Options**: Built-in HTTP and SOCKS5 proxy support within tunnels.
+- **Lockdown Mode**: Custom kill switch for maximum leak prevention and security.
+- **Dynamic DNS Handling**: Detects and updates DNS changes without tunnel restarts.
+- **Monitoring Tools**: Advanced tunnel monitoring features for tunnel performance monitoring.
+- **Android TV Support**: Android TV support for secure streaming and browsing.
+- **Advanced DNS**: DNS over HTTPS support for tunnel endpoint resolutions.
 
 ## Building
 
 ```sh
-git clone https://github.com/zaneschepke/wgtunnel
+git clone https://github.com/wgtunnel/wgtunnel
 cd wgtunnel
 ```
 
@@ -113,6 +104,15 @@ This app is using [Weblate](https://weblate.org) to assist with translations.
 Help translate WG Tunnel into your language
 at [Hosted Weblate](https://hosted.weblate.org/engage/wg-tunnel/).\
 [![Translation status](https://hosted.weblate.org/widgets/wg-tunnel/-/multi-auto.svg)](https://hosted.weblate.org/engage/wg-tunnel/)
+
+## Acknowledgements
+
+Thank you to the following:
+
+- All of the users that have helped contribute to the project with ideas, translations, feedback, bug reports, testing, and donations.
+- [WireGuard](https://www.wireguard.com/) - Jason A. Donenfeld (https://github.com/WireGuard/wireguard-android)
+- [AmneziaWG](https://docs.amnezia.org/documentation/amnezia-wg/) - Amnezia Team (https://github.com/amnezia-vpn/amneziawg-android)
+- [JetBrains](https://jetbrains.com) - For supporting open-source developers with free software licenses.
 
 ## Contributing
 

@@ -1,14 +1,15 @@
-Features
-
-- Add tunnels via .conf file, zip, manual entry, or QR code
-- Auto connect to VPN based on Wi-Fi SSID, ethernet, or mobile data
-- Split tunneling by application with search
-- WireGuard support for kernel and userspace modes
-- Amnezia support for userspace mode for DPI/censorship protection
-- Always-On VPN support
-- Export Amnezia and WireGuard tunnels to zip
-- Quick tile support for VPN toggling
-- Static shortcuts support for primary tunnel for automation integration
-- Intent automation support for all tunnels
-- Automatic service restart after reboot
-- Battery preservation measures
+- **Tunnel Import Methods**: Easily add tunnels using .conf files, ZIP archives, manual entry, or QR code scanning.
+- **Auto-Tunneling**: Automatically activate tunnels based on Wi-Fi SSID, Ethernet connections, or mobile data networks.
+- **Split Tunneling**: Flexible support for routing specific apps or traffic through the VPN.
+- **WireGuard Modes**: Full compatibility with WireGuard in both kernel and userspace implementations.
+- **AmneziaWG Integration**: Userspace mode for AmneziaWG, providing robust censorship evasion.
+- **Always-On VPN**: Ensures continuous protection with Android's Always-On VPN feature.
+- **Quick Controls**: Quick Settings tile and home screen shortcuts for easy VPN toggling.
+- **Automation Support**: Intent-based automation for controlling tunnels.
+- **Auto-Restore**: Seamlessly restores auto-tunneling and active tunnels after device restarts or app updates.
+- **Proxying Options**: Built-in HTTP and SOCKS5 proxy support within tunnels.
+- **Lockdown Mode**: Custom kill switch for maximum leak prevention and security.
+- **Dynamic DNS Handling**: Detects and updates DNS changes without tunnel restarts.
+- **Monitoring Tools**: Advanced tunnel monitoring features for tunnel performance monitoring.
+- **Android TV Support**: Android TV support for secure streaming and browsing.
+- **Advanced DNS**: DNS over HTTPS support for tunnel endpoint resolutions.
