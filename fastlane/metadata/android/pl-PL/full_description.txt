@@ -1,14 +1,15 @@
-Funkcje
-
-- Dodawanie tuneli za pomocą pliku .conf, pliku zip, ręcznego wprowadzania lub kodu QR
-- Automatyczne łączenie się z VPN na podstawie SSID Wi-Fi, Ethernetu lub danych mobilnych
-- Podział tunelowania według aplikacji z wyszukiwaniem
-- Obsługa protokołu WireGuard dla trybów jądra i przestrzeni użytkownika
-- Obsługa protokołu Amnezia dla trybu przestrzeni użytkownika dla ochrony DPI/cenzury
-- Obsługa stałego VPN
-- Eksport tuneli protokołów Amnezia i WireGuard do pliku ZIP
-- Obsługa szybkiego kafelka dla przełączania VPN
-- Obsługa skrótów statycznych dla tunelu głównego w celu integracji automatyzacji
-- Obsługa automatyzacji intencji dla wszystkich tuneli
-- Automatyczne ponowne uruchomienie usługi po ponownym uruchomieniu
-- Środki oszczędzania baterii
+- **Metody importu tuneli**: łatwe dodawanie tuneli za pomocą plików .conf, archiwów ZIP, ręcznego wprowadzania danych lub skanowania kodów QR.
+- **Autotunelowanie**: automatyczne aktywowanie tuneli na podstawie identyfikatora SSID Wi-Fi, połączeń Ethernet lub sieci danych komórkowych.
+- **Tunelowanie dzielone**: elastyczne wsparcie dla trasowania określonych aplikacji lub ruchu przez VPN.
+- **Tryby WireGuard**: pełna zgodność z WireGuard zarówno w implementacjach jądra, jak i przestrzeni użytkownika.
+- **Integracja AmneziaWG**: tryb przestrzeni użytkownika dla AmneziaWG, zapewniający skuteczne unikanie cenzury.
+- **Zawsze włączony VPN**: zapewnia ciągłą ochronę dzięki funkcji „Zawsze włączony VPN” w systemie Android.
+- **Szybkie sterowanie**: kafelek szybkich ustawień i skróty na ekranie głównym ułatwiające przełączanie VPN.
+- **Obsługa automatyzacji**: automatyzacja oparta na intencjach do kontrolowania tuneli.
+- **Automatyczne przywracanie**: bezproblemowe przywracanie autotunelowania i aktywnych tuneli po ponownym uruchomieniu urządzenia lub aktualizacji aplikacji.
+- **Opcje proxy**: wbudowana obsługa proxy HTTP i SOCKS5 w tunelach.
+- **Tryb blokady**: niestandardowy wyłącznik awaryjny zapewniający maksymalną ochronę przed wyciekami oraz bezpieczeństwo.
+- **Dynamiczne zarządzanie DNS**: wykrywa i aktualizuje zmiany DNS bez ponownego uruchamiania tunelu.
+- **Narzędzia monitorujące**: zaawansowane funkcje monitorowania tunelu do monitorowania wydajności tunelu.
+- **Obsługa Android TV**: obsługa Android TV do bezpiecznego przesyłania strumieniowego i przeglądania stron internetowych.
+- **Zaawansowany DNS**: obsługa DNS poprzez HTTPS do rozpoznawania punktów końcowych tunelu.
