@@ -17,10 +17,8 @@ import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.util.extensions.distinctByKeys
 import dagger.hilt.android.AndroidEntryPoint
-import io.ktor.util.collections.*
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -38,8 +36,6 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
     @Inject @IoDispatcher lateinit var ioDispatcher: CoroutineDispatcher
 
     @Inject lateinit var tunnelsRepository: TunnelRepository
-
-    private val tunnelJobs = ConcurrentMap<Int, Job>()
 
     protected abstract val fgsType: Int
 
@@ -74,12 +70,6 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
         lifecycleScope.launch(ioDispatcher) {
             tunnelManager.activeTunnels.distinctByKeys().collect { activeTunnels ->
                 val activeTunConfigs = activeTunnels.keys
-                val obsoleteJobs = tunnelJobs.keys - activeTunConfigs
-                obsoleteJobs.forEach { tunId -> tunnelJobs[tunId]?.cancel() }
-                activeTunConfigs.forEach { tunId ->
-                    if (tunnelJobs.contains(tunId)) return@forEach
-                    tunnelJobs[tunId] = launch { tunnelMonitor.startMonitoring(tunId, true) }
-                }
                 val tunnels = tunnelsRepository.getAll()
                 val activeConfigs = tunnels.filter { activeTunConfigs.contains(it.id) }
                 updateServiceNotification(activeConfigs)
@@ -105,13 +95,11 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
 
     override fun stop() {
         Timber.d("Stop called")
-        tunnelJobs.forEach { it.value.cancel() }
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
 
     override fun onDestroy() {
-        tunnelJobs.forEach { it.value.cancel() }
         serviceManager.handleTunnelServiceDestroy()
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         Timber.d("onDestroy")

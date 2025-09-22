@@ -133,6 +133,7 @@ class TunnelModule {
         serviceManager: ServiceManager,
         tunnelRepository: TunnelRepository,
         settingsRepository: GeneralSettingRepository,
+        tunnelMonitor: TunnelMonitor,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
         @ApplicationScope applicationScope: CoroutineScope,
     ): TunnelManager {
@@ -143,6 +144,7 @@ class TunnelModule {
             serviceManager,
             settingsRepository,
             tunnelRepository,
+            tunnelMonitor,
             applicationScope,
             ioDispatcher,
         )
@@ -193,8 +195,6 @@ class TunnelModule {
     @Singleton
     @Provides
     fun provideTunnelMonitor(
-        @ApplicationContext context: Context,
-        tunnelManager: TunnelManager,
         networkMonitor: NetworkMonitor,
         networkUtils: NetworkUtils,
         logReader: LogReader,
@@ -204,7 +204,6 @@ class TunnelModule {
         return TunnelMonitor(
             settingsRepository,
             tunnelsRepository,
-            tunnelManager,
             networkMonitor,
             networkUtils,
             logReader,

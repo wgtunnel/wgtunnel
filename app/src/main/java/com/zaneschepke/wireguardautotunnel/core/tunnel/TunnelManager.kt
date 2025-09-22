@@ -15,6 +15,7 @@ import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.AtomicReference
@@ -35,9 +36,12 @@ constructor(
     private val serviceManager: ServiceManager,
     private val settingsRepository: GeneralSettingRepository,
     private val tunnelsRepository: TunnelRepository,
-    @ApplicationScope applicationScope: CoroutineScope,
-    @IoDispatcher ioDispatcher: CoroutineDispatcher,
+    private val tunnelMonitor: TunnelMonitor,
+    @ApplicationScope private val applicationScope: CoroutineScope,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : TunnelProvider {
+
+    private val monitoringJobs = ConcurrentHashMap<Int, Job>()
 
     private data class SideEffectState(
         val activeTuns: Map<Int, TunnelState>,
@@ -129,6 +133,12 @@ constructor(
                                     it.restartOnPingFailure && s.activeTuns.keys.contains(it.id)
                                 } && s.settings.appMode != AppMode.KERNEL
                             },
+                        ),
+                        SideEffectWithCondition(
+                            effect = { s ->
+                                handleFullTunnelMonitoring(s.activeTuns, s.tuns, s.settings)
+                            },
+                            condition = { s -> s.activeTuns.keys != s.previouslyActive.keys },
                         ),
                     )
 
@@ -358,6 +368,36 @@ constructor(
                         }
                 }
             }
+        }
+    }
+
+    private suspend fun handleFullTunnelMonitoring(
+        activeTuns: Map<Int, TunnelState>,
+        configs: List<TunnelConf>,
+        settings: GeneralSettings,
+    ) {
+        val activeIds = activeTuns.keys
+        val obsoleteIds = monitoringJobs.keys - activeIds
+        obsoleteIds.forEach { id ->
+            monitoringJobs[id]?.cancel()
+            monitoringJobs.remove(id)
+        }
+        activeIds.forEach { id ->
+            if (monitoringJobs.contains(id)) return@forEach
+            configs.find { it.id == id } ?: return@forEach
+            val tunStateFlow = activeTunnels.map { it[id] }.stateIn(applicationScope + ioDispatcher)
+            monitoringJobs[id] =
+                applicationScope.launch(ioDispatcher) {
+                    tunnelMonitor.startMonitoring(
+                        id,
+                        withLogs = settings.appMode != AppMode.KERNEL,
+                        tunStateFlow = tunStateFlow,
+                        getStatistics = { tunnelId -> getStatistics(tunnelId) },
+                        updateTunnelStatus = { tid, status, stats, pings, logHealth ->
+                            updateTunnelStatus(tid, null, stats, pings, logHealth)
+                        },
+                    )
+                }
         }
     }
 }

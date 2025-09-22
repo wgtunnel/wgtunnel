@@ -10,6 +10,8 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.FailureReason
 import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
+import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
+import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import dagger.hilt.android.scopes.ServiceScoped
@@ -26,23 +28,37 @@ class TunnelMonitor
 constructor(
     private val settingsRepository: GeneralSettingRepository,
     private val tunnelsRepository: TunnelRepository,
-    private val tunnelManager: TunnelManager,
     private val networkMonitor: NetworkMonitor,
     private val networkUtils: NetworkUtils,
     private val logReader: LogReader,
 ) {
 
     @OptIn(FlowPreview::class)
-    suspend fun startMonitoring(tunnelId: Int, withLogs: Boolean): Job = coroutineScope {
+    suspend fun startMonitoring(
+        tunnelId: Int,
+        withLogs: Boolean,
+        tunStateFlow: StateFlow<TunnelState?>,
+        getStatistics: suspend (Int) -> TunnelStatistics?,
+        updateTunnelStatus:
+            suspend (
+                Int, TunnelStatus?, TunnelStatistics?, Map<Key, PingState>?, LogHealthState?,
+            ) -> Unit,
+    ): Job = coroutineScope {
         launch {
             val config = tunnelsRepository.getById(tunnelId) ?: return@launch
-            launch { startPingMonitor(config) }
-            launch { startWgStatsPoll(config.id) }
-            if (withLogs) launch { startLogsMonitor(config) }
+            launch { startPingMonitor(config, tunStateFlow, updateTunnelStatus) }
+            launch { startWgStatsPoll(tunnelId, getStatistics, updateTunnelStatus) }
+            if (withLogs) launch { startLogsMonitor(config, updateTunnelStatus) }
         }
     }
 
-    private suspend fun startLogsMonitor(tunnelConf: TunnelConf) {
+    private suspend fun startLogsMonitor(
+        tunnelConf: TunnelConf,
+        updateTunnelStatus:
+            suspend (
+                Int, TunnelStatus?, TunnelStatistics?, Map<Key, PingState>?, LogHealthState?,
+            ) -> Unit,
+    ) {
         logReader.liveLogs
             .filter { log -> log.tag.contains(tunnelConf.tunName) }
             .mapNotNull { log ->
@@ -61,15 +77,19 @@ constructor(
             .distinctUntilChangedBy { it.isHealthy } // Only emit when health changes
             .collect { logHealthState ->
                 Timber.d("Tunnel log health updated for ${tunnelConf.tunName}: $logHealthState")
-                tunnelManager.updateTunnelStatus(tunnelConf.id, logHealthState = logHealthState)
+                updateTunnelStatus(tunnelConf.id, null, null, null, logHealthState)
             }
     }
 
-    private suspend fun startPingMonitor(tunnelConf: TunnelConf) = coroutineScope {
+    private suspend fun startPingMonitor(
+        tunnelConf: TunnelConf,
+        tunStateFlow: StateFlow<TunnelState?>,
+        updateTunnelStatus:
+            suspend (
+                Int, TunnelStatus?, TunnelStatistics?, Map<Key, PingState>?, LogHealthState?,
+            ) -> Unit,
+    ) = coroutineScope {
         val pingStatsFlow = MutableStateFlow<Map<Key, PingState>>(emptyMap())
-
-        val tunStateFlow =
-            tunnelManager.activeTunnels.mapNotNull { it[tunnelConf.id] }.stateIn(this)
 
         val connectivityStateFlow = networkMonitor.connectivityStateFlow.stateIn(this)
 
@@ -99,8 +119,8 @@ constructor(
                 old.isPingEnabled == new.isPingEnabled &&
                     old.tunnelPingIntervalSeconds == new.tunnelPingIntervalSeconds &&
                     old.tunnelPingAttempts == new.tunnelPingAttempts &&
-                    old.tunnelPingTimeoutSeconds == new.tunnelPingTimeoutSeconds
-                old.appMode == new.appMode
+                    old.tunnelPingTimeoutSeconds == new.tunnelPingTimeoutSeconds &&
+                    old.appMode == new.appMode
             }
             .collectLatest { settings ->
                 if (!settings.isPingEnabled) return@collectLatest
@@ -205,12 +225,12 @@ constructor(
 
                     if (updates.isNotEmpty()) {
                         pingStatsFlow.update { updates }
-                        tunnelManager.updateTunnelStatus(tunnelConf.id, null, null, updates)
+                        updateTunnelStatus(tunnelConf.id, null, null, updates, null)
                     }
                 }
 
                 // Wait for the tunnel to be fully active
-                tunStateFlow.filter { state -> state.status == TunnelStatus.Up }.first()
+                tunStateFlow.filter { state -> state?.status == TunnelStatus.Up }.first()
 
                 // small delay to make sure tunnel is fully up before we actively monitor
                 delay(3_000L)
@@ -228,22 +248,24 @@ constructor(
                                 )
                             }
                         }
-                        tunnelManager.updateTunnelStatus(
-                            tunnelConf.id,
-                            null,
-                            null,
-                            pingStatsFlow.value,
-                        )
+                        updateTunnelStatus(tunnelConf.id, null, null, pingStatsFlow.value, null)
                     }
                     delay(settings.tunnelPingIntervalSeconds.toMillis())
                 }
             }
     }
 
-    private suspend fun startWgStatsPoll(tunnelId: Int) = coroutineScope {
+    private suspend fun startWgStatsPoll(
+        tunnelId: Int,
+        getStatistics: suspend (Int) -> TunnelStatistics?,
+        updateTunnelStatus:
+            suspend (
+                Int, TunnelStatus?, TunnelStatistics?, Map<Key, PingState>?, LogHealthState?,
+            ) -> Unit,
+    ) = coroutineScope {
         while (isActive) {
-            val stats = tunnelManager.getStatistics(tunnelId)
-            tunnelManager.updateTunnelStatus(tunnelId, null, stats, null)
+            val stats = getStatistics(tunnelId)
+            updateTunnelStatus(tunnelId, null, stats, null, null)
             delay(STATS_DELAY)
         }
     }

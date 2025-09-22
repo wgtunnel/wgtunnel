@@ -7,7 +7,6 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.HandshakeStatus
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
-import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.NumberUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import org.amnezia.awg.backend.Backend
@@ -72,21 +71,6 @@ fun com.wireguard.config.BadConfigException.asStringValue(): StringValue {
         }
     val location = this.location.name
     return StringValue.StringResource(R.string.config_error_template, reason, location)
-}
-
-fun Config.toWgQuickString(): String {
-    val amQuick = toAwgQuickString(true, false)
-    val lines = amQuick.lines().toMutableList()
-    val linesIterator = lines.iterator()
-    while (linesIterator.hasNext()) {
-        val next = linesIterator.next()
-        Constants.amProperties.forEach {
-            if (next.startsWith(it, ignoreCase = true)) {
-                linesIterator.remove()
-            }
-        }
-    }
-    return lines.joinToString(System.lineSeparator())
 }
 
 fun Config.defaultName(): String {

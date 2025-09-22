@@ -3,7 +3,6 @@ package com.zaneschepke.wireguardautotunnel.domain.model
 import com.wireguard.config.Config
 import com.zaneschepke.wireguardautotunnel.util.extensions.defaultName
 import com.zaneschepke.wireguardautotunnel.util.extensions.isValidIpv4orIpv6Address
-import com.zaneschepke.wireguardautotunnel.util.extensions.toWgQuickString
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
 
@@ -76,7 +75,7 @@ data class TunnelConf(
 
         fun tunnelConfFromQuick(amQuick: String, name: String? = null): TunnelConf {
             val config = configFromAmQuick(amQuick)
-            val wgQuick = config.toWgQuickString()
+            val wgQuick = config.toWgQuickString(true)
             return TunnelConf(
                 tunName = name ?: config.defaultName(),
                 wgQuick = wgQuick,
@@ -89,7 +88,7 @@ data class TunnelConf(
             name: String? = null,
         ): TunnelConf {
             val amQuick = config.toAwgQuickString(true, false)
-            val wgQuick = config.toWgQuickString()
+            val wgQuick = config.toWgQuickString(true)
             return TunnelConf(
                 tunName = name ?: config.defaultName(),
                 wgQuick = wgQuick,
