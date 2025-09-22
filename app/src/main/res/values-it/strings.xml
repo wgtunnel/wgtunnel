@@ -33,7 +33,7 @@
     <string name="name">Nome</string>
     <string name="always_on_vpn_support">Permetti VPN sempre attiva</string>
     <string name="location_services_not_detected">Servizi di localizzazione non rilevati</string>
-    <string name="auto_tunneling">Tunneling automatico</string>
+    <string name="auto_tunneling">Auto-tunneling</string>
     <string name="vpn_on">VPN on</string>
     <string name="vpn_off">VPN off</string>
     <string name="create_import">Crea da zero</string>
@@ -43,7 +43,7 @@
     <string name="persistent_keepalive">Keepalive persistente</string>
     <string name="cancel">Annulla</string>
     <string name="unknown_error">Errore sconosciuto</string>
-    <string name="tunnel_on_wifi">Tunnel su wifi non fidato</string>
+    <string name="tunnel_on_wifi">Tunnel attivo su reti WiFi non affidabili</string>
     <string name="error_ssid_exists">L\'SSID esiste già</string>
     <string name="error_root_denied">Shell di root negata</string>
     <string name="prominent_background_location_title">Permesso localizzazione in background</string>
@@ -74,7 +74,7 @@
     <string name="restart_on_ping">Riavvia su fallimento ping (beta)</string>
     <string name="mobile_data_tunnel">Imposta come tunnel dati mobili</string>
     <string name="set_primary_tunnel">Imposta come tunnel principale</string>
-    <string name="use_tunnel_on_wifi_name">Usa tunnel su nome wifi</string>
+    <string name="use_tunnel_on_wifi_name">Utilizza tunnel sulle reti WiFi</string>
     <string name="edit_tunnel">Modifica tunnel</string>
     <string name="settings">Impostazioni</string>
     <string name="support">Supporto</string>
@@ -277,7 +277,7 @@
     <string name="amnezia">Amnezia</string>
     <string name="wireguard">WireGuard</string>
     <string name="done">Fatto</string>
-    <string name="wifi_detection_method">Metodo di rilevamento Wi-Fi</string>
+    <string name="wifi_detection_method">Modalità di rilevamento reti Wi-Fi</string>
     <string name="_default">Default</string>
     <string name="legacy">Legacy</string>
     <string name="root">Root</string>
@@ -306,10 +306,11 @@
     <string name="donate_title">Donazioni</string>
     <string name="tunnel_monitoring">Monitoraggio tunnel</string>
     <string name="monitoring_ping">Monitora lo stato di salute del tunnel mediante ping test</string>
-    <string name="tunnel_ping_interval">Effettua un test ogni</string>
-    <string name="attempts_per_interval">Richieste ping inviate</string>
-    <string name="ping_timeout">Tempo limite</string>
-    <string name="timeout_all_attempts">Tempo limite massimo per singolo test (include tutte le richieste ping inviate)</string>
+    <string name="tunnel_ping_interval">Ripeti ping test ogni</string>
+    <string name="attempts_per_interval">Richieste ping inviate per singolo test</string>
+    <string name="ping_timeout">Ping test timeout</string>
+    <string name="timeout_all_attempts">Durata massima per singolo test (comprensiva di tutte le richieste ping inviate)</string>
     <string name="display_detailed_ping_stats">Mostra statistiche dettagliate di ping</string>
     <string name="error_tunnel_name">Il nome del tunnel non deve superare i 15 caratteri in modalità kernel</string>
+    <string name="location_justification">Per poter rilevare i nomi delle reti Wi-Fi in background nella modalità corrente, Android richiede che le app dispongano dell\'autorizzazione di accesso alla posizione con le opzioni \"Consenti sempre\" e \"Usa posizione esatta\" (accesso alla posizione in background nei dispositivi meno recenti). Concedi le autorizzazioni richieste all\'interno delle impostazioni dell\'app.</string>
 </resources>
