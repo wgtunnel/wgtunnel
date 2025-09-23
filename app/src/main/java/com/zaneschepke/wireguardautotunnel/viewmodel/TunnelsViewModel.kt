@@ -203,9 +203,7 @@ constructor(
         importTunnelConfigs(mapOf(conf to null))
     }
 
-    fun importFromQr(conf: String) = intent {
-        importFromClipboard(conf)
-    }
+    fun importFromQr(conf: String) = intent { importFromClipboard(conf) }
 
     fun importFromUrl(url: String) = intent {
         runCatching {
