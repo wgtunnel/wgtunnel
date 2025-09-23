@@ -46,7 +46,13 @@ fun TunnelStatisticsRow(
                         peer.publicKey.toBase64().subSequence(0, 3).toString() + "***"
                     }
                 val endpoint by
-                    remember(peerStats) { derivedStateOf { peerStats?.resolvedEndpoint } }
+                    remember(peerStats, peer) { 
+                        derivedStateOf { 
+                            // Display original configured endpoint if present, fallback to resolved
+                            peer.endpoint.takeIf { it.isPresent }?.get()?.toString() 
+                                ?: peerStats?.resolvedEndpoint 
+                        } 
+                    }
                 val peerRxMB by
                     remember(peerStats) {
                         derivedStateOf {
