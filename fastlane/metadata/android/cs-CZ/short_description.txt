@@ -1,1 +1,1 @@
-Alternativní VPN klientská aplikace pro WireGuard s přidanými funkcemi
+WireGuard & AmneziaWG VPN klient s automatickým tunelováním, blokováním a proxy.
