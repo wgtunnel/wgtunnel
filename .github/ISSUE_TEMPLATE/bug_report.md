@@ -15,7 +15,7 @@ A clear and concise description of what the bug is.
 - Device: [e.g. Pixel 4a]
 - Android Version: [e.g. Android 13]
 - App Version [e.g. 3.3.3]
-- Backend: [e.g. Kernel, Userspace]
+- App mode: [e.g. Kernel, VPN, Proxy, Lockdown]
 
 **To Reproduce**
 Steps to reproduce the behavior:
