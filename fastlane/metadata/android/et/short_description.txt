@@ -1,1 +1,1 @@
-WireGuardil põhineva VPN-i alternatiivne klientrakendus lisavõimalustega
+WireGuardi & AmneziaWG VPNi klient automaatse tunnelduse, lukustuse ja proksiga.
