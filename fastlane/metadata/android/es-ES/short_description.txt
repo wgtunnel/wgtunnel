@@ -1,1 +1,1 @@
-Una app cliente VPN alternativa para WireGuard con características adicionales
+Un cliente VPN WireGuard alternativo con túnel automático, aislamiento y proxy.
