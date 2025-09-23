@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="no_tunnels">Žádné tunely ještě nebyly přidány!</string>
     <string name="tunnel_mobile_data">Tunelovat na mobilních datech</string>
@@ -65,7 +65,7 @@
     <string name="email_description">Poslat mi email</string>
     <string name="location_services_missing_message">Aplikace nenašla žádné služby polohy zapnuté na Vašem zařízení. Dle Vašeho zařízení, tohle může způsobit, že funkce nedůvěryhodné Wi-Fi nedokáže přečíst jméno připojené Wi-Fi. Chcete i přesto pokračovat?</string>
     <string name="delete_tunnel">Smazat tunel</string>
-    <string name="delete_tunnel_message">Jste si jisti, že chcete smazat tento tunel?</string>
+    <string name="delete_tunnel_message">Opravdu chcete smazat vybrané tunely?</string>
     <string name="yes">Ano</string>
     <string name="all">Vše</string>
     <string name="no_email_detected">Žádná emailová aplikace nebyla nalezena</string>
