@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="error_file_extension">檔案類型不是 .conf 或 .zip</string>
     <string name="language">語言</string>
@@ -31,7 +31,7 @@
     <string name="docs_description">閱讀文件</string>
     <string name="error_ssid_exists">SSID 已經存在</string>
     <string name="delete_tunnel">刪除隧道</string>
-    <string name="delete_tunnel_message">您確定要刪除此隧道？</string>
+    <string name="delete_tunnel_message">您確定要刪除所選的隧道？</string>
     <string name="yes">是</string>
     <string name="no_browser_detected">找不到瀏覽器</string>
     <string name="no_email_detected">找不到電子郵件應用程式</string>
@@ -54,7 +54,7 @@
     <string name="logs">日誌</string>
     <string name="dark">灰色</string>
     <string name="light">亮色</string>
-    <string name="donate">捐款</string>
+    <string name="donate">捐款給此專案</string>
     <string name="appearance">外觀</string>
     <string name="display_theme">主題</string>
     <string name="primary_tunnel">主要隧道</string>
@@ -227,7 +227,7 @@
     <string name="ping_success_template">上次 ping 成功: %1$s</string>
     <string name="display_detailed_ping_stats">顯示詳細的 ping 統計資訊</string>
     <string name="fix">修復</string>
-    <string name="tunnel_item_description">1$s, %2$s, %3$s</string>
+    <string name="tunnel_item_description">%1$s, %2$s, %3$s</string>
     <string name="start">啟動</string>
     <string name="tunnel">隧道</string>
     <string name="location_permissions">位置存取權</string>
@@ -261,4 +261,51 @@
     <string name="skip">略過</string>
     <string name="ethernet_tunnel">乙太網路隧道</string>
     <string name="set_ethernet_tunnel">設為乙太網路隧道</string>
+    <string name="password_no_spaces">密碼不能含有空格。</string>
+    <string name="tunnel_name_taken">隧道名稱已經被使用。</string>
+    <string name="doh">DNS over HTTPS (DoH)</string>
+    <string name="password">密碼</string>
+    <string name="proxy">代理</string>
+    <string name="http_proxy">HTTP 代理</string>
+    <string name="socks_5_proxy">SOCKS5 代理</string>
+    <string name="show_password">顯示密碼</string>
+    <string name="vpn">VPN</string>
+    <string name="android_integrations">Android 整合</string>
+    <string name="defaults_to_template">(預設為 %1$s)</string>
+    <string name="dns_protocol">DNS 協定</string>
+    <string name="dns_settings">DNS 設定</string>
+    <string name="read_failed">讀取資料失敗。</string>
+    <string name="new_tunnel">新隧道</string>
+    <string name="system_features">系統功能</string>
+    <string name="dns_provider">DNS 提供者</string>
+    <string name="proxy_settings">代理設定</string>
+    <string name="username">使用者名稱</string>
+    <string name="socks_5_bind_address">SOCKS5 綁定位址</string>
+    <string name="http_bind_address">HTTP 綁定位址</string>
+    <string name="donate_title">捐款</string>
+    <string name="google_donation_message">不幸的是，由於 Google 的政策，此應用程式的 Play Store 版本不被允許出現捐款連結。請至此專案的網站尋找捐款方式。</string>
+    <string name="donation_thanks_intro">感謝您考慮向本專案捐款！</string>
+    <string name="disabled">已停用</string>
+    <string name="mimic_quic">模仿 QUIC</string>
+    <string name="mimic_dns">模仿 DNS</string>
+    <string name="mimic_sip">模仿 SIP</string>
+    <string name="server_port">伺服器:連接埠</string>
+    <string name="proxy_credentials">代理身份驗證資訊</string>
+    <string name="comma_separated">逗號分隔</string>
+    <string name="syntax_error">句法錯誤</string>
+    <string name="range_hint">(%1$d–%2$d)</string>
+    <string name="crypto">加密貨幣地址</string>
+    <string name="github_sponsors">GitHub Sponsors</string>
+    <string name="liberapay">Liberapay</string>
+    <string name="kofi">Ko-fi</string>
+    <string name="mode_disabled_template">此功能在 %1$s 模式下不可用。</string>
+    <string name="ddns_auto_update">動態 DNS 自動更新</string>
+    <string name="ddns_auto_update_description">DDNS 變更時自動更新 IP</string>
+    <string name="delete_active_message">無法刪除正在使用的隧道。</string>
+    <string name="system">系統</string>
+    <string name="locked_down">鎖定</string>
+    <string name="expiremental_template">%1$s (實驗性)</string>
+    <string name="recommended_template">%1$s (推薦)</string>
+    <string name="root_required_template">%1$s (需要 root)</string>
+    <string name="hint_template">(%1$s)</string>
 </resources>
