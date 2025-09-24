@@ -43,7 +43,7 @@
     <string name="persistent_keepalive">Keepalive persistente</string>
     <string name="cancel">Annulla</string>
     <string name="unknown_error">Errore sconosciuto</string>
-    <string name="tunnel_on_wifi">Tunnel attivo su reti WiFi non affidabili</string>
+    <string name="tunnel_on_wifi">Tunnel su reti WiFi non affidabili</string>
     <string name="error_ssid_exists">L\'SSID esiste già</string>
     <string name="error_root_denied">Shell di root negata</string>
     <string name="prominent_background_location_title">Permesso localizzazione in background</string>
@@ -97,8 +97,8 @@
     <string name="enter_pin">Inserisci PIN</string>
     <string name="create_pin">Crea PIN</string>
     <string name="transport_packet_magic_header">Magic header pacchetto trasporto</string>
-    <string name="prominent_background_location_message">Questa caratteristica richiede il permesso di localizzazione in background per abilitare il monitoraggio dell\'SSID Wi-fi anche quando l\'applicazione è chiusa. Per più dettagli, verifica la Privacy Policy linkata nella schermata di supporto.</string>
-    <string name="auto_tunnel_title">Servizio tunnel automatico</string>
+    <string name="prominent_background_location_message">Questa caratteristica richiede il permesso di localizzazione in background per abilitare il monitoraggio dell\'SSID delle reti Wi-fi anche quando l\'applicazione è chiusa. Per maggiori dettagli, consultare il link alla Privacy Policy presente nella schermata \"Supporto\".</string>
+    <string name="auto_tunnel_title">Servizio tunneling automatico</string>
     <string name="mobile_tunnel">Tunnel dati mobili</string>
     <string name="use_root_shell_for_wifi">Utilizzare una shell root per ottenere le informazioni Wi-Fi, evitando la necessità dell\'autorizzazioni della posizione</string>
     <string name="stop_on_internet_loss">Arresta il tunnel in caso di assenza di connessione internet</string>
@@ -130,7 +130,7 @@
     <string name="never">Mai</string>
     <string name="use_wildcards">Abilita caratteri jolly</string>
     <string name="add_from_clipboard">Importa dagli appunti</string>
-    <string name="trusted_wifi_names">Elenco reti WiFi affidabili</string>
+    <string name="trusted_wifi_names">Elenco SSID reti affidabili</string>
     <string name="add_wifi_name">Aggiungi il nome di una rete WiFi</string>
     <string name="primary_tunnel">Tunnel primario</string>
     <string name="post_down">Dopo essersi arrestato</string>
@@ -313,4 +313,5 @@
     <string name="display_detailed_ping_stats">Mostra statistiche dettagliate di ping</string>
     <string name="error_tunnel_name">Il nome del tunnel non deve superare i 15 caratteri in modalità kernel</string>
     <string name="location_justification">Per poter rilevare i nomi delle reti Wi-Fi in background nella modalità corrente, Android richiede che le app dispongano dell\'autorizzazione di accesso alla posizione con le opzioni \"Consenti sempre\" e \"Usa posizione esatta\" (accesso alla posizione in background nei dispositivi meno recenti). Concedi le autorizzazioni richieste all\'interno delle impostazioni dell\'app.</string>
+    <string name="ping_target_description">Utilizzato qualora nessun indirizzo IP di rete locale risulti disponibile (ad esempio in configurazioni full-tunnel). Se non indicato, viene utilizzato Cloudflare di default.</string>
 </resources>
