@@ -196,7 +196,7 @@
     <string name="update_available">Aggiornamento disponibile!</string>
     <string name="permission_required">Permessi Richiesti</string>
     <string name="download_and_install">Scarica e Installa</string>
-    <string name="latest_installed">Stai utilizzando l\'ultima versione disponibile.</string>
+    <string name="latest_installed">Stai già utilizzando l\'ultima versione disponibile.</string>
     <string name="update_download_failed">Download aggiornamento fallito.</string>
     <string name="install_updated_permission">Questa applicazione richiede i permessi per installare gli aggiornamenti.</string>
     <string name="allow">Autorizza</string>
@@ -314,4 +314,6 @@
     <string name="error_tunnel_name">Il nome del tunnel non deve superare i 15 caratteri in modalità kernel</string>
     <string name="location_justification">Per poter rilevare i nomi delle reti Wi-Fi in background nella modalità corrente, Android richiede che le app dispongano dell\'autorizzazione di accesso alla posizione con le opzioni \"Consenti sempre\" e \"Usa posizione esatta\" (accesso alla posizione in background nei dispositivi meno recenti). Concedi le autorizzazioni richieste all\'interno delle impostazioni dell\'app.</string>
     <string name="ping_target_description">Utilizzato qualora nessun indirizzo IP di rete locale risulti disponibile (ad esempio in configurazioni full-tunnel). Se non indicato, viene utilizzato Cloudflare di default.</string>
+    <string name="ip_or_hostname">Indirizzo IP o nome host</string>
+    <string name="set_custom_ping_target">Bersaglio ping test (facoltativo)</string>
 </resources>
