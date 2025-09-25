@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="mtu">MTU</string>
     <string name="tunnel_name">Имя туннеля</string>
@@ -70,7 +70,7 @@
     <string name="use_tunnel_on_wifi_name">Использовать туннель в сети Wi-Fi</string>
     <string name="prominent_background_location_message">Эта функция требует фоновый доступ к местоположению для отслеживания имён сетей Wi-Fi, даже когда приложение закрыто. Для получения дополнительной информации, прочтите политику конфиденциальности на экране поддержки.</string>
     <string name="copy_public_key">Копировать открытый ключ</string>
-    <string name="enabled_app_shortcuts">Включить ярлыки приложения</string>
+    <string name="enabled_app_shortcuts">Ярлыки приложения</string>
     <string name="open_issue">Сообщить о проблеме</string>
     <string name="incorrect_pin">Некорректный PIN-код</string>
     <string name="pin_created">PIN-код создан успешно</string>
@@ -247,8 +247,8 @@
     <string name="restarting_app">Перезапуск приложения для применения изменений…</string>
     <string name="restore_failed">Невозможно восстановить из резервной копии.</string>
     <string name="backup_failed">Невозможно создать резервную копию.</string>
-    <string name="backup_application">Резервирование данных приложения</string>
-    <string name="restore_application">Восстановление данных приложения</string>
+    <string name="backup_application">Резервирование данных</string>
+    <string name="restore_application">Восстановление данных</string>
     <string name="tunnel_monitoring">Отслеживание туннеля</string>
     <string name="sec_ago_template">%1$s сек.</string>
     <string name="latency_template">Задержка: %1$s</string>
