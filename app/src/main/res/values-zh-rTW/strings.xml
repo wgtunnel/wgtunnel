@@ -179,7 +179,7 @@
     <string name="add_peer">新增端點</string>
     <string name="init_packet_magic_header">初始封包魔法標頭</string>
     <string name="response_packet_magic_header">回應封包魔法標頭</string>
-    <string name="always_on_message2">確保 永久連線的 VPN 已經關閉並再試一次</string>
+    <string name="always_on_message2">確保永久連線的 VPN 已經關閉並再試一次</string>
     <string name="enter_config_url">輸入組態 URL</string>
     <string name="error_download_failed">下載組態失敗</string>
     <string name="config_error">無效組態</string>
@@ -308,4 +308,23 @@
     <string name="recommended_template">%1$s (推薦)</string>
     <string name="root_required_template">%1$s (需要 root)</string>
     <string name="hint_template">(%1$s)</string>
+    <string name="donation_signoff">感激地，</string>
+    <string name="donation_closing">為您全職開發本專案是我的夢想。</string>
+    <string name="donation_dev_message">作為唯一的開發者，我不知疲倦地使 WG Tunnel 成為 Android 最好的自由開源 WireGuard 用戶端，但沒有您的支援這無法實現。</string>
+    <string name="lockdown">鎖定</string>
+    <string name="ports_must_differ">失敗。代理必須具有不同連接埠。</string>
+    <string name="prefer_ipv6_resolution">偏好 IPv6 端點解析</string>
+    <string name="invalid_number">無效數字</string>
+    <string name="invalid_value">無效值</string>
+    <string name="invalid_key">無效金鑰</string>
+    <string name="missing_attribute">缺少屬性</string>
+    <string name="unknown_attribute">未知屬性</string>
+    <string name="missing_section">缺少部份</string>
+    <string name="unknown_section">未知部份</string>
+    <string name="active_tunnel_update_failed">使用中的隧道更新失敗</string>
+    <string name="config_error_template">錯誤組態。%2$s 的 %1$s。</string>
+    <string name="selected">已選擇的</string>
+    <string name="backend_mode">應用程式模式</string>
+    <string name="dropdown">下拉</string>
+    <string name="enabled_app_shortcuts">啟用主畫面捷徑</string>
 </resources>
