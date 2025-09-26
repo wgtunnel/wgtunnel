@@ -14,8 +14,6 @@ sealed class GlobalSideEffect {
 
     data object PopBackStack : GlobalSideEffect()
 
-    data class ShareFile(val file: File) : GlobalSideEffect()
-
     data class LaunchUrl(val url: String) : GlobalSideEffect()
 
     data object ConfigChanged : GlobalSideEffect()

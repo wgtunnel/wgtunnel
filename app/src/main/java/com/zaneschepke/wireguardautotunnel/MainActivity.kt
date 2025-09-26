@@ -191,7 +191,6 @@ class MainActivity : AppCompatActivity() {
                             requestingAppMode = Pair(sideEffect.requestingMode, sideEffect.config)
                             vpnActivity.launch(VpnService.prepare(this@MainActivity))
                         }
-                        is GlobalSideEffect.ShareFile -> context.launchShareFile(sideEffect.file)
                         is GlobalSideEffect.Snackbar ->
                             scope.launch {
                                 snackbar.showSnackbar(sideEffect.message.asString(context))

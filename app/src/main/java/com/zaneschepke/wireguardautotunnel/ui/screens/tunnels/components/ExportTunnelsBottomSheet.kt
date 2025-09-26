@@ -11,9 +11,9 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberFileExportLauncherForResult
 import com.zaneschepke.wireguardautotunnel.ui.common.sheet.CustomBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.common.sheet.SheetOption
-import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.extensions.hasSAFSupport
+import java.time.Instant
 
 @Composable
 fun ExportTunnelsBottomSheet(
@@ -37,7 +37,12 @@ fun ExportTunnelsBottomSheet(
 
     fun handleFileExport() {
         if (context.hasSAFSupport(FileUtils.ZIP_FILE_MIME_TYPE)) {
-            selectedTunnelsExportLauncher.launch(Constants.DEFAULT_EXPORT_FILE_NAME)
+            val fileName =
+                when (exportConfigType) {
+                    ConfigType.AM -> "am_export_${Instant.now().epochSecond}.zip"
+                    ConfigType.WG -> "wg_export_${Instant.now().epochSecond}.zip"
+                }
+            selectedTunnelsExportLauncher.launch(fileName)
         } else {
             onExport(exportConfigType, null)
         }

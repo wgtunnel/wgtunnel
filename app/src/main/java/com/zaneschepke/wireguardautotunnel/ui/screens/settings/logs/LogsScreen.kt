@@ -69,7 +69,16 @@ fun LogsScreen(viewModel: LoggerViewModel = hiltViewModel()) {
     }
 
     if (showLogsSheet) {
-        LogsBottomSheet({ viewModel.exportLogs() }, { viewModel.deleteLogs() }) {
+        LogsBottomSheet(
+            { uri ->
+                viewModel.exportLogs(uri)
+                showLogsSheet = false
+            },
+            {
+                viewModel.deleteLogs()
+                showLogsSheet = false
+            },
+        ) {
             showLogsSheet = false
         }
     }

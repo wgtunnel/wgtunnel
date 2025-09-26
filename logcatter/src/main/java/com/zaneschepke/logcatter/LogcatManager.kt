@@ -1,5 +1,6 @@
 package com.zaneschepke.logcatter
 
+import android.R.attr.path
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.zaneschepke.logcatter.model.LogMessage
@@ -61,15 +62,13 @@ class LogcatManager(pid: Int, logDir: String, maxFileSize: Long, maxFolderSize: 
         isStarted = false
     }
 
-    override fun zipLogFiles(path: String) {
-        logScope.launch {
-            val wasStarted = isStarted
-            stop()
-            fileManager.zipLogs(path)
-            if (wasStarted) {
-                logcatReader.clearLogs()
-                start()
-            }
+    override suspend fun zipLogFiles(path: String) {
+        val wasStarted = isStarted
+        stop()
+        fileManager.zipLogs(path)
+        if (wasStarted) {
+            logcatReader.clearLogs()
+            start()
         }
     }
 

@@ -1,7 +1,9 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.logcatter.LogReader
+import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
@@ -11,7 +13,6 @@ import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.time.Instant
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -71,18 +72,30 @@ constructor(
         globalEffectRepository.post(globalSideEffect)
     }
 
-    fun exportLogs() = intent {
+    fun exportLogs(uri: Uri?) = intent {
         val result =
             fileUtils.createNewShareFile(
-                "${Constants.BASE_LOG_FILE_NAME}-${Instant.now().epochSecond}.zip"
+                "${Constants.BASE_LOG_FILE_NAME}_${BuildConfig.VERSION_NAME}_${BuildConfig.FLAVOR}.zip"
             )
-        result.onSuccess { file -> postSideEffect(GlobalSideEffect.ShareFile(file)) }
-        result.onFailure { error ->
-            val message =
-                error.message?.let { StringValue.DynamicString(it) }
-                    ?: StringValue.StringResource(R.string.unknown_error)
-            postSideEffect(GlobalSideEffect.Toast(message))
+        val onFailure = { action: Throwable ->
+            Timber.e(action)
+            intent {
+                postSideEffect(
+                    GlobalSideEffect.Toast(
+                        StringValue.StringResource(
+                            R.string.export_failed,
+                            ": ${action.localizedMessage}",
+                        )
+                    )
+                )
+            }
+            Unit
         }
+        result.onSuccess { file ->
+            logReader.zipLogFiles(file.absolutePath)
+            fileUtils.exportFile(file, uri, FileUtils.ZIP_FILE_MIME_TYPE).onFailure(onFailure)
+        }
+        result.onFailure(onFailure)
     }
 
     fun deleteLogs() = intent {

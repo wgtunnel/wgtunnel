@@ -9,8 +9,6 @@ object Constants {
     const val SYSTEM_EXEMPT_SERVICE_TYPE_ID = 1 shl 10
     const val SPECIAL_USE_SERVICE_TYPE_ID = 1 shl 30
 
-    const val DEFAULT_EXPORT_FILE_NAME = "wgtunnel-export.zip"
-
     const val QR_CODE_NAME_PROPERTY = "# Name ="
 
     const val FDROID_FLAVOR = "fdroid"

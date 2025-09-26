@@ -8,7 +8,7 @@ interface LogReader {
 
     fun stop()
 
-    fun zipLogFiles(path: String)
+    suspend fun zipLogFiles(path: String)
 
     suspend fun deleteAndClearLogs()
 
