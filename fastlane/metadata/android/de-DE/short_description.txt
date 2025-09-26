@@ -1,1 +1,1 @@
-Eine alternative VPN Client App für Wireguard mit zusätzlichen Funktionen
+Ein WireGuard- und AmneziaWG-VPN-Client mit automatischem Tunneling, Sperrung und Proxying.
