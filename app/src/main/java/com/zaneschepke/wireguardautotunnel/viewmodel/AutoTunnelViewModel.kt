@@ -117,7 +117,7 @@ constructor(
     }
 
     fun setTunnelOnEthernet(to: Boolean) = intent {
-        settingsRepository.save(state.generalSettings.copy(isTunnelOnMobileDataEnabled = to))
+        settingsRepository.save(state.generalSettings.copy(isTunnelOnEthernetEnabled = to))
     }
 
     fun setDebounceDelay(to: Int) = intent {
