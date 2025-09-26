@@ -32,7 +32,6 @@ import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.asString
 import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
-import xyz.teamgravity.pin_lock_compose.PinManager
 
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
@@ -158,7 +157,6 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     add(
                         pinLockItem(settingsState.isPinLockEnabled) { enabled ->
                             if (enabled) {
-                                PinManager.initialize(context)
                                 navController.navigate(Route.Lock)
                             } else {
                                 sharedViewModel.setPinLockEnabled(false)

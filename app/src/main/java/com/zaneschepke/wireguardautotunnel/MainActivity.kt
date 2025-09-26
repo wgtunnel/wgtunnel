@@ -126,14 +126,8 @@ class MainActivity : AppCompatActivity() {
             val navController = rememberNavController()
             val scope = rememberCoroutineScope()
 
-            var pinManagerInitialized by remember { mutableStateOf(false) }
-
             LaunchedEffect(appState.isAppLoaded) {
                 if (appState.isAppLoaded) {
-                    if (appState.pinLockEnabled && !pinManagerInitialized) {
-                        PinManager.initialize(this@MainActivity)
-                        pinManagerInitialized = true
-                    }
                     appState.locale.let { LocaleUtil.changeLocale(it) }
                 }
             }
@@ -271,7 +265,10 @@ class MainActivity : AppCompatActivity() {
                                             Route.Lock
                                         else Route.TunnelsGraph,
                                 ) {
-                                    composable<Route.Lock> { PinLockScreen() }
+                                    composable<Route.Lock> {
+                                        PinManager.initialize(context = this@MainActivity)
+                                        PinLockScreen()
+                                    }
                                     navigation<Route.TunnelsGraph>(
                                         startDestination = Route.Tunnels
                                     ) {
