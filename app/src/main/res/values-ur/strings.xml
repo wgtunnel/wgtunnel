@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="peer">پیر</string>
     <string name="add_from_qr">کیو آر کوڈ سے شامل کریں</string>
@@ -50,7 +50,7 @@
     <string name="error_no_file_explorer">کوئی فائل ایکسپلورر انسٹال نہیں ہے</string>
     <string name="auto_tunnel_title">خودکار ٹنل سروس</string>
     <string name="delete_tunnel">ٹنل حذف کریں</string>
-    <string name="delete_tunnel_message">کیا آپ واقعی اس ٹنل کو حذف کرنا چاہیں گے؟</string>
+    <string name="delete_tunnel_message">کیا آپ واقعی منتخب ٹنل کو حذف کرنا چاہیں گے؟</string>
     <string name="yes">ہاں</string>
     <string name="all">تمام</string>
     <string name="no_email_detected">کوئی ای میل ایپ نہیں ملی</string>
@@ -328,4 +328,15 @@
     <string name="disabled">معذور</string>
     <string name="mode_disabled_template">فیچر %1$s موڈ میں دستیاب نہیں ہے۔</string>
     <string name="lockdown">لاک ڈاؤن</string>
+    <string name="donate_title">عطیہ کریں</string>
+    <string name="crypto">کریپٹو کرنسی کے پتے</string>
+    <string name="github_sponsors">گٹ‌ہب سپانسرز</string>
+    <string name="liberapay">لیبرا‌پے</string>
+    <string name="kofi">کو-فی</string>
+    <string name="donation_thanks_intro">اس منصوبے کے لیے عطیہ دینے پر غور کرنے کے لیے آپ کا شکریہ!</string>
+    <string name="donation_dev_message">واحد ڈویلپر کے طور پر، میں ڈبلیو جی کو اینڈرائیڈ کے لیے بہترین مفت اور اوپن سورس وائرگارڈ کلائنٹ بنانے کے لیے انتھک محنت کرتا ہوں، لیکن یہ صرف آپ کے تعاون سے ہی ممکن ہے۔</string>
+    <string name="donation_closing">اس پروجیکٹ پر کل وقتی کام کرنا میرا خواب ہے۔</string>
+    <string name="donation_signoff">شکر گزار،</string>
+    <string name="google_donation_message">بدقسمتی سے، گوگل کی پالیسیوں کی وجہ سے، اس ایپ کے پلے اسٹور ورژن میں عطیہ کے لنکس کی اجازت نہیں ہے۔ عطیہ کہاں کرنا ہے تلاش کرنے کے لیے براہ کرم پروجیکٹ کے ویب پیجز کو براؤز کریں۔</string>
+    <string name="delete_active_message">فعال ٹنل کو حذف نہیں کیا جا سکتا۔</string>
 </resources>

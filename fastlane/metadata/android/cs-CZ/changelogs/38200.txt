@@ -1,8 +1,0 @@
-Co je nového:
-- Nová ikona aplikace a drobná vylepšení uživatelského rozhraní
-- Oprava chyby v přepínání místních záznamníků protokolu
-- Oprava restartu AndroidTV při restartu počítače
-- Oprava výběru jazyka AndroidTV
-- Oprava funkce ping spuštěné ve výchozím nastavení
-- Oprava chyby při vypínání režimu jádra
-- Oprava chyby automatického tunelování kill switch

@@ -1,6 +1,0 @@
-Co je nového:
-- Oprava problémů s překladem DNS
-- Vylepšení obnovení Android TV při uspání
-- Opravena chyba s vyhledáváním děleného tunelu
-- Aktualizace lokalizace
-- Aktualizovány odkazy na dokumentaci k nové webové stránce aplikace

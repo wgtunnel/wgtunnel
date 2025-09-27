@@ -1,5 +1,0 @@
-Was ist neu?
-- Regressionskorrektur für automatischen Tunnel
-- Verbesserungen bei der Kachel-Synchronisation
-Optimierte Abfrage des WiFi-Namens
-- - Verbesserte Berechtigungsprüfungen für die Netzwerküberwachung
