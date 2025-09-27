@@ -56,6 +56,10 @@ abstract class BaseTunnel(@ApplicationScope protected val applicationScope: Coro
     ) {
         tunStatusMutex.withLock {
             activeTuns.update { currentTuns ->
+                if (!currentTuns.containsKey(tunnelId) && status != TunnelStatus.Starting) {
+                    Timber.d("Ignoring update for inactive tunnel $tunnelId")
+                    return@update currentTuns
+                }
                 val existingState = currentTuns[tunnelId] ?: TunnelState()
                 val newStatus = status ?: existingState.status
                 if (newStatus == TunnelStatus.Down) {

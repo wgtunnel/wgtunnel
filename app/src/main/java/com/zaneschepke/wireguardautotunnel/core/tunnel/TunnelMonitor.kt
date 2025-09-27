@@ -139,6 +139,7 @@ constructor(
                     val updates = ConcurrentMap<Key, PingState>()
 
                     pingablePeers.forEach { peer ->
+                        ensureActive()
                         val previousState = pingStatsFlow.value[peer.publicKey] ?: PingState()
 
                         val allowedIpStr = peer.allowedIps.firstOrNull()?.toString()
@@ -172,41 +173,45 @@ constructor(
 
                         val attemptTime = System.currentTimeMillis()
                         runCatching {
-                                val pingStats =
-                                    settings.tunnelPingTimeoutSeconds?.let {
-                                        networkUtils.pingWithStats(
-                                            host,
-                                            settings.tunnelPingAttempts,
-                                            it.toMillis(),
-                                        )
-                                    }
-                                        ?: networkUtils.pingWithStats(
-                                            host,
-                                            settings.tunnelPingAttempts,
-                                        )
+                                withTimeout(
+                                    settings.tunnelPingTimeoutSeconds?.toMillis() ?: 5000L
+                                ) {
+                                    val pingStats =
+                                        settings.tunnelPingTimeoutSeconds?.let {
+                                            networkUtils.pingWithStats(
+                                                host,
+                                                settings.tunnelPingAttempts,
+                                                it.toMillis(),
+                                            )
+                                        }
+                                            ?: networkUtils.pingWithStats(
+                                                host,
+                                                settings.tunnelPingAttempts,
+                                            )
 
-                                updates[peer.publicKey] =
-                                    previousState.copy(
-                                        transmitted = pingStats.transmitted,
-                                        received = pingStats.received,
-                                        packetLoss = pingStats.packetLoss,
-                                        rttMin = pingStats.rttMin,
-                                        rttMax = pingStats.rttMax,
-                                        rttAvg = pingStats.rttAvg,
-                                        rttStddev = pingStats.rttStddev,
-                                        isReachable = pingStats.isReachable,
-                                        failureReason =
-                                            if (pingStats.isReachable) null
-                                            else FailureReason.PingFailed,
-                                        lastSuccessfulPingMillis =
-                                            pingStats.lastSuccessfulPingMillis
-                                                ?: previousState.lastSuccessfulPingMillis,
-                                        pingTarget = host,
-                                        lastPingAttemptMillis = attemptTime,
+                                    updates[peer.publicKey] =
+                                        previousState.copy(
+                                            transmitted = pingStats.transmitted,
+                                            received = pingStats.received,
+                                            packetLoss = pingStats.packetLoss,
+                                            rttMin = pingStats.rttMin,
+                                            rttMax = pingStats.rttMax,
+                                            rttAvg = pingStats.rttAvg,
+                                            rttStddev = pingStats.rttStddev,
+                                            isReachable = pingStats.isReachable,
+                                            failureReason =
+                                                if (pingStats.isReachable) null
+                                                else FailureReason.PingFailed,
+                                            lastSuccessfulPingMillis =
+                                                pingStats.lastSuccessfulPingMillis
+                                                    ?: previousState.lastSuccessfulPingMillis,
+                                            pingTarget = host,
+                                            lastPingAttemptMillis = attemptTime,
+                                        )
+                                    Timber.d(
+                                        "Ping completed for peer ${peer.publicKey.toBase64().substring(0, 5)}.. to host $host with stats: $pingStats"
                                     )
-                                Timber.d(
-                                    "Ping completed for peer ${peer.publicKey.toBase64().substring(0, 5)}.. to host $host with stats: $pingStats"
-                                )
+                                }
                             }
                             .onFailure {
                                 Timber.e(
@@ -224,6 +229,7 @@ constructor(
                     }
 
                     if (updates.isNotEmpty()) {
+                        ensureActive()
                         pingStatsFlow.update { updates }
                         updateTunnelStatus(tunnelConf.id, null, null, updates, null)
                     }
@@ -236,6 +242,7 @@ constructor(
                 delay(3_000L)
 
                 while (isActive) {
+                    ensureActive()
                     if (isNetworkConnected.value) {
                         performPing()
                     } else {
@@ -248,6 +255,7 @@ constructor(
                                 )
                             }
                         }
+                        ensureActive()
                         updateTunnelStatus(tunnelConf.id, null, null, pingStatsFlow.value, null)
                     }
                     delay(settings.tunnelPingIntervalSeconds.toMillis())
@@ -264,7 +272,9 @@ constructor(
             ) -> Unit,
     ) = coroutineScope {
         while (isActive) {
+            ensureActive()
             val stats = getStatistics(tunnelId)
+            ensureActive()
             updateTunnelStatus(tunnelId, null, stats, null, null)
             delay(STATS_DELAY)
         }
