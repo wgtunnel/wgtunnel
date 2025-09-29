@@ -1,0 +1,5 @@
+Was ist neu:
+- Fehlerbehebung beim Absturz der App-Sperre
+- Fehlerbehebung bei der Veröffentlichung auf F-Droid
+- Fehlerbehebung beim Exportieren von Protokollen
+- Fehlerbehebung beim Umschalten des automatischen Ethernet-Tunnels
