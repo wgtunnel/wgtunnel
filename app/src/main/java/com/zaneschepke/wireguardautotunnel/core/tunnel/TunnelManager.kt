@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
+import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.di.*
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
@@ -56,6 +57,28 @@ constructor(
         val effect: suspend (SideEffectState) -> Unit,
         val condition: (SideEffectState) -> Boolean,
     )
+
+    private val settings: StateFlow<GeneralSettings> =
+        settingsRepository.flow
+            .filterNotNull()
+            .stateIn(
+                scope = applicationScope.plus(ioDispatcher),
+                started = SharingStarted.Eagerly,
+                initialValue = GeneralSettings(),
+            )
+
+    private val tunnels: StateFlow<List<TunnelConf>> =
+        tunnelsRepository.flow.stateIn(
+            scope = applicationScope.plus(ioDispatcher),
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList(),
+        )
+
+    private suspend fun getSettings(): GeneralSettings =
+        settingsRepository.flow.filterNotNull().first { it != GeneralSettings() }
+
+    private suspend fun getTunnels(): List<TunnelConf> =
+        tunnelsRepository.flow.first { it.isNotEmpty() }
 
     private val tunnelProviderFlow: StateFlow<TunnelProvider> = run {
         val currentBackend = AtomicReference(userspaceTunnel)
@@ -216,7 +239,17 @@ constructor(
         // for VPN Mode, we need to stop active tunnels as we can only have one active at a time
         if (activeTunnels.value.isNotEmpty() && tunnelProviderFlow.value == userspaceTunnel)
             stopActiveTunnels()
-        tunnelProviderFlow.value.startTunnel(tunnelConf)
+        val runConfig =
+            tunnelConf.run {
+                if (getSettings().isTunnelGlobalsEnabled) {
+                    val globalTunnel =
+                        getTunnels().firstOrNull { it.tunName == TunnelConfig.GLOBAL_CONFIG_NAME }
+                            ?: return@run this
+                    return@run copyWithGlobalValues(globalTunnel)
+                }
+                this
+            }
+        tunnelProviderFlow.value.startTunnel(runConfig)
     }
 
     override suspend fun stopTunnel(tunnelId: Int) {

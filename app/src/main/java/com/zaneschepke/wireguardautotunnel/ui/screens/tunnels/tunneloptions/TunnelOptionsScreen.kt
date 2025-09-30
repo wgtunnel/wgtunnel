@@ -10,13 +10,16 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.tunneloptions.components.*
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
@@ -61,7 +64,11 @@ fun TunnelOptionsScreen(tunnelId: Int, viewModel: TunnelsViewModel) {
                 buildList {
                     add(primaryTunnelItem(tunnelConf) { viewModel.togglePrimaryTunnel(tunnelId) })
                     add(autoTunnelingItem(tunnelConf, navController))
-                    add(splitTunnelingItem(tunnelConf, navController))
+                    add(
+                        splitTunnelingItem(stringResource(R.string.splt_tunneling)) {
+                            navController.navigate(Route.SplitTunnel(id = tunnelConf.id))
+                        }
+                    )
                 }
         )
         SectionDivider()

@@ -84,7 +84,6 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             Modifier.verticalScroll(rememberScrollState())
                 .fillMaxSize()
                 .padding(vertical = 24.dp)
-                .padding(horizontal = 12.dp)
                 .then(
                     if (!isTv) {
                         Modifier.clickable(
@@ -132,6 +131,16 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                                     appMode.asString(context),
                                 )
                             )
+                        }
+                    )
+                    add(
+                        tunnelGlobalsSettingItem(
+                            settingsState.settings.isTunnelGlobalsEnabled,
+                            onClick = viewModel::setTunnelGlobals,
+                        ) {
+                            settingsState.globalTunnelConf?.let {
+                                navController.navigate(Route.TunnelGlobals(it.id))
+                            }
                         }
                     )
                     if (showProxySettings)

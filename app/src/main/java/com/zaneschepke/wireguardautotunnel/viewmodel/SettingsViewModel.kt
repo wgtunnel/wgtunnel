@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
 import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
 import com.zaneschepke.wireguardautotunnel.data.model.DnsProvider
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.SettingUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +25,7 @@ constructor(
     private val settingsRepository: GeneralSettingRepository,
     private val shortcutManager: ShortcutManager,
     private val appStateRepository: AppStateRepository,
+    private val tunnelsRepository: TunnelRepository,
     private val globalEffectRepository: GlobalEffectRepository,
 ) : ContainerHost<SettingUiState, Nothing>, ViewModel() {
 
@@ -32,7 +35,11 @@ constructor(
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
             intent {
-                combine(settingsRepository.flow, appStateRepository.flow) { settings, appState ->
+                combine(
+                        settingsRepository.flow,
+                        appStateRepository.flow,
+                        tunnelsRepository.globalTunnelFlow,
+                    ) { settings, appState, tunnel ->
                         SettingUiState(
                             settings = settings,
                             isLocalLoggingEnabled = appState.isLocalLogsEnabled,
@@ -41,6 +48,7 @@ constructor(
                             isPinLockEnabled = appState.isPinLockEnabled,
                             showDetailedPingStats = appState.showDetailedPingStats,
                             stateInitialized = true,
+                            globalTunnelConf = tunnel,
                         )
                     }
                     .collect { reduce { it } }
@@ -70,6 +78,12 @@ constructor(
 
     fun setLanKillSwitchEnabled(to: Boolean) = intent {
         settingsRepository.save(state.settings.copy(isLanOnKillSwitchEnabled = to))
+    }
+
+    fun setTunnelGlobals(to: Boolean) = intent {
+        settingsRepository.save(state.settings.copy(isTunnelGlobalsEnabled = to))
+        if (state.globalTunnelConf == null)
+            tunnelsRepository.save(TunnelConf.generateDefaultGlobalConfig())
     }
 
     fun setTunnelPingIntervalSeconds(to: Int) = intent {

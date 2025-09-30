@@ -20,6 +20,7 @@ import java.util.*
 
 @Composable
 fun InterfaceSection(
+    isGlobalConfig: Boolean,
     configProxy: ConfigProxy,
     tunnelName: String,
     isTunnelNameTaken: Boolean,
@@ -32,6 +33,7 @@ fun InterfaceSection(
     var showAmneziaValues by rememberSaveable {
         mutableStateOf(configProxy.`interface`.isAmneziaEnabled())
     }
+
     var showScripts by rememberSaveable { mutableStateOf(configProxy.hasScripts()) }
     var isDropDownExpanded by rememberSaveable { mutableStateOf(false) }
     val isAmneziaCompatibilitySet =
@@ -82,17 +84,19 @@ fun InterfaceSection(
                     },
                 )
             }
-            ConfigurationTextBox(
-                value = tunnelName,
-                onValueChange = onTunnelNameChange,
-                label = stringResource(R.string.name),
-                isError = isTunnelNameTaken,
-                hint =
-                    stringResource(R.string.hint_template, stringResource(R.string.tunnel_name))
-                        .lowercase(Locale.getDefault()),
-                modifier = Modifier.fillMaxWidth(),
-            )
+            if (!isGlobalConfig)
+                ConfigurationTextBox(
+                    value = tunnelName,
+                    onValueChange = onTunnelNameChange,
+                    label = stringResource(R.string.name),
+                    isError = isTunnelNameTaken,
+                    hint =
+                        stringResource(R.string.hint_template, stringResource(R.string.tunnel_name))
+                            .lowercase(Locale.getDefault()),
+                    modifier = Modifier.fillMaxWidth(),
+                )
             InterfaceFields(
+                isGlobalConfig,
                 interfaceState = configProxy.`interface`,
                 showScripts = showScripts,
                 showAmneziaValues = showAmneziaValues,

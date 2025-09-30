@@ -20,11 +20,13 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectReposit
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
+import com.zaneschepke.wireguardautotunnel.ui.state.ConfigProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.SharedAppUiState
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
 import com.zaneschepke.wireguardautotunnel.util.StringValue
+import com.zaneschepke.wireguardautotunnel.util.extensions.asStringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.saveTunnelsUniquely
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
@@ -36,9 +38,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import org.amnezia.awg.config.BadConfigException
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import rikka.shizuku.Shizuku
+import timber.log.Timber
 import xyz.teamgravity.pin_lock_compose.PinManager
 
 @HiltViewModel
@@ -121,6 +125,46 @@ constructor(
     fun setPinLockEnabled(enabled: Boolean) = intent {
         if (!enabled) PinManager.clearPin()
         appStateRepository.setPinLockEnabled(enabled)
+    }
+
+    fun saveConfigProxy(tunnelId: Int?, configProxy: ConfigProxy, tunnelName: String) = intent {
+        if (state.tunnels.any { it.tunName == tunnelName && it.id != tunnelId })
+            return@intent postSideEffect(
+                GlobalSideEffect.Toast(StringValue.StringResource(R.string.tunnel_name_taken))
+            )
+        runCatching {
+                val (wg, am) = configProxy.buildConfigs()
+                val tunnelConf =
+                    if (tunnelId == null) {
+                        TunnelConf.tunnelConfFromQuick(am.toAwgQuickString(true, false), tunnelName)
+                    } else {
+                        val latestTunnel = state.tunnels.find { it.id == tunnelId }
+                        latestTunnel?.copy(
+                            tunName = tunnelName,
+                            amQuick = am.toAwgQuickString(true, false),
+                            wgQuick = wg.toWgQuickString(true),
+                        )
+                    }
+                if (tunnelConf != null) {
+                    tunnelRepository.save(tunnelConf)
+                    postSideEffect(
+                        GlobalSideEffect.Toast(
+                            StringValue.StringResource(R.string.config_changes_saved)
+                        )
+                    )
+                    postSideEffect(GlobalSideEffect.PopBackStack)
+                }
+            }
+            .onFailure {
+                Timber.e(it)
+                val message =
+                    when (it) {
+                        is BadConfigException -> it.asStringValue()
+                        is com.wireguard.config.BadConfigException -> it.asStringValue()
+                        else -> StringValue.StringResource(R.string.unknown_error)
+                    }
+                postSideEffect(GlobalSideEffect.Snackbar(message))
+            }
     }
 
     fun stopTunnel(tunnelConf: TunnelConf) = intent { tunnelManager.stopTunnel(tunnelConf.id) }

@@ -37,6 +37,12 @@ sealed class Route {
 
     @Keep @Serializable data class SplitTunnel(val id: Int) : Route()
 
+    @Keep @Serializable data class ConfigGlobal(val id: Int?) : Route()
+
+    @Keep @Serializable data class TunnelGlobals(val id: Int) : Route()
+
+    @Keep @Serializable data class SplitTunnelGlobal(val id: Int) : Route()
+
     @Keep @Serializable data class TunnelAutoTunnel(val id: Int) : Route()
 
     @Keep @Serializable data object Sort : Route()

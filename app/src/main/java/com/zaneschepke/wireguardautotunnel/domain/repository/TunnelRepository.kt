@@ -7,6 +7,10 @@ import kotlinx.coroutines.flow.Flow
 interface TunnelRepository {
     val flow: Flow<List<TunnelConf>>
 
+    val userTunnelsFlow: Flow<List<TunnelConf>>
+
+    val globalTunnelFlow: Flow<TunnelConf?>
+
     suspend fun getAll(): Tunnels
 
     suspend fun save(tunnelConf: TunnelConf)

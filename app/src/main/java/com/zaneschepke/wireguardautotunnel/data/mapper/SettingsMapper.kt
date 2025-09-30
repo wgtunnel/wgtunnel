@@ -32,6 +32,7 @@ fun Settings.toAppSettings(): GeneralSettings {
         appMode = appMode,
         dnsProtocol = dnsProtocol,
         dnsEndpoint = dnsEndpoint,
+        isTunnelGlobalsEnabled = isTunnelGlobalsEnabled,
     )
 }
 
@@ -61,6 +62,7 @@ fun GeneralSettings.toSettings(): Settings {
         appMode = appMode,
         dnsProtocol = dnsProtocol,
         dnsEndpoint = dnsEndpoint,
+        isTunnelGlobalsEnabled = isTunnelGlobalsEnabled,
     )
 }
 

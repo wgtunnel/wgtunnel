@@ -31,6 +31,7 @@ data class GeneralSettings(
     val appMode: AppMode = AppMode.VPN,
     val dnsProtocol: DnsProtocol = DnsProtocol.SYSTEM,
     val dnsEndpoint: String? = null,
+    val isTunnelGlobalsEnabled: Boolean = false,
 ) {
     fun toAutoTunnelStateString(): String {
         return """
