@@ -5,7 +5,7 @@
     <string name="public_key">Открытый ключ</string>
     <string name="name">Имя</string>
     <string name="peer">Пир</string>
-    <string name="privacy_policy">Посмотреть политику конфиденциальности</string>
+    <string name="privacy_policy">Политика конфиденциальности</string>
     <string name="add_from_qr">Добавить из QR-кода</string>
     <string name="auto_tunneling">Автотуннелирование</string>
     <string name="no_tunnels">Туннели ещё не добавлены!</string>
@@ -35,7 +35,7 @@
     <string name="tunnel_mobile_data">Туннелировать через мобильный интернет</string>
     <string name="tunnel_on_ethernet">Туннелировать через Ethernet</string>
     <string name="cancel">Отмена</string>
-    <string name="docs_description">Посмотреть документацию</string>
+    <string name="docs_description">Документация</string>
     <string name="email_chooser">Отправить письмо…</string>
     <string name="auto_tunnel_title">Сервис автотуннелирования</string>
     <string name="create_import">Создать с нуля</string>
