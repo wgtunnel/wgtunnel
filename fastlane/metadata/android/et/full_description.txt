@@ -1,14 +1,15 @@
-Funktsionaalsused:
-
-- Tunneli lisamine .conf faili, .zip faili, käsitsi sisestuse või QR-koodi alusel
-- VPN-i automaatne ühendamine konkreetse WiFi SSID, traadiga võrgu või mobiilse andmeside alusel
-- Jagatud tunneldus koos otsinguga
-- WireGuardi tugi nii kerneli, kui kasutajarežiimis
-- Amnezia tugi kasutajarežiimis nii pakettide süvakontrolli kui tsenseerimise vastu
-- Alati toimiva VPN-i tugi
-- Amnezia ja WireGuardi tunnelite eksport zip-faili
-- Androidi kiirvalikute tugi VPN-i sisselülitamiseks või katkestamiseks
-- Põhitunneli staatiliste linkide tugi automaatseks lõimimiseks
-- Sinu määratud eelistuste automatiseerimise tugi kõikide tunnelite puhul
-- Teenuse käivitamine koos nutiseadme käivitamisega
-- Säästlik akukasutus
+- **Tunneli importimise meetodid**: Tunneli lisamine mugavalt .conf faili, .zip faili, käsitsi sisestuse või QR-koodi alusel.
+- **Automaatne tunneldus**: VPN-i automaatne ühendamine konkreetse WiFi SSID, traadiga võrgu või mobiilse andmeside alusel.
+- **Jagatud tunneldus**: Paindlik tugi võimalusele mõne konkreetse rakenduse või liikluse juhtimisele tunneli kaudu.
+- **WireGuardi režiimid**: Täistugi WireGuardi tööks nii kerneli-, kui kasutajarežiimis.
+- **Amnezia lõiming**: AmneziaWG tugi kasutajarežiimis nii pakettide süvakontrolli kui tsenseerimise vastu.
+- **Pidevalt töötav VPN**: Alati toimiva VPN-i tugi tagab pidevalt toimiva kaitse.
+- **Kiirvalikud**: Kiirvalikute vidin ja avalehe lingid VPN-i mugavaks sisse/välja lülitamiseks.
+- **Automatiseerimise tugi**: Kavatsuste-põhine automatiseerimine tunnelite juhtimisel.
+- **Automaatne taastamine**: Automaatse tunnelduse ja aktiivsete tunnelite sujuv taastamine nutiseadme käivitamisel või rakenduse uuendamisel.
+- **Proksiteenuse võimalused**: Rakendusesisese HTTP või SOCKS5-proksi tugi tunnelites.
+- **Lukustusrežiim**: Sinu seadistatavad sulgemisvõimalused maksimaalseks kaitseks andmete lekkimise vastu ja turvalisuse nimel.
+- **Dünaamiline nimelahendus**: Tuvastab nimelahenduse muudatused või uuendab neid ilma tunneli uuesti käivitamiseta.
+- **Monitooringuvahendid**: Mitmed detailsed võimalused tunneli jõudluse jälgmiseks.
+- **Android TV tugi**: Rakendus on kasutatav Android TV-s, võimaldades turvalist voogedastust ja veebisirvimist.
+- **Moodne ja turvaline nimelahendus**: tunneli otspunktide nimelahendus või kasutada DOH-protokolli (DNS üle HTTP).

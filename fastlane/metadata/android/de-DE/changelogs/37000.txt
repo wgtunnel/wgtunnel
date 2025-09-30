@@ -1,6 +1,0 @@
-Was ist neu?
-- Unterstützung mehrerer Tunnel für den Kernel-Modus
-- Überschreiben der WG-Standard-DNS-Ipv4-Präferenz
-- Notschalter bei vertrauenswürdiger Unterstützung abschalten
-- Begrenzung der Standortabfrage durch Autotunnel
-- Verschiedene Fehlerbehebungen und Verbesserungen

@@ -1,1 +1,1 @@
-Alternatywna aplikacja klienta VPN dla WireGuard z dodatkowymi funkcjami
+Klient VPN WireGuard i AmneziaWG z autotunelowaniem, blokadą i proxy.

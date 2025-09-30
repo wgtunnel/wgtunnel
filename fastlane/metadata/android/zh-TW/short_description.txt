@@ -1,1 +1,1 @@
-一款具備進階功能的 WireGuard VPN 用戶端應用程式
+一個支援 WireGuard 和 AmneziaWG 並帶有自動隧道管理、鎖定模式和代理功能的 VPN 用戶端。

@@ -1,4 +1,0 @@
-Co je nového:
-- Opravuje chybu skeneru QR kódů
-- Opravuje chybu sledování aktivní sítě Wi-Fi
-- Opravuje reprodukovatelnost Fdroid
