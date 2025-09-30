@@ -85,9 +85,10 @@ class TunnelModule {
     @Kernel
     fun provideKernelProvider(
         @ApplicationScope applicationScope: CoroutineScope,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
         backend: com.wireguard.android.backend.Backend,
     ): TunnelProvider {
-        return KernelTunnel(applicationScope, backend)
+        return KernelTunnel(applicationScope, ioDispatcher, backend)
     }
 
     @Provides
@@ -98,9 +99,11 @@ class TunnelModule {
         proxySettingsRepository: ProxySettingsRepository,
         settingsRepository: GeneralSettingRepository,
         @Userspace backend: Backend,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
     ): TunnelProvider {
         return UserspaceTunnel(
             applicationScope,
+            ioDispatcher,
             proxySettingsRepository,
             settingsRepository,
             backend,
@@ -115,9 +118,11 @@ class TunnelModule {
         settingsRepository: GeneralSettingRepository,
         proxySettingsRepository: ProxySettingsRepository,
         @ProxyUserspace backend: Backend,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
     ): TunnelProvider {
         return UserspaceTunnel(
             applicationScope,
+            ioDispatcher,
             proxySettingsRepository,
             settingsRepository,
             backend,

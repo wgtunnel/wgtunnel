@@ -4,6 +4,7 @@ import com.wireguard.android.backend.Backend
 import com.wireguard.android.backend.BackendException
 import com.wireguard.android.backend.Tunnel as WgTunnel
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
+import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.di.Kernel
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
@@ -15,6 +16,7 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.asTunnelState
 import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendCoreException
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
@@ -28,8 +30,9 @@ class KernelTunnel
 @Inject
 constructor(
     @ApplicationScope applicationScope: CoroutineScope,
+    @IoDispatcher ioDispatcher: CoroutineDispatcher,
     @Kernel private val backend: Backend,
-) : BaseTunnel(applicationScope) {
+) : BaseTunnel(applicationScope, ioDispatcher) {
 
     private val runtimeTunnels = ConcurrentHashMap<Int, WgTunnel>()
 

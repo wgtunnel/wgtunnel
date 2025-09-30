@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
+import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
@@ -12,6 +13,7 @@ import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.cancellation.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -21,8 +23,10 @@ import kotlinx.coroutines.sync.withLock
 import org.amnezia.awg.crypto.Key
 import timber.log.Timber
 
-abstract class BaseTunnel(@ApplicationScope protected val applicationScope: CoroutineScope) :
-    TunnelProvider {
+abstract class BaseTunnel(
+    @ApplicationScope protected val applicationScope: CoroutineScope,
+    @IoDispatcher protected val ioDispatcher: CoroutineDispatcher,
+) : TunnelProvider {
 
     protected val errors = MutableSharedFlow<Pair<String, BackendCoreException>>()
     override val errorEvents = errors.asSharedFlow()
@@ -105,7 +109,7 @@ abstract class BaseTunnel(@ApplicationScope protected val applicationScope: Coro
             updateTunnelStatus(tunnelConf.id, TunnelStatus.Starting)
 
             val job =
-                applicationScope.launch {
+                applicationScope.launch(ioDispatcher) {
                     try {
                         tunnelStateFlow(tunnelConf).collect { status ->
                             updateTunnelStatus(tunnelConf.id, status)

@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.core.tunnel
 
 import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
+import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
@@ -19,6 +20,7 @@ import java.io.IOException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
@@ -41,10 +43,11 @@ class UserspaceTunnel
 @Inject
 constructor(
     @ApplicationScope applicationScope: CoroutineScope,
+    @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val proxySettingsRepository: ProxySettingsRepository,
     private val settingsRepository: GeneralSettingRepository,
     private val backend: Backend,
-) : BaseTunnel(applicationScope) {
+) : BaseTunnel(applicationScope, ioDispatcher) {
 
     private val runtimeTunnels = ConcurrentHashMap<Int, AwgTunnel>()
 
