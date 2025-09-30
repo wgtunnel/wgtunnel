@@ -31,7 +31,7 @@ fun GettingStartedLabel(onClick: (url: String) -> Unit) {
             append(" ")
             pushStringAnnotation(
                 tag = "gettingStarted",
-                annotation = stringResource(id = R.string.getting_started_url),
+                annotation = stringResource(id = R.string.docs_url),
             )
             withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
                 append(stringResource(id = R.string.getting_started_guide))

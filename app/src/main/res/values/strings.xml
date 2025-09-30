@@ -8,9 +8,8 @@
     <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
     <string name="kofi_url" translatable="false">https://ko-fi.com/zaneschepke</string>
     <string name="liberapay_url" translatable="false">https://liberapay.com/zaneschepke</string>
-    <string name="docs_url" translatable="false">https://wgtunnel.com/docs/</string>
-    <string name="getting_started_url" translatable="false">https://wgtunnel.com/docs/getting-started</string>
-    <string name="privacy_policy_url" translatable="false">https://wgtunnel.com/docs/privacy-policy/</string>
+    <string name="docs_url" translatable="false">https://wgtunnel.com/docs/getting-started</string>
+    <string name="privacy_policy_url" translatable="false">https://wgtunnel.com/privacy-policy/</string>
 	<string name="docs_wildcards" translatable="false" >https://wgtunnel.com/docs/auto-tunneling/#use-name-wildcards</string>
     <string name="matrix_url" translatable="false">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
     <string name="telegram_url" translatable="false">https://t.me/wgtunnel</string>
