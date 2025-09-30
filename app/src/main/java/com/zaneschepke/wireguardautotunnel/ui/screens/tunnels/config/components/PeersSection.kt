@@ -88,7 +88,7 @@ fun PeersSection(
                         }
                     }
                 }
-                PeerFields( peer = peer, onPeerChange = { onUpdatePeer(it, index) })
+                PeerFields(peer = peer, onPeerChange = { onUpdatePeer(it, index) })
             }
         }
     }

@@ -133,28 +133,28 @@ constructor(
                 GlobalSideEffect.Toast(StringValue.StringResource(R.string.tunnel_name_taken))
             )
         runCatching {
-            val (wg, am) = configProxy.buildConfigs()
-            val tunnelConf =
-                if (tunnelId == null) {
-                    TunnelConf.tunnelConfFromQuick(am.toAwgQuickString(true, false), tunnelName)
-                } else {
-                    val latestTunnel = state.tunnels.find { it.id == tunnelId }
-                    latestTunnel?.copy(
-                        tunName = tunnelName,
-                        amQuick = am.toAwgQuickString(true, false),
-                        wgQuick = wg.toWgQuickString(true),
+                val (wg, am) = configProxy.buildConfigs()
+                val tunnelConf =
+                    if (tunnelId == null) {
+                        TunnelConf.tunnelConfFromQuick(am.toAwgQuickString(true, false), tunnelName)
+                    } else {
+                        val latestTunnel = state.tunnels.find { it.id == tunnelId }
+                        latestTunnel?.copy(
+                            tunName = tunnelName,
+                            amQuick = am.toAwgQuickString(true, false),
+                            wgQuick = wg.toWgQuickString(true),
+                        )
+                    }
+                if (tunnelConf != null) {
+                    tunnelRepository.save(tunnelConf)
+                    postSideEffect(
+                        GlobalSideEffect.Toast(
+                            StringValue.StringResource(R.string.config_changes_saved)
+                        )
                     )
+                    postSideEffect(GlobalSideEffect.PopBackStack)
                 }
-            if (tunnelConf != null) {
-                tunnelRepository.save(tunnelConf)
-                postSideEffect(
-                    GlobalSideEffect.Toast(
-                        StringValue.StringResource(R.string.config_changes_saved)
-                    )
-                )
-                postSideEffect(GlobalSideEffect.PopBackStack)
             }
-        }
             .onFailure {
                 Timber.e(it)
                 val message =

@@ -43,93 +43,98 @@ fun InterfaceFields(
     var showPrivateKey by rememberSaveable { mutableStateOf(false) }
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        if(!isGlobalConfig) ConfigurationTextBox(
-            value = interfaceState.privateKey,
-            hint =
-                stringResource(R.string.hint_template, stringResource(R.string.base64_key))
-                    .lowercase(Locale.getDefault()),
-            onValueChange = { onInterfaceChange(interfaceState.copy(privateKey = it)) },
-            label = stringResource(R.string.private_key),
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation =
-                if (showPrivateKey) VisualTransformation.None else PasswordVisualTransformation(),
-            trailing = {
-                CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 4.dp) {
-                    Row(modifier = Modifier.padding(end = 4.dp)) {
-                        IconButton(onClick = { showPrivateKey = !showPrivateKey }) {
-                            Icon(
-                                Icons.Outlined.RemoveRedEye,
-                                stringResource(R.string.show_password),
-                            )
-                        }
-                        IconButton(
-                            enabled = true,
-                            onClick = {
-                                val keypair = KeyPair()
-                                onInterfaceChange(
-                                    interfaceState.copy(
-                                        privateKey = keypair.privateKey.toBase64(),
-                                        publicKey = keypair.publicKey.toBase64(),
-                                    )
+        if (!isGlobalConfig)
+            ConfigurationTextBox(
+                value = interfaceState.privateKey,
+                hint =
+                    stringResource(R.string.hint_template, stringResource(R.string.base64_key))
+                        .lowercase(Locale.getDefault()),
+                onValueChange = { onInterfaceChange(interfaceState.copy(privateKey = it)) },
+                label = stringResource(R.string.private_key),
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation =
+                    if (showPrivateKey) VisualTransformation.None
+                    else PasswordVisualTransformation(),
+                trailing = {
+                    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 4.dp) {
+                        Row(modifier = Modifier.padding(end = 4.dp)) {
+                            IconButton(onClick = { showPrivateKey = !showPrivateKey }) {
+                                Icon(
+                                    Icons.Outlined.RemoveRedEye,
+                                    stringResource(R.string.show_password),
                                 )
-                            },
-                        ) {
-                            Icon(
-                                Icons.Rounded.Refresh,
-                                stringResource(R.string.rotate_keys),
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
+                            }
+                            IconButton(
+                                enabled = true,
+                                onClick = {
+                                    val keypair = KeyPair()
+                                    onInterfaceChange(
+                                        interfaceState.copy(
+                                            privateKey = keypair.privateKey.toBase64(),
+                                            publicKey = keypair.publicKey.toBase64(),
+                                        )
+                                    )
+                                },
+                            ) {
+                                Icon(
+                                    Icons.Rounded.Refresh,
+                                    stringResource(R.string.rotate_keys),
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
                         }
                     }
-                }
-            },
-            enabled = true,
-            singleLine = true,
-            keyboardOptions = keyboardOptions,
-            keyboardActions = keyboardActions,
-        )
-        if(!isGlobalConfig) ConfigurationTextBox(
-            value = interfaceState.publicKey,
-            hint =
-                stringResource(R.string.hint_template, stringResource(R.string.base64_key))
-                    .lowercase(Locale.getDefault()),
-            onValueChange = { onInterfaceChange(interfaceState.copy(publicKey = it)) },
-            label = stringResource(R.string.public_key),
-            enabled = false,
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            trailing = {
-                IconButton(onClick = { clipboardManager.copy(interfaceState.publicKey) }) {
-                    Icon(
-                        Icons.Rounded.ContentCopy,
-                        stringResource(R.string.copy_public_key),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
-            },
-            keyboardOptions = keyboardOptions,
-            keyboardActions = keyboardActions,
-        )
-        if(!isGlobalConfig) ConfigurationTextBox(
-            value = interfaceState.addresses,
-            onValueChange = { onInterfaceChange(interfaceState.copy(addresses = it)) },
-            label = stringResource(R.string.addresses),
-            hint =
-                stringResource(
-                        R.string.hint_template,
-                        stringResource(R.string.comma_separated).lowercase(locale),
-                    )
-                    .lowercase(Locale.getDefault()),
-            modifier = Modifier.fillMaxWidth(),
-        )
-        if(!isGlobalConfig) ConfigurationTextBox(
-            value = interfaceState.listenPort,
-            onValueChange = { onInterfaceChange(interfaceState.copy(listenPort = it)) },
-            label = stringResource(R.string.listen_port),
-            hint = stringResource(R.string.random),
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        )
+                },
+                enabled = true,
+                singleLine = true,
+                keyboardOptions = keyboardOptions,
+                keyboardActions = keyboardActions,
+            )
+        if (!isGlobalConfig)
+            ConfigurationTextBox(
+                value = interfaceState.publicKey,
+                hint =
+                    stringResource(R.string.hint_template, stringResource(R.string.base64_key))
+                        .lowercase(Locale.getDefault()),
+                onValueChange = { onInterfaceChange(interfaceState.copy(publicKey = it)) },
+                label = stringResource(R.string.public_key),
+                enabled = false,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                trailing = {
+                    IconButton(onClick = { clipboardManager.copy(interfaceState.publicKey) }) {
+                        Icon(
+                            Icons.Rounded.ContentCopy,
+                            stringResource(R.string.copy_public_key),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                },
+                keyboardOptions = keyboardOptions,
+                keyboardActions = keyboardActions,
+            )
+        if (!isGlobalConfig)
+            ConfigurationTextBox(
+                value = interfaceState.addresses,
+                onValueChange = { onInterfaceChange(interfaceState.copy(addresses = it)) },
+                label = stringResource(R.string.addresses),
+                hint =
+                    stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.comma_separated).lowercase(locale),
+                        )
+                        .lowercase(Locale.getDefault()),
+                modifier = Modifier.fillMaxWidth(),
+            )
+        if (!isGlobalConfig)
+            ConfigurationTextBox(
+                value = interfaceState.listenPort,
+                onValueChange = { onInterfaceChange(interfaceState.copy(listenPort = it)) },
+                label = stringResource(R.string.listen_port),
+                hint = stringResource(R.string.random),
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            )
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(6.dp),

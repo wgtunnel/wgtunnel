@@ -35,7 +35,11 @@ constructor(
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
             intent {
-                combine(settingsRepository.flow, appStateRepository.flow, tunnelsRepository.globalTunnelFlow) { settings, appState, tunnel ->
+                combine(
+                        settingsRepository.flow,
+                        appStateRepository.flow,
+                        tunnelsRepository.globalTunnelFlow,
+                    ) { settings, appState, tunnel ->
                         SettingUiState(
                             settings = settings,
                             isLocalLoggingEnabled = appState.isLocalLogsEnabled,
@@ -44,7 +48,7 @@ constructor(
                             isPinLockEnabled = appState.isPinLockEnabled,
                             showDetailedPingStats = appState.showDetailedPingStats,
                             stateInitialized = true,
-                            globalTunnelConf = tunnel
+                            globalTunnelConf = tunnel,
                         )
                     }
                     .collect { reduce { it } }
@@ -78,7 +82,8 @@ constructor(
 
     fun setTunnelGlobals(to: Boolean) = intent {
         settingsRepository.save(state.settings.copy(isTunnelGlobalsEnabled = to))
-        if(state.globalTunnelConf == null) tunnelsRepository.save(TunnelConf.generateDefaultGlobalConfig())
+        if (state.globalTunnelConf == null)
+            tunnelsRepository.save(TunnelConf.generateDefaultGlobalConfig())
     }
 
     fun setTunnelPingIntervalSeconds(to: Int) = intent {

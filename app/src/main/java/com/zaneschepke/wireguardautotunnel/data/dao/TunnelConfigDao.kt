@@ -78,7 +78,5 @@ interface TunnelConfigDao {
     ): Flow<List<TunnelConfig>>
 
     @Query("SELECT * FROM TunnelConfig WHERE name = :globalName LIMIT 1")
-    fun getGlobalTunnel(
-        globalName: String = TunnelConfig.GLOBAL_CONFIG_NAME
-    ): Flow<TunnelConfig?>
+    fun getGlobalTunnel(globalName: String = TunnelConfig.GLOBAL_CONFIG_NAME): Flow<TunnelConfig?>
 }

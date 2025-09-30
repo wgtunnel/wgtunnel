@@ -49,7 +49,8 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                     Route.Config::class.simpleName -> backStackEntry?.toRoute<Route.Config>()
                     Route.SplitTunnel::class.simpleName ->
                         backStackEntry?.toRoute<Route.SplitTunnel>()
-                    Route.ConfigGlobal::class.simpleName -> backStackEntry?.toRoute<Route.ConfigGlobal>()
+                    Route.ConfigGlobal::class.simpleName ->
+                        backStackEntry?.toRoute<Route.ConfigGlobal>()
                     Route.SplitTunnelGlobal::class.simpleName ->
                         backStackEntry?.toRoute<Route.SplitTunnelGlobal>()
                     Route.TunnelAutoTunnel::class.simpleName ->
@@ -73,7 +74,8 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                         backStackEntry?.toRoute<Route.LocationDisclosure>()
                     Route.Donate::class.simpleName -> backStackEntry?.toRoute<Route.Donate>()
                     Route.Addresses::class.simpleName -> backStackEntry?.toRoute<Route.Addresses>()
-                    Route.TunnelGlobals::class.simpleName -> backStackEntry?.toRoute<Route.TunnelGlobals>()
+                    Route.TunnelGlobals::class.simpleName ->
+                        backStackEntry?.toRoute<Route.TunnelGlobals>()
                     else -> null
                 }
             }
@@ -280,9 +282,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = {
-                            Text(stringResource(R.string.configuration))
-                        },
+                        topTitle = { Text(stringResource(R.string.configuration)) },
                         topTrailing = {
                             ActionIconButton(Icons.Rounded.Save, R.string.save) {
                                 keyboardController?.hide()
@@ -314,7 +314,9 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                                 navController.popBackStack()
                             }
                         },
-                        showBottomItems = true, topTitle = { Text(tunnel?.tunName ?: "") })
+                        showBottomItems = true,
+                        topTitle = { Text(tunnel?.tunName ?: "") },
+                    )
                 }
                 Route.TunnelMonitoring ->
                     NavbarState(
@@ -337,7 +339,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                         showBottomItems = true,
                         topTitle = { Text(tunnel?.tunName ?: "") },
                         topTrailing = {
-                            Row{
+                            Row {
                                 ActionIconButton(Icons.Rounded.QrCode2, R.string.show_qr) {
                                     sharedViewModel.postSideEffect(LocalSideEffect.Modal.QR)
                                 }

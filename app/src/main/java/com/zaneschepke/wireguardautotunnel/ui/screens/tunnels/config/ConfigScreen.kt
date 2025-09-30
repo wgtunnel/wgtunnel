@@ -81,34 +81,38 @@ fun ConfigScreen(tunnelId: Int? = null) {
                 configProxy = configProxy.copy(`interface` = configProxy.`interface`.setSipMimic())
             },
         )
-        if(!isGlobalConfig) PeersSection(
-            configProxy,
-            onRemove = {
-                configProxy =
-                    configProxy.copy(
-                        peers = configProxy.peers.toMutableList().apply { removeAt(it) }
-                    )
-            },
-            onToggleLan = { index ->
-                configProxy =
-                    configProxy.copy(
-                        peers =
-                            configProxy.peers.toMutableList().apply {
-                                val peer = get(index)
-                                val updated =
-                                    if (peer.isLanExcluded()) peer.includeLan()
-                                    else peer.excludeLan()
-                                set(index, updated)
-                            }
-                    )
-            },
-            onUpdatePeer = { peer, index ->
-                configProxy =
-                    configProxy.copy(
-                        peers = configProxy.peers.toMutableList().apply { set(index, peer) }
-                    )
-            },
-        )
-        if(!isGlobalConfig) AddPeerButton { configProxy = configProxy.copy(peers = configProxy.peers + PeerProxy()) }
+        if (!isGlobalConfig)
+            PeersSection(
+                configProxy,
+                onRemove = {
+                    configProxy =
+                        configProxy.copy(
+                            peers = configProxy.peers.toMutableList().apply { removeAt(it) }
+                        )
+                },
+                onToggleLan = { index ->
+                    configProxy =
+                        configProxy.copy(
+                            peers =
+                                configProxy.peers.toMutableList().apply {
+                                    val peer = get(index)
+                                    val updated =
+                                        if (peer.isLanExcluded()) peer.includeLan()
+                                        else peer.excludeLan()
+                                    set(index, updated)
+                                }
+                        )
+                },
+                onUpdatePeer = { peer, index ->
+                    configProxy =
+                        configProxy.copy(
+                            peers = configProxy.peers.toMutableList().apply { set(index, peer) }
+                        )
+                },
+            )
+        if (!isGlobalConfig)
+            AddPeerButton {
+                configProxy = configProxy.copy(peers = configProxy.peers + PeerProxy())
+            }
     }
 }

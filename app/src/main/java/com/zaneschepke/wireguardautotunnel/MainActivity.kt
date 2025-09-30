@@ -365,7 +365,7 @@ class MainActivity : AppCompatActivity() {
                                                 it.sharedViewModel<SettingsViewModel>(navController)
                                             DnsSettingsScreen(viewModel)
                                         }
-                                        composable<Route.TunnelGlobals>{ backStackEntry ->
+                                        composable<Route.TunnelGlobals> { backStackEntry ->
                                             val args = backStackEntry.toRoute<Route.TunnelGlobals>()
                                             TunnelGlobalsScreen(args.id)
                                         }
@@ -374,7 +374,8 @@ class MainActivity : AppCompatActivity() {
                                             ConfigScreen(args.id)
                                         }
                                         composable<Route.SplitTunnelGlobal> { backStackEntry ->
-                                            val args = backStackEntry.toRoute<Route.SplitTunnelGlobal>()
+                                            val args =
+                                                backStackEntry.toRoute<Route.SplitTunnelGlobal>()
                                             SplitTunnelScreen(args.id)
                                         }
                                         composable<Route.ProxySettings> { ProxySettingsScreen() }

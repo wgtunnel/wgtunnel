@@ -26,18 +26,14 @@ fun TunnelGlobalsScreen(globalTunnelId: Int) {
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
         modifier =
-            Modifier.verticalScroll(rememberScrollState())
-                .fillMaxSize()
-                .padding(vertical = 24.dp)
+            Modifier.verticalScroll(rememberScrollState()).fillMaxSize().padding(vertical = 24.dp),
     ) {
         SurfaceSelectionGroupButton(
             listOf(
-                globalConfigItem {
-                    navController.navigate(Route.ConfigGlobal(globalTunnelId))
-                },
+                globalConfigItem { navController.navigate(Route.ConfigGlobal(globalTunnelId)) },
                 splitTunnelingItem(stringResource(R.string.splt_tunneling)) {
                     navController.navigate(Route.SplitTunnelGlobal(id = globalTunnelId))
-                }
+                },
             )
         )
     }

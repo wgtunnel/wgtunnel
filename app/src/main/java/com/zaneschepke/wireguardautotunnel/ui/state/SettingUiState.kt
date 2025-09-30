@@ -11,5 +11,5 @@ data class SettingUiState(
     val isPinLockEnabled: Boolean = false,
     val showDetailedPingStats: Boolean = false,
     val stateInitialized: Boolean = false,
-    val globalTunnelConf: TunnelConf? = null
+    val globalTunnelConf: TunnelConf? = null,
 )

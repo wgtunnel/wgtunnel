@@ -12,15 +12,13 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionIte
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionLabelType
 
 @Composable
-fun globalConfigItem(onClick: () -> Unit) : SelectionItem {
+fun globalConfigItem(onClick: () -> Unit): SelectionItem {
     return SelectionItem(
         leading = { Icon(Icons.Outlined.Settings, contentDescription = null) },
         title = {
             SelectionItemLabel(stringResource(R.string.configuration), SelectionLabelType.TITLE)
         },
-        trailing = {
-            ForwardButton { onClick() }
-        },
+        trailing = { ForwardButton { onClick() } },
         onClick = onClick,
     )
 }

@@ -4,29 +4,18 @@ import android.R.attr.onClick
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.CallSplit
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ForwardButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItemLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionLabelType
-import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 
 @Composable
 fun splitTunnelingItem(label: String, onClick: () -> Unit): SelectionItem {
     return SelectionItem(
         leading = { Icon(Icons.AutoMirrored.Outlined.CallSplit, contentDescription = null) },
-        title = {
-            SelectionItemLabel(label, SelectionLabelType.TITLE)
-        },
-        trailing = {
-            ForwardButton { onClick() }
-        },
+        title = { SelectionItemLabel(label, SelectionLabelType.TITLE) },
+        trailing = { ForwardButton { onClick() } },
         onClick = onClick,
     )
 }

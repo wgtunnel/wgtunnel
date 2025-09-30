@@ -84,16 +84,17 @@ fun InterfaceSection(
                     },
                 )
             }
-            if(!isGlobalConfig) ConfigurationTextBox(
-                value = tunnelName,
-                onValueChange = onTunnelNameChange,
-                label = stringResource(R.string.name),
-                isError = isTunnelNameTaken,
-                hint =
-                    stringResource(R.string.hint_template, stringResource(R.string.tunnel_name))
-                        .lowercase(Locale.getDefault()),
-                modifier = Modifier.fillMaxWidth(),
-            )
+            if (!isGlobalConfig)
+                ConfigurationTextBox(
+                    value = tunnelName,
+                    onValueChange = onTunnelNameChange,
+                    label = stringResource(R.string.name),
+                    isError = isTunnelNameTaken,
+                    hint =
+                        stringResource(R.string.hint_template, stringResource(R.string.tunnel_name))
+                            .lowercase(Locale.getDefault()),
+                    modifier = Modifier.fillMaxWidth(),
+                )
             InterfaceFields(
                 isGlobalConfig,
                 interfaceState = configProxy.`interface`,

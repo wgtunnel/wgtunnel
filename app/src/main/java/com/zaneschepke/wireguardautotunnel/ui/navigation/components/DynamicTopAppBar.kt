@@ -16,14 +16,8 @@ fun DynamicTopAppBar(navBarState: NavbarState, modifier: Modifier = Modifier) {
     TopAppBar(
         modifier = modifier.padding(top = LockedDownBannerHeight),
         colors = TopAppBarDefaults.topAppBarColors().copy(Color.Transparent),
-        navigationIcon = {
-            navBarState.topLeading?.invoke()
-        },
-        title = {
-            navBarState.topTitle?.invoke()
-        },
-        actions = {
-            navBarState.topTrailing?.invoke()
-        },
+        navigationIcon = { navBarState.topLeading?.invoke() },
+        title = { navBarState.topTitle?.invoke() },
+        actions = { navBarState.topTrailing?.invoke() },
     )
 }
