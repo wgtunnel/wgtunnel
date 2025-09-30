@@ -11,7 +11,6 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepos
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
-import com.zaneschepke.wireguardautotunnel.ui.state.ConfigProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelsUiState
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
@@ -20,14 +19,13 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.TunnelName
 import com.zaneschepke.wireguardautotunnel.util.extensions.asStringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.saveTunnelsUniquely
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.IOException
-import java.net.URL
-import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
 import org.amnezia.awg.config.BadConfigException
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
-import timber.log.Timber
+import java.io.IOException
+import java.net.URL
+import javax.inject.Inject
 
 @HiltViewModel
 class TunnelsViewModel
@@ -47,7 +45,7 @@ constructor(
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
             combine(
-                    tunnelRepository.flow,
+                    tunnelRepository.userTunnelsFlow,
                     generalSettingRepository.flow,
                     appStateRepository.flow,
                     tunnelManager.activeTunnels,
@@ -67,46 +65,6 @@ constructor(
 
     suspend fun postSideEffect(globalSideEffect: GlobalSideEffect) {
         globalEffectRepository.post(globalSideEffect)
-    }
-
-    fun saveConfigProxy(tunnelId: Int?, configProxy: ConfigProxy, tunnelName: String) = intent {
-        if (state.tunnels.any { it.tunName == tunnelName && it.id != tunnelId })
-            return@intent postSideEffect(
-                GlobalSideEffect.Toast(StringValue.StringResource(R.string.tunnel_name_taken))
-            )
-        runCatching {
-                val (wg, am) = configProxy.buildConfigs()
-                val tunnelConf =
-                    if (tunnelId == null) {
-                        TunnelConf.tunnelConfFromQuick(am.toAwgQuickString(true, false), tunnelName)
-                    } else {
-                        val latestTunnel = state.tunnels.find { it.id == tunnelId }
-                        latestTunnel?.copy(
-                            tunName = tunnelName,
-                            amQuick = am.toAwgQuickString(true, false),
-                            wgQuick = wg.toWgQuickString(true),
-                        )
-                    }
-                if (tunnelConf != null) {
-                    tunnelRepository.save(tunnelConf)
-                    postSideEffect(
-                        GlobalSideEffect.Toast(
-                            StringValue.StringResource(R.string.config_changes_saved)
-                        )
-                    )
-                    postSideEffect(GlobalSideEffect.PopBackStack)
-                }
-            }
-            .onFailure {
-                Timber.e(it)
-                val message =
-                    when (it) {
-                        is BadConfigException -> it.asStringValue()
-                        is com.wireguard.config.BadConfigException -> it.asStringValue()
-                        else -> StringValue.StringResource(R.string.unknown_error)
-                    }
-                postSideEffect(GlobalSideEffect.Snackbar(message))
-            }
     }
 
     fun saveSortChanges(tunnels: List<TunnelConf>) = intent {

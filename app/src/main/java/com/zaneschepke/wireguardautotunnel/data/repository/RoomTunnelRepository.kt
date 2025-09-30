@@ -7,6 +7,7 @@ import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.util.extensions.Tunnels
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -19,6 +20,16 @@ class RoomTunnelRepository(
     override val flow =
         tunnelConfigDao.getAllFlow().flowOn(ioDispatcher).map {
             it.map(TunnelConfigMapper::toTunnelConf)
+        }
+
+    override val userTunnelsFlow =
+        tunnelConfigDao.getAllTunnelsExceptGlobal().flowOn(ioDispatcher).map {
+            it.map(TunnelConfigMapper::toTunnelConf)
+        }
+
+    override val globalTunnelFlow: Flow<TunnelConf?> =
+        tunnelConfigDao.getGlobalTunnel().flowOn(ioDispatcher).map {
+            it?.let(TunnelConfigMapper::toTunnelConf)
         }
 
     override suspend fun getAll(): Tunnels {

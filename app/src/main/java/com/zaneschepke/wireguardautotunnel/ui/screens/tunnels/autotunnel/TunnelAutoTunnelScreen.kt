@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.autotunnel.components.MobileDataTunnelItem
-import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.autotunnel.components.PingRestartItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.autotunnel.components.WifiTunnelItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.autotunnel.components.ethernetTunnelItem
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
@@ -42,13 +41,6 @@ fun TunnelAutoTunnelScreen(tunnelId: Int, viewModel: TunnelsViewModel) {
         SurfaceSelectionGroupButton(
             items =
                 buildList {
-                    if (tunnelsState.isPingEnabled) {
-                        add(
-                            PingRestartItem(tunnelConf.restartOnPingFailure) {
-                                viewModel.setRestartOnPing(tunnelId, it)
-                            }
-                        )
-                    }
                     add(
                         MobileDataTunnelItem(tunnelConf.isMobileDataTunnel) {
                             viewModel.setMobileDataTunnel(tunnelId, it)

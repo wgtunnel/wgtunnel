@@ -22,6 +22,7 @@ import com.zaneschepke.wireguardautotunnel.ui.theme.iconSize
 
 @Composable
 fun PeersSection(
+    isGlobalConfig: Boolean,
     configProxy: ConfigProxy,
     onRemove: (index: Int) -> Unit,
     onToggleLan: (index: Int) -> Unit,
@@ -45,7 +46,7 @@ fun PeersSection(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        IconButton(
+                        if(!isGlobalConfig) IconButton(
                             modifier = Modifier.size(iconSize),
                             onClick = { onRemove(index) },
                         ) {
@@ -88,7 +89,7 @@ fun PeersSection(
                         }
                     }
                 }
-                PeerFields(peer = peer, onPeerChange = { onUpdatePeer(it, index) })
+                PeerFields(isGlobalConfig, peer = peer, onPeerChange = { onUpdatePeer(it, index) })
             }
         }
     }

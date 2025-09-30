@@ -391,4 +391,7 @@
         the Play Store version of this app. Please browse the project\'s webpages to find where to donate.
     </string>
     <string name="delete_active_message">Cannot delete active tunnel.</string>
+    <string name="tunnel_global_overrides">Global tunnel overrides</string>
+    <string name="back">Back</string>
+    <string name="configuration">Configuration</string>
 </resources>

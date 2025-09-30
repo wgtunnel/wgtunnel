@@ -1,8 +1,15 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
 import com.wireguard.config.Config
+import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig.Companion.GLOBAL_CONFIG_NAME
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf.`<no name provided>`.configFromAmQuick
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf.`<no name provided>`.configFromWgQuick
 import com.zaneschepke.wireguardautotunnel.util.extensions.defaultName
 import com.zaneschepke.wireguardautotunnel.util.extensions.isValidIpv4orIpv6Address
+import org.amnezia.awg.config.InetEndpoint
+import org.amnezia.awg.config.Interface
+import org.amnezia.awg.config.Peer
+import org.amnezia.awg.crypto.KeyPair
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
 
@@ -60,6 +67,128 @@ data class TunnelConf(
         return configFromWgQuick(wgQuick)
     }
 
+    fun copyWithGlobalValues(globalTunnel: TunnelConf): TunnelConf {
+        fun TunnelConf.copyFromGlobalTunnel(globalTunnelConf: TunnelConf): TunnelConf {
+            val existingConfig = toAmConfig()
+            val globalConfig = globalTunnelConf.toAmConfig()
+
+            val newInterfaceBuilder = Interface.Builder().apply {
+                setKeyPair(existingConfig.`interface`.keyPair)
+                setAddresses(existingConfig.`interface`.addresses)
+                setDnsServers(existingConfig.`interface`.dnsServers)
+                setDnsSearchDomains(existingConfig.`interface`.dnsSearchDomains)
+                setExcludedApplications(existingConfig.`interface`.excludedApplications)
+                setIncludedApplications(existingConfig.`interface`.includedApplications)
+                existingConfig.`interface`.listenPort.ifPresent { setListenPort(it) }
+                existingConfig.`interface`.mtu.ifPresent { setMtu(it) }
+                existingConfig.`interface`.junkPacketCount.ifPresent { setJunkPacketCount(it) }
+                existingConfig.`interface`.junkPacketMinSize.ifPresent { setJunkPacketMinSize(it) }
+                existingConfig.`interface`.junkPacketMaxSize.ifPresent { setJunkPacketMaxSize(it) }
+                existingConfig.`interface`.initPacketJunkSize.ifPresent { setInitPacketJunkSize(it) }
+                existingConfig.`interface`.responsePacketJunkSize.ifPresent { setResponsePacketJunkSize(it) }
+                existingConfig.`interface`.initPacketMagicHeader.ifPresent { setInitPacketMagicHeader(it) }
+                existingConfig.`interface`.responsePacketMagicHeader.ifPresent { setResponsePacketMagicHeader(it) }
+                existingConfig.`interface`.underloadPacketMagicHeader.ifPresent { setUnderloadPacketMagicHeader(it) }
+                existingConfig.`interface`.transportPacketMagicHeader.ifPresent { setTransportPacketMagicHeader(it) }
+                existingConfig.`interface`.i1.ifPresent { setI1(it) }
+                existingConfig.`interface`.i2.ifPresent { setI2(it) }
+                existingConfig.`interface`.i3.ifPresent { setI3(it) }
+                existingConfig.`interface`.i4.ifPresent { setI4(it) }
+                existingConfig.`interface`.i5.ifPresent { setI5(it) }
+                existingConfig.`interface`.j1.ifPresent { setJ1(it) }
+                existingConfig.`interface`.j2.ifPresent { setJ2(it) }
+                existingConfig.`interface`.j3.ifPresent { setJ3(it) }
+                existingConfig.`interface`.itime.ifPresent { setItime(it) }
+                setPreUp(existingConfig.`interface`.preUp)
+                setPostUp(existingConfig.`interface`.postUp)
+                setPreDown(existingConfig.`interface`.preDown)
+                setPostDown(existingConfig.`interface`.postDown)
+
+                globalConfig.`interface`.mtu.ifPresent { setMtu(it) }
+                if (!globalConfig.`interface`.dnsServers.isEmpty()) {
+                    setDnsServers(globalConfig.`interface`.dnsServers)
+                }
+                if (!globalConfig.`interface`.dnsSearchDomains.isEmpty()) {
+                    setDnsSearchDomains(globalConfig.`interface`.dnsSearchDomains)
+                }
+                // Include/exclude applications
+                if (!globalConfig.`interface`.excludedApplications.isEmpty()) {
+                    setExcludedApplications(globalConfig.`interface`.excludedApplications)
+                }
+                if (!globalConfig.`interface`.includedApplications.isEmpty()) {
+                    setIncludedApplications(globalConfig.`interface`.includedApplications)
+                }
+                // Pre/post up/down scripts
+                if (!globalConfig.`interface`.preUp.isEmpty()) {
+                    setPreUp(globalConfig.`interface`.preUp)
+                }
+                if (!globalConfig.`interface`.postUp.isEmpty()) {
+                    setPostUp(globalConfig.`interface`.postUp)
+                }
+                if (!globalConfig.`interface`.preDown.isEmpty()) {
+                    setPreDown(globalConfig.`interface`.preDown)
+                }
+                if (!globalConfig.`interface`.postDown.isEmpty()) {
+                    setPostDown(globalConfig.`interface`.postDown)
+                }
+                // All Amnezia properties (junk packets, junk sizes, magic headers, i/j params, itime)
+                globalConfig.`interface`.junkPacketCount.ifPresent { setJunkPacketCount(it) }
+                globalConfig.`interface`.junkPacketMinSize.ifPresent { setJunkPacketMinSize(it) }
+                globalConfig.`interface`.junkPacketMaxSize.ifPresent { setJunkPacketMaxSize(it) }
+                globalConfig.`interface`.initPacketJunkSize.ifPresent { setInitPacketJunkSize(it) }
+                globalConfig.`interface`.responsePacketJunkSize.ifPresent { setResponsePacketJunkSize(it) }
+                globalConfig.`interface`.initPacketMagicHeader.ifPresent { setInitPacketMagicHeader(it) }
+                globalConfig.`interface`.responsePacketMagicHeader.ifPresent { setResponsePacketMagicHeader(it) }
+                globalConfig.`interface`.underloadPacketMagicHeader.ifPresent { setUnderloadPacketMagicHeader(it) }
+                globalConfig.`interface`.transportPacketMagicHeader.ifPresent { setTransportPacketMagicHeader(it) }
+                globalConfig.`interface`.i1.ifPresent { setI1(it) }
+                globalConfig.`interface`.i2.ifPresent { setI2(it) }
+                globalConfig.`interface`.i3.ifPresent { setI3(it) }
+                globalConfig.`interface`.i4.ifPresent { setI4(it) }
+                globalConfig.`interface`.i5.ifPresent { setI5(it) }
+                globalConfig.`interface`.j1.ifPresent { setJ1(it) }
+                globalConfig.`interface`.j2.ifPresent { setJ2(it) }
+                globalConfig.`interface`.j3.ifPresent { setJ3(it) }
+                globalConfig.`interface`.itime.ifPresent { setItime(it) }
+            }
+            val newInterface = newInterfaceBuilder.build()
+            // Handle peers: copy existing, but for single peer, override allowedIps and persistentKeepalive if global has peers
+            val newPeers = existingConfig.peers.toMutableList()
+            if (newPeers.size == 1) {
+                val existingPeer = newPeers[0]
+                val newPeerBuilder = Peer.Builder().apply {
+                    setPublicKey(existingPeer.publicKey)
+                    allowedIps.addAll(existingPeer.allowedIps)
+                    existingPeer.endpoint.ifPresent { setEndpoint(it) }
+                    existingPeer.preSharedKey.ifPresent { setPreSharedKey(it) }
+                    existingPeer.persistentKeepalive.ifPresent { setPersistentKeepalive(it) }
+
+                    // Override if global has peers (use first as default)
+                    if (globalConfig.peers.isNotEmpty()) {
+                        val globalPeer = globalConfig.peers[0]
+                        if (!globalPeer.allowedIps.isEmpty()) {
+                            allowedIps.clear()
+                            allowedIps.addAll(globalPeer.allowedIps)
+                        }
+                        globalPeer.persistentKeepalive.ifPresent { setPersistentKeepalive(it) }
+                    }
+                }
+                newPeers[0] = newPeerBuilder.build()
+            }
+
+            val newConfigBuilder = Config.Builder().apply {
+                setInterface(newInterface)
+                addPeers(newPeers)
+                addProxies(existingConfig.proxies)
+                setDnsSettings(globalConfig.dnsSettings ?: existingConfig.dnsSettings)
+            }
+            val newAmConfig = newConfigBuilder.build()
+
+            // Assuming there's a fromAmConfig method or factory to convert back to TunnelConf
+            return TunnelConf.fromAmConfig(newAmConfig)
+        }
+    }
+
     companion object {
         fun configFromWgQuick(wgQuick: String): Config {
             val inputStream: InputStream = wgQuick.byteInputStream()
@@ -94,6 +223,21 @@ data class TunnelConf(
                 wgQuick = wgQuick,
                 amQuick = amQuick,
             )
+        }
+
+        fun generateDefaultGlobalConfig() : TunnelConf {
+            val keyPair = KeyPair()
+            val config = org.amnezia.awg.config.Config.Builder().apply {
+                setInterface(Interface.Builder().apply {
+                    setKeyPair(keyPair)
+                    parseAddresses("10.0.0.2/32")
+                }.build())
+                addPeer(Peer.Builder().apply {
+                    setPublicKey(keyPair.publicKey)
+                    setEndpoint(InetEndpoint.parse("server.example.com:51820"))
+                }.build())
+            }.build()
+            return TunnelConf(tunName = GLOBAL_CONFIG_NAME, amQuick = config.toAwgQuickString(false, false), wgQuick = config.toWgQuickString(false))
         }
 
         private const val IPV6_ALL_NETWORKS = "::/0"

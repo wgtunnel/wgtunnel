@@ -53,4 +53,6 @@ data class Settings(
     @ColumnInfo(name = "dns_protocol", defaultValue = "0")
     val dnsProtocol: DnsProtocol = DnsProtocol.fromValue(0),
     @ColumnInfo(name = "dns_endpoint") val dnsEndpoint: String? = null,
+    @ColumnInfo(name = "is_tunnel_globals_enabled", defaultValue = "0")
+    val isTunnelGlobalsEnabled: Boolean = false
 )

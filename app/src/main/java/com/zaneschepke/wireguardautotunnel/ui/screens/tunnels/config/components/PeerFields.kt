@@ -28,13 +28,13 @@ import com.zaneschepke.wireguardautotunnel.ui.state.PeerProxy
 import java.util.*
 
 @Composable
-fun PeerFields(peer: PeerProxy, onPeerChange: (PeerProxy) -> Unit) {
+fun PeerFields(isGlobalConfig: Boolean, peer: PeerProxy, onPeerChange: (PeerProxy) -> Unit) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
     val keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
     var showPresharedKey by rememberSaveable { mutableStateOf(false) }
 
-    ConfigurationTextBox(
+    if(!isGlobalConfig)ConfigurationTextBox(
         value = peer.publicKey,
         onValueChange = { onPeerChange(peer.copy(publicKey = it)) },
         label = stringResource(R.string.public_key),
@@ -43,7 +43,7 @@ fun PeerFields(peer: PeerProxy, onPeerChange: (PeerProxy) -> Unit) {
                 .lowercase(Locale.getDefault()),
         modifier = Modifier.fillMaxWidth(),
     )
-    ConfigurationTextBox(
+    if(!isGlobalConfig) ConfigurationTextBox(
         visualTransformation =
             if (showPresharedKey) VisualTransformation.None else PasswordVisualTransformation(),
         value = peer.preSharedKey,
@@ -77,7 +77,7 @@ fun PeerFields(peer: PeerProxy, onPeerChange: (PeerProxy) -> Unit) {
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
     )
-    ConfigurationTextBox(
+    if(!isGlobalConfig) ConfigurationTextBox(
         value = peer.endpoint,
         onValueChange = { onPeerChange(peer.copy(endpoint = it)) },
         label = stringResource(R.string.endpoint),

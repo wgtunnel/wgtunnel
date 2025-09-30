@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components
 
+import android.R.attr.label
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,6 +29,7 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InterfaceFields(
+    isGlobalConfig: Boolean,
     interfaceState: InterfaceProxy,
     showScripts: Boolean,
     showAmneziaValues: Boolean,
@@ -41,7 +43,7 @@ fun InterfaceFields(
     var showPrivateKey by rememberSaveable { mutableStateOf(false) }
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        ConfigurationTextBox(
+        if(!isGlobalConfig) ConfigurationTextBox(
             value = interfaceState.privateKey,
             hint =
                 stringResource(R.string.hint_template, stringResource(R.string.base64_key))
@@ -86,7 +88,7 @@ fun InterfaceFields(
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
         )
-        ConfigurationTextBox(
+        if(!isGlobalConfig) ConfigurationTextBox(
             value = interfaceState.publicKey,
             hint =
                 stringResource(R.string.hint_template, stringResource(R.string.base64_key))
@@ -108,7 +110,7 @@ fun InterfaceFields(
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
         )
-        ConfigurationTextBox(
+        if(!isGlobalConfig) ConfigurationTextBox(
             value = interfaceState.addresses,
             onValueChange = { onInterfaceChange(interfaceState.copy(addresses = it)) },
             label = stringResource(R.string.addresses),
@@ -120,7 +122,7 @@ fun InterfaceFields(
                     .lowercase(Locale.getDefault()),
             modifier = Modifier.fillMaxWidth(),
         )
-        ConfigurationTextBox(
+        if(!isGlobalConfig) ConfigurationTextBox(
             value = interfaceState.listenPort,
             onValueChange = { onInterfaceChange(interfaceState.copy(listenPort = it)) },
             label = stringResource(R.string.listen_port),

@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -27,6 +28,7 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelec
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.*
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.compoents.AppModeBottomSheet
+import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.tunneloptions.components.splitTunnelingItem
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.asString
@@ -84,7 +86,6 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             Modifier.verticalScroll(rememberScrollState())
                 .fillMaxSize()
                 .padding(vertical = 24.dp)
-                .padding(horizontal = 12.dp)
                 .then(
                     if (!isTv) {
                         Modifier.clickable(
@@ -134,6 +135,9 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                             )
                         }
                     )
+                    add(tunnelGlobalsSettingItem(settingsState.settings.isTunnelGlobalsEnabled, onClick = viewModel::setTunnelGlobals) {
+                        settingsState.globalTunnelConf?.let { navController.navigate(Route.TunnelGlobals(it.id)) }
+                    })
                     if (showProxySettings)
                         add(proxYSettingsItem { navController.navigate(Route.ProxySettings) })
                 }

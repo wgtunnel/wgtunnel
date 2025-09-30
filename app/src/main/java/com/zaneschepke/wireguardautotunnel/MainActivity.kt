@@ -63,6 +63,7 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.Appear
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.display.DisplayScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.language.LanguageScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.dns.DnsSettingsScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.globals.TunnelGlobalsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.LogsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.TunnelMonitoringScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.system.SystemFeaturesScreen
@@ -304,11 +305,7 @@ class MainActivity : AppCompatActivity() {
                                         }
                                         composable<Route.Config> { backStackEntry ->
                                             val args = backStackEntry.toRoute<Route.Config>()
-                                            val viewModel =
-                                                backStackEntry.sharedViewModel<TunnelsViewModel>(
-                                                    navController
-                                                )
-                                            ConfigScreen(args.id, viewModel)
+                                            ConfigScreen(args.id)
                                         }
                                     }
 
@@ -367,6 +364,18 @@ class MainActivity : AppCompatActivity() {
                                             val viewModel =
                                                 it.sharedViewModel<SettingsViewModel>(navController)
                                             DnsSettingsScreen(viewModel)
+                                        }
+                                        composable<Route.TunnelGlobals>{ backStackEntry ->
+                                            val args = backStackEntry.toRoute<Route.TunnelGlobals>()
+                                            TunnelGlobalsScreen(args.id)
+                                        }
+                                        composable<Route.ConfigGlobal> { backStackEntry ->
+                                            val args = backStackEntry.toRoute<Route.ConfigGlobal>()
+                                            ConfigScreen(args.id)
+                                        }
+                                        composable<Route.SplitTunnelGlobal> { backStackEntry ->
+                                            val args = backStackEntry.toRoute<Route.SplitTunnelGlobal>()
+                                            SplitTunnelScreen(args.id)
                                         }
                                         composable<Route.ProxySettings> { ProxySettingsScreen() }
                                         composable<Route.Appearance> { AppearanceScreen() }
