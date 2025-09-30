@@ -81,8 +81,7 @@ fun ConfigScreen(tunnelId: Int? = null) {
                 configProxy = configProxy.copy(`interface` = configProxy.`interface`.setSipMimic())
             },
         )
-        PeersSection(
-            isGlobalConfig,
+        if(!isGlobalConfig) PeersSection(
             configProxy,
             onRemove = {
                 configProxy =

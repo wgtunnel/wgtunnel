@@ -242,9 +242,9 @@ constructor(
         if (activeTunnels.value.isNotEmpty() && tunnelProviderFlow.value == userspaceTunnel)
             stopActiveTunnels()
         val runConfig = tunnelConf.run {
-            if(settings.value.isTunnelGlobalsEnabled) {
+            if(getSettings().isTunnelGlobalsEnabled) {
                 val globalTunnel = getTunnels().firstOrNull { it.tunName == TunnelConfig.GLOBAL_CONFIG_NAME } ?: return@run this
-
+                return@run copyWithGlobalValues(globalTunnel)
             }
             this
         }
