@@ -99,7 +99,6 @@
     <string name="telegram_url" translatable="false">https://t.me/wgtunnel</string>
     <string name="unsure_how">nasıl devam edeceğinizden emin değilseniz</string>
     <string name="see_the">Bakınız</string>
-    <string name="getting_started_url" translatable="false">https://zaneschepke.com/wgtunnel-docs/getting-started.html</string>
     <string name="getting_started_guide">başlangıç kılavuzu</string>
     <string name="restart_at_boot">Başlangıçta yeniden başlat</string>
     <string name="vpn_denied_dialog_title">İzin Reddedildi</string>

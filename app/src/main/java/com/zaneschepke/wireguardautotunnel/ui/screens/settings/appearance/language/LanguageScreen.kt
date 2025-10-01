@@ -62,7 +62,7 @@ fun LanguageScreen() {
         state = lazyListState,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
-        modifier = Modifier.padding(horizontal = 12.dp),
+        modifier = Modifier.padding(horizontal = 16.dp),
     ) {
         item {
             IconSurfaceButton(

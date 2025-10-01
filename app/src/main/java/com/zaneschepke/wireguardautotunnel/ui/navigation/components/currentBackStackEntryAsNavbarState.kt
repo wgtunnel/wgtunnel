@@ -6,11 +6,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -31,6 +30,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
     val sharedState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
     val backStackEntry by currentBackStackEntryAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
     val route =
         remember(backStackEntry) {
             backStackEntry?.destination?.route?.let {
@@ -97,7 +97,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.advanced_settings)) },
+                        topTitle = context.getString(R.string.advanced_settings),
                     )
                 Route.Appearance ->
                     NavbarState(
@@ -107,7 +107,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.appearance)) },
+                        topTitle = context.getString(R.string.appearance),
                     )
                 Route.AutoTunnel ->
                     NavbarState(
@@ -115,7 +115,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                         topTitle =
                             if (!sharedState.isLocationDisclosureShown) null
                             else {
-                                { Text(stringResource(R.string.auto_tunnel)) }
+                                context.getString(R.string.auto_tunnel)
                             },
                     )
                 Route.Display ->
@@ -126,7 +126,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.display_theme)) },
+                        topTitle = context.getString(R.string.display_theme),
                     )
                 Route.Dns ->
                     NavbarState(
@@ -136,7 +136,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.dns_settings)) },
+                        topTitle = context.getString(R.string.dns_settings),
                     )
                 Route.Language ->
                     NavbarState(
@@ -146,7 +146,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.language)) },
+                        topTitle = context.getString(R.string.language),
                     )
                 Route.License ->
                     NavbarState(
@@ -156,7 +156,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.licenses)) },
+                        topTitle = context.getString(R.string.licenses),
                     )
                 Route.LocationDisclosure -> NavbarState(showBottomItems = true)
                 Route.Lock -> NavbarState(showBottomItems = false)
@@ -164,7 +164,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                     NavbarState(
                         showBottomItems = false,
                         removeBottom = true,
-                        topTitle = { Text(stringResource(R.string.logs)) },
+                        topTitle = context.getString(R.string.logs),
                         topTrailing = {
                             ActionIconButton(Icons.Rounded.Menu, R.string.quick_actions) {
                                 sharedViewModel.postSideEffect(LocalSideEffect.Sheet.LoggerActions)
@@ -179,7 +179,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.proxy_settings)) },
+                        topTitle = context.getString(R.string.proxy_settings),
                         topTrailing = {
                             ActionIconButton(Icons.Rounded.Save, R.string.save) {
                                 keyboardController?.hide()
@@ -190,7 +190,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                 Route.Settings ->
                     NavbarState(
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.settings)) },
+                        topTitle = context.getString(R.string.settings),
                         topTrailing = {
                             ActionIconButton(
                                 Icons.Rounded.SettingsBackupRestore,
@@ -208,7 +208,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.sort)) },
+                        topTitle = context.getString(R.string.sort),
                         topTrailing = {
                             Row {
                                 ActionIconButton(Icons.Rounded.SortByAlpha, R.string.sort) {
@@ -229,10 +229,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = {
-                            val title = tunnel?.tunName ?: stringResource(R.string.new_tunnel)
-                            Text(title)
-                        },
+                        topTitle = tunnel?.tunName ?: context.getString(R.string.new_tunnel),
                         topTrailing = {
                             ActionIconButton(Icons.Rounded.Save, R.string.save) {
                                 keyboardController?.hide()
@@ -249,7 +246,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                                 navController.popBackStack()
                             }
                         },
-                        topTitle = { Text(tunnel?.tunName ?: "") },
+                        topTitle = tunnel?.tunName ?: "",
                         topTrailing = {
                             ActionIconButton(Icons.Rounded.Save, R.string.save) {
                                 sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
@@ -265,7 +262,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                                 navController.popBackStack()
                             }
                         },
-                        topTitle = { Text(stringResource(R.string.splt_tunneling)) },
+                        topTitle = context.getString(R.string.splt_tunneling),
                         topTrailing = {
                             ActionIconButton(Icons.Rounded.Save, R.string.save) {
                                 sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
@@ -282,7 +279,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.configuration)) },
+                        topTitle = context.getString(R.string.configuration),
                         topTrailing = {
                             ActionIconButton(Icons.Rounded.Save, R.string.save) {
                                 keyboardController?.hide()
@@ -293,7 +290,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                 }
                 Route.Support ->
                     NavbarState(
-                        topTitle = { Text(stringResource(R.string.support)) },
+                        topTitle = context.getString(R.string.support),
                         showBottomItems = true,
                     )
                 Route.SystemFeatures ->
@@ -303,7 +300,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                                 navController.popBackStack()
                             }
                         },
-                        topTitle = { Text(stringResource(R.string.android_integrations)) },
+                        topTitle = context.getString(R.string.android_integrations),
                         showBottomItems = true,
                     )
                 is Route.TunnelAutoTunnel -> {
@@ -315,7 +312,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = { Text(tunnel?.tunName ?: "") },
+                        topTitle = tunnel?.tunName ?: "",
                     )
                 }
                 Route.TunnelMonitoring ->
@@ -325,7 +322,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                                 navController.popBackStack()
                             }
                         },
-                        topTitle = { Text(stringResource(R.string.tunnel_monitoring)) },
+                        topTitle = context.getString(R.string.tunnel_monitoring),
                         showBottomItems = true,
                     )
                 is Route.TunnelOptions -> {
@@ -337,7 +334,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = { Text(tunnel?.tunName ?: "") },
+                        topTitle = tunnel?.tunName ?: "",
                         topTrailing = {
                             Row {
                                 ActionIconButton(Icons.Rounded.QrCode2, R.string.show_qr) {
@@ -352,7 +349,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                 }
                 Route.Tunnels -> {
                     NavbarState(
-                        topTitle = { Text(stringResource(R.string.tunnels)) },
+                        topTitle = context.getString(R.string.tunnels),
                         topTrailing = {
                             when (selectedCount) {
                                 0 -> DefaultTunnelsActions(navController, sharedViewModel)
@@ -404,7 +401,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                                 navController.popBackStack()
                             }
                         },
-                        topTitle = { Text(stringResource(R.string.wifi_detection_method)) },
+                        topTitle = context.getString(R.string.wifi_detection_method),
                         showBottomItems = true,
                     )
                 Route.Donate -> {
@@ -414,7 +411,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                                 navController.popBackStack()
                             }
                         },
-                        topTitle = { Text(stringResource(R.string.donate_title)) },
+                        topTitle = context.getString(R.string.donate_title),
                         showBottomItems = true,
                     )
                 }
@@ -425,7 +422,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                                 navController.popBackStack()
                             }
                         },
-                        topTitle = { Text(stringResource(R.string.addresses)) },
+                        topTitle = context.getString(R.string.addresses),
                         showBottomItems = true,
                     )
                 }
@@ -436,7 +433,7 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                                 navController.popBackStack()
                             }
                         },
-                        topTitle = { Text(stringResource(R.string.tunnel_global_overrides)) },
+                        topTitle = context.getString(R.string.tunnel_global_overrides),
                         showBottomItems = true,
                     )
                 }

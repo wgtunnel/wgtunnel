@@ -25,8 +25,8 @@ fun DisplayScreen() {
 
     Column(
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
-        modifier = Modifier.fillMaxSize().padding(top = 24.dp).padding(horizontal = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
+        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
     ) {
         enumValues<Theme>().forEach {
             val title =

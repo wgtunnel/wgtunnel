@@ -254,7 +254,10 @@ class MainActivity : AppCompatActivity() {
                                 modifier =
                                     Modifier.fillMaxSize()
                                         .background(MaterialTheme.colorScheme.surface)
-                                        .padding(padding)
+                                        .padding(
+                                            top = padding.calculateTopPadding().plus(8.dp),
+                                            bottom = padding.calculateBottomPadding(),
+                                        )
                                         .consumeWindowInsets(padding)
                                         .imePadding()
                             ) {

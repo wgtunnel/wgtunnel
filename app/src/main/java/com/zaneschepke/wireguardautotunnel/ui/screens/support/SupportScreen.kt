@@ -126,16 +126,12 @@ fun SupportScreen(viewModel: SupportViewModel) {
     Column(
         modifier =
             Modifier.fillMaxSize()
-                .padding(vertical = 24.dp)
-                .padding(horizontal = 12.dp)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
     ) {
-        GroupLabel(
-            stringResource(R.string.thank_you),
-            modifier = Modifier.padding(horizontal = 12.dp).padding(bottom = 12.dp),
-        )
+        GroupLabel(stringResource(R.string.thank_you), modifier = Modifier.padding(bottom = 12.dp))
         UpdateSection { viewModel.checkForUpdate() }
         SectionDivider()
         DonateSection { navController.navigate(Route.Donate) }

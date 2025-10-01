@@ -28,7 +28,7 @@ fun WifiDetectionMethodScreen(viewModel: AutoTunnelViewModel) {
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
-        modifier = Modifier.fillMaxSize().padding(top = 24.dp).padding(horizontal = 24.dp),
+        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
     ) {
         enumValues<WifiDetectionMethod>().forEach {
             val title = it.asTitleString(context)

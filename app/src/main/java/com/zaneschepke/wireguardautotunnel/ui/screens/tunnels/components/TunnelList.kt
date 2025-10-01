@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -16,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
@@ -42,7 +40,6 @@ fun TunnelList(
 
     LazyColumn(
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
         modifier =
             modifier
                 .pointerInput(Unit) {
@@ -84,7 +81,7 @@ fun TunnelList(
                 isPingEnabled = tunnelsState.isPingEnabled,
                 showDetailedStats = tunnelsState.showPingStats,
                 modifier =
-                    if (!isTv)
+                    (if (!isTv)
                         Modifier.combinedClickable(
                             onClick = {
                                 if (sharedState.selectedTunnels.isNotEmpty()) {
@@ -98,7 +95,7 @@ fun TunnelList(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
                         )
-                    else Modifier,
+                    else Modifier),
             )
         }
     }

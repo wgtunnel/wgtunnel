@@ -88,8 +88,7 @@ fun SortScreen(viewModel: TunnelsViewModel) {
         verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
         modifier =
             Modifier.pointerInput(Unit) { if (tunnelsState.tunnels.isEmpty()) return@pointerInput }
-                .overscroll(rememberOverscrollEffect())
-                .padding(horizontal = 16.dp, vertical = 24.dp),
+                .overscroll(rememberOverscrollEffect()),
         state = lazyListState,
         userScrollEnabled = true,
         reverseLayout = false,

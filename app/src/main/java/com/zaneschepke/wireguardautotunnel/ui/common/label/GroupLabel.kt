@@ -18,7 +18,7 @@ fun GroupLabel(title: String, modifier: Modifier = Modifier) {
     ) {
         Text(
             title,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
         )

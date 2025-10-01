@@ -59,10 +59,7 @@ fun ConfigScreen(tunnelId: Int? = null) {
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
         modifier =
-            Modifier.fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(top = 12.dp, bottom = 24.dp)
-                .padding(horizontal = 12.dp),
+            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
     ) {
         InterfaceSection(
             isGlobalConfig,

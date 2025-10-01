@@ -21,7 +21,7 @@ fun AppearanceScreen() {
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
-        modifier = Modifier.fillMaxSize().padding(vertical = 24.dp).padding(horizontal = 12.dp),
+        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
     ) {
         SurfaceSelectionGroupButton(items = listOf(LanguageItem(navController)))
         SectionDivider()

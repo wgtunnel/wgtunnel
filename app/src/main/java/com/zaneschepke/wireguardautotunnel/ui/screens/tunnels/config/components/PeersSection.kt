@@ -33,7 +33,7 @@ fun PeersSection(
         Surface(shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.surface) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.padding(horizontal = 16.dp).focusGroup(),
+                modifier = Modifier.focusGroup(),
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,

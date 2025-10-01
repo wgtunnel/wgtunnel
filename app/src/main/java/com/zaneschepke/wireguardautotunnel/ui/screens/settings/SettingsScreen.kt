@@ -83,7 +83,6 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
         modifier =
             Modifier.verticalScroll(rememberScrollState())
                 .fillMaxSize()
-                .padding(vertical = 24.dp)
                 .then(
                     if (!isTv) {
                         Modifier.clickable(
@@ -94,7 +93,8 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     } else {
                         Modifier
                     }
-                ),
+                )
+                .padding(horizontal = 16.dp),
     ) {
         SurfaceSelectionGroupButton(
             listOf(appModeItem(settingsState.settings.appMode) { showAppModeSheet = true })

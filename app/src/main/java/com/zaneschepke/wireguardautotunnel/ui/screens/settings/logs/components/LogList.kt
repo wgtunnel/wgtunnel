@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -20,7 +21,7 @@ fun LogList(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
         state = lazyColumnListState,
-        modifier = modifier,
+        modifier = modifier.padding(horizontal = 16.dp),
     ) {
         itemsIndexed(items = logs, key = { index, _ -> index }, contentType = { _, _ -> null }) {
             _,

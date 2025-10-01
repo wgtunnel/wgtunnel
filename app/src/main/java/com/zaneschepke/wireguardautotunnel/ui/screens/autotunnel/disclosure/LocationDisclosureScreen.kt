@@ -46,7 +46,7 @@ fun LocationDisclosureScreen(viewModel: AutoTunnelViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(18.dp, Alignment.Top),
-        modifier = Modifier.fillMaxSize().padding(top = 18.dp).padding(horizontal = 24.dp),
+        modifier = Modifier.fillMaxSize().padding(top = 18.dp).padding(horizontal = 16.dp),
     ) {
         LocationDisclosureHeader()
         SurfaceSelectionGroupButton(

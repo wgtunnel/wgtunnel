@@ -101,7 +101,7 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
-        modifier = Modifier.fillMaxSize().padding(top = 24.dp).padding(horizontal = 12.dp),
+        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
     ) {
         SurfaceSelectionGroupButton(
             listOf(

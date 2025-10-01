@@ -28,7 +28,7 @@ fun SurfaceSelectionGroupButton(items: List<SelectionItem>, modifier: Modifier =
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(0.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier.fillMaxWidth(),
         ) {
             items.forEach { item ->
@@ -52,7 +52,7 @@ fun SurfaceSelectionGroupButton(items: List<SelectionItem>, modifier: Modifier =
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,

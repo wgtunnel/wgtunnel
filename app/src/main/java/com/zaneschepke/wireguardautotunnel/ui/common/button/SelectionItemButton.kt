@@ -36,9 +36,7 @@ fun SelectionItemButton(
                     interactionSource = remember { MutableInteractionSource() },
                     onClick = { onClick() },
                 )
-                .height(IntrinsicSize.Min)
-                .padding(horizontal = 12.dp)
-                .padding(end = 12.dp),
+                .height(IntrinsicSize.Min),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
     ) {
         Row(

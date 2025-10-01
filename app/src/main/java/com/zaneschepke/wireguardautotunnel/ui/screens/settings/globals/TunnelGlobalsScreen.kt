@@ -26,7 +26,7 @@ fun TunnelGlobalsScreen(globalTunnelId: Int) {
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
         modifier =
-            Modifier.verticalScroll(rememberScrollState()).fillMaxSize().padding(vertical = 24.dp),
+            Modifier.verticalScroll(rememberScrollState()).fillMaxSize().padding(horizontal = 16.dp),
     ) {
         SurfaceSelectionGroupButton(
             listOf(
