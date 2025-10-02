@@ -3,7 +3,8 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.viewmodel.SplitTunnelViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SplitTunnelScreen(tunnelId: Int, viewModel: SplitTunnelViewModel = hiltViewModel()) {
     val sharedViewModel = LocalSharedVm.current
@@ -24,7 +26,7 @@ fun SplitTunnelScreen(tunnelId: Int, viewModel: SplitTunnelViewModel = hiltViewM
 
     if (!splitTunnelState.stateInitialized) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(modifier = Modifier.size(30.dp), strokeWidth = 5.dp)
+            CircularWavyProgressIndicator(waveSpeed = 60.dp, modifier = Modifier.size(48.dp))
         }
         return
     }
