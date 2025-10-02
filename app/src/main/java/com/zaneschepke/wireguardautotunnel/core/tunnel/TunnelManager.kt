@@ -236,9 +236,15 @@ constructor(
     }
 
     override suspend fun startTunnel(tunnelConf: TunnelConf) {
-        // for VPN Mode, we need to stop active tunnels as we can only have one active at a time
-        if (activeTunnels.value.isNotEmpty() && tunnelProviderFlow.value == userspaceTunnel)
+        val provider = tunnelProviderFlow.value
+        val isKernel = provider is KernelTunnel
+
+        if (!isKernel && activeTunnels.value.isNotEmpty()) {
             stopActiveTunnels()
+            withTimeoutOrNull(BaseTunnel.STARTUP_TIMEOUT_MS) {
+                activeTunnels.first { it.isEmpty() }
+            } ?: run { activeTunnels.value.keys.forEach { id -> provider.forceStopTunnel(id) } }
+        }
         val runConfig =
             tunnelConf.run {
                 if (getSettings().isTunnelGlobalsEnabled) {
@@ -254,6 +260,10 @@ constructor(
 
     override suspend fun stopTunnel(tunnelId: Int) {
         tunnelProviderFlow.value.stopTunnel(tunnelId)
+    }
+
+    override suspend fun forceStopTunnel(tunnelId: Int) {
+        tunnelProviderFlow.value.forceStopTunnel(tunnelId)
     }
 
     override suspend fun stopActiveTunnels() {

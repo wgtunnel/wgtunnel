@@ -22,12 +22,15 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import org.amnezia.awg.backend.Backend
 import org.amnezia.awg.backend.BackendException
 import org.amnezia.awg.backend.ProxyGoBackend
@@ -62,55 +65,62 @@ constructor(
         }
 
         try {
-            updateTunnelStatus(tunnelConf.id, TunnelStatus.Starting)
+            withTimeout(STARTUP_TIMEOUT_MS) {
+                updateTunnelStatus(tunnelConf.id, TunnelStatus.Starting)
 
-            val proxies: List<Proxy> =
-                when (backend) {
-                    is ProxyGoBackend -> {
-                        val proxySettings = proxySettingsRepository.get()
-                        Timber.d("Adding proxy configs")
-                        buildList {
-                            if (proxySettings.socks5ProxyEnabled) {
-                                add(
-                                    Socks5Proxy(
-                                        proxySettings.socks5ProxyBindAddress
-                                            ?: AppProxySettings.DEFAULT_SOCKS_BIND_ADDRESS,
-                                        proxySettings.proxyUsername,
-                                        proxySettings.proxyPassword,
+                val proxies: List<Proxy> =
+                    when (backend) {
+                        is ProxyGoBackend -> {
+                            val proxySettings = proxySettingsRepository.get()
+                            Timber.d("Adding proxy configs")
+                            buildList {
+                                if (proxySettings.socks5ProxyEnabled) {
+                                    add(
+                                        Socks5Proxy(
+                                            proxySettings.socks5ProxyBindAddress
+                                                ?: AppProxySettings.DEFAULT_SOCKS_BIND_ADDRESS,
+                                            proxySettings.proxyUsername,
+                                            proxySettings.proxyPassword,
+                                        )
                                     )
-                                )
-                            }
-                            if (proxySettings.httpProxyEnabled) {
-                                add(
-                                    HttpProxy(
-                                        proxySettings.httpProxyBindAddress
-                                            ?: AppProxySettings.DEFAULT_HTTP_BIND_ADDRESS,
-                                        proxySettings.proxyUsername,
-                                        proxySettings.proxyPassword,
+                                }
+                                if (proxySettings.httpProxyEnabled) {
+                                    add(
+                                        HttpProxy(
+                                            proxySettings.httpProxyBindAddress
+                                                ?: AppProxySettings.DEFAULT_HTTP_BIND_ADDRESS,
+                                            proxySettings.proxyUsername,
+                                            proxySettings.proxyPassword,
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
+                        else -> emptyList()
                     }
-                    else -> emptyList()
-                }
-            val setting = settingsRepository.get()
-            val config = tunnelConf.toAmConfig()
-            val updatedConfig =
-                Config.Builder()
-                    .apply {
-                        setInterface(config.`interface`)
-                        addPeers(config.peers)
-                        addProxies(proxies)
-                        setDnsSettings(
-                            DnsSettings(
-                                setting.dnsProtocol == DnsProtocol.DOH,
-                                Optional.ofNullable(setting.dnsEndpoint),
+                val setting = settingsRepository.get()
+                val config = tunnelConf.toAmConfig()
+                val updatedConfig =
+                    Config.Builder()
+                        .apply {
+                            setInterface(config.`interface`)
+                            addPeers(config.peers)
+                            addProxies(proxies)
+                            setDnsSettings(
+                                DnsSettings(
+                                    setting.dnsProtocol == DnsProtocol.DOH,
+                                    Optional.ofNullable(setting.dnsEndpoint),
+                                )
                             )
-                        )
-                    }
-                    .build()
-            backend.setState(runtimeTunnel, AwgTunnel.State.UP, updatedConfig)
+                        }
+                        .build()
+                backend.setState(runtimeTunnel, AwgTunnel.State.UP, updatedConfig)
+            }
+        } catch (e: TimeoutCancellationException) {
+            Timber.e("Startup timed out for ${tunnelConf.tunName} (likely DNS hang)")
+            errors.emit(tunnelConf.tunName to BackendCoreException.DNS)
+            forceStopTunnel(tunnelConf.id)
+            close()
         } catch (e: BackendException) {
             close(e.toBackendCoreException())
         } catch (e: IllegalArgumentException) {
@@ -168,6 +178,21 @@ constructor(
         } catch (e: Exception) {
             Timber.e(e, "Failed to get stats for $tunnelId")
             null
+        }
+    }
+
+    override suspend fun forceStopTunnel(tunnelId: Int) {
+        val runtimeTunnel = runtimeTunnels[tunnelId] ?: return
+        try {
+            backend.setState(runtimeTunnel, AwgTunnel.State.DOWN, null)
+        } catch (e: BackendException) {
+            Timber.e(e, "Force stop failed for $tunnelId")
+        } finally {
+            tunJobs[tunnelId]?.cancel()
+            runtimeTunnels.remove(tunnelId)
+            tunJobs.remove(tunnelId)
+            activeTuns.update { it - tunnelId }
+            updateTunnelStatus(tunnelId, TunnelStatus.Down)
         }
     }
 }

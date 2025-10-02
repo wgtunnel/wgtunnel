@@ -24,6 +24,8 @@ interface TunnelProvider {
      */
     suspend fun stopTunnel(tunnelId: Int)
 
+    suspend fun forceStopTunnel(tunnelId: Int)
+
     /** Stops all active tunnels. */
     suspend fun stopActiveTunnels()
 

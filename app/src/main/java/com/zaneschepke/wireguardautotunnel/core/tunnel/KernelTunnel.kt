@@ -18,12 +18,15 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
 class KernelTunnel
@@ -50,8 +53,15 @@ constructor(
         }
 
         try {
-            updateTunnelStatus(tunnelConf.id, TunnelStatus.Starting)
-            backend.setState(runtimeTunnel, WgTunnel.State.UP, tunnelConf.toWgConfig())
+            withTimeout(STARTUP_TIMEOUT_MS) {
+                updateTunnelStatus(tunnelConf.id, TunnelStatus.Starting)
+                backend.setState(runtimeTunnel, WgTunnel.State.UP, tunnelConf.toWgConfig())
+            }
+        } catch (e: TimeoutCancellationException) {
+            Timber.e("Startup timed out for ${tunnelConf.tunName}")
+            errors.emit(tunnelConf.tunName to BackendCoreException.DNS)
+            forceStopTunnel(tunnelConf.id)
+            close()
         } catch (e: BackendException) {
             close(e.toBackendCoreException())
         } catch (e: IllegalArgumentException) {
@@ -101,5 +111,20 @@ constructor(
 
     override suspend fun runningTunnelNames(): Set<String> {
         return backend.runningTunnelNames
+    }
+
+    override suspend fun forceStopTunnel(tunnelId: Int) {
+        val runtimeTunnel = runtimeTunnels[tunnelId] ?: return
+        try {
+            backend.setState(runtimeTunnel, WgTunnel.State.DOWN, null)
+        } catch (e: BackendException) {
+            Timber.e(e, "Force stop failed for $tunnelId")
+        } finally {
+            tunJobs[tunnelId]?.cancel()
+            runtimeTunnels.remove(tunnelId)
+            tunJobs.remove(tunnelId)
+            activeTuns.update { it - tunnelId }
+            updateTunnelStatus(tunnelId, TunnelStatus.Down)
+        }
     }
 }
