@@ -46,6 +46,8 @@ fun SortScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
     val hapticFeedback = LocalHapticFeedback.current
     val isTv = LocalIsAndroidTV.current
 
+    if (!tunnelsState.stateInitialized) return
+
     var sortAscending by rememberSaveable { mutableStateOf<Boolean?>(null) }
     var editableTunnels by rememberSaveable { mutableStateOf(tunnelsState.tunnels) }
 

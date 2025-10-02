@@ -72,7 +72,7 @@ interface TunnelConfigDao {
     @Query("SELECT * FROM tunnelconfig ORDER BY position")
     fun getAllFlow(): Flow<List<TunnelConfig>>
 
-    @Query("SELECT * FROM TunnelConfig WHERE name != :globalName")
+    @Query("SELECT * FROM TunnelConfig WHERE name != :globalName ORDER BY position")
     fun getAllTunnelsExceptGlobal(
         globalName: String = TunnelConfig.GLOBAL_CONFIG_NAME
     ): Flow<List<TunnelConfig>>
