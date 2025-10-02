@@ -161,6 +161,11 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.storage)
 
+    implementation("androidx.navigation3:navigation3-runtime:1.0.0-alpha10")
+    implementation("androidx.navigation3:navigation3-ui:1.0.0-alpha10")
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
+
     testImplementation(libs.junit)
     testImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -176,9 +181,6 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(libs.timber)
-
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)

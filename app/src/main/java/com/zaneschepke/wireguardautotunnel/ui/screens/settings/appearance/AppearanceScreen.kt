@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.components.DisplayThemeItem
@@ -17,16 +16,15 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.compon
 
 @Composable
 fun AppearanceScreen() {
-    val navController = LocalNavController.current
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
     ) {
-        SurfaceSelectionGroupButton(items = listOf(LanguageItem(navController)))
+        SurfaceSelectionGroupButton(items = listOf(LanguageItem()))
         SectionDivider()
         SurfaceSelectionGroupButton(items = listOf(NotificationsItem()))
         SectionDivider()
-        SurfaceSelectionGroupButton(items = listOf(DisplayThemeItem(navController)))
+        SurfaceSelectionGroupButton(items = listOf(DisplayThemeItem()))
     }
 }

@@ -8,8 +8,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ForwardButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.LaunchButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
@@ -20,8 +20,9 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
 
 @Composable
-fun GeneralSupportOptions(navController: NavController) {
+fun GeneralSupportOptions() {
     val context = LocalContext.current
+    val backStack = LocalBackStack.current
     SurfaceSelectionGroupButton(
         items =
             buildList {
@@ -70,8 +71,8 @@ fun GeneralSupportOptions(navController: NavController) {
                                 SelectionLabelType.TITLE,
                             )
                         },
-                        trailing = { ForwardButton { navController.navigate(Route.License) } },
-                        onClick = { navController.navigate(Route.License) },
+                        trailing = { ForwardButton { backStack.add(Route.License) } },
+                        onClick = { backStack.add(Route.License) },
                     )
                 )
             }

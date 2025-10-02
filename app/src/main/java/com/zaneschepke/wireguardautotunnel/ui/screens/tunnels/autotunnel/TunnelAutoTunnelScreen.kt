@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.autotunnel.components.MobileDataTunnelItem
@@ -21,7 +22,7 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.autotunnel.compone
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
 
 @Composable
-fun TunnelAutoTunnelScreen(tunnelId: Int, viewModel: TunnelsViewModel) {
+fun TunnelAutoTunnelScreen(tunnelId: Int, viewModel: TunnelsViewModel = hiltViewModel()) {
     val tunnelsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     val tunnelConf by

@@ -20,6 +20,7 @@ fun IconSurfaceButton(
     title: String,
     onClick: () -> Unit,
     selected: Boolean,
+    modifier: Modifier = Modifier,
     leading: (@Composable () -> Unit)? = null,
     description: String? = null,
 ) {
@@ -38,7 +39,8 @@ fun IconSurfaceButton(
         Box(modifier = Modifier.clickable { onClick() }.fillMaxWidth()) {
             Column(
                 modifier =
-                    Modifier.padding(horizontal = 8.dp, vertical = 10.dp)
+                    modifier
+                        .padding(horizontal = 8.dp, vertical = 10.dp)
                         .padding(end = 16.dp)
                         .padding(start = 8.dp)
                         .fillMaxSize(),

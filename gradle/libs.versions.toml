@@ -18,8 +18,7 @@ junit = "4.13.2"
 kotlinx-serialization-json = "1.9.0"
 ktorClientCore = "3.3.0"
 lifecycle-runtime-compose = "2.9.4"
-material3 = "1.4.0"
-navigationCompose = "2.9.5"
+material3 = "1.5.0-alpha04"
 pinLockCompose = "1.0.5"
 qrose = "1.0.1"
 roomVersion = "2.8.1"
@@ -44,6 +43,7 @@ material = "1.13.0"
 storage = "1.6.0"
 ktfmt = "0.24.0"
 licensee = "1.13.0"
+lifecycleViewmodelNavigation3 = "2.10.0-alpha04"
 
 [libraries]
 
@@ -73,11 +73,9 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
-androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltCompiler" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
 # lifecyle
 androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle-runtime-compose" }
@@ -123,6 +121,7 @@ reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reo
 # tunnel
 tunnel = { module = "com.zaneschepke:wireguard-android", version.ref = "tunnel" }
 amneziawg-android = { module = "com.zaneschepke:amneziawg-android", version.ref = "amneziawgAndroid" }
+androidx-lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNavigation3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
@@ -19,7 +20,7 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 
 @Composable
-fun WifiDetectionMethodScreen(viewModel: AutoTunnelViewModel) {
+fun WifiDetectionMethodScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val sharedViewModel = LocalSharedVm.current
 

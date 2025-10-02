@@ -19,10 +19,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
+import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
@@ -38,9 +39,9 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.requestInstallPackage
 import com.zaneschepke.wireguardautotunnel.viewmodel.SupportViewModel
 
 @Composable
-fun SupportScreen(viewModel: SupportViewModel) {
+fun SupportScreen(viewModel: SupportViewModel = hiltViewModel()) {
     val context = LocalContext.current
-    val navController = LocalNavController.current
+    val backStack = LocalBackStack.current
     val supportState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
@@ -134,9 +135,9 @@ fun SupportScreen(viewModel: SupportViewModel) {
         GroupLabel(stringResource(R.string.thank_you), modifier = Modifier.padding(bottom = 12.dp))
         UpdateSection { viewModel.checkForUpdate() }
         SectionDivider()
-        DonateSection { navController.navigate(Route.Donate) }
+        DonateSection { backStack.add(Route.Donate) }
         SectionDivider()
-        GeneralSupportOptions(navController)
+        GeneralSupportOptions()
         SectionDivider()
         ContactSupportOptions(context)
     }

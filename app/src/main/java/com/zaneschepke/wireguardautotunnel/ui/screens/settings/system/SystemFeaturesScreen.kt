@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
@@ -20,7 +21,7 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.settings.system.components
 import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 
 @Composable
-fun SystemFeaturesScreen(viewModel: SettingsViewModel) {
+fun SystemFeaturesScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val settingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     val isTv = LocalIsAndroidTV.current

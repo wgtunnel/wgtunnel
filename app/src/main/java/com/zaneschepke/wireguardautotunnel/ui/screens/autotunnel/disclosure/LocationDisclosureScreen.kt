@@ -11,29 +11,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.LocationDisclosureHeader
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.appSettingsItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.skipItem
+import com.zaneschepke.wireguardautotunnel.util.extensions.popUpTo
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 
 @Composable
-fun LocationDisclosureScreen(viewModel: AutoTunnelViewModel) {
-    val navController = LocalNavController.current
+fun LocationDisclosureScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     val context = LocalContext.current
+    val backStack = LocalBackStack.current
 
     fun goToAutoTunnel() {
-        navController.navigate(Route.AutoTunnel) {
-            popUpTo(Route.LocationDisclosure) { inclusive = true }
-        }
+        backStack.popUpTo(Route.AutoTunnel)
     }
 
     val settingsLauncher =

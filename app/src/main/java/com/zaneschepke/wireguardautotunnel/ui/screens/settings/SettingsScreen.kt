@@ -4,7 +4,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,8 +21,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
+import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
-import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
@@ -37,7 +39,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val isTv = LocalIsAndroidTV.current
     val context = LocalContext.current
-    val navController = LocalNavController.current
+    val backStack = LocalBackStack.current
     val focusManager = LocalFocusManager.current
     val sharedViewModel = LocalSharedVm.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -113,7 +115,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     add(
                         tunnelMonitoringItem(
                             appMode,
-                            onClick = { navController.navigate(Route.TunnelMonitoring) },
+                            onClick = { backStack.add(Route.TunnelMonitoring) },
                         ) {
                             sharedViewModel.showSnackMessage(
                                 StringValue.StringResource(
@@ -124,7 +126,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                         }
                     )
                     add(
-                        dnsSettingsItem(appMode, onClick = { navController.navigate(Route.Dns) }) {
+                        dnsSettingsItem(appMode, onClick = { backStack.add(Route.Dns) }) {
                             sharedViewModel.showSnackMessage(
                                 StringValue.StringResource(
                                     R.string.mode_disabled_template,
@@ -139,34 +141,34 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                             onClick = viewModel::setTunnelGlobals,
                         ) {
                             settingsState.globalTunnelConf?.let {
-                                navController.navigate(Route.TunnelGlobals(it.id))
+                                backStack.add(Route.TunnelGlobals(it.id))
                             }
                         }
                     )
                     if (showProxySettings)
-                        add(proxYSettingsItem { navController.navigate(Route.ProxySettings) })
+                        add(proxYSettingsItem { backStack.add(Route.ProxySettings) })
                 }
         )
         SectionDivider()
         SurfaceSelectionGroupButton(
-            listOf(systemFeaturesItem { navController.navigate(Route.SystemFeatures) })
+            listOf(systemFeaturesItem { backStack.add(Route.SystemFeatures) })
         )
         SectionDivider()
         SurfaceSelectionGroupButton(
             items =
                 buildList {
-                    add(appearanceItem { navController.navigate(Route.Appearance) })
+                    add(appearanceItem { backStack.add(Route.Appearance) })
                     add(
                         localLoggingItem(settingsState.isLocalLoggingEnabled) {
                             viewModel.setLocalLogging(it)
                         }
                     )
                     if (settingsState.isLocalLoggingEnabled)
-                        add(readLogsItem { navController.navigate(Route.Logs) })
+                        add(readLogsItem { backStack.add(Route.Logs) })
                     add(
                         pinLockItem(settingsState.isPinLockEnabled) { enabled ->
                             if (enabled) {
-                                navController.navigate(Route.Lock)
+                                backStack.add(Route.Lock)
                             } else {
                                 sharedViewModel.setPinLockEnabled(false)
                             }
@@ -174,5 +176,6 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     )
                 }
         )
+        Spacer(Modifier.height(80.dp))
     }
 }

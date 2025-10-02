@@ -21,6 +21,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -31,11 +32,10 @@ import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navigation
-import androidx.navigation.toRoute
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.*
+import androidx.navigation3.scene.rememberSceneSetupNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.data.AppDatabase
@@ -43,16 +43,17 @@ import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
+import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
-import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.AppAlertBanner
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.VpnDeniedDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.CustomSnackBar
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Tab
 import com.zaneschepke.wireguardautotunnel.ui.navigation.components.BottomNavbar
 import com.zaneschepke.wireguardautotunnel.ui.navigation.components.DynamicTopAppBar
-import com.zaneschepke.wireguardautotunnel.ui.navigation.components.currentBackStackEntryAsNavbarState
+import com.zaneschepke.wireguardautotunnel.ui.navigation.components.currentRouteAsNavbarState
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.AutoTunnelScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.advanced.AutoTunnelAdvancedScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.detection.WifiDetectionMethodScreen
@@ -86,9 +87,9 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.*
 import dagger.hilt.android.AndroidEntryPoint
 import de.raphaelebner.roomdatabasebackup.core.RoomBackup
 import java.util.*
+import java.util.Map.entry
 import javax.inject.Inject
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import xyz.teamgravity.pin_lock_compose.PinManager
 
 @AndroidEntryPoint
@@ -101,6 +102,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var roomBackup: RoomBackup
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @SuppressLint("BatteryLife")
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
@@ -124,7 +126,6 @@ class MainActivity : AppCompatActivity() {
             val context = LocalContext.current
             val isTv = isRunningOnTv()
             val appState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
-            val navController = rememberNavController()
             val scope = rememberCoroutineScope()
 
             LaunchedEffect(appState.isAppLoaded) {
@@ -133,8 +134,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            val navState by
-                navController.currentBackStackEntryAsNavbarState(viewModel, navController)
+            val sharedState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
             val snackbar = remember { SnackbarHostState() }
             var showVpnPermissionDialog by remember { mutableStateOf(false) }
             var vpnPermissionDenied by remember { mutableStateOf(false) }
@@ -142,7 +142,7 @@ class MainActivity : AppCompatActivity() {
                 mutableStateOf<Pair<AppMode?, TunnelConf?>>(Pair(null, null))
             }
 
-            LaunchedEffect(navState) { Timber.d("New navbar state $navState") }
+            val backStack = rememberNavBackStack(Route.Tunnels)
 
             val vpnActivity =
                 rememberLauncherForActivityResult(
@@ -185,19 +185,23 @@ class MainActivity : AppCompatActivity() {
                 viewModel.globalSideEffect.collect { sideEffect ->
                     when (sideEffect) {
                         GlobalSideEffect.ConfigChanged -> restartApp()
-                        GlobalSideEffect.PopBackStack -> navController.popBackStack()
+                        GlobalSideEffect.PopBackStack -> backStack.removeLastOrNull()
                         GlobalSideEffect.RequestBatteryOptimizationDisabled ->
                             requestDisableBatteryOptimizations()
+
                         is GlobalSideEffect.RequestVpnPermission -> {
                             requestingAppMode = Pair(sideEffect.requestingMode, sideEffect.config)
                             vpnActivity.launch(VpnService.prepare(this@MainActivity))
                         }
+
                         is GlobalSideEffect.Snackbar ->
                             scope.launch {
                                 snackbar.showSnackbar(sideEffect.message.asString(context))
                             }
+
                         is GlobalSideEffect.Toast ->
                             scope.launch { context.showToast(sideEffect.message.asString(context)) }
+
                         is GlobalSideEffect.LaunchUrl -> context.openWebUrl(sideEffect.url)
                         is GlobalSideEffect.InstallApk -> context.installApk(sideEffect.apk)
                     }
@@ -206,10 +210,15 @@ class MainActivity : AppCompatActivity() {
 
             if (!appState.isAppLoaded) return@setContent
 
+            var showLock by remember {
+                mutableStateOf(appState.pinLockEnabled && !appState.isAuthorized)
+            }
+            LaunchedEffect(appState.isAuthorized) { if (appState.isAuthorized) showLock = false }
+
             CompositionLocalProvider(
                 LocalIsAndroidTV provides isTv,
                 LocalSharedVm provides viewModel,
-                LocalNavController provides navController,
+                LocalBackStack provides backStack,
             ) {
                 WireguardAutoTunnelTheme(theme = appState.theme) {
                     VpnDeniedDialog(
@@ -220,186 +229,151 @@ class MainActivity : AppCompatActivity() {
                         },
                     )
 
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        if (appState.settings.appMode == AppMode.LOCK_DOWN) {
-                            AppAlertBanner(
-                                stringResource(R.string.locked_down).uppercase(Locale.getDefault()),
-                                OffWhite,
-                                AlertRed,
-                                modifier = Modifier.fillMaxWidth().zIndex(2f),
-                            )
+                    if (showLock) {
+                        PinManager.initialize(context = this@MainActivity)
+                        PinLockScreen()
+                    } else {
+                        val currentRoute by remember {
+                            derivedStateOf { backStack.lastOrNull() as? Route }
                         }
+                        val currentTab by remember {
+                            derivedStateOf { Tab.fromRoute(currentRoute ?: Route.Tunnels) }
+                        }
+                        val selectedCount by
+                            rememberSaveable(sharedState.selectedTunnels) {
+                                mutableIntStateOf(sharedState.selectedTunnels.size)
+                            }
 
-                        Scaffold(
-                            snackbarHost = {
-                                SnackbarHost(snackbar) { snackbarData ->
-                                    CustomSnackBar(
-                                        snackbarData.visuals.message,
-                                        isRtl = false,
-                                        containerColor =
-                                            MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
-                                    )
-                                }
-                            },
-                            topBar = { DynamicTopAppBar(navState) },
-                            bottomBar = {
-                                BottomNavbar(appState.isAutoTunnelActive, navState, navController)
-                            },
-                            modifier =
-                                Modifier.pointerInput(Unit) {
-                                    detectTapGestures { viewModel.clearSelectedTunnels() }
-                                },
-                        ) { padding ->
-                            Box(
-                                modifier =
-                                    Modifier.fillMaxSize()
-                                        .background(MaterialTheme.colorScheme.surface)
-                                        .padding(
-                                            top = padding.calculateTopPadding().plus(8.dp),
-                                            bottom = padding.calculateBottomPadding(),
+                        val navState by
+                            currentRouteAsNavbarState(
+                                viewModel,
+                                currentRoute,
+                                selectedCount,
+                                backStack,
+                            )
+
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            if (appState.settings.appMode == AppMode.LOCK_DOWN) {
+                                AppAlertBanner(
+                                    stringResource(R.string.locked_down)
+                                        .uppercase(Locale.getDefault()),
+                                    OffWhite,
+                                    AlertRed,
+                                    modifier = Modifier.fillMaxWidth().zIndex(2f),
+                                )
+                            }
+                            Scaffold(
+                                snackbarHost = {
+                                    SnackbarHost(snackbar) { snackbarData ->
+                                        CustomSnackBar(
+                                            snackbarData.visuals.message,
+                                            isRtl = false,
+                                            containerColor =
+                                                MaterialTheme.colorScheme.surfaceColorAtElevation(
+                                                    2.dp
+                                                ),
                                         )
-                                        .consumeWindowInsets(padding)
-                                        .imePadding()
-                            ) {
-                                NavHost(
-                                    navController = navController,
-                                    startDestination =
-                                        if (appState.pinLockEnabled && !appState.isAuthorized)
-                                            Route.Lock
-                                        else Route.TunnelsGraph,
+                                    }
+                                },
+                                topBar = { DynamicTopAppBar(navState) },
+                                bottomBar = {
+                                    if (navState.showBottomItems) {
+                                        BottomNavbar(
+                                            appState.isAutoTunnelActive,
+                                            currentTab,
+                                            onTabSelected = { tab ->
+                                                backStack.popUpTo(tab.startRoute)
+                                                if (backStack.last() != tab.startRoute) {
+                                                    backStack.add(tab.startRoute)
+                                                }
+                                            },
+                                        )
+                                    }
+                                },
+                                modifier =
+                                    Modifier.pointerInput(Unit) {
+                                        detectTapGestures { viewModel.clearSelectedTunnels() }
+                                    },
+                            ) { padding ->
+                                Column(
+                                    modifier =
+                                        Modifier.fillMaxSize()
+                                            .background(MaterialTheme.colorScheme.surface)
+                                            .padding(
+                                                top = padding.calculateTopPadding().plus(8.dp),
+                                                bottom = padding.calculateBottomPadding(),
+                                            )
+                                            .consumeWindowInsets(padding)
+                                            .imePadding()
                                 ) {
-                                    composable<Route.Lock> {
-                                        PinManager.initialize(context = this@MainActivity)
-                                        PinLockScreen()
-                                    }
-                                    navigation<Route.TunnelsGraph>(
-                                        startDestination = Route.Tunnels
-                                    ) {
-                                        composable<Route.Tunnels> {
-                                            val viewModel =
-                                                it.sharedViewModel<TunnelsViewModel>(navController)
-                                            TunnelsScreen(viewModel)
-                                        }
-                                        composable<Route.Sort> {
-                                            val viewModel =
-                                                it.sharedViewModel<TunnelsViewModel>(navController)
-                                            SortScreen(viewModel)
-                                        }
-                                        composable<Route.TunnelOptions> { backStackEntry ->
-                                            val args = backStackEntry.toRoute<Route.TunnelOptions>()
-                                            val viewModel =
-                                                backStackEntry.sharedViewModel<TunnelsViewModel>(
-                                                    navController
-                                                )
-                                            TunnelOptionsScreen(args.id, viewModel)
-                                        }
-                                        composable<Route.SplitTunnel> { backStackEntry ->
-                                            val args = backStackEntry.toRoute<Route.SplitTunnel>()
-                                            SplitTunnelScreen(args.id)
-                                        }
-                                        composable<Route.TunnelAutoTunnel> { backStackEntry ->
-                                            val args =
-                                                backStackEntry.toRoute<Route.TunnelAutoTunnel>()
-                                            val viewModel =
-                                                backStackEntry.sharedViewModel<TunnelsViewModel>(
-                                                    navController
-                                                )
-                                            TunnelAutoTunnelScreen(args.id, viewModel)
-                                        }
-                                        composable<Route.Config> { backStackEntry ->
-                                            val args = backStackEntry.toRoute<Route.Config>()
-                                            ConfigScreen(args.id)
-                                        }
-                                    }
-
-                                    navigation<Route.AutoTunnelGraph>(
-                                        startDestination = Route.AutoTunnel
-                                    ) {
-                                        composable<Route.LocationDisclosure> {
-                                            val viewModel =
-                                                it.sharedViewModel<AutoTunnelViewModel>(
-                                                    navController
-                                                )
-                                            LocationDisclosureScreen(viewModel)
-                                        }
-                                        composable<Route.AutoTunnel> {
-                                            val viewModel =
-                                                it.sharedViewModel<AutoTunnelViewModel>(
-                                                    navController
-                                                )
-                                            AutoTunnelScreen(viewModel)
-                                        }
-                                        composable<Route.AdvancedAutoTunnel> {
-                                            val viewModel =
-                                                it.sharedViewModel<AutoTunnelViewModel>(
-                                                    navController
-                                                )
-                                            AutoTunnelAdvancedScreen(viewModel)
-                                        }
-                                        composable<Route.WifiDetectionMethod> {
-                                            val viewModel =
-                                                it.sharedViewModel<AutoTunnelViewModel>(
-                                                    navController
-                                                )
-                                            WifiDetectionMethodScreen(viewModel)
-                                        }
-                                    }
-
-                                    navigation<Route.SettingsGraph>(
-                                        startDestination = Route.Settings
-                                    ) {
-                                        composable<Route.Settings> {
-                                            val viewModel =
-                                                it.sharedViewModel<SettingsViewModel>(navController)
-                                            SettingsScreen(viewModel)
-                                        }
-                                        composable<Route.TunnelMonitoring> {
-                                            val viewModel =
-                                                it.sharedViewModel<SettingsViewModel>(navController)
-                                            TunnelMonitoringScreen(viewModel)
-                                        }
-                                        composable<Route.SystemFeatures> {
-                                            val viewModel =
-                                                it.sharedViewModel<SettingsViewModel>(navController)
-                                            SystemFeaturesScreen(viewModel)
-                                        }
-                                        composable<Route.Dns> {
-                                            val viewModel =
-                                                it.sharedViewModel<SettingsViewModel>(navController)
-                                            DnsSettingsScreen(viewModel)
-                                        }
-                                        composable<Route.TunnelGlobals> { backStackEntry ->
-                                            val args = backStackEntry.toRoute<Route.TunnelGlobals>()
-                                            TunnelGlobalsScreen(args.id)
-                                        }
-                                        composable<Route.ConfigGlobal> { backStackEntry ->
-                                            val args = backStackEntry.toRoute<Route.ConfigGlobal>()
-                                            ConfigScreen(args.id)
-                                        }
-                                        composable<Route.SplitTunnelGlobal> { backStackEntry ->
-                                            val args =
-                                                backStackEntry.toRoute<Route.SplitTunnelGlobal>()
-                                            SplitTunnelScreen(args.id)
-                                        }
-                                        composable<Route.ProxySettings> { ProxySettingsScreen() }
-                                        composable<Route.Appearance> { AppearanceScreen() }
-                                        composable<Route.Language> { LanguageScreen() }
-                                        composable<Route.Display> { DisplayScreen() }
-                                        composable<Route.Logs> { LogsScreen() }
-                                    }
-
-                                    navigation<Route.SupportGraph>(
-                                        startDestination = Route.Support
-                                    ) {
-                                        composable<Route.Support> {
-                                            val viewModel =
-                                                it.sharedViewModel<SupportViewModel>(navController)
-                                            SupportScreen(viewModel)
-                                        }
-                                        composable<Route.License> { LicenseScreen() }
-                                        composable<Route.Donate> { DonateScreen(navController) }
-                                        composable<Route.Addresses> { AddressesScreen() }
-                                    }
+                                    NavDisplay(
+                                        backStack = backStack,
+                                        modifier = Modifier.fillMaxSize(),
+                                        onBack = { backStack.removeLastOrNull() },
+                                        entryDecorators =
+                                            listOf(
+                                                rememberSceneSetupNavEntryDecorator(),
+                                                rememberSavedStateNavEntryDecorator(),
+                                                rememberViewModelStoreNavEntryDecorator(),
+                                            ),
+                                        entryProvider =
+                                            entryProvider {
+                                                entry<Route.Lock> {
+                                                    PinManager.initialize(
+                                                        context = this@MainActivity
+                                                    )
+                                                    PinLockScreen()
+                                                }
+                                                entry<Route.Tunnels> { TunnelsScreen() }
+                                                entry<Route.Sort> { SortScreen() }
+                                                entry<Route.TunnelOptions> { key ->
+                                                    TunnelOptionsScreen(key.id)
+                                                }
+                                                entry<Route.SplitTunnel> { key ->
+                                                    SplitTunnelScreen(key.id)
+                                                }
+                                                entry<Route.TunnelAutoTunnel> { key ->
+                                                    TunnelAutoTunnelScreen(key.id)
+                                                }
+                                                entry<Route.Config> { key -> ConfigScreen(key.id) }
+                                                entry<Route.LocationDisclosure> {
+                                                    LocationDisclosureScreen()
+                                                }
+                                                entry<Route.AutoTunnel> { AutoTunnelScreen() }
+                                                entry<Route.AdvancedAutoTunnel> {
+                                                    AutoTunnelAdvancedScreen()
+                                                }
+                                                entry<Route.WifiDetectionMethod> {
+                                                    WifiDetectionMethodScreen()
+                                                }
+                                                entry<Route.Settings> { SettingsScreen() }
+                                                entry<Route.TunnelMonitoring> {
+                                                    TunnelMonitoringScreen()
+                                                }
+                                                entry<Route.SystemFeatures> {
+                                                    SystemFeaturesScreen()
+                                                }
+                                                entry<Route.Dns> { DnsSettingsScreen() }
+                                                entry<Route.TunnelGlobals> { key ->
+                                                    TunnelGlobalsScreen(key.id)
+                                                }
+                                                entry<Route.ConfigGlobal> { key ->
+                                                    ConfigScreen(key.id)
+                                                }
+                                                entry<Route.SplitTunnelGlobal> { key ->
+                                                    SplitTunnelScreen(key.id)
+                                                }
+                                                entry<Route.ProxySettings> { ProxySettingsScreen() }
+                                                entry<Route.Appearance> { AppearanceScreen() }
+                                                entry<Route.Language> { LanguageScreen() }
+                                                entry<Route.Display> { DisplayScreen() }
+                                                entry<Route.Logs> { LogsScreen() }
+                                                entry<Route.Support> { SupportScreen() }
+                                                entry<Route.License> { LicenseScreen() }
+                                                entry<Route.Donate> { DonateScreen() }
+                                                entry<Route.Addresses> { AddressesScreen() }
+                                            },
+                                    )
                                 }
                             }
                         }

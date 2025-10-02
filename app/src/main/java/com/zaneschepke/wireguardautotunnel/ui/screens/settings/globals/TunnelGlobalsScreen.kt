@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
+import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.globals.components.globalConfigItem
@@ -20,7 +20,7 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.tunneloptions.comp
 
 @Composable
 fun TunnelGlobalsScreen(globalTunnelId: Int) {
-    val navController = LocalNavController.current
+    val backStack = LocalBackStack.current
 
     Column(
         horizontalAlignment = Alignment.Start,
@@ -30,9 +30,9 @@ fun TunnelGlobalsScreen(globalTunnelId: Int) {
     ) {
         SurfaceSelectionGroupButton(
             listOf(
-                globalConfigItem { navController.navigate(Route.ConfigGlobal(globalTunnelId)) },
+                globalConfigItem { backStack.add(Route.ConfigGlobal(globalTunnelId)) },
                 splitTunnelingItem(stringResource(R.string.splt_tunneling)) {
-                    navController.navigate(Route.SplitTunnelGlobal(id = globalTunnelId))
+                    backStack.add(Route.SplitTunnelGlobal(id = globalTunnelId))
                 },
             )
         )

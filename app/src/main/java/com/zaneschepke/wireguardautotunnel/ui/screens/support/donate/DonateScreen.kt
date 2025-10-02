@@ -10,8 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.zaneschepke.wireguardautotunnel.BuildConfig
+import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.components.DonationHeroSection
@@ -20,7 +20,8 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.components.
 import com.zaneschepke.wireguardautotunnel.util.Constants
 
 @Composable
-fun DonateScreen(navController: NavController) {
+fun DonateScreen() {
+    val backStack = LocalBackStack.current
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
@@ -30,7 +31,7 @@ fun DonateScreen(navController: NavController) {
         DonationHeroSection()
         SectionDivider()
         if (BuildConfig.FLAVOR != Constants.GOOGLE_PLAY_FLAVOR) {
-            DonationOptions { navController.navigate(Route.Addresses) }
+            DonationOptions { backStack.add(Route.Addresses) }
         } else {
             GoogleDonationMessage()
         }

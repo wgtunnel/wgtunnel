@@ -7,14 +7,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ForwardButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 
 @Composable
-fun LanguageItem(navController: NavController): SelectionItem {
+fun LanguageItem(): SelectionItem {
+    val backStack = LocalBackStack.current
     return SelectionItem(
         leading = { Icon(Icons.Outlined.Translate, contentDescription = null) },
         title = {
@@ -24,7 +25,7 @@ fun LanguageItem(navController: NavController): SelectionItem {
                     MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onSurface),
             )
         },
-        trailing = { ForwardButton { navController.navigate(Route.Language) } },
-        onClick = { navController.navigate(Route.Language) },
+        trailing = { ForwardButton { backStack.add(Route.Language) } },
+        onClick = { backStack.add(Route.Language) },
     )
 }
