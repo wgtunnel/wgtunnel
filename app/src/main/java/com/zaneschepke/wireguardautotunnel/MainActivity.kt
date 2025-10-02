@@ -142,7 +142,12 @@ class MainActivity : AppCompatActivity() {
                 mutableStateOf<Pair<AppMode?, TunnelConf?>>(Pair(null, null))
             }
 
-            val backStack = rememberNavBackStack(Route.Tunnels)
+            val startingStack = buildList {
+                add(Route.Tunnels)
+                if (intent?.action == Intent.ACTION_APPLICATION_PREFERENCES) add(Route.Settings)
+            }
+
+            val backStack = rememberNavBackStack(*startingStack.toTypedArray())
 
             val vpnActivity =
                 rememberLauncherForActivityResult(
