@@ -40,26 +40,24 @@ fun QrCodeDialog(tunnelConf: TunnelConf, onDismiss: () -> Unit) {
 
 @Composable
 private fun QrCodeAlertDialog(tunnelConf: TunnelConf, onDismiss: () -> Unit) {
-    Surface(color = Color.White, tonalElevation = 0.dp) {
-        AlertDialog(
-            containerColor = Color.White,
-            onDismissRequest = onDismiss,
-            confirmButton = {
-                TextButton(onClick = onDismiss) {
-                    Text(stringResource(R.string.done), color = MaterialTheme.colorScheme.surface)
-                }
-            },
-            title = {
-                Text(
-                    text = tunnelConf.tunName,
-                    color = Color.Black,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-            },
-            text = { QrCodeContent(tunnelConf = tunnelConf) },
-            properties = DialogProperties(usePlatformDefaultWidth = true),
-        )
-    }
+    AlertDialog(
+        containerColor = Color.White,
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.done), color = MaterialTheme.colorScheme.surface)
+            }
+        },
+        title = {
+            Text(
+                text = tunnelConf.tunName,
+                color = Color.Black,
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        text = { QrCodeContent(tunnelConf = tunnelConf) },
+        properties = DialogProperties(usePlatformDefaultWidth = true),
+    )
 }
 
 @Composable

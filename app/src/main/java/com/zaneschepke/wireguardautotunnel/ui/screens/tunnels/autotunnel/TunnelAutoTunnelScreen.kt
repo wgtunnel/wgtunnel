@@ -25,6 +25,8 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
 fun TunnelAutoTunnelScreen(tunnelId: Int, viewModel: TunnelsViewModel = hiltViewModel()) {
     val tunnelsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
+    if (!tunnelsState.stateInitialized) return
+
     val tunnelConf by
         remember(tunnelsState.tunnels) {
             derivedStateOf { tunnelsState.tunnels.find { it.id == tunnelId }!! }
