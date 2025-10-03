@@ -1,5 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.ui.navigation.components
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,8 +12,8 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.zaneschepke.wireguardautotunnel.ui.common.animations.AnimatedFloatIcon
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Tab
 import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
 
@@ -28,6 +30,7 @@ fun BottomNavbar(isAutoTunnelActive: Boolean, currentTab: Tab, onTabSelected: (T
                     val interactionSource = remember { MutableInteractionSource() }
                     val isSelected = currentTab == tab
                     val hasBadge = tab == Tab.AUTOTUNNEL && isAutoTunnelActive
+
                     IconButton(
                         onClick = { onTabSelected(tab) },
                         colors =
@@ -54,15 +57,19 @@ fun BottomNavbar(isAutoTunnelActive: Boolean, currentTab: Tab, onTabSelected: (T
                                     )
                                 }
                             ) {
-                                Icon(
-                                    imageVector = tab.icon,
-                                    contentDescription = stringResource(tab.titleRes),
+                                AnimatedFloatIcon(
+                                    activeIcon = tab.activeIcon,
+                                    inactiveIcon = tab.inactiveIcon,
+                                    isSelected = isSelected,
+                                    modifier = Modifier.size(24.dp),
                                 )
                             }
                         } else {
-                            Icon(
-                                imageVector = tab.icon,
-                                contentDescription = stringResource(tab.titleRes),
+                            AnimatedFloatIcon(
+                                activeIcon = tab.activeIcon,
+                                inactiveIcon = tab.inactiveIcon,
+                                isSelected = isSelected,
+                                modifier = Modifier.size(24.dp),
                             )
                         }
                     }

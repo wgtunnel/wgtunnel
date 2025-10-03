@@ -69,7 +69,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            signingConfig = signingConfigs.getByName(Constants.RELEASE)
+            signingConfig = signingConfigs.getByName("debug")
             resValue("string", "provider", "\"${Constants.APP_NAME}.provider\"")
         }
 
@@ -161,6 +161,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.storage)
 
+    implementation("androidx.compose.animation:animation-graphics:1.9.2")
     implementation("androidx.navigation3:navigation3-runtime:1.0.0-alpha10")
     implementation("androidx.navigation3:navigation3-ui:1.0.0-alpha10")
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)

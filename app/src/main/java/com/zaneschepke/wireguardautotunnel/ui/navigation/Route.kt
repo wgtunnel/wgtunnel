@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.QuestionMark
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Home
@@ -80,13 +81,20 @@ sealed class Route : NavKey {
 enum class Tab(
     val startRoute: Route,
     val titleRes: Int,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    val inactiveIcon: androidx.compose.ui.graphics.vector.ImageVector,
+    val activeIcon: androidx.compose.ui.graphics.vector.ImageVector,
     val index: Int,
 ) {
-    TUNNELS(Route.Tunnels, R.string.tunnels, Icons.Rounded.Home, 0),
-    AUTOTUNNEL(Route.AutoTunnel, R.string.auto_tunnel, Icons.Rounded.Bolt, 1),
-    SETTINGS(Route.Settings, R.string.settings, Icons.Rounded.Settings, 2),
-    SUPPORT(Route.Support, R.string.support, Icons.Rounded.QuestionMark, 3);
+    TUNNELS(Route.Tunnels, R.string.tunnels, Icons.Outlined.Home, Icons.Filled.Home, 0),
+    AUTOTUNNEL(Route.AutoTunnel, R.string.auto_tunnel, Icons.Outlined.Bolt, Icons.Filled.Bolt, 1),
+    SETTINGS(Route.Settings, R.string.settings, Icons.Outlined.Settings, Icons.Filled.Settings, 2),
+    SUPPORT(
+        Route.Support,
+        R.string.support,
+        Icons.Outlined.QuestionMark,
+        Icons.Filled.QuestionMark,
+        3,
+    );
 
     companion object {
         fun fromRoute(route: Route): Tab =
