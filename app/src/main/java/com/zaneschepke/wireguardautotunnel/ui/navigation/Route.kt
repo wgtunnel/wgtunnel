@@ -10,11 +10,6 @@ import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.QuestionMark
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.QuestionMark
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.ui.input.key.Key.Companion.Home
 import androidx.navigation3.runtime.NavKey
 import com.zaneschepke.wireguardautotunnel.R
 import kotlinx.serialization.Serializable
