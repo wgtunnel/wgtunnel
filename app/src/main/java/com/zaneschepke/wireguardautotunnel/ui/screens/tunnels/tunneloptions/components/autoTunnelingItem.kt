@@ -9,14 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ForwardButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 
 @Composable
 fun autoTunnelingItem(tunnelConf: TunnelConf): SelectionItem {
-    val backStack = LocalBackStack.current
+    val navController = LocalNavController.current
     return SelectionItem(
         leading = { Icon(Icons.Outlined.Bolt, contentDescription = null) },
         title = {
@@ -32,7 +32,9 @@ fun autoTunnelingItem(tunnelConf: TunnelConf): SelectionItem {
                 style = MaterialTheme.typography.bodySmall.copy(MaterialTheme.colorScheme.outline),
             )
         },
-        trailing = { ForwardButton { backStack.add(Route.TunnelAutoTunnel(id = tunnelConf.id)) } },
-        onClick = { backStack.add(Route.TunnelAutoTunnel(id = tunnelConf.id)) },
+        trailing = {
+            ForwardButton { navController.push(Route.TunnelAutoTunnel(id = tunnelConf.id)) }
+        },
+        onClick = { navController.push(Route.TunnelAutoTunnel(id = tunnelConf.id)) },
     )
 }

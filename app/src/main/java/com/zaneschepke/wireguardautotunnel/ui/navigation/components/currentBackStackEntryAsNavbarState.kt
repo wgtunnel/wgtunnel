@@ -12,8 +12,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.BackStack
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ActionIconButton
+import com.zaneschepke.wireguardautotunnel.ui.navigation.NavController
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
@@ -24,7 +24,7 @@ fun currentRouteAsNavbarState(
     sharedViewModel: SharedAppViewModel,
     route: Route?,
     selectedCount: Int,
-    backStack: BackStack,
+    navController: NavController,
 ): State<NavbarState> {
     val sharedState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -37,7 +37,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         showBottomItems = true,
@@ -47,7 +47,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         showBottomItems = true,
@@ -66,7 +66,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         showBottomItems = true,
@@ -76,7 +76,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         showBottomItems = true,
@@ -86,7 +86,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         showBottomItems = true,
@@ -96,7 +96,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         showBottomItems = true,
@@ -108,7 +108,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         showBottomItems = true,
@@ -123,7 +123,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         showBottomItems = true,
@@ -152,7 +152,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         showBottomItems = true,
@@ -173,7 +173,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         showBottomItems = true,
@@ -191,7 +191,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         topTitle = tunnel?.tunName ?: "",
@@ -207,7 +207,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         topTitle = context.getString(R.string.splt_tunneling),
@@ -223,7 +223,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         showBottomItems = true,
@@ -245,7 +245,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         topTitle = context.getString(R.string.android_integrations),
@@ -256,7 +256,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         showBottomItems = true,
@@ -267,7 +267,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         topTitle = context.getString(R.string.tunnel_monitoring),
@@ -278,7 +278,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         showBottomItems = true,
@@ -289,7 +289,7 @@ fun currentRouteAsNavbarState(
                                     sharedViewModel.postSideEffect(LocalSideEffect.Modal.QR)
                                 }
                                 ActionIconButton(Icons.Rounded.Edit, R.string.edit_tunnel) {
-                                    backStack.add(Route.Config(route.id))
+                                    navController.push(Route.Config(route.id))
                                 }
                             }
                         },
@@ -306,7 +306,7 @@ fun currentRouteAsNavbarState(
                                             Icons.AutoMirrored.Rounded.Sort,
                                             R.string.sort,
                                         ) {
-                                            backStack.add(Route.Sort)
+                                            navController.push(Route.Sort)
                                         }
                                         ActionIconButton(Icons.Rounded.Add, R.string.add_tunnel) {
                                             sharedViewModel.postSideEffect(
@@ -359,7 +359,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         topTitle = context.getString(R.string.wifi_detection_method),
@@ -369,7 +369,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         topTitle = context.getString(R.string.donate_title),
@@ -380,7 +380,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         topTitle = context.getString(R.string.addresses),
@@ -391,7 +391,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
-                                backStack.removeLastOrNull()
+                                navController.pop()
                             }
                         },
                         topTitle = context.getString(R.string.tunnel_global_overrides),

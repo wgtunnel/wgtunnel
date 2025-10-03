@@ -14,17 +14,9 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
-import com.zaneschepke.wireguardautotunnel.ui.BackStack
-import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
 import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
 import com.zaneschepke.wireguardautotunnel.ui.theme.Straw
-
-fun BackStack.popUpTo(route: Route) {
-    while (size > 1 && last() != route) {
-        removeLast()
-    }
-}
 
 fun WifiDetectionMethod.asTitleString(context: Context): String {
     return when (this) {

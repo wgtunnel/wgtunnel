@@ -16,6 +16,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -33,7 +34,10 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.*
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.scene.rememberSceneSetupNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.zaneschepke.networkmonitor.NetworkMonitor
@@ -43,8 +47,8 @@ import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
-import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.AppAlertBanner
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.VpnDeniedDialog
@@ -54,6 +58,7 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.Tab
 import com.zaneschepke.wireguardautotunnel.ui.navigation.components.BottomNavbar
 import com.zaneschepke.wireguardautotunnel.ui.navigation.components.DynamicTopAppBar
 import com.zaneschepke.wireguardautotunnel.ui.navigation.components.currentRouteAsNavbarState
+import com.zaneschepke.wireguardautotunnel.ui.navigation.functions.rememberNavController
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.AutoTunnelScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.advanced.AutoTunnelAdvancedScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.detection.WifiDetectionMethodScreen
@@ -83,11 +88,10 @@ import com.zaneschepke.wireguardautotunnel.ui.theme.OffWhite
 import com.zaneschepke.wireguardautotunnel.ui.theme.WireguardAutoTunnelTheme
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
 import com.zaneschepke.wireguardautotunnel.util.extensions.*
-import com.zaneschepke.wireguardautotunnel.viewmodel.*
+import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import de.raphaelebner.roomdatabasebackup.core.RoomBackup
 import java.util.*
-import java.util.Map.entry
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import xyz.teamgravity.pin_lock_compose.PinManager
@@ -148,6 +152,12 @@ class MainActivity : AppCompatActivity() {
             }
 
             val backStack = rememberNavBackStack(*startingStack.toTypedArray())
+            var previousRoute by remember { mutableStateOf<Route?>(null) }
+
+            val navController =
+                rememberNavController<NavKey>(backStack) { previousKey ->
+                    previousRoute = previousKey as? Route
+                }
 
             val vpnActivity =
                 rememberLauncherForActivityResult(
@@ -190,7 +200,7 @@ class MainActivity : AppCompatActivity() {
                 viewModel.globalSideEffect.collect { sideEffect ->
                     when (sideEffect) {
                         GlobalSideEffect.ConfigChanged -> restartApp()
-                        GlobalSideEffect.PopBackStack -> backStack.removeLastOrNull()
+                        GlobalSideEffect.PopBackStack -> navController.pop()
                         GlobalSideEffect.RequestBatteryOptimizationDisabled ->
                             requestDisableBatteryOptimizations()
 
@@ -223,7 +233,7 @@ class MainActivity : AppCompatActivity() {
             CompositionLocalProvider(
                 LocalIsAndroidTV provides isTv,
                 LocalSharedVm provides viewModel,
-                LocalBackStack provides backStack,
+                LocalNavController provides navController,
             ) {
                 WireguardAutoTunnelTheme(theme = appState.theme) {
                     VpnDeniedDialog(
@@ -254,7 +264,7 @@ class MainActivity : AppCompatActivity() {
                                 viewModel,
                                 currentRoute,
                                 selectedCount,
-                                backStack,
+                                navController,
                             )
 
                         Box(modifier = Modifier.fillMaxSize()) {
@@ -287,10 +297,7 @@ class MainActivity : AppCompatActivity() {
                                             appState.isAutoTunnelActive,
                                             currentTab,
                                             onTabSelected = { tab ->
-                                                backStack.popUpTo(tab.startRoute)
-                                                if (backStack.last() != tab.startRoute) {
-                                                    backStack.add(tab.startRoute)
-                                                }
+                                                navController.popUpTo(tab.startRoute)
                                             },
                                         )
                                     }
@@ -314,7 +321,30 @@ class MainActivity : AppCompatActivity() {
                                     NavDisplay(
                                         backStack = backStack,
                                         modifier = Modifier.fillMaxSize(),
-                                        onBack = { backStack.removeLastOrNull() },
+                                        onBack = { navController.pop() },
+                                        transitionSpec = {
+                                            val initialIndex =
+                                                previousRoute?.let(Tab::fromRoute)?.index ?: 0
+                                            val targetIndex =
+                                                currentRoute?.let(Tab::fromRoute)?.index ?: 0
+                                            if (initialIndex != targetIndex) {
+                                                val dir = if (targetIndex > initialIndex) 1 else -1
+                                                (slideInHorizontally { dir * it } +
+                                                    fadeIn()) togetherWith
+                                                    (slideOutHorizontally { dir * -it } + fadeOut())
+                                            } else {
+                                                (slideInHorizontally { it } + fadeIn()) togetherWith
+                                                    (slideOutHorizontally { -it } + fadeOut())
+                                            }
+                                        },
+                                        popTransitionSpec = {
+                                            (slideInHorizontally { -it } + fadeIn()) togetherWith
+                                                (slideOutHorizontally { it } + fadeOut())
+                                        },
+                                        predictivePopTransitionSpec = {
+                                            (slideInHorizontally { -it } + fadeIn()) togetherWith
+                                                (slideOutHorizontally { it } + fadeOut())
+                                        },
                                         entryDecorators =
                                             listOf(
                                                 rememberSceneSetupNavEntryDecorator(),

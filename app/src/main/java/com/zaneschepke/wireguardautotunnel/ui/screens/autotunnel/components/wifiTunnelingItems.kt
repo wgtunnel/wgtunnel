@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ForwardButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
@@ -38,7 +38,7 @@ fun wifiTunnelingItems(
     viewModel: AutoTunnelViewModel,
 ): List<SelectionItem> {
     val context = LocalContext.current
-    val backStack = LocalBackStack.current
+    val navController = LocalNavController.current
     val clipboardHelper = rememberClipboardHelper()
 
     var currentText by rememberSaveable { mutableStateOf("") }
@@ -138,8 +138,8 @@ fun wifiTunnelingItems(
                                 ),
                         )
                     },
-                    trailing = { ForwardButton { backStack.add(Route.WifiDetectionMethod) } },
-                    onClick = { backStack.add(Route.WifiDetectionMethod) },
+                    trailing = { ForwardButton { navController.push(Route.WifiDetectionMethod) } },
+                    onClick = { navController.push(Route.WifiDetectionMethod) },
                 ),
                 SelectionItem(
                     leading = { Icon(Icons.Outlined.Filter1, contentDescription = null) },

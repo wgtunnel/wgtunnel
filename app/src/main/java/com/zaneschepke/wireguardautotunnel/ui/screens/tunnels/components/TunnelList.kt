@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
-import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.state.SharedAppUiState
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelsUiState
@@ -32,7 +32,7 @@ fun TunnelList(
     modifier: Modifier = Modifier,
     sharedViewModel: SharedAppViewModel,
 ) {
-    val backStack = LocalBackStack.current
+    val navController = LocalNavController.current
     val isTv = LocalIsAndroidTV.current
     val context = LocalContext.current
 
@@ -69,7 +69,7 @@ fun TunnelList(
                 isSelected = selected,
                 tunnel = tunnel,
                 tunnelState = tunnelState,
-                onTvClick = { backStack.add(Route.TunnelOptions(tunnel.id)) },
+                onTvClick = { navController.push(Route.TunnelOptions(tunnel.id)) },
                 onToggleSelectedTunnel = { tunnel ->
                     sharedViewModel.toggleSelectedTunnel(tunnel.id)
                 },
@@ -87,7 +87,7 @@ fun TunnelList(
                                 if (sharedState.selectedTunnels.isNotEmpty()) {
                                     sharedViewModel.toggleSelectedTunnel(tunnel.id)
                                 } else {
-                                    backStack.add(Route.TunnelOptions(tunnel.id))
+                                    navController.push(Route.TunnelOptions(tunnel.id))
                                     sharedViewModel.clearSelectedTunnels()
                                 }
                             },

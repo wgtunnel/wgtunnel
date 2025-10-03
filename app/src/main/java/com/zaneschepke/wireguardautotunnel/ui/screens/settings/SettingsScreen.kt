@@ -21,8 +21,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
-import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
@@ -39,7 +39,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val isTv = LocalIsAndroidTV.current
     val context = LocalContext.current
-    val backStack = LocalBackStack.current
+    val navController = LocalNavController.current
     val focusManager = LocalFocusManager.current
     val sharedViewModel = LocalSharedVm.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -115,7 +115,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     add(
                         tunnelMonitoringItem(
                             appMode,
-                            onClick = { backStack.add(Route.TunnelMonitoring) },
+                            onClick = { navController.push(Route.TunnelMonitoring) },
                         ) {
                             sharedViewModel.showSnackMessage(
                                 StringValue.StringResource(
@@ -126,7 +126,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                         }
                     )
                     add(
-                        dnsSettingsItem(appMode, onClick = { backStack.add(Route.Dns) }) {
+                        dnsSettingsItem(appMode, onClick = { navController.push(Route.Dns) }) {
                             sharedViewModel.showSnackMessage(
                                 StringValue.StringResource(
                                     R.string.mode_disabled_template,
@@ -141,34 +141,34 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                             onClick = viewModel::setTunnelGlobals,
                         ) {
                             settingsState.globalTunnelConf?.let {
-                                backStack.add(Route.TunnelGlobals(it.id))
+                                navController.push(Route.TunnelGlobals(it.id))
                             }
                         }
                     )
                     if (showProxySettings)
-                        add(proxYSettingsItem { backStack.add(Route.ProxySettings) })
+                        add(proxYSettingsItem { navController.push(Route.ProxySettings) })
                 }
         )
         SectionDivider()
         SurfaceSelectionGroupButton(
-            listOf(systemFeaturesItem { backStack.add(Route.SystemFeatures) })
+            listOf(systemFeaturesItem { navController.push(Route.SystemFeatures) })
         )
         SectionDivider()
         SurfaceSelectionGroupButton(
             items =
                 buildList {
-                    add(appearanceItem { backStack.add(Route.Appearance) })
+                    add(appearanceItem { navController.push(Route.Appearance) })
                     add(
                         localLoggingItem(settingsState.isLocalLoggingEnabled) {
                             viewModel.setLocalLogging(it)
                         }
                     )
                     if (settingsState.isLocalLoggingEnabled)
-                        add(readLogsItem { backStack.add(Route.Logs) })
+                        add(readLogsItem { navController.push(Route.Logs) })
                     add(
                         pinLockItem(settingsState.isPinLockEnabled) { enabled ->
                             if (enabled) {
-                                backStack.add(Route.Lock)
+                                navController.push(Route.Lock)
                             } else {
                                 sharedViewModel.setPinLockEnabled(false)
                             }

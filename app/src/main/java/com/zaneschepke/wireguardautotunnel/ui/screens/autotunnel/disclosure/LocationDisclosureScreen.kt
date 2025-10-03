@@ -16,22 +16,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.LocationDisclosureHeader
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.appSettingsItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.skipItem
-import com.zaneschepke.wireguardautotunnel.util.extensions.popUpTo
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 
 @Composable
 fun LocationDisclosureScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     val context = LocalContext.current
-    val backStack = LocalBackStack.current
+    val navController = LocalNavController.current
 
     fun goToAutoTunnel() {
-        backStack.popUpTo(Route.AutoTunnel)
+        navController.popUpTo(Route.AutoTunnel)
     }
 
     val settingsLauncher =

@@ -16,7 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
@@ -35,7 +35,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 fun TunnelsScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
     val sharedViewModel = LocalSharedVm.current
-    val backStack = LocalBackStack.current
+    val navController = LocalNavController.current
     val clipboard = rememberClipboardHelper()
 
     val sharedState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
@@ -125,7 +125,7 @@ fun TunnelsScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
                     if (result != null) viewModel.importFromClipboard(result)
                 }
             },
-            onManualImportClick = { backStack.add(Route.Config(null)) },
+            onManualImportClick = { navController.push(Route.Config(null)) },
             onUrlClick = { showUrlDialog = true },
         )
     }

@@ -16,7 +16,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
-import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
@@ -28,7 +28,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun TunnelOptionsScreen(tunnelId: Int, viewModel: TunnelsViewModel = hiltViewModel()) {
-    val backStack = LocalBackStack.current
+    val navController = LocalNavController.current
     val sharedViewModel = LocalSharedVm.current
 
     val tunnelsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
@@ -66,7 +66,7 @@ fun TunnelOptionsScreen(tunnelId: Int, viewModel: TunnelsViewModel = hiltViewMod
                     add(autoTunnelingItem(tunnelConf))
                     add(
                         splitTunnelingItem(stringResource(R.string.splt_tunneling)) {
-                            backStack.add(Route.SplitTunnel(id = tunnelConf.id))
+                            navController.push(Route.SplitTunnel(id = tunnelConf.id))
                         }
                     )
                 }

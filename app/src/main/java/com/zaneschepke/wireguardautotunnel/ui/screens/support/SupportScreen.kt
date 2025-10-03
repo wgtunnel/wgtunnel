@@ -23,7 +23,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
@@ -41,7 +41,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.SupportViewModel
 @Composable
 fun SupportScreen(viewModel: SupportViewModel = hiltViewModel()) {
     val context = LocalContext.current
-    val backStack = LocalBackStack.current
+    val navController = LocalNavController.current
     val supportState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
@@ -135,7 +135,7 @@ fun SupportScreen(viewModel: SupportViewModel = hiltViewModel()) {
         GroupLabel(stringResource(R.string.thank_you), modifier = Modifier.padding(bottom = 12.dp))
         UpdateSection { viewModel.checkForUpdate() }
         SectionDivider()
-        DonateSection { backStack.add(Route.Donate) }
+        DonateSection { navController.push(Route.Donate) }
         SectionDivider()
         GeneralSupportOptions()
         SectionDivider()

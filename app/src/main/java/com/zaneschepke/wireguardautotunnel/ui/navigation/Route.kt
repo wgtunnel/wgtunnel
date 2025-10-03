@@ -81,11 +81,12 @@ enum class Tab(
     val startRoute: Route,
     val titleRes: Int,
     val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    val index: Int,
 ) {
-    TUNNELS(Route.Tunnels, R.string.tunnels, Icons.Rounded.Home),
-    AUTOTUNNEL(Route.AutoTunnel, R.string.auto_tunnel, Icons.Rounded.Bolt),
-    SETTINGS(Route.Settings, R.string.settings, Icons.Rounded.Settings),
-    SUPPORT(Route.Support, R.string.support, Icons.Rounded.QuestionMark);
+    TUNNELS(Route.Tunnels, R.string.tunnels, Icons.Rounded.Home, 0),
+    AUTOTUNNEL(Route.AutoTunnel, R.string.auto_tunnel, Icons.Rounded.Bolt, 1),
+    SETTINGS(Route.Settings, R.string.settings, Icons.Rounded.Settings, 2),
+    SUPPORT(Route.Support, R.string.support, Icons.Rounded.QuestionMark, 3);
 
     companion object {
         fun fromRoute(route: Route): Tab =

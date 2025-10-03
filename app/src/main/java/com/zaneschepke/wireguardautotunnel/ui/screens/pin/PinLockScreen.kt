@@ -10,7 +10,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.util.StringValue
@@ -20,14 +20,13 @@ import xyz.teamgravity.pin_lock_compose.PinManager
 @Composable
 fun PinLockScreen() {
     val sharedViewModel = LocalSharedVm.current
-    val backStack = LocalBackStack.current
+    val navController = LocalNavController.current
     val pinAlreadyExists by rememberSaveable { mutableStateOf(PinManager.pinExists()) }
     var pinCreated by rememberSaveable { mutableStateOf(false) }
 
     fun onPinCorrect() {
         sharedViewModel.authenticated()
-        backStack.removeLastOrNull()
-        backStack.add(Route.Tunnels)
+        navController.popUpTo(Route.Tunnels)
     }
 
     PinLock(
@@ -57,6 +56,6 @@ fun PinLockScreen() {
     )
     BackHandler(enabled = (!pinAlreadyExists && !pinCreated)) {
         PinManager.clearPin()
-        backStack.add(Route.Settings)
+        navController.push(Route.Settings)
     }
 }

@@ -21,7 +21,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalBackStack
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.WarningBanner
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
@@ -39,12 +39,12 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 @Composable
 fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     val context = LocalContext.current
-    val backStack = LocalBackStack.current
+    val navController = LocalNavController.current
     val autoTunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     LaunchedEffect(autoTunnelState.stateInitialized) {
         if (!autoTunnelState.isLocationDisclosureShown && autoTunnelState.stateInitialized) {
-            backStack.add(Route.LocationDisclosure)
+            navController.push(Route.LocationDisclosure)
         }
     }
 
@@ -168,7 +168,9 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
         SectionDivider()
         SurfaceSelectionGroupButton(
             items =
-                listOf(AdvancedSettingsItem(onClick = { backStack.add(Route.AdvancedAutoTunnel) }))
+                listOf(
+                    AdvancedSettingsItem(onClick = { navController.push(Route.AdvancedAutoTunnel) })
+                )
         )
     }
 }
