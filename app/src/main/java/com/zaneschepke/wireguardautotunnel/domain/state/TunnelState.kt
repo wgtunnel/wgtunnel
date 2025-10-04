@@ -38,6 +38,7 @@ data class TunnelState(
         statistics?.let { stats ->
             if (stats.isTunnelStale()) return Health.STALE
             if (stats.rx() == 0L) return Health.UNKNOWN
+            return Health.HEALTHY
         }
 
         return Health.UNKNOWN
