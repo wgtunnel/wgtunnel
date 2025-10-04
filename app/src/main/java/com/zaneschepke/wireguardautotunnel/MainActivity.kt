@@ -138,7 +138,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            val sharedState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
             val snackbar = remember { SnackbarHostState() }
             var showVpnPermissionDialog by remember { mutableStateOf(false) }
             var vpnPermissionDenied by remember { mutableStateOf(false) }
@@ -255,12 +254,13 @@ class MainActivity : AppCompatActivity() {
                             derivedStateOf { Tab.fromRoute(currentRoute ?: Route.Tunnels) }
                         }
                         val selectedCount by
-                            rememberSaveable(sharedState.selectedTunnels) {
-                                mutableIntStateOf(sharedState.selectedTunnels.size)
+                            rememberSaveable(appState.selectedTunnels) {
+                                mutableIntStateOf(appState.selectedTunnels.size)
                             }
 
                         val navState by
                             currentRouteAsNavbarState(
+                                appState,
                                 viewModel,
                                 currentRoute,
                                 selectedCount,

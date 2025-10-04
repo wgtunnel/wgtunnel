@@ -30,32 +30,24 @@ fun BottomNavbar(isAutoTunnelActive: Boolean, currentTab: Tab, onTabSelected: (T
                     val interactionSource = remember { MutableInteractionSource() }
                     val isSelected = currentTab == tab
                     val hasBadge = tab == Tab.AUTOTUNNEL && isAutoTunnelActive
-
-                    IconButton(
-                        onClick = { onTabSelected(tab) },
-                        colors =
-                            IconButtonDefaults.iconButtonColors(
-                                containerColor = Color.Transparent,
-                                contentColor =
-                                    if (isSelected) {
-                                        MaterialTheme.colorScheme.primary
-                                    } else {
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                    },
-                                disabledContainerColor = Color.Transparent,
-                                disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            ),
-                        interactionSource = interactionSource,
-                    ) {
-                        if (hasBadge) {
-                            BadgedBox(
-                                badge = {
-                                    Badge(
-                                        modifier =
-                                            Modifier.offset(x = 8.dp, y = (-8).dp).size(6.dp),
-                                        containerColor = SilverTree,
-                                    )
-                                }
+                    val button =
+                        @Stable @Composable {
+                            IconButton(
+                                onClick = { onTabSelected(tab) },
+                                colors =
+                                    IconButtonDefaults.iconButtonColors(
+                                        containerColor = Color.Transparent,
+                                        contentColor =
+                                            if (isSelected) {
+                                                MaterialTheme.colorScheme.primary
+                                            } else {
+                                                MaterialTheme.colorScheme.onSurfaceVariant
+                                            },
+                                        disabledContainerColor = Color.Transparent,
+                                        disabledContentColor =
+                                            MaterialTheme.colorScheme.onSurfaceVariant,
+                                    ),
+                                interactionSource = interactionSource,
                             ) {
                                 AnimatedFloatIcon(
                                     activeIcon = tab.activeIcon,
@@ -64,14 +56,20 @@ fun BottomNavbar(isAutoTunnelActive: Boolean, currentTab: Tab, onTabSelected: (T
                                     modifier = Modifier.size(24.dp),
                                 )
                             }
-                        } else {
-                            AnimatedFloatIcon(
-                                activeIcon = tab.activeIcon,
-                                inactiveIcon = tab.inactiveIcon,
-                                isSelected = isSelected,
-                                modifier = Modifier.size(24.dp),
-                            )
                         }
+                    if (hasBadge) {
+                        BadgedBox(
+                            badge = {
+                                Badge(
+                                    modifier = Modifier.offset(x = (-4).dp, y = (4).dp).size(6.dp),
+                                    containerColor = SilverTree,
+                                )
+                            }
+                        ) {
+                            button()
+                        }
+                    } else {
+                        button()
                     }
                 }
             }

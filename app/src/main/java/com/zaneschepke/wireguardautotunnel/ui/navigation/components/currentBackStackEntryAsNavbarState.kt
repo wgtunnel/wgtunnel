@@ -10,23 +10,23 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ActionIconButton
 import com.zaneschepke.wireguardautotunnel.ui.navigation.NavController
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
+import com.zaneschepke.wireguardautotunnel.ui.state.SharedAppUiState
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 
 @Composable
 fun currentRouteAsNavbarState(
+    sharedState: SharedAppUiState,
     sharedViewModel: SharedAppViewModel,
     route: Route?,
     selectedCount: Int,
     navController: NavController,
 ): State<NavbarState> {
-    val sharedState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
 

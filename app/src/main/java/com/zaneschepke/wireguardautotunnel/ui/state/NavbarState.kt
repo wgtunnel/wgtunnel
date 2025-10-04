@@ -7,5 +7,4 @@ data class NavbarState(
     val topTrailing: (@Composable () -> Unit)? = null,
     val topLeading: (@Composable () -> Unit)? = null,
     val showBottomItems: Boolean = false,
-    val isAutoTunnelActive: Boolean = false,
 )

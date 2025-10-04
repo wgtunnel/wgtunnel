@@ -71,7 +71,7 @@ constructor(
         object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName, service: IBinder) {
                 val binder = service as? LocalBinder
-                _tunnelService.value = binder?.service
+                _tunnelService.update { binder?.service }
                 val serviceClass =
                     when {
                         name.className.contains("VpnForegroundService") -> "VpnForegroundService"
@@ -83,7 +83,7 @@ constructor(
             }
 
             override fun onServiceDisconnected(name: ComponentName) {
-                _tunnelService.value = null
+                _tunnelService.update { null }
                 val serviceClass =
                     when {
                         name.className.contains("VpnForegroundService") -> "VpnForegroundService"
@@ -99,12 +99,12 @@ constructor(
         object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName, service: IBinder) {
                 val binder = service as? AutoTunnelService.LocalBinder
-                _autoTunnelService.value = binder?.service
+                _autoTunnelService.update { binder?.service }
                 Timber.d("AutoTunnelService connected")
             }
 
             override fun onServiceDisconnected(name: ComponentName) {
-                _autoTunnelService.value = null
+                _autoTunnelService.update { null }
                 Timber.d("AutoTunnelService disconnected")
             }
         }
