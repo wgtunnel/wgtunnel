@@ -2,7 +2,6 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components
 
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
@@ -50,7 +49,7 @@ fun InterfaceSection(
         onInterfaceChange(interfaceProxy)
     }
 
-    Surface(shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.surface) {
+    Surface(color = MaterialTheme.colorScheme.surface) {
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.focusGroup(),

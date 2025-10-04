@@ -3,7 +3,6 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.MoreVert
@@ -30,7 +29,7 @@ fun PeersSection(
     configProxy.peers.forEachIndexed { index, peer ->
         var isDropDownExpanded by remember { mutableStateOf(false) }
 
-        Surface(shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.surface) {
+        Surface(color = MaterialTheme.colorScheme.surface) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.focusGroup(),
