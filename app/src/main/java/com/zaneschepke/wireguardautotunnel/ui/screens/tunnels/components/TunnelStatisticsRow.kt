@@ -1,208 +1,282 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components
 
+import android.text.format.Formatter
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowDownward
+import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
+import com.zaneschepke.wireguardautotunnel.ui.common.label.lowercaseLabel
 import com.zaneschepke.wireguardautotunnel.util.NumberUtils
-import com.zaneschepke.wireguardautotunnel.util.extensions.toThreeDecimalPlaceString
+import com.zaneschepke.wireguardautotunnel.util.extensions.abbreviateKey
+import kotlinx.coroutines.delay
 
 @Composable
 fun TunnelStatisticsRow(
     tunnelState: TunnelState,
-    tunnelConf: TunnelConf,
     pingEnabled: Boolean,
     showDetailedStats: Boolean,
 ) {
-    val config = remember(tunnelConf) { TunnelConf.configFromAmQuick(tunnelConf.wgQuick) }
-    val peerText = stringResource(R.string.peer)
-    val handshakeText = stringResource(R.string.handshake)
-    val endpointText = stringResource(R.string.endpoint)
-    val neverText = stringResource(R.string.never)
+    val context = LocalContext.current
     val textStyle = MaterialTheme.typography.bodySmall
     val textColor = MaterialTheme.colorScheme.outline
 
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(start = 45.dp, bottom = 10.dp, end = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        horizontalAlignment = Alignment.Start,
-    ) {
-        config.peers.forEachIndexed { index, peer ->
-            key(peer.publicKey.toBase64()) { // Key by peer ID to skip recomposition if unchanged
-                val peerStats =
-                    remember(tunnelState.statistics, peer, tunnelConf) {
-                        tunnelState.statistics?.peerStats(peer.publicKey)
-                    }
-                val peerId =
-                    remember(peer) {
-                        peer.publicKey.toBase64().subSequence(0, 3).toString() + "***"
-                    }
-                val endpoint by
-                    remember(peerStats) { derivedStateOf { peerStats?.resolvedEndpoint } }
-                val peerRxMB by
-                    remember(peerStats) {
-                        derivedStateOf {
-                            peerStats
-                                ?.rxBytes
-                                ?.let { NumberUtils.bytesToMB(it) }
-                                ?.toThreeDecimalPlaceString() ?: "0.00"
-                        }
-                    }
-                val peerTxMB by
-                    remember(peerStats) {
-                        derivedStateOf {
-                            peerStats
-                                ?.txBytes
-                                ?.let { NumberUtils.bytesToMB(it) }
-                                ?.toThreeDecimalPlaceString() ?: "0.00"
-                        }
-                    }
-                val handshake by
-                    remember(peerStats) {
-                        derivedStateOf {
-                            peerStats?.latestHandshakeEpochMillis?.let {
-                                if (it == 0L) null
-                                else NumberUtils.getSecondsBetweenTimestampAndNow(it).toString()
-                            }
-                        }
-                    }
-                val pingState by
-                    remember(tunnelState.pingStates) {
-                        derivedStateOf {
-                            tunnelState.pingStates?.getOrDefault(peer.publicKey, null)
-                        }
-                    }
-                val lastPingedSeconds by
-                    remember(peerStats) {
-                        derivedStateOf {
-                            pingState?.lastSuccessfulPingMillis?.let {
-                                NumberUtils.getSecondsBetweenTimestampAndNow(it)
-                            }
-                        }
-                    }
+    var currentTimeMillis by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1000L)
+            currentTimeMillis = System.currentTimeMillis()
+        }
+    }
 
-                // Group peer stats in a column with internal spacing
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        Text("$peerText: $peerId", style = textStyle, color = textColor)
-                        Text(
-                            "$handshakeText: ${handshake?.let { stringResource(R.string.sec_ago_template, it)} ?: neverText}",
-                            style = textStyle,
-                            color = textColor,
-                        )
-                    }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        Text(
-                            stringResource(R.string.rx_template, peerRxMB),
-                            style = textStyle,
-                            color = textColor,
-                        )
-                        Text(
-                            stringResource(R.string.tx_template, peerTxMB),
-                            style = textStyle,
-                            color = textColor,
-                        )
-                    }
-                    AnimatedVisibility(visible = endpoint != null) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        ) {
-                            Text("$endpointText: $endpoint", style = textStyle, color = textColor)
-                        }
-                    }
-                    AnimatedVisibility(visible = pingState != null && pingEnabled) {
-                        pingState?.let {
-                            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    val statistics = tunnelState.statistics
+    val peerText = lowercaseLabel(stringResource(R.string.peer))
+    val handshakeText = lowercaseLabel(stringResource(R.string.handshake))
+    val endpointText = lowercaseLabel(stringResource(R.string.endpoint))
+    val neverText = lowercaseLabel(stringResource(R.string.never))
+
+    statistics?.let { stats ->
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(start = 32.dp, bottom = 10.dp, end = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalAlignment = Alignment.Start,
+        ) {
+            stats.getPeers().forEach { peerBase64 ->
+                key(peerBase64) {
+                    val peerStats = remember(stats, peerBase64) { stats.peerStats(peerBase64) }
+                    peerStats?.let { stats ->
+                        val endpoint by
+                            remember(stats) { derivedStateOf { stats.resolvedEndpoint } }
+                        val formattedRx by
+                            remember(stats) {
+                                derivedStateOf {
+                                    stats.rxBytes.let { Formatter.formatFileSize(context, it) }
+                                }
+                            }
+                        val formattedTx by
+                            remember(stats) {
+                                derivedStateOf {
+                                    stats.txBytes.let { Formatter.formatFileSize(context, it) }
+                                }
+                            }
+                        val handshake by
+                            remember(stats) {
+                                derivedStateOf {
+                                    stats.latestHandshakeEpochMillis.let { lastHandshake ->
+                                        if (lastHandshake == 0L) null
+                                        else
+                                            NumberUtils.getSecondsBetween(
+                                                lastHandshake,
+                                                currentTimeMillis,
+                                            )
+                                    }
+                                }
+                            }
+                        val pingState by
+                            remember(tunnelState.pingStates) {
+                                derivedStateOf {
+                                    tunnelState.pingStates?.getOrDefault(peerBase64, null)
+                                }
+                            }
+                        val lastPingedSeconds by
+                            remember(pingState, currentTimeMillis) {
+                                derivedStateOf {
+                                    pingState?.lastSuccessfulPingMillis?.let { lastPing ->
+                                        NumberUtils.getSecondsBetween(lastPing, currentTimeMillis)
+                                    }
+                                }
+                            }
+
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            // Peer ID row
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                Text(
+                                    "$peerText: ${peerBase64.abbreviateKey()}",
+                                    style = textStyle,
+                                    color = textColor,
+                                )
+                            }
+                            // RX/TX row
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.ArrowDownward,
+                                        contentDescription = null,
+                                        tint = textColor,
+                                        modifier = Modifier.size(12.dp),
+                                    )
+                                    Text(formattedRx, style = textStyle, color = textColor)
+                                }
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.ArrowUpward,
+                                        contentDescription = null,
+                                        tint = textColor,
+                                        modifier = Modifier.size(12.dp),
+                                    )
+                                    Text(formattedTx, style = textStyle, color = textColor)
+                                }
+                            }
+                            // Handshake row
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                Text(
+                                    "$handshakeText: ${handshake?.let { lowercaseLabel(stringResource(R.string.sec_ago_template, it.toString())) } ?: neverText}",
+                                    style = textStyle,
+                                    color = textColor,
+                                )
+                            }
+                            AnimatedVisibility(visible = endpoint != null) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                                 ) {
                                     Text(
-                                        stringResource(
-                                            R.string.reachable_template,
-                                            stringResource(
-                                                if (it.isReachable) R.string._true
-                                                else R.string._false
-                                            ),
-                                        ),
-                                        style = textStyle,
-                                        color = textColor,
-                                    )
-                                    Text(
-                                        stringResource(
-                                            R.string.ping_target_template,
-                                            it.pingTarget,
-                                        ),
+                                        "$endpointText: $endpoint",
                                         style = textStyle,
                                         color = textColor,
                                     )
                                 }
-                                if (showDetailedStats) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                    ) {
-                                        Text(
-                                            stringResource(R.string.latency_template, it.rttAvg),
-                                            style = textStyle,
-                                            color = textColor,
+                            }
+                            // Ping block (per unique peer key)
+                            AnimatedVisibility(visible = pingState != null && pingEnabled) {
+                                pingState?.let {
+                                    val reachableText =
+                                        lowercaseLabel(
+                                            stringResource(
+                                                R.string.reachable_template,
+                                                stringResource(
+                                                    if (it.isReachable) R.string._true
+                                                    else R.string._false
+                                                ),
+                                            )
                                         )
-                                        Text(
-                                            stringResource(R.string.jitter_template, it.rttStddev),
-                                            style = textStyle,
-                                            color = textColor,
+                                    val pingTargetText =
+                                        lowercaseLabel(
+                                            stringResource(
+                                                R.string.ping_target_template,
+                                                it.pingTarget,
+                                            )
                                         )
-                                    }
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                    ) {
-                                        Text(
+                                    val latencyText =
+                                        lowercaseLabel(
+                                            stringResource(R.string.latency_template, it.rttAvg)
+                                        )
+                                    val jitterText =
+                                        lowercaseLabel(
+                                            stringResource(R.string.jitter_template, it.rttStddev)
+                                        )
+                                    val packetsSentText =
+                                        lowercaseLabel(
                                             stringResource(
                                                 R.string.packets_sent_template,
                                                 it.transmitted,
-                                            ),
-                                            style = textStyle,
-                                            color = textColor,
+                                            )
                                         )
-                                        Text(
+                                    val packetLossText =
+                                        lowercaseLabel(
                                             stringResource(
                                                 R.string.packet_loss_template,
                                                 it.packetLoss,
-                                            ),
-                                            style = textStyle,
-                                            color = textColor,
+                                            )
                                         )
-                                    }
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                    ) {
-                                        Text(
+                                    val pingSuccessText =
+                                        lowercaseLabel(
                                             stringResource(
                                                 R.string.ping_success_template,
                                                 lastPingedSeconds?.let { sec ->
-                                                    stringResource(R.string.sec_ago_template, sec)
+                                                    lowercaseLabel(
+                                                        stringResource(
+                                                            R.string.sec_ago_template,
+                                                            sec.toString(),
+                                                        )
+                                                    )
                                                 } ?: neverText,
-                                            ),
-                                            style = textStyle,
-                                            color = textColor,
+                                            )
                                         )
+                                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                        ) {
+                                            Text(
+                                                reachableText,
+                                                style = textStyle,
+                                                color = textColor,
+                                            )
+                                            Text(
+                                                pingTargetText,
+                                                style = textStyle,
+                                                color = textColor,
+                                            )
+                                        }
+                                        if (showDetailedStats) {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                            ) {
+                                                Text(
+                                                    latencyText,
+                                                    style = textStyle,
+                                                    color = textColor,
+                                                )
+                                                Text(
+                                                    jitterText,
+                                                    style = textStyle,
+                                                    color = textColor,
+                                                )
+                                            }
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                            ) {
+                                                Text(
+                                                    packetsSentText,
+                                                    style = textStyle,
+                                                    color = textColor,
+                                                )
+                                                Text(
+                                                    packetLossText,
+                                                    style = textStyle,
+                                                    color = textColor,
+                                                )
+                                            }
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                            ) {
+                                                Text(
+                                                    pingSuccessText,
+                                                    style = textStyle,
+                                                    color = textColor,
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }

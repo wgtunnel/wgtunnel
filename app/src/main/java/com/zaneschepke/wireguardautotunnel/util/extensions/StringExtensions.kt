@@ -26,6 +26,15 @@ fun String.isValidIpv4orIpv6Address(): Boolean {
     return ipv4Pattern.matches(sanitized) || ipv6Pattern.matches(sanitized)
 }
 
+fun String.abbreviateKey(prefixLength: Int = 6): String {
+    val full = this
+    return if (full.length > prefixLength * 2 + 3) {
+        "${full.take(prefixLength)}...${full.takeLast(prefixLength)}"
+    } else {
+        full
+    }
+}
+
 // only allow valid Android ports
 fun String.isValidAndroidProxyBindAddress(): Boolean {
     // Regex: IPv4 address with mandatory port (1–65535)

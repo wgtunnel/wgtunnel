@@ -29,7 +29,6 @@ fun TunnelRowItem(
     state: TunnelState,
     isSelected: Boolean,
     tunnel: TunnelConf,
-    tunnelState: TunnelState,
     onTvClick: () -> Unit,
     onToggleSelectedTunnel: (TunnelConf) -> Unit,
     onSwitchClick: (Boolean) -> Unit,
@@ -65,7 +64,6 @@ fun TunnelRowItem(
             }
         }
 
-    // Status description based on tunnel state
     val statusDescription =
         remember(state) {
             if (state.status.isUpOrStarting()) {
@@ -75,7 +73,6 @@ fun TunnelRowItem(
             }
         }
 
-    // Combined content description for accessibility
     val combinedContentDescription =
         stringResource(
             R.string.tunnel_item_description,
@@ -108,8 +105,8 @@ fun TunnelRowItem(
         },
         text = tunnel.tunName,
         expanded = {
-            if (tunnelState.status != TunnelStatus.Down) {
-                TunnelStatisticsRow(tunnelState, tunnel, isPingEnabled, showDetailedStats)
+            if (state.status != TunnelStatus.Down) {
+                TunnelStatisticsRow(state, isPingEnabled, showDetailedStats)
             }
         },
         trailing = {

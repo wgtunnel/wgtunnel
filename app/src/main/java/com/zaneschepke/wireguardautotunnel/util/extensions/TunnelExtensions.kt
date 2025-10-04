@@ -3,10 +3,8 @@ package com.zaneschepke.wireguardautotunnel.util.extensions
 import com.wireguard.android.backend.BackendException
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
-import com.zaneschepke.wireguardautotunnel.domain.enums.HandshakeStatus
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
-import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.util.NumberUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import org.amnezia.awg.backend.Backend
@@ -14,28 +12,6 @@ import org.amnezia.awg.backend.Tunnel
 import org.amnezia.awg.config.BadConfigException
 import org.amnezia.awg.config.Config
 import timber.log.Timber
-
-fun TunnelStatistics.mapPeerStats(): Map<org.amnezia.awg.crypto.Key, TunnelStatistics.PeerStats?> {
-    return this.getPeers().associateWith { key -> (this.peerStats(key)) }
-}
-
-fun TunnelStatistics.PeerStats.latestHandshakeSeconds(): Long? {
-    return NumberUtils.getSecondsBetweenTimestampAndNow(this.latestHandshakeEpochMillis)
-}
-
-fun TunnelStatistics.PeerStats.handshakeStatus(): HandshakeStatus {
-    // TODO add never connected status after duration
-    return this.latestHandshakeSeconds().let {
-        when {
-            it == null -> HandshakeStatus.NOT_STARTED
-            it <= HandshakeStatus.STALE_TIME_LIMIT_SEC -> HandshakeStatus.HEALTHY
-            it > HandshakeStatus.STALE_TIME_LIMIT_SEC -> HandshakeStatus.STALE
-            else -> {
-                HandshakeStatus.UNKNOWN
-            }
-        }
-    }
-}
 
 fun BadConfigException.asStringValue(): StringValue {
     val reason =
@@ -136,7 +112,8 @@ fun org.amnezia.awg.backend.BackendException.toBackendCoreException(): BackendCo
             BackendCoreException.Unknown
         org.amnezia.awg.backend.BackendException.Reason.SERVICE_NOT_RUNNING ->
             BackendCoreException.ServiceNotRunning
-        org.amnezia.awg.backend.BackendException.Reason.UAPI_UPDATE_FAILED -> TODO()
+        org.amnezia.awg.backend.BackendException.Reason.UAPI_UPDATE_FAILED ->
+            BackendCoreException.UapiUpdateFailed
     }
 }
 

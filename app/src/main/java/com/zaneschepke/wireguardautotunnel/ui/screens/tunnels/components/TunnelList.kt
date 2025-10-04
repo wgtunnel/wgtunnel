@@ -68,7 +68,6 @@ fun TunnelList(
                 state = tunnelState,
                 isSelected = selected,
                 tunnel = tunnel,
-                tunnelState = tunnelState,
                 onTvClick = { navController.push(Route.TunnelOptions(tunnel.id)) },
                 onToggleSelectedTunnel = { tunnel ->
                     sharedViewModel.toggleSelectedTunnel(tunnel.id)

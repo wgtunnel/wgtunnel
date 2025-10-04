@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
-import org.amnezia.awg.crypto.Key
 import timber.log.Timber
 
 abstract class BaseTunnel(
@@ -58,7 +57,7 @@ abstract class BaseTunnel(
         tunnelId: Int,
         status: TunnelStatus?,
         stats: TunnelStatistics?,
-        pingStates: Map<Key, PingState>?,
+        pingStates: Map<String, PingState>?,
         logHealthState: LogHealthState?,
     ) {
         tunStatusMutex.withLock {

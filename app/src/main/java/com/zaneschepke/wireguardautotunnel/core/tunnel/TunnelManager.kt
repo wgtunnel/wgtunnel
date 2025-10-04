@@ -25,7 +25,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.amnezia.awg.crypto.Key
 import timber.log.Timber
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalAtomicApi::class)
@@ -290,7 +289,7 @@ constructor(
         tunnelId: Int,
         status: TunnelStatus?,
         stats: TunnelStatistics?,
-        pingStates: Map<Key, PingState>?,
+        pingStates: Map<String, PingState>?,
         logHealthState: LogHealthState?,
     ) {
         tunnelProviderFlow.value.updateTunnelStatus(

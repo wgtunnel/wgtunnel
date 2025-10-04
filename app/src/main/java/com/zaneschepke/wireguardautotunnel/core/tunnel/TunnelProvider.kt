@@ -11,7 +11,6 @@ import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import org.amnezia.awg.crypto.Key
 
 interface TunnelProvider {
     /** Starts the specified tunnel configuration. */
@@ -49,7 +48,7 @@ interface TunnelProvider {
         tunnelId: Int,
         status: TunnelStatus? = null,
         stats: TunnelStatistics? = null,
-        pingStates: Map<Key, PingState>? = null,
+        pingStates: Map<String, PingState>? = null,
         logHealthState: LogHealthState? = null,
     )
 }

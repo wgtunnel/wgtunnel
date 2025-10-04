@@ -148,23 +148,64 @@ dependencies {
     implementation(project(":logcatter"))
     implementation(project(":networkmonitor"))
 
+    // Core foundations
     implementation(libs.bundles.androidx.core.full)
-    implementation(libs.bundles.androidx.lifecycle.base)
-    implementation(libs.bundles.androidx.lifecycle.service)
-    implementation(libs.bundles.androidx.lifecycle.process)
-    implementation(libs.androidx.activity.compose)
+    implementation(libs.bundles.androidx.lifecycle.core)
+    implementation(libs.bundles.androidx.appcompat)
+    implementation(libs.bundles.androidx.storage)
+
+    // Compose setup
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.androidx.compose.ui)
-    implementation(libs.bundles.androidx.material)
-    implementation(libs.bundles.androidx.appcompat)
-    implementation(libs.bundles.google.material)
-    implementation(libs.androidx.storage)
+    implementation(libs.bundles.androidx.compose.material)
+    implementation(libs.androidx.activity.compose)
 
-    implementation(libs.bundles.androidx.compose.animation)
+    // Navigation
     implementation(libs.bundles.androidx.navigation3)
-    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
-    implementation(libs.androidx.hilt.hilt.navigation.compose)
+    implementation(libs.bundles.navigation.lifecycle)
+    implementation(libs.bundles.androidx.hilt)
 
+    // Material and icons
+    implementation(libs.bundles.google.material)
+    implementation(libs.bundles.material.icons)
+
+    // Database
+    implementation(libs.bundles.androidx.room)
+    implementation(libs.bundles.androidx.datastore)
+    ksp(libs.androidx.room.compiler)
+
+    // DI and work
+    implementation(libs.bundles.hilt.android)
+    implementation(libs.bundles.androidx.work)
+    ksp(libs.hilt.android.compiler)
+
+    // Networking and serialization
+    implementation(libs.bundles.ktor.client)
+    implementation(libs.bundles.kotlinx.serialization)
+
+    // State management
+    implementation(libs.bundles.orbit.mvi)
+
+    // Tunnel
+    implementation(libs.bundles.wireguard.tunnel)
+
+    // Shizuku
+    implementation(libs.bundles.shizuku)
+
+    // UI utilities
+    implementation(libs.bundles.ui.utilities)
+
+    // Misc utilities
+    implementation(libs.bundles.misc.utilities)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    // Accompanist
+    implementation(libs.bundles.accompanist)
+
+    // Lifecycle Compose
+    implementation(libs.lifecycle.runtime.compose)
+
+    // Testing
     testImplementation(libs.junit)
     testImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -175,54 +216,10 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.manifest)
 
-    implementation(libs.tunnel)
-    implementation(libs.amneziawg.android)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
-
-    implementation(libs.timber)
-
-    implementation(libs.bundles.hilt.android)
-    ksp(libs.hilt.android.compiler)
-    ksp(libs.androidx.hilt.compiler)
-
-    implementation(libs.bundles.accompanist)
-
-    implementation(libs.bundles.androidx.room)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.datastore.preferences)
-
-    implementation(libs.bundles.androidx.lifecycle.compose)
-
-    implementation(libs.kotlinx.serialization.json)
-
-    implementation(libs.zxing.android.embedded)
-
-    implementation(libs.bundles.material.icons)
-
-    implementation(libs.pin.lock.compose)
-
-    implementation(libs.androidx.core.splashscreen)
-
-    implementation(libs.bundles.androidx.work)
-    implementation(libs.androidx.hilt.work)
-
-    implementation(libs.qrose)
-    implementation(libs.semver4j)
-
-    implementation(libs.bundles.ktor.client)
-    implementation(libs.slf4j.android)
-    implementation(libs.icmp4a)
-
-    // shizuku
-    implementation(libs.bundles.shizuku)
-
-    implementation(libs.reorderable)
+    // Room database backup
     implementation(libs.roomdatabasebackup) {
         exclude(group = "org.reactivestreams", module = "reactive-streams")
     }
-
-    // state management
-    implementation(libs.bundles.orbit.mvi)
 }
 
 tasks.register<Copy>("copyLicenseeJsonToAssets") {

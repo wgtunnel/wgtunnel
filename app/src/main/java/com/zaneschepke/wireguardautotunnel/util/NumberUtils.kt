@@ -28,14 +28,11 @@ object NumberUtils {
         return (Math.random() * 100000).toInt()
     }
 
-    fun randomThree(): Int {
-        return (Math.random() * 1000).toInt()
-    }
-
-    fun getSecondsBetweenTimestampAndNow(epoch: Long): Long? {
-        return if (epoch != 0L) {
-            val time = Instant.ofEpochMilli(epoch)
-            return Duration.between(time, Instant.now()).seconds
+    fun getSecondsBetween(start: Long, end: Long): Long? {
+        return if (start != 0L && end != 0L) {
+            val startInstant = Instant.ofEpochMilli(start)
+            val endInstant = Instant.ofEpochMilli(end)
+            return Duration.between(startInstant, endInstant).seconds
         } else {
             null
         }

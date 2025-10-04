@@ -46,25 +46,60 @@ licensee = "1.13.0"
 lifecycleViewmodelNavigation3 = "2.10.0-alpha04"
 
 [bundles]
+# Core AndroidX foundations
 androidx-core-full = ["androidx-core", "androidx-core-ktx"]
-androidx-lifecycle-base = ["androidx-lifecycle-runtime-ktx"]
-androidx-lifecycle-service = ["androidx-lifecycle-service"]
-androidx-lifecycle-process = ["androidx-lifecycle-process"]
-androidx-lifecycle-compose = ["lifecycle-runtime-compose"]
+
+# Lifecycle components (merged non-compose ones for common usage)
+androidx-lifecycle-core = ["androidx-lifecycle-runtime-ktx", "androidx-lifecycle-service", "androidx-lifecycle-process"]
+
+# Compose UI essentials
 androidx-compose-ui = ["androidx-compose-ui", "androidx-compose-ui-graphics", "androidx-compose-ui-tooling-preview"]
-androidx-material = ["androidx-material3"]
-androidx-appcompat = ["androidx-appcompat"]
+androidx-compose-material = ["androidx-material3", "androidx-compose-animation-graphics"]  # Merged animation for UI fluidity
+
+# Material and icons
 google-material = ["material"]
-androidx-compose-animation = ["androidx-compose-animation-graphics"]
-androidx-navigation3 = ["androidx-navigation3-runtime", "androidx-navigation3-ui"]
-accompanist = ["accompanist-permissions", "accompanist-drawablepainter"]
-androidx-room = ["androidx-room-runtime", "androidx-room-ktx"]
 material-icons = ["material-icons-core", "material-icons-extended"]
-androidx-work = ["androidx-work-runtime"]
+
+# Navigation and related
+androidx-navigation3 = ["androidx-navigation3-runtime", "androidx-navigation3-ui"]
+navigation-lifecycle = ["androidx-lifecycle-viewmodel-navigation3"]  # Kept as-is since it's tightly coupled
+
+# Accompanist utilities
+accompanist = ["accompanist-permissions", "accompanist-drawablepainter"]
+
+# Room and database
+androidx-room = ["androidx-room-runtime", "androidx-room-ktx"]
+androidx-datastore = ["androidx-datastore-preferences"]
+
+# Hilt DI and work
 hilt-android = ["hilt-android"]
-shizuku = ["shizuku-api", "shizuku-provider"]
-orbit-mvi = ["orbit-compose", "orbit-viewmodel", "orbit-core"]
+androidx-hilt = ["androidx-hilt-compiler", "androidx-hilt-work", "androidx-hilt-hilt-navigation-compose"]
+androidx-work = ["androidx-work-runtime"]
+
+# Ktor networking
 ktor-client = ["ktor-client-core", "ktor-client-okhttp", "ktor-client-cio", "ktor-client-content-negotiation", "ktor-serialization-kotlinx-json"]
+
+# Serialization
+kotlinx-serialization = ["kotlinx-serialization-json"]
+
+# State management
+orbit-mvi = ["orbit-compose", "orbit-viewmodel", "orbit-core"]
+
+# Tunnel/WireGuard
+wireguard-tunnel = ["tunnel", "amneziawg-android"]
+
+# Shizuku
+shizuku = ["shizuku-api", "shizuku-provider"]
+
+# UI utilities
+ui-utilities = ["pin-lock-compose", "qrose", "reorderable", "zxing-android-embedded", "androidx-core-splashscreen"]
+
+# Misc utilities
+misc-utilities = ["semver4j", "icmp4a", "slf4j-android", "timber"]
+
+# Appcompat and storage
+androidx-appcompat = ["androidx-appcompat"]
+androidx-storage = ["androidx-storage"]
 
 [libraries]
 # accompanist
