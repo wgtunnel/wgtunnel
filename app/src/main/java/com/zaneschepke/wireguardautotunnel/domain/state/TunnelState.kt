@@ -36,7 +36,8 @@ data class TunnelState(
 
         // Stats health if no logs or pings
         statistics?.let { stats ->
-            return if (stats.isTunnelStale()) Health.STALE else Health.HEALTHY
+            if (stats.isTunnelStale()) return Health.STALE
+            if (stats.rx() == 0L) return Health.UNKNOWN
         }
 
         return Health.UNKNOWN
