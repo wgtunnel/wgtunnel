@@ -1,0 +1,4 @@
+Was ist neu:
+- Fehlerbehebung: Überwachung konnte nicht beendet werden
+- Fehlerbehebung: Benachrichtigungen stoppten Aktion
+- Fehlerbehebung: Benachrichtigung wurde erneut gestartet, obwohl sie bereits aktiv war
