@@ -20,7 +20,7 @@ jobs:
       - name: Check for new commits
         id: check
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
           NEW_COMMITS=$(git rev-list --count --after="$(date -Iseconds -d '23 hours ago')" ${{ github.sha }})
           echo "new_commits=$NEW_COMMITS" >> $GITHUB_OUTPUT
@@ -53,14 +53,14 @@ jobs:
           tag: "latest"
           message: "Automated tag for HEAD commit"
           force_push_tag: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PAT }}
           tag_exists_error: false
 
       - name: Generate Changelog
         id: changelog
         uses: requarks/changelog-action@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT }}
           toTag: "nightly"
           fromTag: "latest"
           writeToFile: false
@@ -84,7 +84,7 @@ jobs:
           tag_name: "nightly"
           delete_release: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
 
       - name: Get checksum
         id: checksum
@@ -124,4 +124,4 @@ jobs:
           files: |
             ${{ github.workspace }}/temp/**/*.apk
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}

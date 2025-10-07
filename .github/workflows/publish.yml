@@ -86,20 +86,20 @@ jobs:
           tag: "latest"
           message: "Automated tag for HEAD commit"
           force_push_tag: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PAT }}
           tag_exists_error: false
       - name: Get latest release
         id: latest_release
         uses: kaliber5/action-get-release@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT }}
           latest: true
 
       - name: Generate Changelog
         id: changelog
         uses: requarks/changelog-action@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT }}
           toTag: ${{ steps.latest_release.outputs.tag_name }}
           fromTag: "latest"
           writeToFile: false
@@ -161,7 +161,7 @@ jobs:
           files: |
             ${{ github.workspace }}/temp/**/*.apk
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
 
   publish-fdroid-public:
     runs-on: ubuntu-latest
@@ -172,7 +172,7 @@ jobs:
       - name: Dispatch update for fdroid repo
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT }}
           repository: wgtunnel/fdroid
           event-type: fdroid-update
 
