@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 import android.net.Uri
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.lifecycle.ViewModel
+import com.wireguard.android.backend.WgQuickBackend
 import com.wireguard.android.util.RootShell
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
@@ -180,7 +181,23 @@ constructor(
                     )
                 }
             }
-            AppMode.KERNEL -> if (!requestRoot()) return@intent
+            //AppMode.KERNEL -> if (!requestRoot()) return@intent
+            AppMode.KERNEL -> {
+                if (WgQuickBackend.hasKernelSupport())
+                    Timber.i("Device supports kernel backend. WireGuard module is built in, switching to kernel backend.")
+                if (!requestRoot()) return@intent
+                else {
+                    Timber.e("Device does not support kernel backend!")
+                    intent {
+                        postSideEffect(
+                            GlobalSideEffect.Snackbar(
+                                StringValue.StringResource(R.string.kernel_wireguard_unsupported)
+                            )
+                        )
+                    }
+                    return@intent
+                }
+            }
         }
         settingsRepository.save(state.settings.copy(appMode = appMode))
     }
