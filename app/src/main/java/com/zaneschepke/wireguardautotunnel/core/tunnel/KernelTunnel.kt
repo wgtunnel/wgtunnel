@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.core.tunnel
 
 import com.wireguard.android.backend.Backend
 import com.wireguard.android.backend.BackendException
+import com.wireguard.android.backend.WgQuickBackend
 import com.wireguard.android.backend.Tunnel as WgTunnel
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
@@ -41,6 +42,7 @@ constructor(
 
     // TODO Add DNS settings
     override fun tunnelStateFlow(tunnelConf: TunnelConf): Flow<TunnelStatus> = callbackFlow {
+        if (!WgQuickBackend.hasKernelSupport()) close(BackendCoreException.KernelNotSupported)
         if (!tunnelConf.isNameKernelCompatible) close(BackendCoreException.TunnelNameTooLong)
 
         val stateChannel = Channel<WgTunnel.State>()
