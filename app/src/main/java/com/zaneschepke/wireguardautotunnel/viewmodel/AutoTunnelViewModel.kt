@@ -1,15 +1,18 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
+import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
+import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.AutoTunnelUiState
+import com.zaneschepke.wireguardautotunnel.util.RootShellUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -17,6 +20,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
+import rikka.shizuku.Shizuku
 
 @HiltViewModel
 class AutoTunnelViewModel
@@ -27,6 +31,7 @@ constructor(
     private val networkMonitor: NetworkMonitor,
     private val globalEffectRepository: GlobalEffectRepository,
     private val appStateRepository: AppStateRepository,
+    private val rootShellUtils: RootShellUtils,
 ) : ContainerHost<AutoTunnelUiState, Nothing>, ViewModel() {
 
     override val container =
@@ -44,7 +49,7 @@ constructor(
                         AutoTunnelUiState(
                             autoTunnelActive = active,
                             connectivityState = connectivity,
-                            generalSettings = settings,
+                            settings = settings,
                             isBatteryOptimizationShown = appState.isBatteryOptimizationDisableShown,
                             isLocationDisclosureShown = appState.isLocationDisclosureShown,
                             stateInitialized = true,
@@ -64,7 +69,7 @@ constructor(
 
     fun toggleAutoTunnel() = intent {
         if (!state.autoTunnelActive) {
-            when (state.generalSettings.appMode) {
+            when (state.settings.appMode) {
                 AppMode.VPN ->
                     if (!serviceManager.hasVpnPermission())
                         return@intent postSideEffect(
@@ -82,45 +87,87 @@ constructor(
     }
 
     fun setAutoTunnelOnWifiEnabled(to: Boolean) = intent {
-        settingsRepository.save(state.generalSettings.copy(isTunnelOnWifiEnabled = to))
+        settingsRepository.save(state.settings.copy(isTunnelOnWifiEnabled = to))
     }
 
     fun setWildcardsEnabled(to: Boolean) = intent {
-        settingsRepository.save(state.generalSettings.copy(isWildcardsEnabled = to))
+        settingsRepository.save(state.settings.copy(isWildcardsEnabled = to))
     }
 
     fun setStopOnNoInternetEnabled(to: Boolean) = intent {
-        settingsRepository.save(state.generalSettings.copy(isStopOnNoInternetEnabled = to))
+        settingsRepository.save(state.settings.copy(isStopOnNoInternetEnabled = to))
     }
 
     fun saveTrustedNetworkName(name: String) = intent {
         if (name.isEmpty()) return@intent
         val trimmed = name.trim()
-        if (state.generalSettings.trustedNetworkSSIDs.contains(name)) {
+        if (state.settings.trustedNetworkSSIDs.contains(name)) {
             return@intent postSideEffect(
                 GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.error_ssid_exists))
             )
         }
-        setTrustedNetworkNames((state.generalSettings.trustedNetworkSSIDs + trimmed).toMutableSet())
+        setTrustedNetworkNames((state.settings.trustedNetworkSSIDs + trimmed).toMutableSet())
     }
 
     fun setTrustedNetworkNames(to: Set<String>) = intent {
-        settingsRepository.save(state.generalSettings.copy(trustedNetworkSSIDs = to))
+        settingsRepository.save(state.settings.copy(trustedNetworkSSIDs = to))
     }
 
     fun removeTrustedNetworkName(name: String) = intent {
-        setTrustedNetworkNames((state.generalSettings.trustedNetworkSSIDs - name).toMutableSet())
+        setTrustedNetworkNames((state.settings.trustedNetworkSSIDs - name).toMutableSet())
     }
 
     fun setTunnelOnCellular(to: Boolean) = intent {
-        settingsRepository.save(state.generalSettings.copy(isTunnelOnMobileDataEnabled = to))
+        settingsRepository.save(state.settings.copy(isTunnelOnMobileDataEnabled = to))
     }
 
     fun setTunnelOnEthernet(to: Boolean) = intent {
-        settingsRepository.save(state.generalSettings.copy(isTunnelOnEthernetEnabled = to))
+        settingsRepository.save(state.settings.copy(isTunnelOnEthernetEnabled = to))
     }
 
     fun setDebounceDelay(to: Int) = intent {
-        settingsRepository.save(state.generalSettings.copy(debounceDelaySeconds = to))
+        settingsRepository.save(state.settings.copy(debounceDelaySeconds = to))
+    }
+
+    fun setWifiDetectionMethod(method: WifiDetectionMethod) = intent {
+        when (method) {
+            WifiDetectionMethod.ROOT -> {
+                val accepted = rootShellUtils.requestRoot()
+                val message =
+                    if (!accepted) StringValue.StringResource(R.string.error_root_denied)
+                    else StringValue.StringResource(R.string.root_accepted)
+                postSideEffect(GlobalSideEffect.Snackbar(message))
+                if (!accepted) return@intent
+            }
+            WifiDetectionMethod.SHIZUKU -> {
+                requestShizuku()
+                return@intent
+            }
+            else -> Unit
+        }
+        settingsRepository.save(state.settings.copy(wifiDetectionMethod = method))
+    }
+
+    private fun requestShizuku() = intent {
+        Shizuku.addRequestPermissionResultListener(
+            Shizuku.OnRequestPermissionResultListener { requestCode: Int, grantResult: Int ->
+                if (grantResult != PERMISSION_GRANTED) return@OnRequestPermissionResultListener
+                intent {
+                    settingsRepository.save(
+                        state.settings.copy(wifiDetectionMethod = WifiDetectionMethod.SHIZUKU)
+                    )
+                }
+            }
+        )
+        try {
+            if (Shizuku.checkSelfPermission() != PERMISSION_GRANTED) Shizuku.requestPermission(123)
+            settingsRepository.save(
+                state.settings.copy(wifiDetectionMethod = WifiDetectionMethod.SHIZUKU)
+            )
+        } catch (_: Exception) {
+            postSideEffect(
+                GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.shizuku_not_detected))
+            )
+        }
     }
 }

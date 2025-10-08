@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -38,7 +39,6 @@ fun TunnelsScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
     val navController = LocalNavController.current
     val clipboard = rememberClipboardHelper()
 
-    val sharedState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
     val tunnelsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     var showExportSheet by rememberSaveable { mutableStateOf(false) }
@@ -46,11 +46,17 @@ fun TunnelsScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
     var showDeleteModal by rememberSaveable { mutableStateOf(false) }
     var showUrlDialog by rememberSaveable { mutableStateOf(false) }
 
+    LaunchedEffect(tunnelsState.selectedTunnels) {
+        sharedViewModel.setSelectedTunnelCount(tunnelsState.selectedTunnels.size)
+    }
+
     sharedViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             LocalSideEffect.Sheet.ImportTunnels -> showImportSheet = true
             LocalSideEffect.Modal.DeleteTunnels -> showDeleteModal = true
             LocalSideEffect.Sheet.ExportTunnels -> showExportSheet = true
+            LocalSideEffect.SelectedTunnels.Copy -> viewModel.copySelectedTunnel()
+            LocalSideEffect.SelectedTunnels.SelectAll -> viewModel.toggleSelectAllTunnels()
             else -> Unit
         }
     }
@@ -94,7 +100,7 @@ fun TunnelsScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
         InfoDialog(
             onDismiss = { showDeleteModal = false },
             onAttest = {
-                sharedViewModel.deleteSelectedTunnels()
+                viewModel.deleteSelectedTunnels()
                 showDeleteModal = false
             },
             title = { Text(text = stringResource(R.string.delete_tunnel)) },
@@ -105,11 +111,11 @@ fun TunnelsScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
 
     if (showExportSheet) {
         ExportTunnelsBottomSheet({ type, uri ->
-            sharedViewModel.exportSelectedTunnels(type, uri)
+            viewModel.exportSelectedTunnels(type, uri)
             showExportSheet = false
         }) {
             showExportSheet = false
-            sharedViewModel.clearSelectedTunnels()
+            viewModel.clearSelectedTunnels()
         }
     }
 
@@ -140,5 +146,5 @@ fun TunnelsScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
         )
     }
 
-    TunnelList(tunnelsState, sharedState, modifier = Modifier.fillMaxSize(), sharedViewModel)
+    TunnelList(tunnelsState, Modifier.fillMaxSize(), viewModel, sharedViewModel)
 }

@@ -24,13 +24,12 @@ fun currentRouteAsNavbarState(
     sharedState: SharedAppUiState,
     sharedViewModel: SharedAppViewModel,
     route: Route?,
-    selectedCount: Int,
     navController: NavController,
 ): State<NavbarState> {
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
 
-    return remember(route, selectedCount) {
+    return remember(route, sharedState) {
         derivedStateOf {
             when (route) {
                 Route.AdvancedAutoTunnel ->
@@ -169,7 +168,7 @@ fun currentRouteAsNavbarState(
                         },
                     )
                 is Route.Config -> {
-                    val tunnel = sharedState.tunnels.find { it.id == route.id }
+                    val tunnelName = sharedState.tunnelNames[route.id]
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
@@ -177,7 +176,7 @@ fun currentRouteAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = tunnel?.tunName ?: context.getString(R.string.new_tunnel),
+                        topTitle = tunnelName ?: context.getString(R.string.new_tunnel),
                         topTrailing = {
                             ActionIconButton(Icons.Rounded.Save, R.string.save) {
                                 keyboardController?.hide()
@@ -187,14 +186,14 @@ fun currentRouteAsNavbarState(
                     )
                 }
                 is Route.SplitTunnel -> {
-                    val tunnel = sharedState.tunnels.find { it.id == route.id }
+                    val tunnelName = sharedState.tunnelNames[route.id]
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
                                 navController.pop()
                             }
                         },
-                        topTitle = tunnel?.tunName ?: "",
+                        topTitle = tunnelName ?: "",
                         topTrailing = {
                             ActionIconButton(Icons.Rounded.Save, R.string.save) {
                                 sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
@@ -252,7 +251,7 @@ fun currentRouteAsNavbarState(
                         showBottomItems = true,
                     )
                 is Route.TunnelAutoTunnel -> {
-                    val tunnel = sharedState.tunnels.find { it.id == route.id }
+                    val tunnelName = sharedState.tunnelNames[route.id]
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
@@ -260,7 +259,7 @@ fun currentRouteAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = tunnel?.tunName ?: "",
+                        topTitle = tunnelName ?: "",
                     )
                 }
                 Route.TunnelMonitoring ->
@@ -274,7 +273,7 @@ fun currentRouteAsNavbarState(
                         showBottomItems = true,
                     )
                 is Route.TunnelOptions -> {
-                    val tunnel = sharedState.tunnels.find { it.id == route.id }
+                    val tunnelName = sharedState.tunnelNames[route.id]
                     NavbarState(
                         topLeading = {
                             ActionIconButton(Icons.AutoMirrored.Rounded.ArrowBack, R.string.back) {
@@ -282,7 +281,7 @@ fun currentRouteAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                        topTitle = tunnel?.tunName ?: "",
+                        topTitle = tunnelName ?: "",
                         topTrailing = {
                             Row {
                                 ActionIconButton(Icons.Rounded.QrCode2, R.string.show_qr) {
@@ -299,7 +298,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topTitle = context.getString(R.string.tunnels),
                         topTrailing = {
-                            when (selectedCount) {
+                            when (sharedState.selectedTunnelCount) {
                                 0 ->
                                     Row {
                                         ActionIconButton(
@@ -320,7 +319,9 @@ fun currentRouteAsNavbarState(
                                             Icons.Rounded.SelectAll,
                                             R.string.select_all,
                                         ) {
-                                            sharedViewModel.toggleSelectAllTunnels()
+                                            sharedViewModel.postSideEffect(
+                                                LocalSideEffect.SelectedTunnels.SelectAll
+                                            )
                                         }
                                         // due to permissions, and SAF issues on TV, not support
                                         // less than Android
@@ -336,9 +337,11 @@ fun currentRouteAsNavbarState(
                                             }
                                         }
 
-                                        if (selectedCount == 1) {
+                                        if (sharedState.selectedTunnelCount == 1) {
                                             ActionIconButton(Icons.Rounded.CopyAll, R.string.copy) {
-                                                sharedViewModel.copySelectedTunnel()
+                                                sharedViewModel.postSideEffect(
+                                                    LocalSideEffect.SelectedTunnels.Copy
+                                                )
                                             }
                                         }
                                         ActionIconButton(

@@ -18,19 +18,17 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -88,7 +86,10 @@ import com.zaneschepke.wireguardautotunnel.ui.theme.OffWhite
 import com.zaneschepke.wireguardautotunnel.ui.theme.WireguardAutoTunnelTheme
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
 import com.zaneschepke.wireguardautotunnel.util.extensions.*
+import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.SplitTunnelViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import de.raphaelebner.roomdatabasebackup.core.RoomBackup
 import java.util.*
@@ -253,17 +254,11 @@ class MainActivity : AppCompatActivity() {
                         val currentTab by remember {
                             derivedStateOf { Tab.fromRoute(currentRoute ?: Route.Tunnels) }
                         }
-                        val selectedCount by
-                            rememberSaveable(appState.selectedTunnels) {
-                                mutableIntStateOf(appState.selectedTunnels.size)
-                            }
-
                         val navState by
                             currentRouteAsNavbarState(
                                 appState,
                                 viewModel,
                                 currentRoute,
-                                selectedCount,
                                 navController,
                             )
 
@@ -302,10 +297,6 @@ class MainActivity : AppCompatActivity() {
                                         )
                                     }
                                 },
-                                modifier =
-                                    Modifier.pointerInput(Unit) {
-                                        detectTapGestures { viewModel.clearSelectedTunnels() }
-                                    },
                             ) { padding ->
                                 Column(
                                     modifier =
@@ -362,15 +353,53 @@ class MainActivity : AppCompatActivity() {
                                                 entry<Route.Tunnels> { TunnelsScreen() }
                                                 entry<Route.Sort> { SortScreen() }
                                                 entry<Route.TunnelOptions> { key ->
-                                                    TunnelOptionsScreen(key.id)
+                                                    val viewModel =
+                                                        hiltViewModel<
+                                                            TunnelViewModel,
+                                                            TunnelViewModel.Factory,
+                                                        >(
+                                                            creationCallback = { factory ->
+                                                                factory.create(key.id)
+                                                            }
+                                                        )
+                                                    TunnelOptionsScreen(viewModel)
                                                 }
                                                 entry<Route.SplitTunnel> { key ->
-                                                    SplitTunnelScreen(key.id)
+                                                    val viewModel =
+                                                        hiltViewModel<
+                                                            SplitTunnelViewModel,
+                                                            SplitTunnelViewModel.Factory,
+                                                        >(
+                                                            creationCallback = { factory ->
+                                                                factory.create(key.id)
+                                                            }
+                                                        )
+                                                    SplitTunnelScreen(viewModel)
                                                 }
                                                 entry<Route.TunnelAutoTunnel> { key ->
-                                                    TunnelAutoTunnelScreen(key.id)
+                                                    val viewModel =
+                                                        hiltViewModel<
+                                                            TunnelViewModel,
+                                                            TunnelViewModel.Factory,
+                                                        >(
+                                                            creationCallback = { factory ->
+                                                                factory.create(key.id)
+                                                            }
+                                                        )
+                                                    TunnelAutoTunnelScreen(viewModel)
                                                 }
-                                                entry<Route.Config> { key -> ConfigScreen(key.id) }
+                                                entry<Route.Config> { key ->
+                                                    val viewModel =
+                                                        hiltViewModel<
+                                                            ConfigViewModel,
+                                                            ConfigViewModel.Factory,
+                                                        >(
+                                                            creationCallback = { factory ->
+                                                                factory.create(key.id)
+                                                            }
+                                                        )
+                                                    ConfigScreen(viewModel)
+                                                }
                                                 entry<Route.LocationDisclosure> {
                                                     LocationDisclosureScreen()
                                                 }
@@ -393,10 +422,28 @@ class MainActivity : AppCompatActivity() {
                                                     TunnelGlobalsScreen(key.id)
                                                 }
                                                 entry<Route.ConfigGlobal> { key ->
-                                                    ConfigScreen(key.id)
+                                                    val viewModel =
+                                                        hiltViewModel<
+                                                            ConfigViewModel,
+                                                            ConfigViewModel.Factory,
+                                                        >(
+                                                            creationCallback = { factory ->
+                                                                factory.create(key.id)
+                                                            }
+                                                        )
+                                                    ConfigScreen(viewModel)
                                                 }
                                                 entry<Route.SplitTunnelGlobal> { key ->
-                                                    SplitTunnelScreen(key.id)
+                                                    val viewModel =
+                                                        hiltViewModel<
+                                                            SplitTunnelViewModel,
+                                                            SplitTunnelViewModel.Factory,
+                                                        >(
+                                                            creationCallback = { factory ->
+                                                                factory.create(key.id)
+                                                            }
+                                                        )
+                                                    SplitTunnelScreen(viewModel)
                                                 }
                                                 entry<Route.ProxySettings> { ProxySettingsScreen() }
                                                 entry<Route.Appearance> { AppearanceScreen() }

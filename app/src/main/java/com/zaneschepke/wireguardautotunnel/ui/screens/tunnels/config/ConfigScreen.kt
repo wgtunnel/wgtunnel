@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SecureScreenFromRecording
@@ -21,36 +22,34 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components.
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.PeerProxy
+import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
-fun ConfigScreen(tunnelId: Int? = null) {
-    val viewModel = LocalSharedVm.current
+fun ConfigScreen(viewModel: ConfigViewModel) {
+    val sharedViewModel = LocalSharedVm.current
 
-    val tunnelsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val configUiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
-    val tunnelConf by
-        remember(tunnelsState.tunnels) {
-            derivedStateOf { tunnelsState.tunnels.find { it.id == tunnelId } }
-        }
+    if (configUiState.isLoading) return
 
     var configProxy by remember {
-        mutableStateOf(tunnelConf?.let { ConfigProxy.from(it.toAmConfig()) } ?: ConfigProxy())
+        mutableStateOf(
+            configUiState.tunnel?.let { ConfigProxy.from(it.toAmConfig()) } ?: ConfigProxy()
+        )
     }
 
-    var tunnelName by remember { mutableStateOf(tunnelConf?.tunName ?: "") }
+    var tunnelName by remember { mutableStateOf(configUiState.tunnel?.tunName ?: "") }
     val isGlobalConfig = rememberSaveable { tunnelName == TunnelConfig.GLOBAL_CONFIG_NAME }
 
     val isTunnelNameTaken by
-        remember(tunnelName, tunnelsState.tunnels) {
-            derivedStateOf {
-                tunnelsState.tunnels.any { it.tunName == tunnelName && it.id != tunnelConf?.id }
-            }
+        remember(tunnelName) {
+            derivedStateOf { configUiState.unavailableNames.contains(tunnelName) }
         }
 
-    viewModel.collectSideEffect { sideEffect ->
+    sharedViewModel.collectSideEffect { sideEffect ->
         if (sideEffect is LocalSideEffect.SaveChanges)
-            viewModel.saveConfigProxy(tunnelId, configProxy, tunnelName)
+            viewModel.saveConfigProxy(configProxy, tunnelName)
     }
 
     SecureScreenFromRecording()

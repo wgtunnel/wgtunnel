@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
-import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.IconSurfaceButton
 import com.zaneschepke.wireguardautotunnel.util.extensions.asDescriptionString
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
@@ -22,7 +21,6 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 @Composable
 fun WifiDetectionMethodScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     val context = LocalContext.current
-    val sharedViewModel = LocalSharedVm.current
 
     val autoTunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
@@ -36,8 +34,8 @@ fun WifiDetectionMethodScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) 
             val description = it.asDescriptionString(context)
             IconSurfaceButton(
                 title = title,
-                onClick = { sharedViewModel.setWifiDetectionMethod(it) },
-                selected = autoTunnelState.generalSettings.wifiDetectionMethod == it,
+                onClick = { viewModel.setWifiDetectionMethod(it) },
+                selected = autoTunnelState.settings.wifiDetectionMethod == it,
                 description = description,
             )
         }

@@ -5,6 +5,8 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
+import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
@@ -19,10 +21,13 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.TunnelName
 import com.zaneschepke.wireguardautotunnel.util.extensions.asStringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.saveTunnelsUniquely
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.File
 import java.io.IOException
 import java.net.URL
+import java.time.Instant
 import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import org.amnezia.awg.config.BadConfigException
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
@@ -89,74 +94,6 @@ constructor(
         }
     }
 
-    fun setTunnelPingIp(ip: String, tunnelId: Int) = intent {
-        val latestTunnel = state.tunnels.find { it.id == tunnelId }
-        if (latestTunnel != null) {
-            tunnelRepository.save(latestTunnel.copy(pingTarget = ip.ifBlank { null }))
-        }
-    }
-
-    fun addTunnelNetwork(tunnelId: Int, ssid: String) = intent {
-        val latestTunnel = state.tunnels.find { it.id == tunnelId }
-        if (latestTunnel != null) {
-            tunnelRepository.save(
-                latestTunnel.copy(
-                    tunnelNetworks = latestTunnel.tunnelNetworks.toMutableSet().apply { add(ssid) }
-                )
-            )
-        }
-    }
-
-    fun removeTunnelNetwork(tunnelId: Int, ssid: String) = intent {
-        val latestTunnel = state.tunnels.find { it.id == tunnelId }
-        if (latestTunnel != null) {
-            tunnelRepository.save(
-                latestTunnel.copy(
-                    tunnelNetworks =
-                        latestTunnel.tunnelNetworks.toMutableSet().apply { remove(ssid) }
-                )
-            )
-        }
-    }
-
-    fun setRestartOnPing(tunnelId: Int, to: Boolean) = intent {
-        val latestTunnel = state.tunnels.find { it.id == tunnelId }
-        if (latestTunnel != null) {
-            tunnelRepository.save(latestTunnel.copy(restartOnPingFailure = to))
-        }
-    }
-
-    fun togglePrimaryTunnel(tunnelId: Int) = intent {
-        val latestTunnel = state.tunnels.find { it.id == tunnelId }
-        if (latestTunnel != null) {
-            val update = if (latestTunnel.isPrimaryTunnel) null else latestTunnel
-            tunnelRepository.updatePrimaryTunnel(update)
-        }
-    }
-
-    fun setMobileDataTunnel(tunnelId: Int, to: Boolean) = intent {
-        val latestTunnel = state.tunnels.find { it.id == tunnelId }
-        if (latestTunnel != null) {
-            tunnelRepository.save(latestTunnel.copy(isMobileDataTunnel = to))
-        }
-    }
-
-    fun setEthernetTunnel(tunnelId: Int, to: Boolean) = intent {
-        val latestTunnel = state.tunnels.find { it.id == tunnelId }
-        if (latestTunnel != null) {
-            tunnelRepository.save(latestTunnel.copy(isEthernetTunnel = to))
-        }
-    }
-
-    fun toggleIpv4Preferred(tunnelId: Int) = intent {
-        val latestTunnel = state.tunnels.find { it.id == tunnelId }
-        if (latestTunnel != null) {
-            tunnelRepository.save(
-                latestTunnel.copy(isIpv4Preferred = !latestTunnel.isIpv4Preferred)
-            )
-        }
-    }
-
     fun importFromClipboard(conf: String) {
         importTunnelConfigs(mapOf(conf to null))
     }
@@ -191,4 +128,98 @@ constructor(
                 postSideEffect(GlobalSideEffect.Toast(message))
             }
     }
+
+    fun toggleSelectAllTunnels() = intent {
+        if (state.selectedTunnels.size != state.tunnels.size) {
+            return@intent reduce { state.copy(selectedTunnels = state.tunnels) }
+        }
+        reduce { state.copy(selectedTunnels = emptyList()) }
+    }
+
+    fun clearSelectedTunnels() = intent { reduce { state.copy(selectedTunnels = emptyList()) } }
+
+    fun toggleSelectedTunnel(tunnelId: Int) = intent {
+        reduce {
+            state.copy(
+                selectedTunnels =
+                    state.selectedTunnels.toMutableList().apply {
+                        val removed = removeIf { it.id == tunnelId }
+                        if (!removed) addAll(state.tunnels.filter { it.id == tunnelId })
+                    }
+            )
+        }
+    }
+
+    fun deleteSelectedTunnels() = intent {
+        val activeTunIds = tunnelManager.activeTunnels.firstOrNull()?.map { it.key }
+        if (state.selectedTunnels.any { activeTunIds?.contains(it.id) == true })
+            return@intent postSideEffect(
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.delete_active_message)
+                )
+            )
+        tunnelRepository.delete(state.selectedTunnels)
+        clearSelectedTunnels()
+    }
+
+    fun copySelectedTunnel() = intent {
+        val selected = state.selectedTunnels.firstOrNull() ?: return@intent
+        val copy = TunnelConf.tunnelConfFromQuick(selected.amQuick, selected.tunName)
+        tunnelRepository.saveTunnelsUniquely(listOf(copy), state.tunnels)
+        clearSelectedTunnels()
+    }
+
+    fun exportSelectedTunnels(configType: ConfigType, uri: Uri?) = intent {
+        val (files, shareFileName) =
+            when (configType) {
+                ConfigType.AM ->
+                    Pair(
+                        createAmFiles(state.selectedTunnels),
+                        "am-export_${Instant.now().epochSecond}.zip",
+                    )
+                ConfigType.WG ->
+                    Pair(
+                        createWgFiles(state.selectedTunnels),
+                        "wg-export_${Instant.now().epochSecond}.zip",
+                    )
+            }
+        val onFailure = { action: Throwable ->
+            intent {
+                postSideEffect(
+                    GlobalSideEffect.Toast(
+                        StringValue.StringResource(
+                            R.string.export_failed,
+                            ": ${action.localizedMessage}",
+                        )
+                    )
+                )
+            }
+            Unit
+        }
+        fileUtils
+            .createNewShareFile(shareFileName)
+            .onSuccess {
+                fileUtils.zipAll(it, files).onFailure(onFailure)
+                fileUtils.exportFile(it, uri, FileUtils.ZIP_FILE_MIME_TYPE).onFailure(onFailure)
+                postSideEffect(
+                    GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.export_success))
+                )
+                clearSelectedTunnels()
+            }
+            .onFailure(onFailure)
+    }
+
+    suspend fun createWgFiles(tunnels: Collection<TunnelConf>): List<File> =
+        tunnels.mapNotNull { config ->
+            if (config.wgQuick.isNotBlank()) {
+                fileUtils.createFile(config.tunName, config.wgQuick)
+            } else null
+        }
+
+    suspend fun createAmFiles(tunnels: Collection<TunnelConf>): List<File> =
+        tunnels.mapNotNull { config ->
+            if (config.amQuick != TunnelConfig.AM_QUICK_DEFAULT && config.amQuick.isNotBlank()) {
+                fileUtils.createFile(config.tunName, config.amQuick)
+            } else null
+        }
 }

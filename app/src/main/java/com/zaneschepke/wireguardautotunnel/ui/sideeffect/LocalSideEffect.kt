@@ -21,4 +21,10 @@ sealed class LocalSideEffect {
 
         data object DeleteTunnels : Modal()
     }
+
+    sealed class SelectedTunnels : LocalSideEffect() {
+        data object SelectAll : SelectedTunnels()
+
+        data object Copy : SelectedTunnels()
+    }
 }

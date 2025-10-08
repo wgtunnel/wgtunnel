@@ -7,30 +7,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.autotunnel.components.MobileDataTunnelItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.autotunnel.components.WifiTunnelItem
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.autotunnel.components.ethernetTunnelItem
-import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
 
 @Composable
-fun TunnelAutoTunnelScreen(tunnelId: Int, viewModel: TunnelsViewModel = hiltViewModel()) {
-    val tunnelsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+fun TunnelAutoTunnelScreen(viewModel: TunnelViewModel) {
+    val tunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
-    if (!tunnelsState.stateInitialized) return
-
-    val tunnelConf by
-        remember(tunnelsState.tunnels) {
-            derivedStateOf { tunnelsState.tunnels.find { it.id == tunnelId }!! }
-        }
+    if (tunnelState.isLoading) return
+    val tunnel = tunnelState.tunnel ?: return
 
     Column(
         horizontalAlignment = Alignment.Start,
@@ -42,21 +35,21 @@ fun TunnelAutoTunnelScreen(tunnelId: Int, viewModel: TunnelsViewModel = hiltView
             items =
                 buildList {
                     add(
-                        MobileDataTunnelItem(tunnelConf.isMobileDataTunnel) {
-                            viewModel.setMobileDataTunnel(tunnelId, it)
+                        MobileDataTunnelItem(tunnel.isMobileDataTunnel) {
+                            viewModel.setMobileDataTunnel(it)
                         }
                     )
                     add(
-                        ethernetTunnelItem(tunnelConf.isEthernetTunnel) {
-                            viewModel.setEthernetTunnel(tunnelId, it)
+                        ethernetTunnelItem(tunnel.isEthernetTunnel) {
+                            viewModel.setEthernetTunnel(it)
                         }
                     )
                     add(
                         WifiTunnelItem(
-                            tunnelConf.tunnelNetworks,
-                            tunnelsState.isWildcardsEnabled,
-                            onSaveTunnelNetwork = { viewModel.addTunnelNetwork(tunnelId, it) },
-                            onDeleteTunnelNetwork = { viewModel.removeTunnelNetwork(tunnelId, it) },
+                            tunnel.tunnelNetworks,
+                            isWildcardsEnabled = tunnelState.isWildcardsEnabled,
+                            onSaveTunnelNetwork = { viewModel.addTunnelNetwork(it) },
+                            onDeleteTunnelNetwork = { viewModel.removeTunnelNetwork(it) },
                         )
                     )
                 }

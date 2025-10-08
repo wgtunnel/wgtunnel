@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,17 +20,17 @@ import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
-import com.zaneschepke.wireguardautotunnel.ui.state.SharedAppUiState
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelsUiState
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TunnelList(
     tunnelsState: TunnelsUiState,
-    sharedState: SharedAppUiState,
     modifier: Modifier = Modifier,
+    viewModel: TunnelsViewModel,
     sharedViewModel: SharedAppViewModel,
 ) {
     val navController = LocalNavController.current
@@ -43,8 +44,10 @@ fun TunnelList(
         modifier =
             modifier
                 .pointerInput(Unit) {
-                    if (tunnelsState.tunnels.isEmpty()) return@pointerInput
-                    sharedViewModel.clearSelectedTunnels()
+                    detectTapGestures {
+                        if (tunnelsState.tunnels.isEmpty()) return@detectTapGestures
+                        viewModel.clearSelectedTunnels()
+                    }
                 }
                 .overscroll(rememberOverscrollEffect()),
         state = lazyListState,
@@ -55,23 +58,21 @@ fun TunnelList(
         if (tunnelsState.tunnels.isEmpty()) {
             item { GettingStartedLabel(onClick = { context.openWebUrl(it) }) }
         }
-        items(tunnelsState.tunnels, key = { it.id }) { tunnel ->
+        items(tunnelsState.tunnels.toList(), key = { it.id }) { tunnel ->
             val tunnelState =
                 remember(tunnelsState.activeTunnels) {
                     tunnelsState.activeTunnels[tunnel.id] ?: TunnelState()
                 }
             val selected =
-                remember(sharedState.selectedTunnels) {
-                    sharedState.selectedTunnels.any { it.id == tunnel.id }
+                remember(tunnelsState.selectedTunnels) {
+                    tunnelsState.selectedTunnels.any { it.id == tunnel.id }
                 }
             TunnelRowItem(
                 state = tunnelState,
                 isSelected = selected,
                 tunnel = tunnel,
                 onTvClick = { navController.push(Route.TunnelOptions(tunnel.id)) },
-                onToggleSelectedTunnel = { tunnel ->
-                    sharedViewModel.toggleSelectedTunnel(tunnel.id)
-                },
+                onToggleSelectedTunnel = { tunnel -> viewModel.toggleSelectedTunnel(tunnel.id) },
                 onSwitchClick = { checked ->
                     if (checked) sharedViewModel.startTunnel(tunnel)
                     else sharedViewModel.stopTunnel(tunnel)
@@ -83,14 +84,14 @@ fun TunnelList(
                     (if (!isTv)
                         Modifier.combinedClickable(
                             onClick = {
-                                if (sharedState.selectedTunnels.isNotEmpty()) {
-                                    sharedViewModel.toggleSelectedTunnel(tunnel.id)
+                                if (tunnelsState.selectedTunnels.isNotEmpty()) {
+                                    viewModel.toggleSelectedTunnel(tunnel.id)
                                 } else {
                                     navController.push(Route.TunnelOptions(tunnel.id))
-                                    sharedViewModel.clearSelectedTunnels()
+                                    viewModel.clearSelectedTunnels()
                                 }
                             },
-                            onLongClick = { sharedViewModel.toggleSelectedTunnel(tunnel.id) },
+                            onLongClick = { viewModel.toggleSelectedTunnel(tunnel.id) },
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
                         )

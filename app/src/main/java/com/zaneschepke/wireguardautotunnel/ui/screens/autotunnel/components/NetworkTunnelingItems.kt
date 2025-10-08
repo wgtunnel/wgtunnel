@@ -36,7 +36,7 @@ fun networkTunnelingItems(
             },
             trailing = {
                 ScaledSwitch(
-                    checked = autoTunnelState.generalSettings.isTunnelOnMobileDataEnabled,
+                    checked = autoTunnelState.settings.isTunnelOnMobileDataEnabled,
                     onClick = { viewModel.setTunnelOnCellular(it) },
                 )
             },
@@ -58,9 +58,7 @@ fun networkTunnelingItems(
                 )
             },
             onClick = {
-                viewModel.setTunnelOnCellular(
-                    !autoTunnelState.generalSettings.isTunnelOnMobileDataEnabled
-                )
+                viewModel.setTunnelOnCellular(!autoTunnelState.settings.isTunnelOnMobileDataEnabled)
             },
         ),
         SelectionItem(
@@ -76,7 +74,7 @@ fun networkTunnelingItems(
             },
             trailing = {
                 ScaledSwitch(
-                    checked = autoTunnelState.generalSettings.isTunnelOnEthernetEnabled,
+                    checked = autoTunnelState.settings.isTunnelOnEthernetEnabled,
                     onClick = { viewModel.setTunnelOnEthernet(it) },
                 )
             },
@@ -98,9 +96,7 @@ fun networkTunnelingItems(
                 )
             },
             onClick = {
-                viewModel.setTunnelOnEthernet(
-                    !autoTunnelState.generalSettings.isTunnelOnEthernetEnabled
-                )
+                viewModel.setTunnelOnEthernet(!autoTunnelState.settings.isTunnelOnEthernetEnabled)
             },
         ),
         SelectionItem(
@@ -123,13 +119,13 @@ fun networkTunnelingItems(
             },
             trailing = {
                 ScaledSwitch(
-                    checked = autoTunnelState.generalSettings.isStopOnNoInternetEnabled,
+                    checked = autoTunnelState.settings.isStopOnNoInternetEnabled,
                     onClick = { viewModel.setStopOnNoInternetEnabled(it) },
                 )
             },
             onClick = {
                 viewModel.setStopOnNoInternetEnabled(
-                    !autoTunnelState.generalSettings.isStopOnNoInternetEnabled
+                    !autoTunnelState.settings.isStopOnNoInternetEnabled
                 )
             },
         ),

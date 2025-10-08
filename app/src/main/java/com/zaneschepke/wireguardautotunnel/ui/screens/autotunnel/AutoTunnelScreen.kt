@@ -54,28 +54,26 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     val showLocationServicesWarning by
         remember(
             autoTunnelState.connectivityState?.wifiState,
-            autoTunnelState.generalSettings.trustedNetworkSSIDs,
-            autoTunnelState.generalSettings.wifiDetectionMethod,
+            autoTunnelState.settings.trustedNetworkSSIDs,
+            autoTunnelState.settings.wifiDetectionMethod,
         ) {
             derivedStateOf {
                 autoTunnelState.connectivityState?.wifiState?.locationServicesEnabled == false &&
-                    autoTunnelState.generalSettings.wifiDetectionMethod
-                        .needsLocationPermissions() &&
-                    autoTunnelState.generalSettings.trustedNetworkSSIDs.isNotEmpty()
+                    autoTunnelState.settings.wifiDetectionMethod.needsLocationPermissions() &&
+                    autoTunnelState.settings.trustedNetworkSSIDs.isNotEmpty()
             }
         }
 
     val showLocationPermissionsWarning by
         remember(
             autoTunnelState.connectivityState?.wifiState,
-            autoTunnelState.generalSettings.trustedNetworkSSIDs,
-            autoTunnelState.generalSettings.wifiDetectionMethod,
+            autoTunnelState.settings.trustedNetworkSSIDs,
+            autoTunnelState.settings.wifiDetectionMethod,
         ) {
             derivedStateOf {
                 autoTunnelState.connectivityState?.wifiState?.locationPermissionsGranted == false &&
-                    autoTunnelState.generalSettings.wifiDetectionMethod
-                        .needsLocationPermissions() &&
-                    autoTunnelState.generalSettings.trustedNetworkSSIDs.isNotEmpty()
+                    autoTunnelState.settings.wifiDetectionMethod.needsLocationPermissions() &&
+                    autoTunnelState.settings.trustedNetworkSSIDs.isNotEmpty()
             }
         }
 

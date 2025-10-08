@@ -43,7 +43,7 @@ fun wifiTunnelingItems(
 
     var currentText by rememberSaveable { mutableStateOf("") }
 
-    LaunchedEffect(autoTunnelState.generalSettings.trustedNetworkSSIDs) { currentText = "" }
+    LaunchedEffect(autoTunnelState.settings.trustedNetworkSSIDs) { currentText = "" }
 
     val baseItems =
         listOf(
@@ -60,7 +60,7 @@ fun wifiTunnelingItems(
                 },
                 trailing = {
                     ScaledSwitch(
-                        checked = autoTunnelState.generalSettings.isTunnelOnWifiEnabled,
+                        checked = autoTunnelState.settings.isTunnelOnWifiEnabled,
                         onClick = { viewModel.setAutoTunnelOnWifiEnabled(it) },
                     )
                 },
@@ -104,13 +104,13 @@ fun wifiTunnelingItems(
                 },
                 onClick = {
                     viewModel.setAutoTunnelOnWifiEnabled(
-                        !autoTunnelState.generalSettings.isTunnelOnWifiEnabled
+                        !autoTunnelState.settings.isTunnelOnWifiEnabled
                     )
                 },
             )
         )
 
-    return if (autoTunnelState.generalSettings.isTunnelOnWifiEnabled) {
+    return if (autoTunnelState.settings.isTunnelOnWifiEnabled) {
         baseItems +
             listOf(
                 SelectionItem(
@@ -128,9 +128,7 @@ fun wifiTunnelingItems(
                         Text(
                             stringResource(
                                 R.string.current_template,
-                                autoTunnelState.generalSettings.wifiDetectionMethod.asTitleString(
-                                    context
-                                ),
+                                autoTunnelState.settings.wifiDetectionMethod.asTitleString(context),
                             ),
                             style =
                                 MaterialTheme.typography.bodySmall.copy(
@@ -160,14 +158,12 @@ fun wifiTunnelingItems(
                     },
                     trailing = {
                         ScaledSwitch(
-                            checked = autoTunnelState.generalSettings.isWildcardsEnabled,
+                            checked = autoTunnelState.settings.isWildcardsEnabled,
                             onClick = { viewModel.setWildcardsEnabled(it) },
                         )
                     },
                     onClick = {
-                        viewModel.setWildcardsEnabled(
-                            !autoTunnelState.generalSettings.isWildcardsEnabled
-                        )
+                        viewModel.setWildcardsEnabled(!autoTunnelState.settings.isWildcardsEnabled)
                     },
                 ),
                 SelectionItem(
@@ -204,14 +200,13 @@ fun wifiTunnelingItems(
                     },
                     description = {
                         TrustedNetworkTextBox(
-                            autoTunnelState.generalSettings.trustedNetworkSSIDs,
+                            autoTunnelState.settings.trustedNetworkSSIDs,
                             onDelete = { viewModel.removeTrustedNetworkName(it) },
                             currentText = currentText,
                             onSave = { ssid -> viewModel.saveTrustedNetworkName(ssid) },
                             onValueChange = { currentText = it },
                             supporting = {
-                                if (autoTunnelState.generalSettings.isWildcardsEnabled)
-                                    WildcardsLabel()
+                                if (autoTunnelState.settings.isWildcardsEnabled) WildcardsLabel()
                             },
                         )
                     },
