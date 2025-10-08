@@ -42,7 +42,7 @@ constructor(
 
     // TODO Add DNS settings
     override fun tunnelStateFlow(tunnelConf: TunnelConf): Flow<TunnelStatus> = callbackFlow {
-        if (!WgQuickBackend.hasKernelSupport()) close(BackendCoreException.KernelNotSupported)
+        if (!WgQuickBackend.hasKernelSupport()) close(BackendCoreException.KernelWireguardNotSupported)
         if (!tunnelConf.isNameKernelCompatible) close(BackendCoreException.TunnelNameTooLong)
 
         val stateChannel = Channel<WgTunnel.State>()
