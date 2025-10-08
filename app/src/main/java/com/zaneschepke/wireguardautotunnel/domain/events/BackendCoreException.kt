@@ -21,6 +21,7 @@ sealed class BackendCoreException : Exception() {
     data object TunnelNameTooLong : BackendCoreException()
 
     data object UapiUpdateFailed : BackendCoreException()
+    data object KernelWireguardNotSupported: BackendCoreException()
 
     data class BounceFailed(val error: BackendCoreException) : BackendCoreException()
 
@@ -36,6 +37,7 @@ sealed class BackendCoreException : Exception() {
             TunnelNameTooLong -> R.string.error_tunnel_name
             is BounceFailed -> R.string.bounce_failed_template
             UapiUpdateFailed -> R.string.active_tunnel_update_failed
+            KernelWireguardNotSupported -> R.string.kernel_wireguard_unsupported
         }
 
     fun toStringValue(): StringValue {
