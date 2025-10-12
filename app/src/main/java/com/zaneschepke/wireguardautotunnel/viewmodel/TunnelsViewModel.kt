@@ -62,7 +62,7 @@ constructor(
                         isPingEnabled = settings.isPingEnabled,
                         isWildcardsEnabled = settings.isWildcardsEnabled,
                         showPingStats = appState.showDetailedPingStats,
-                        stateInitialized = true,
+                        isLoading = false,
                     )
                 }
                 .collect { reduce { it } }

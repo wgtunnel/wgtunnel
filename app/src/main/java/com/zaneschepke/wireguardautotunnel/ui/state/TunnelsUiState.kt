@@ -12,5 +12,5 @@ data class TunnelsUiState(
     val appMode: AppMode = AppMode.VPN,
     val isWildcardsEnabled: Boolean = false,
     val showPingStats: Boolean = false,
-    val stateInitialized: Boolean = false,
+    val isLoading: Boolean = true,
 )

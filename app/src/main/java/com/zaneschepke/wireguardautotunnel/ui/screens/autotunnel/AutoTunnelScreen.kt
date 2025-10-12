@@ -24,16 +24,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.common.banner.WarningBanner
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
-import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.navigation.TunnelNetwork
-import com.zaneschepke.wireguardautotunnel.util.extensions.launchAppSettings
-import com.zaneschepke.wireguardautotunnel.util.extensions.launchLocationServicesSettings
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -44,7 +40,6 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     val autoTunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     if (autoTunnelState.isLoading) return
-    var showLocationDialog by remember { mutableStateOf(false) }
 
     val (ethernetTunnel, mobileDataTunnel, mappedTunnels) =
         remember(autoTunnelState.tunnels) {
@@ -55,77 +50,12 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
             )
         }
 
-    val showLocationServicesWarning by
-        remember(
-            autoTunnelState.connectivityState?.wifiState,
-            autoTunnelState.settings.trustedNetworkSSIDs,
-            autoTunnelState.settings.wifiDetectionMethod,
-        ) {
-            derivedStateOf {
-                autoTunnelState.connectivityState?.wifiState?.locationServicesEnabled == false &&
-                    autoTunnelState.settings.wifiDetectionMethod.needsLocationPermissions() &&
-                    autoTunnelState.settings.trustedNetworkSSIDs.isNotEmpty()
-            }
-        }
-
-    val showLocationPermissionsWarning by
-        remember(
-            autoTunnelState.connectivityState?.wifiState,
-            autoTunnelState.settings.trustedNetworkSSIDs,
-            autoTunnelState.settings.wifiDetectionMethod,
-        ) {
-            derivedStateOf {
-                autoTunnelState.connectivityState?.wifiState?.locationPermissionsGranted == false &&
-                    autoTunnelState.settings.wifiDetectionMethod.needsLocationPermissions() &&
-                    autoTunnelState.settings.trustedNetworkSSIDs.isNotEmpty()
-            }
-        }
-
-    if (showLocationDialog) {
-        InfoDialog(
-            onAttest = {
-                context.launchAppSettings()
-                showLocationDialog = false
-            },
-            onDismiss = { showLocationDialog = false },
-            title = { Text(stringResource(R.string.location_permissions)) },
-            body = { Text(stringResource(R.string.location_justification)) },
-            confirmText = { Text(stringResource(R.string.open_settings)) },
-        )
-    }
-
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
     ) {
         Column {
-            WarningBanner(
-                stringResource(R.string.location_services_not_detected),
-                showLocationServicesWarning,
-                trailing = {
-                    TextButton({ context.launchLocationServicesSettings() }) {
-                        Text(
-                            stringResource(R.string.fix),
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                },
-            )
-            WarningBanner(
-                stringResource(R.string.location_permissions_missing),
-                showLocationPermissionsWarning,
-                trailing = {
-                    TextButton({ showLocationDialog = true }) {
-                        Text(
-                            stringResource(R.string.fix),
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                },
-            )
             val (title, buttonText, icon) =
                 remember(autoTunnelState.autoTunnelActive) {
                     when (autoTunnelState.autoTunnelActive) {

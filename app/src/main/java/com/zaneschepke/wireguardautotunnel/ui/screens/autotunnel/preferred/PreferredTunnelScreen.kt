@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.preferences
+package com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.preferred
 
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.interaction.MutableInteractionSource

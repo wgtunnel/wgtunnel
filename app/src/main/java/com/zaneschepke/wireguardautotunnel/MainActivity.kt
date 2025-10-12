@@ -61,8 +61,8 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.AutoTunnelScree
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.advanced.AutoTunnelAdvancedScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.detection.WifiDetectionMethodScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.LocationDisclosureScreen
-import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.preferences.PreferredTunnelScreen
-import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.preferences.wifi.WifiSettingsScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.preferred.PreferredTunnelScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.wifi.WifiSettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.pin.PinLockScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.SettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.AppearanceScreen

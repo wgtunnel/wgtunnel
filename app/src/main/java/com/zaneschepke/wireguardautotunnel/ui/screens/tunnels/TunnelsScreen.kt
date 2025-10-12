@@ -46,6 +46,8 @@ fun TunnelsScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
     var showDeleteModal by rememberSaveable { mutableStateOf(false) }
     var showUrlDialog by rememberSaveable { mutableStateOf(false) }
 
+    if (tunnelsState.isLoading) return
+
     LaunchedEffect(tunnelsState.selectedTunnels) {
         sharedViewModel.setSelectedTunnelCount(tunnelsState.selectedTunnels.size)
     }
@@ -60,8 +62,6 @@ fun TunnelsScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
             else -> Unit
         }
     }
-
-    if (!tunnelsState.stateInitialized) return
 
     val tunnelFileImportResultLauncher =
         rememberFileImportLauncherForResult(
