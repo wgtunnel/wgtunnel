@@ -148,7 +148,7 @@ fun TunnelStatisticsRow(
                                     color = textColor,
                                 )
                             }
-                            AnimatedVisibility(visible = endpoint != null) {
+                            AnimatedVisibility(visible = true) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(16.dp),

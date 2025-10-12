@@ -131,7 +131,6 @@ enum class Tab(
                 Route.License,
                 Route.Donate,
                 Route.Addresses -> SUPPORT
-                else -> throw IllegalArgumentException("No tab for route $route")
             }
     }
 }
