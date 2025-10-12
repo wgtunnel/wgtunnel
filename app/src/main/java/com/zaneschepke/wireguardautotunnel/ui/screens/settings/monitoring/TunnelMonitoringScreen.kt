@@ -31,7 +31,6 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
-import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 
@@ -57,7 +56,7 @@ fun TunnelMonitoringScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 title = stringResource(R.string.ping_monitor),
                 trailing = {
                     ScaledSwitch(
-                        checked = settingsState.showDetailedPingStats,
+                        checked = settingsState.settings.isPingEnabled,
                         onClick = { viewModel.setPingEnabled(it) },
                     )
                 },
@@ -120,7 +119,6 @@ fun TunnelMonitoringScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.ViewHeadline, contentDescription = null) },
                 title = stringResource(R.string.local_logging),
-                description = { DescriptionText(stringResource(R.string.enable_local_logging)) },
                 trailing = { modifier ->
                     SwitchWithDivider(
                         checked = settingsState.isLocalLoggingEnabled,

@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.components
+package com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.logs.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

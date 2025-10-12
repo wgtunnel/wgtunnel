@@ -14,6 +14,7 @@ import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.Lan
 import androidx.compose.material.icons.outlined.MonitorHeart
 import androidx.compose.material.icons.outlined.Pin
+import androidx.compose.material.icons.outlined.SettingsBackupRestore
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,14 +41,12 @@ import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.*
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.compoents.AppModeBottomSheet
-import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.asString
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
 import com.zaneschepke.wireguardautotunnel.util.extensions.capitalize
 import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 import java.util.Locale
-import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
@@ -73,13 +72,6 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             mutableStateOf(appMode == AppMode.VPN || appMode == AppMode.KERNEL)
         }
     val dnsEnabled by rememberSaveable(appMode) { mutableStateOf(appMode != AppMode.KERNEL) }
-
-    sharedViewModel.collectSideEffect { sideEffect ->
-        when (sideEffect) {
-            LocalSideEffect.Sheet.BackupApp -> showBackupSheet = true
-            else -> Unit
-        }
-    }
 
     val showProxySettings by
         remember(settingsState.settings.appMode) {
@@ -237,6 +229,17 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     } else {
                         sharedViewModel.setPinLockEnabled(false)
                     }
+                },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.SettingsBackupRestore, contentDescription = null) },
+                title = stringResource(R.string.backup_and_restore),
+                onClick = { showBackupSheet = true },
+                trailing = {
+                    Icon(
+                        Icons.Outlined.ExpandMore,
+                        contentDescription = stringResource(R.string.select),
+                    )
                 },
             )
         }

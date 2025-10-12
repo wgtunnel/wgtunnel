@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.components
+package com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.logs.components
 
 import android.net.Uri
 import androidx.compose.material.icons.Icons

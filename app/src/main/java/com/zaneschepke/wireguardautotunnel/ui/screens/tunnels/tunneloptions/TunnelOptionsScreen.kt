@@ -38,6 +38,7 @@ import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
+import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.CustomTextField
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
@@ -73,6 +74,10 @@ fun TunnelOptionsScreen(viewModel: TunnelViewModel) {
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
     ) {
         Column {
+            GroupLabel(
+                stringResource(R.string.general),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Star, contentDescription = null) },
                 title = stringResource(R.string.primary_tunnel),
@@ -102,6 +107,10 @@ fun TunnelOptionsScreen(viewModel: TunnelViewModel) {
             )
         }
         Column {
+            GroupLabel(
+                stringResource(R.string.reliability),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Dns, contentDescription = null) },
                 title = stringResource(R.string.ddns_auto_update),

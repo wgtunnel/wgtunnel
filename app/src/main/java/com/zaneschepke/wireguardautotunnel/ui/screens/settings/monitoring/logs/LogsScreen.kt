@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs
+package com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.logs
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,8 +15,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.components.LogList
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.components.LogsBottomSheet
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.logs.components.LogList
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.logs.components.LogsBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.viewmodel.LoggerViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect

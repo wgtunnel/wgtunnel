@@ -176,18 +176,6 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         showBottomItems = true,
                         topTitle = context.getString(R.string.settings),
-                        topTrailing = {
-                            IconButton(
-                                onClick = {
-                                    sharedViewModel.postSideEffect(LocalSideEffect.Sheet.BackupApp)
-                                }
-                            ) {
-                                Icon(
-                                    Icons.Rounded.SettingsBackupRestore,
-                                    stringResource(R.string.quick_actions),
-                                )
-                            }
-                        },
                     )
                 Sort ->
                     NavbarState(

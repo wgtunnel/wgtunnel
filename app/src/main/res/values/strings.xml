@@ -88,7 +88,7 @@
     <string name="enable_app_lock">Enable app lock</string>
     <string name="restart_on_ping">Restart on ping fail (beta)</string>
     <string name="mobile_data_tunnel">Set as mobile data tunnel</string>
-    <string name="set_primary_tunnel">Tunnel to be used when no preferred tunnel is configured</string>
+    <string name="set_primary_tunnel">Tunnel used when no preferred tunnel is configured</string>
     <string name="use_tunnel_on_wifi_name">Use tunnel on wifi name</string>
     <string name="edit_tunnel">Edit tunnel</string>
     <string name="settings">Settings</string>
@@ -139,7 +139,7 @@
     <string name="tunnel_running">Tunnel running</string>
 	<string name="monitoring_state_changes">Monitoring state changes</string>
 	<string name="donate">Donate to project</string>
-	<string name="local_logging">Local logging</string>
+	<string name="local_logging">Local logs monitor</string>
 	<string name="enable_local_logging">Enable local logging</string>
     <string name="add_from_clipboard">Add from clipboard</string>
 	<string name="stop_on_no_internet">Stop on no internet</string>
@@ -410,4 +410,6 @@
     <string name="wifi_settings">Wi-Fi settings</string>
     <string name="ping">Ping</string>
     <string name="ping_monitor">Ping monitor</string>
+    <string name="backup_and_restore">Backup and restore</string>
+    <string name="reliability">Reliability</string>
 </resources>
