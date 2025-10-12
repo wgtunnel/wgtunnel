@@ -56,22 +56,6 @@ constructor(
         tunnelRepository.save(tunnel.copy(pingTarget = ip.ifBlank { null }))
     }
 
-    fun addTunnelNetwork(ssid: String) = intent {
-        val tunnel = state.tunnel ?: return@intent
-        tunnelRepository.save(
-            tunnel.copy(tunnelNetworks = tunnel.tunnelNetworks.toMutableSet().apply { add(ssid) })
-        )
-    }
-
-    fun removeTunnelNetwork(ssid: String) = intent {
-        val tunnel = state.tunnel ?: return@intent
-        tunnelRepository.save(
-            tunnel.copy(
-                tunnelNetworks = tunnel.tunnelNetworks.toMutableSet().apply { remove(ssid) }
-            )
-        )
-    }
-
     fun setRestartOnPing(to: Boolean) = intent {
         val tunnel = state.tunnel ?: return@intent
         tunnelRepository.save(tunnel.copy(restartOnPingFailure = to))

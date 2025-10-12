@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.state
 
 import com.zaneschepke.networkmonitor.ConnectivityState
 import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 
 data class AutoTunnelUiState(
     val autoTunnelActive: Boolean = false,
@@ -9,5 +10,6 @@ data class AutoTunnelUiState(
     val settings: GeneralSettings = GeneralSettings(),
     val isBatteryOptimizationShown: Boolean = false,
     val isLocationDisclosureShown: Boolean = false,
-    val stateInitialized: Boolean = false,
+    val tunnels: List<TunnelConf> = emptyList(),
+    val isLoading: Boolean = true,
 )

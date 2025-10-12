@@ -5,8 +5,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun ScaledSwitch(
@@ -18,7 +16,7 @@ fun ScaledSwitch(
     Switch(
         checked,
         { onClick(it) },
-        modifier.scale((52.dp / 52.dp)),
+        modifier = modifier,
         enabled = enabled,
         colors =
             SwitchDefaults.colors()

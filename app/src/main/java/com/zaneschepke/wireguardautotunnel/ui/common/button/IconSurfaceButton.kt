@@ -12,8 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItemLabel
-import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionLabelType
 
 @Composable
 fun IconSurfaceButton(
@@ -59,7 +57,11 @@ fun IconSurfaceButton(
                     ) {
                         leading?.invoke()
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            SelectionItemLabel(title, SelectionLabelType.TITLE)
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
                             description?.let {
                                 Text(
                                     description,

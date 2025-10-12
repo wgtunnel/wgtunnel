@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.util.extensions
 
+import java.util.Locale
 import timber.log.Timber
 
 val hasNumberInParentheses = """^(.+?)\((\d+)\)$""".toRegex()
@@ -33,6 +34,10 @@ fun String.abbreviateKey(prefixLength: Int = 6): String {
     } else {
         full
     }
+}
+
+fun String.capitalize(locale: Locale): String {
+    return replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
 }
 
 // only allow valid Android ports

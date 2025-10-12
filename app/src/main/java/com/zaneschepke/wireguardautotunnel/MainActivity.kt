@@ -61,6 +61,8 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.AutoTunnelScree
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.advanced.AutoTunnelAdvancedScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.detection.WifiDetectionMethodScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.LocationDisclosureScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.preferences.PreferredTunnelScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.preferences.wifi.WifiSettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.pin.PinLockScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.SettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.AppearanceScreen
@@ -70,13 +72,12 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.settings.dns.DnsSettingsSc
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.globals.TunnelGlobalsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.LogsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.TunnelMonitoringScreen
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.system.SystemFeaturesScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.system.AndroidIntegrationsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.SupportScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.DonateScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.crypto.AddressesScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.license.LicenseScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.TunnelsScreen
-import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.autotunnel.TunnelAutoTunnelScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.ConfigScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.sort.SortScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.SplitTunnelScreen
@@ -149,13 +150,15 @@ class MainActivity : AppCompatActivity() {
             val startingStack = buildList {
                 add(Route.Tunnels)
                 if (intent?.action == Intent.ACTION_APPLICATION_PREFERENCES) add(Route.Settings)
+                if (appState.pinLockEnabled) add(Route.Lock)
             }
 
             val backStack = rememberNavBackStack(*startingStack.toTypedArray())
             var previousRoute by remember { mutableStateOf<Route?>(null) }
 
             val navController =
-                rememberNavController<NavKey>(backStack) { previousKey ->
+                rememberNavController<NavKey>(backStack, appState.isLocationDisclosureShown) {
+                    previousKey ->
                     previousRoute = previousKey as? Route
                 }
 
@@ -376,18 +379,6 @@ class MainActivity : AppCompatActivity() {
                                                         )
                                                     SplitTunnelScreen(viewModel)
                                                 }
-                                                entry<Route.TunnelAutoTunnel> { key ->
-                                                    val viewModel =
-                                                        hiltViewModel<
-                                                            TunnelViewModel,
-                                                            TunnelViewModel.Factory,
-                                                        >(
-                                                            creationCallback = { factory ->
-                                                                factory.create(key.id)
-                                                            }
-                                                        )
-                                                    TunnelAutoTunnelScreen(viewModel)
-                                                }
                                                 entry<Route.Config> { key ->
                                                     val viewModel =
                                                         hiltViewModel<
@@ -404,6 +395,9 @@ class MainActivity : AppCompatActivity() {
                                                     LocationDisclosureScreen()
                                                 }
                                                 entry<Route.AutoTunnel> { AutoTunnelScreen() }
+                                                entry<Route.WifiPreferences> {
+                                                    WifiSettingsScreen()
+                                                }
                                                 entry<Route.AdvancedAutoTunnel> {
                                                     AutoTunnelAdvancedScreen()
                                                 }
@@ -414,8 +408,8 @@ class MainActivity : AppCompatActivity() {
                                                 entry<Route.TunnelMonitoring> {
                                                     TunnelMonitoringScreen()
                                                 }
-                                                entry<Route.SystemFeatures> {
-                                                    SystemFeaturesScreen()
+                                                entry<Route.AndroidIntegrations> {
+                                                    AndroidIntegrationsScreen()
                                                 }
                                                 entry<Route.Dns> { DnsSettingsScreen() }
                                                 entry<Route.TunnelGlobals> { key ->
@@ -454,6 +448,9 @@ class MainActivity : AppCompatActivity() {
                                                 entry<Route.License> { LicenseScreen() }
                                                 entry<Route.Donate> { DonateScreen() }
                                                 entry<Route.Addresses> { AddressesScreen() }
+                                                entry<Route.PreferredTunnel> { key ->
+                                                    PreferredTunnelScreen(key.tunnelNetwork)
+                                                }
                                             },
                                     )
                                 }

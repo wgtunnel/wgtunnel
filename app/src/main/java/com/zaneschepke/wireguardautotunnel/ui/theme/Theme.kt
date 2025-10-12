@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
@@ -106,20 +107,25 @@ fun WireguardAutoTunnelTheme(theme: Theme = Theme.AUTOMATIC, content: @Composabl
         }
     }
 
-    // Make hover/ripple more obvious on TV
     val rippleConfig =
-        if (isTv) {
-            RippleConfiguration(
-                color = colorScheme.outline.copy(alpha = 0.12f),
-                rippleAlpha =
+        RippleConfiguration(
+            color = colorScheme.primary,
+            rippleAlpha =
+                if (isTv)
                     RippleAlpha(
-                        pressedAlpha = 0.7f,
-                        focusedAlpha = 0.6f,
-                        draggedAlpha = 0.9f,
-                        hoveredAlpha = 0.3f,
+                        pressedAlpha = 0.5f,
+                        focusedAlpha = 0.4f,
+                        draggedAlpha = 0.2f,
+                        hoveredAlpha = 0.4f,
+                    )
+                else
+                    RippleAlpha(
+                        pressedAlpha = 0.2f,
+                        focusedAlpha = 0.1f,
+                        draggedAlpha = 0.2f,
+                        hoveredAlpha = 0.1f,
                     ),
-            )
-        } else null
+        )
 
     CompositionLocalProvider(LocalRippleConfiguration provides rippleConfig) {
         MaterialTheme(colorScheme = colorScheme, typography = Typography, content = content)

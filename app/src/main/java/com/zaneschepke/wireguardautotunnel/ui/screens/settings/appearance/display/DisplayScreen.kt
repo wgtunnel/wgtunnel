@@ -3,17 +3,19 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.displ
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
-import com.zaneschepke.wireguardautotunnel.ui.common.button.IconSurfaceButton
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
 
 @Composable
@@ -25,8 +27,8 @@ fun DisplayScreen() {
 
     Column(
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.Top,
+        modifier = Modifier.fillMaxSize(),
     ) {
         enumValues<Theme>().forEach {
             val title =
@@ -38,10 +40,19 @@ fun DisplayScreen() {
                     Theme.DARKER -> stringResource(R.string.darker)
                     Theme.AMOLED -> stringResource(R.string.amoled)
                 }
-            IconSurfaceButton(
+            SurfaceRow(
                 title = title,
+                trailing =
+                    if (appState.theme == it) {
+                        {
+                            Icon(
+                                Icons.Outlined.Check,
+                                stringResource(id = R.string.selected),
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                    } else null,
                 onClick = { sharedViewModel.setTheme(it) },
-                selected = appState.theme == it,
             )
         }
     }

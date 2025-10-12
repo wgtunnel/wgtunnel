@@ -10,6 +10,6 @@ data class SettingUiState(
     val isRemoteEnabled: Boolean = false,
     val isPinLockEnabled: Boolean = false,
     val showDetailedPingStats: Boolean = false,
-    val stateInitialized: Boolean = false,
+    val isLoading: Boolean = true,
     val globalTunnelConf: TunnelConf? = null,
 )

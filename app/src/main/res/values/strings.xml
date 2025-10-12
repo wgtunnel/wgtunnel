@@ -9,6 +9,7 @@
     <string name="kofi_url" translatable="false">https://ko-fi.com/zaneschepke</string>
     <string name="liberapay_url" translatable="false">https://liberapay.com/zaneschepke</string>
     <string name="docs_url" translatable="false">https://wgtunnel.com/docs/getting-started</string>
+    <string name="website_url" translatable="false">https://wgtunnel.com</string>
     <string name="privacy_policy_url" translatable="false">https://wgtunnel.com/privacy-policy/</string>
 	<string name="docs_wildcards" translatable="false" >https://wgtunnel.com/docs/auto-tunneling/#use-name-wildcards</string>
     <string name="matrix_url" translatable="false">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
@@ -17,7 +18,7 @@
     <string name="no_tunnels">No tunnels added yet!</string>
     <string name="tunnels">Tunnels</string>
     <string name="tunnel_mobile_data">Tunnel on mobile data</string>
-	<string name="privacy_policy">View privacy policy</string>
+	<string name="privacy_policy">Privacy policy</string>
     <string name="okay">Okay</string>
     <string name="tunnel_on_ethernet">Tunnel on ethernet</string>
     <string name="prominent_background_location_message">This feature requires background location permission to enable Wi-Fi SSID monitoring even while the application is closed. For more details, please see the Privacy Policy linked on the Support screen.</string>
@@ -60,7 +61,7 @@
     <string name="cancel">Cancel</string>
     <string name="enabled_app_shortcuts">Enable app shortcuts</string>
     <string name="unknown_error">Unknown error occurred</string>
-    <string name="tunnel_on_wifi">Tunnel on untrusted wifi</string>
+    <string name="tunnel_on_wifi">Tunnel on Wi-Fi</string>
     <string name="my_email" translatable="false">support@zaneschepke.com</string>
     <string name="email_subject">WG Tunnel Support</string>
     <string name="email_chooser">Send an email…</string>
@@ -87,7 +88,7 @@
     <string name="enable_app_lock">Enable app lock</string>
     <string name="restart_on_ping">Restart on ping fail (beta)</string>
     <string name="mobile_data_tunnel">Set as mobile data tunnel</string>
-    <string name="set_primary_tunnel">Set as primary tunnel</string>
+    <string name="set_primary_tunnel">Tunnel to be used when no preferred tunnel is configured</string>
     <string name="use_tunnel_on_wifi_name">Use tunnel on wifi name</string>
     <string name="edit_tunnel">Edit tunnel</string>
     <string name="settings">Settings</string>
@@ -123,9 +124,9 @@
 	<string name="dynamic">Dynamic</string>
 	<string name="language">Language</string>
 	<string name="display_theme">Display theme</string>
-	<string name="trusted_wifi_names">Trusted wifi names</string>
-	<string name="add_wifi_name">Add wifi name</string>
-    <string name="primary_tunnel">Primary tunnel</string>
+	<string name="trusted_wifi_names">Trusted Wi-Fi names</string>
+	<string name="add_wifi_name">Add Wi-Fi name</string>
+    <string name="primary_tunnel">Default tunnel</string>
 	<string name="mobile_tunnel">Mobile data tunnel</string>
 	<string name="skip">Skip</string>
 	<string name="launch_app_settings">Launch app settings</string>
@@ -390,7 +391,23 @@
         the Play Store version of this app. Please browse the project\'s webpages to find where to donate.
     </string>
     <string name="delete_active_message">Cannot delete active tunnel.</string>
-    <string name="tunnel_global_overrides">Global tunnel overrides</string>
+    <string name="global_overrides">Global overrides</string>
     <string name="back">Back</string>
     <string name="configuration">Configuration</string>
+    <string name="about">About</string>
+    <string name="resources">Resources</string>
+    <string name="website">App website</string>
+    <string name="contact">Contact</string>
+    <string name="review">Rate app</string>
+    <string name="other">Other</string>
+    <string name="options">Options</string>
+    <string name="general">General</string>
+    <string name="networks">Networks</string>
+    <string name="preferred_tunnel_label">Preferred tunnel:&#160;</string>
+    <string name="preferred_tunnel">Preferred tunnel</string>
+    <string name="mapped">Mapped</string>
+    <string name="tunnel_mapping">Tunnel mapping</string>
+    <string name="wifi_settings">Wi-Fi settings</string>
+    <string name="ping">Ping</string>
+    <string name="ping_monitor">Ping monitor</string>
 </resources>

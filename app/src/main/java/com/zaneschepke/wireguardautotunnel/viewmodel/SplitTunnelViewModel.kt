@@ -43,11 +43,9 @@ constructor(
 
             combine(
                     packagesFlow,
-                    tunnelRepository.userTunnelsFlow.map {
-                        it.firstOrNull { tun -> tun.id == tunnelId }
-                    },
+                    tunnelRepository.flow.map { it.firstOrNull { tun -> tun.id == tunnelId } },
                 ) { packages, tunnel ->
-                    SplitTunnelUiState(packages, tunnel == null, tunnel)
+                    SplitTunnelUiState(packages, false, tunnel)
                 }
                 .collect { reduce { it } }
         }

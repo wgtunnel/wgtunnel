@@ -68,7 +68,7 @@ fun AppListSection(
             label = {},
             leading = { Icon(Icons.Outlined.Search, stringResource(R.string.search)) },
             containerColor = MaterialTheme.colorScheme.surface,
-            modifier = Modifier.fillMaxWidth().height(inputHeight),
+            modifier = Modifier.fillMaxWidth().height(inputHeight).padding(horizontal = 16.dp),
             singleLine = true,
             keyboardOptions =
                 KeyboardOptions(

@@ -30,13 +30,7 @@ constructor(
 
     override val container = container<SupportUiState, Nothing>(SupportUiState())
 
-    fun checkForUpdate() = intent {
-        if (BuildConfig.DEBUG || BuildConfig.FLAVOR == Constants.GOOGLE_PLAY_FLAVOR)
-            return@intent postSideEffect(
-                GlobalSideEffect.Toast(
-                    StringValue.StringResource(R.string.update_check_unsupported)
-                )
-            )
+    fun checkForStandaloneUpdate() = intent {
         postSideEffect(
             GlobalSideEffect.Toast(StringValue.StringResource(R.string.checking_for_update))
         )

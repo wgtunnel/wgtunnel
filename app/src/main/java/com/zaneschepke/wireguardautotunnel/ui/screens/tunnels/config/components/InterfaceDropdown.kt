@@ -2,7 +2,6 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.*
@@ -12,7 +11,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.theme.iconSize
 
 @Composable
 fun InterfaceDropdown(
@@ -29,7 +27,7 @@ fun InterfaceDropdown(
     onMimicSip: () -> Unit,
 ) {
     Column {
-        IconButton(modifier = Modifier.size(iconSize), onClick = { onExpandedChange(true) }) {
+        IconButton(onClick = { onExpandedChange(true) }) {
             Icon(
                 Icons.Rounded.MoreVert,
                 contentDescription = stringResource(R.string.quick_actions),

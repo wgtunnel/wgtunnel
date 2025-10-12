@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.compo
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,6 +28,7 @@ fun SplitOptionSelector(selectedOption: SplitOption, onOptionChange: (SplitOptio
             Modifier.background(color = MaterialTheme.colorScheme.surface)
                 .fillMaxWidth()
                 .height(inputHeight)
+                .padding(horizontal = 16.dp)
     ) {
         SplitOption.entries.forEachIndexed { index, entry ->
             val active = selectedOption == entry

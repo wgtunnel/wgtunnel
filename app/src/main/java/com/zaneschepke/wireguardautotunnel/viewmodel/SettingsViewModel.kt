@@ -47,7 +47,7 @@ constructor(
                             isRemoteEnabled = appState.isRemoteControlEnabled,
                             isPinLockEnabled = appState.isPinLockEnabled,
                             showDetailedPingStats = appState.showDetailedPingStats,
-                            stateInitialized = true,
+                            isLoading = false,
                             globalTunnelConf = tunnel,
                         )
                     }

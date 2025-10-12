@@ -26,10 +26,7 @@ import com.zaneschepke.wireguardautotunnel.domain.model.AppProxySettings
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.SecureScreenFromRecording
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
-import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
-import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItemLabel
-import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionLabelType
-import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
@@ -100,82 +97,68 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
 
     Column(
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
+        modifier = Modifier.fillMaxSize(),
     ) {
-        SurfaceSelectionGroupButton(
-            listOf(
-                SelectionItem(
-                    leading = { Icon(Icons.Outlined.Forward5, contentDescription = null) },
-                    title = {
-                        SelectionItemLabel(
-                            stringResource(R.string.socks_5_proxy),
-                            SelectionLabelType.TITLE,
-                        )
-                    },
-                    trailing = {
-                        ScaledSwitch(checked = socks5Enabled, onClick = { socks5Enabled = it })
-                    },
-                    onClick = { socks5Enabled = !socks5Enabled },
-                )
-            )
-        )
-        if (socks5Enabled) {
-            ConfigurationTextBox(
-                modifier = Modifier.padding(horizontal = 12.dp),
-                hint =
-                    stringResource(
-                        R.string.defaults_to_template,
-                        AppProxySettings.DEFAULT_SOCKS_BIND_ADDRESS,
-                    ),
-                label = stringResource(R.string.socks_5_bind_address),
-                value = socksBindAddress,
-                isError = proxySettingsState.isSocks5BindAddressError,
-                onValueChange = {
-                    if (proxySettingsState.isSocks5BindAddressError)
-                        viewModel.clearSocks5BindError()
-                    socksBindAddress = it
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.Forward5, contentDescription = null) },
+                title = stringResource(R.string.socks_5_proxy),
+                trailing = {
+                    ScaledSwitch(checked = socks5Enabled, onClick = { socks5Enabled = it })
                 },
+                onClick = { socks5Enabled = !socks5Enabled },
             )
+            if (socks5Enabled) {
+                ConfigurationTextBox(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    hint =
+                        stringResource(
+                            R.string.defaults_to_template,
+                            AppProxySettings.DEFAULT_SOCKS_BIND_ADDRESS,
+                        ),
+                    label = stringResource(R.string.socks_5_bind_address),
+                    value = socksBindAddress,
+                    isError = proxySettingsState.isSocks5BindAddressError,
+                    onValueChange = {
+                        if (proxySettingsState.isSocks5BindAddressError)
+                            viewModel.clearSocks5BindError()
+                        socksBindAddress = it
+                    },
+                )
+            }
         }
-        SurfaceSelectionGroupButton(
-            listOf(
-                SelectionItem(
-                    leading = { Icon(Icons.Outlined.Http, contentDescription = null) },
-                    title = {
-                        SelectionItemLabel(
-                            stringResource(R.string.http_proxy),
-                            SelectionLabelType.TITLE,
-                        )
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.Http, contentDescription = null) },
+                title = stringResource(R.string.http_proxy),
+                trailing = { ScaledSwitch(checked = httpEnabled, onClick = { httpEnabled = it }) },
+                onClick = { httpEnabled = !httpEnabled },
+            )
+            if (httpEnabled) {
+                ConfigurationTextBox(
+                    hint =
+                        stringResource(
+                            R.string.defaults_to_template,
+                            AppProxySettings.DEFAULT_HTTP_BIND_ADDRESS,
+                        ),
+                    label = stringResource(R.string.http_bind_address),
+                    value = httpBindAddress,
+                    isError = proxySettingsState.isHttpBindAddressError,
+                    onValueChange = {
+                        if (proxySettingsState.isSocks5BindAddressError)
+                            viewModel.clearHttpBindError()
+                        httpBindAddress = it
                     },
-                    trailing = {
-                        ScaledSwitch(checked = httpEnabled, onClick = { httpEnabled = it })
-                    },
-                    onClick = { httpEnabled = !httpEnabled },
+                    modifier = Modifier.padding(horizontal = 12.dp),
                 )
-            )
-        )
-        if (httpEnabled) {
-            ConfigurationTextBox(
-                hint =
-                    stringResource(
-                        R.string.defaults_to_template,
-                        AppProxySettings.DEFAULT_HTTP_BIND_ADDRESS,
-                    ),
-                label = stringResource(R.string.http_bind_address),
-                value = httpBindAddress,
-                isError = proxySettingsState.isHttpBindAddressError,
-                onValueChange = {
-                    if (proxySettingsState.isSocks5BindAddressError) viewModel.clearHttpBindError()
-                    httpBindAddress = it
-                },
-                modifier = Modifier.padding(horizontal = 12.dp),
-            )
+            }
         }
         if (socks5Enabled || httpEnabled) {
             Column(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
+                modifier = Modifier.padding(horizontal = 16.dp),
             ) {
                 GroupLabel(
                     stringResource(
@@ -194,7 +177,6 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
                     hint = "",
                     keyboardActions = keyboardActions,
                     keyboardOptions = keyboardOptions,
-                    modifier = Modifier.padding(horizontal = 12.dp),
                 )
                 ConfigurationTextBox(
                     value = proxyPassword,
@@ -207,7 +189,6 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
                     hint = "",
                     keyboardActions = keyboardActions,
                     keyboardOptions = keyboardOptions,
-                    modifier = Modifier.padding(horizontal = 12.dp),
                     trailing = {
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
                             Icon(

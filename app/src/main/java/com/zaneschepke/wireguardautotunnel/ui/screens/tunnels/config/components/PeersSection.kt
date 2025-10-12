@@ -17,7 +17,6 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.PeerProxy
-import com.zaneschepke.wireguardautotunnel.ui.theme.iconSize
 
 @Composable
 fun PeersSection(
@@ -44,20 +43,14 @@ fun PeersSection(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        IconButton(
-                            modifier = Modifier.size(iconSize),
-                            onClick = { onRemove(index) },
-                        ) {
+                        IconButton(onClick = { onRemove(index) }) {
                             Icon(
                                 Icons.Rounded.Delete,
                                 contentDescription = stringResource(R.string.delete),
                             )
                         }
                         Column {
-                            IconButton(
-                                modifier = Modifier.size(iconSize),
-                                onClick = { isDropDownExpanded = true },
-                            ) {
+                            IconButton(onClick = { isDropDownExpanded = true }) {
                                 Icon(
                                     Icons.Rounded.MoreVert,
                                     contentDescription = stringResource(R.string.quick_actions),

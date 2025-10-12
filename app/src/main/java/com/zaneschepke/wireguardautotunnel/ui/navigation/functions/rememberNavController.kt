@@ -9,7 +9,10 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.NavController
 @Composable
 fun <T : NavKey> rememberNavController(
     backStack: NavBackStack<NavKey>,
+    isDisclosureShown: Boolean,
     onChange: (NavKey?) -> Unit = {},
 ): NavController {
-    return remember(backStack, onChange) { NavController(backStack, onChange) }
+    return remember(backStack, onChange, isDisclosureShown) {
+        NavController(backStack, isDisclosureShown, onChange)
+    }
 }

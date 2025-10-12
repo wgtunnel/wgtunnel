@@ -7,9 +7,11 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.AutoTunnelUiState
 import com.zaneschepke.wireguardautotunnel.util.RootShellUtils
@@ -30,6 +32,7 @@ constructor(
     private val serviceManager: ServiceManager,
     private val networkMonitor: NetworkMonitor,
     private val globalEffectRepository: GlobalEffectRepository,
+    private val tunnelsRepository: TunnelRepository,
     private val appStateRepository: AppStateRepository,
     private val rootShellUtils: RootShellUtils,
 ) : ContainerHost<AutoTunnelUiState, Nothing>, ViewModel() {
@@ -45,14 +48,16 @@ constructor(
                         serviceManager.autoTunnelService.map { it != null },
                         settingsRepository.flow,
                         appStateRepository.flow,
-                    ) { connectivity, active, settings, appState ->
-                        AutoTunnelUiState(
+                        tunnelsRepository.userTunnelsFlow,
+                    ) { connectivity, active, settings, appState, tunnels ->
+                        state.copy(
                             autoTunnelActive = active,
                             connectivityState = connectivity,
                             settings = settings,
+                            tunnels = tunnels,
                             isBatteryOptimizationShown = appState.isBatteryOptimizationDisableShown,
                             isLocationDisclosureShown = appState.isLocationDisclosureShown,
-                            stateInitialized = true,
+                            isLoading = false,
                         )
                     }
                     .collect { reduce { it } }
@@ -127,6 +132,28 @@ constructor(
 
     fun setDebounceDelay(to: Int) = intent {
         settingsRepository.save(state.settings.copy(debounceDelaySeconds = to))
+    }
+
+    fun setPreferredMobileDataTunnel(tunnel: TunnelConf?) = intent {
+        tunnelsRepository.updateMobileDataTunnel(tunnel)
+    }
+
+    fun setPreferredEthernetTunnel(tunnel: TunnelConf?) = intent {
+        tunnelsRepository.updateEthernetTunnel(tunnel)
+    }
+
+    fun addTunnelNetwork(tunnel: TunnelConf, ssid: String) = intent {
+        tunnelsRepository.save(
+            tunnel.copy(tunnelNetworks = tunnel.tunnelNetworks.toMutableSet().apply { add(ssid) })
+        )
+    }
+
+    fun removeTunnelNetwork(tunnel: TunnelConf, ssid: String) = intent {
+        tunnelsRepository.save(
+            tunnel.copy(
+                tunnelNetworks = tunnel.tunnelNetworks.toMutableSet().apply { remove(ssid) }
+            )
+        )
     }
 
     fun setWifiDetectionMethod(method: WifiDetectionMethod) = intent {

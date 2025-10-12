@@ -48,7 +48,7 @@ fun TunnelStatisticsRow(
 
     statistics?.let { stats ->
         Column(
-            modifier = Modifier.fillMaxWidth().padding(start = 32.dp, bottom = 10.dp, end = 10.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalAlignment = Alignment.Start,
         ) {
@@ -99,7 +99,6 @@ fun TunnelStatisticsRow(
                             }
 
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            // Peer ID row
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -110,7 +109,6 @@ fun TunnelStatisticsRow(
                                     color = textColor,
                                 )
                             }
-                            // RX/TX row
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -140,7 +138,6 @@ fun TunnelStatisticsRow(
                                     Text(formattedTx, style = textStyle, color = textColor)
                                 }
                             }
-                            // Handshake row
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -163,7 +160,6 @@ fun TunnelStatisticsRow(
                                     )
                                 }
                             }
-                            // Ping block (per unique peer key)
                             AnimatedVisibility(visible = pingState != null && pingEnabled) {
                                 pingState?.let {
                                     val reachableText =

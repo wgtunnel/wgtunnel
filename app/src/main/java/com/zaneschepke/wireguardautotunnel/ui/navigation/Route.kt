@@ -46,15 +46,13 @@ sealed class Route : NavKey {
 
     @Keep @Serializable data class SplitTunnelGlobal(val id: Int) : Route()
 
-    @Keep @Serializable data class TunnelAutoTunnel(val id: Int) : Route()
-
     @Keep @Serializable data object Sort : Route()
 
     @Keep @Serializable data object Settings : Route()
 
     @Keep @Serializable data object TunnelMonitoring : Route()
 
-    @Keep @Serializable data object SystemFeatures : Route()
+    @Keep @Serializable data object AndroidIntegrations : Route()
 
     @Keep @Serializable data object Dns : Route()
 
@@ -66,11 +64,22 @@ sealed class Route : NavKey {
 
     @Keep @Serializable data object WifiDetectionMethod : Route()
 
+    @Keep @Serializable data object WifiPreferences : Route()
+
     @Keep @Serializable data object LocationDisclosure : Route()
 
     @Keep @Serializable data object Donate : Route()
 
     @Keep @Serializable data object Addresses : Route()
+
+    @Keep @Serializable data class PreferredTunnel(val tunnelNetwork: TunnelNetwork) : Route()
+}
+
+@Serializable
+enum class TunnelNetwork {
+    MOBILE_DATA,
+    ETHERNET,
+    WIFI,
 }
 
 enum class Tab(
@@ -98,15 +107,17 @@ enum class Tab(
                 Route.Sort,
                 is Route.TunnelOptions,
                 is Route.Config,
-                is Route.SplitTunnel,
-                is Route.TunnelAutoTunnel -> TUNNELS
+                is Route.Lock,
+                is Route.SplitTunnel -> TUNNELS
                 is Route.AutoTunnel,
                 Route.AdvancedAutoTunnel,
                 Route.WifiDetectionMethod,
+                Route.WifiPreferences,
+                is Route.PreferredTunnel,
                 Route.LocationDisclosure -> AUTOTUNNEL
                 is Route.Settings,
                 Route.TunnelMonitoring,
-                Route.SystemFeatures,
+                Route.AndroidIntegrations,
                 Route.Dns,
                 is Route.TunnelGlobals,
                 is Route.ConfigGlobal,

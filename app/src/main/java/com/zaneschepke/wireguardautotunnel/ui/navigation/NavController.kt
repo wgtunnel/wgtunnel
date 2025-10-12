@@ -5,6 +5,7 @@ import androidx.navigation3.runtime.NavKey
 
 class NavController(
     private val backStack: NavBackStack<NavKey>,
+    private val isDisclosureShown: Boolean,
     private val onChange: (previous: NavKey?) -> Unit = {},
 ) {
     fun push(route: NavKey) {
@@ -27,6 +28,9 @@ class NavController(
             backStack.removeLast()
         }
         if (backStack.last() != route) {
+            val route =
+                if (route is Route.AutoTunnel && !isDisclosureShown) Route.LocationDisclosure
+                else route
             backStack.add(route)
         }
     }

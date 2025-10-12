@@ -1,26 +1,32 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.overscroll
 import androidx.compose.foundation.rememberOverscrollEffect
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Circle
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
-import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelsUiState
+import com.zaneschepke.wireguardautotunnel.util.extensions.asColor
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
@@ -34,7 +40,6 @@ fun TunnelList(
     sharedViewModel: SharedAppViewModel,
 ) {
     val navController = LocalNavController.current
-    val isTv = LocalIsAndroidTV.current
     val context = LocalContext.current
 
     val lazyListState = rememberLazyListState()
@@ -58,7 +63,7 @@ fun TunnelList(
         if (tunnelsState.tunnels.isEmpty()) {
             item { GettingStartedLabel(onClick = { context.openWebUrl(it) }) }
         }
-        items(tunnelsState.tunnels.toList(), key = { it.id }) { tunnel ->
+        items(tunnelsState.tunnels, key = { it.id }) { tunnel ->
             val tunnelState =
                 remember(tunnelsState.activeTunnels) {
                     tunnelsState.activeTunnels[tunnel.id] ?: TunnelState()
@@ -67,35 +72,56 @@ fun TunnelList(
                 remember(tunnelsState.selectedTunnels) {
                     tunnelsState.selectedTunnels.any { it.id == tunnel.id }
                 }
-            TunnelRowItem(
-                state = tunnelState,
-                isSelected = selected,
-                tunnel = tunnel,
-                onTvClick = { navController.push(Route.TunnelOptions(tunnel.id)) },
-                onToggleSelectedTunnel = { tunnel -> viewModel.toggleSelectedTunnel(tunnel.id) },
-                onSwitchClick = { checked ->
-                    if (checked) sharedViewModel.startTunnel(tunnel)
-                    else sharedViewModel.stopTunnel(tunnel)
+            var leadingIconColor by
+                remember(
+                    tunnelState.status,
+                    tunnelState.logHealthState,
+                    tunnelState.pingStates,
+                    tunnelState.statistics,
+                ) {
+                    mutableStateOf(tunnelState.health().asColor())
+                }
+
+            SurfaceRow(
+                leading = {
+                    Icon(
+                        Icons.Rounded.Circle,
+                        contentDescription = stringResource(R.string.tunnel_monitoring),
+                        tint = leadingIconColor,
+                        modifier = Modifier.size(14.dp),
+                    )
                 },
-                isTv = isTv,
-                isPingEnabled = tunnelsState.isPingEnabled,
-                showDetailedStats = tunnelsState.showPingStats,
-                modifier =
-                    (if (!isTv)
-                        Modifier.combinedClickable(
-                            onClick = {
-                                if (tunnelsState.selectedTunnels.isNotEmpty()) {
-                                    viewModel.toggleSelectedTunnel(tunnel.id)
-                                } else {
-                                    navController.push(Route.TunnelOptions(tunnel.id))
-                                    viewModel.clearSelectedTunnels()
-                                }
-                            },
-                            onLongClick = { viewModel.toggleSelectedTunnel(tunnel.id) },
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                        )
-                    else Modifier),
+                title = tunnel.tunName,
+                onClick = {
+                    if (tunnelsState.selectedTunnels.isNotEmpty()) {
+                        viewModel.toggleSelectedTunnel(tunnel.id)
+                    } else {
+                        navController.push(Route.TunnelOptions(tunnel.id))
+                        viewModel.clearSelectedTunnels()
+                    }
+                },
+                selected = selected,
+                expandedContent =
+                    if (!tunnelState.status.isDown()) {
+                        {
+                            TunnelStatisticsRow(
+                                tunnelState,
+                                tunnelsState.isPingEnabled,
+                                tunnelsState.showPingStats,
+                            )
+                        }
+                    } else null,
+                onLongClick = { viewModel.toggleSelectedTunnel(tunnel.id) },
+                trailing = { modifier ->
+                    SwitchWithDivider(
+                        checked = tunnelState.status.isUpOrStarting(),
+                        onClick = { checked ->
+                            if (checked) sharedViewModel.startTunnel(tunnel)
+                            else sharedViewModel.stopTunnel(tunnel)
+                        },
+                        modifier = modifier,
+                    )
+                },
             )
         }
     }

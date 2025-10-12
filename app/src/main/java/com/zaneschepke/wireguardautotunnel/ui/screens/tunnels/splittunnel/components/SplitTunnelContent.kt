@@ -2,8 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.compo
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +20,7 @@ fun SplitTunnelContent(
     Column(
         verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = Modifier.fillMaxSize(),
     ) {
         SplitOptionSelector(
             selectedOption = splitConfig.first,
