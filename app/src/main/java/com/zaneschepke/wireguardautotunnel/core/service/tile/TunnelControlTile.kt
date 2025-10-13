@@ -1,6 +1,8 @@
 package com.zaneschepke.wireguardautotunnel.core.service.tile
 
+import android.content.Intent
 import android.os.Build
+import android.os.IBinder
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.lifecycle.Lifecycle
@@ -166,6 +168,18 @@ class TunnelControlTile : TileService(), LifecycleOwner {
             }
             .onFailure { Timber.e(it) }
     }
+
+    /* This works around an annoying unsolved frameworks bug some people are hitting. */
+    override fun onBind(intent: Intent): IBinder? {
+        var ret: IBinder? = null
+        try {
+            ret = super.onBind(intent)
+        } catch (_: Throwable) {
+            Timber.e("Failed to bind to TunnelControlTile")
+        }
+        return ret
+    }
+
 
     override val lifecycle: Lifecycle
         get() = lifecycleRegistry
