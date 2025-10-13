@@ -122,13 +122,14 @@ fun SurfaceRow(
                         description()
                     }
                 }
-            }
-            if (trailing != null) {
-                trailing(
-                    Modifier.focusRequester(trailingFocusRequester).focusProperties {
-                        left = mainFocusRequester
-                    }
-                )
+                Spacer(Modifier.weight(1f))
+                if (trailing != null) {
+                    trailing(
+                        Modifier.focusRequester(trailingFocusRequester).focusProperties {
+                            left = mainFocusRequester
+                        }
+                    )
+                }
             }
         }
         if (expandedContent != null) {
