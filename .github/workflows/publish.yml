@@ -86,8 +86,9 @@ jobs:
           tag: "latest"
           message: "Automated tag for HEAD commit"
           force_push_tag: true
-          github_token: ${{ secrets.PAT }}
+          github_token: ${{ github.token }}
           tag_exists_error: false
+
       - name: Get latest release
         id: latest_release
         uses: kaliber5/action-get-release@v1
@@ -99,7 +100,7 @@ jobs:
         id: changelog
         uses: requarks/changelog-action@v1
         with:
-          token: ${{ secrets.PAT }}
+          token: ${{ github.token }}
           toTag: ${{ steps.latest_release.outputs.tag_name }}
           fromTag: "latest"
           writeToFile: false
@@ -161,7 +162,7 @@ jobs:
           files: |
             ${{ github.workspace }}/temp/**/*.apk
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+          GITHUB_TOKEN: ${{ github.token }}
 
   publish-fdroid-public:
     runs-on: ubuntu-latest
