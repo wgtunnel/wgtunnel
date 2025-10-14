@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="no_tunnels">您还没有添加隧道！</string>
     <string name="tunnels">隧道列表</string>
@@ -55,7 +55,7 @@
     <string name="email_subject">WG Tunnel 支持</string>
     <string name="auto_tunnel_title">自动隧道服务</string>
     <string name="delete_tunnel">删除隧道</string>
-    <string name="delete_tunnel_message">确定删除这个隧道吗？</string>
+    <string name="delete_tunnel_message">确定删除所选隧道吗？</string>
     <string name="location_services_missing_message">此应用不会在您的设备上检测任何已开启的定位服务。根据不同的设备，可能会导致无法获得不可信 WiFi 的名称。您想继续吗？</string>
     <string name="yes">是</string>
     <string name="all">全部</string>
@@ -338,4 +338,5 @@
     <string name="donation_closing">我的梦想是为您全职开发本项目。</string>
     <string name="donation_signoff">再次感谢，</string>
     <string name="google_donation_message">不幸的是，由于 Google 的政策，本应用的 Play Store 版本不允许出现捐赠链接。请浏览本项目网页寻找捐赠地址。</string>
+    <string name="delete_active_message">无法删除活跃隧道。</string>
 </resources>

@@ -1,6 +1,0 @@
-Was ist neu?
-- Neue Integration von Remote-Apps
-- Kopieren des aktiven Wifi-Namens in die Zwischenablage
-- Fehler beim Herunterfahren des Tunnels behoben
-- Fix für DNS-Standard-Server-Fehler, der Telefon-DNS bevorzugt
-- Fix für Ipv6 statische Peer-Host-Konfigurationen
