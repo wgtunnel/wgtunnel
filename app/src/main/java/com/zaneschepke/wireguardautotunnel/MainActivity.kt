@@ -71,6 +71,7 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.settings.dns.DnsSettingsSc
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.globals.TunnelGlobalsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.TunnelMonitoringScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.logs.LogsScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.ping.PingTargetScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.system.AndroidIntegrationsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.SupportScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.DonateScreen
@@ -449,6 +450,7 @@ class MainActivity : AppCompatActivity() {
                                                 entry<Route.PreferredTunnel> { key ->
                                                     PreferredTunnelScreen(key.tunnelNetwork)
                                                 }
+                                                entry<Route.PingTarget> { PingTargetScreen() }
                                             },
                                     )
                                 }

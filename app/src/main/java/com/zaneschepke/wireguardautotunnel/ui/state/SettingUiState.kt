@@ -12,4 +12,5 @@ data class SettingUiState(
     val showDetailedPingStats: Boolean = false,
     val isLoading: Boolean = true,
     val globalTunnelConf: TunnelConf? = null,
+    val tunnels: List<TunnelConf> = emptyList(),
 )

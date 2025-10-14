@@ -76,8 +76,7 @@ fun SurfaceRow(
         ) {
             Row(
                 modifier =
-                    Modifier.weight(1f)
-                        .focusRequester(mainFocusRequester)
+                    Modifier.focusRequester(mainFocusRequester)
                         .focusProperties { right = trailingFocusRequester }
                         .run {
                             if (onClick != null) {
@@ -108,7 +107,7 @@ fun SurfaceRow(
                     }
                 }
                 Column(
-                    modifier = Modifier.padding(end = 16.dp),
+                    modifier = Modifier.padding(end = 16.dp).weight(1f),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     Text(
@@ -122,7 +121,6 @@ fun SurfaceRow(
                         description()
                     }
                 }
-                Spacer(Modifier.weight(1f))
                 if (trailing != null) {
                     trailing(
                         Modifier.focusRequester(trailingFocusRequester).focusProperties {

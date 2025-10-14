@@ -45,7 +45,7 @@ fun TrustedNetworkTextBox(
 
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = modifier.animateContentSize().imePadding(),
+        modifier = modifier.animateContentSize(),
     ) {
         FlowRow(
             modifier = Modifier.fillMaxWidth().animateContentSize(),

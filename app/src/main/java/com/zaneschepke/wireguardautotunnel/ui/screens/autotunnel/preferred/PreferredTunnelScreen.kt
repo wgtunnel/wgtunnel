@@ -2,18 +2,11 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.preferred
 
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.overscroll
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,12 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -182,16 +170,9 @@ fun PreferredTunnelScreen(
                                 }
                                 if (selectedTunnel?.id == tunnel.id) {
                                     val focusRequester = remember { FocusRequester() }
-                                    val bringIntoViewRequester = remember {
-                                        BringIntoViewRequester()
-                                    }
                                     val keyboardController = LocalSoftwareKeyboardController.current
 
                                     var currentText by remember { mutableStateOf("") }
-
-                                    LaunchedEffect(tunnel.tunnelNetworks.size) {
-                                        bringIntoViewRequester.bringIntoView()
-                                    }
 
                                     LaunchedEffect(Unit) {
                                         focusRequester.requestFocus()
@@ -219,10 +200,7 @@ fun PreferredTunnelScreen(
                                                 { WildcardsLabel() }
                                             } else null,
                                         modifier =
-                                            Modifier.fillMaxWidth()
-                                                .focusRequester(focusRequester)
-                                                .bringIntoViewRequester(bringIntoViewRequester)
-                                                .imePadding(),
+                                            Modifier.fillMaxWidth().focusRequester(focusRequester),
                                         singleLine = true,
                                         keyboardOptions =
                                             KeyboardOptions(

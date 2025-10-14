@@ -272,11 +272,9 @@
     <string name="pinger_bounce_recovery">Pinger restart failed. Tunnel recovered with old addresses.</string>
     <string name="bounce_failed_template">Pinger failed to recovery tunnel with error: %1$s</string>
     <string name="tunnel_monitoring">Tunnel monitoring</string>
-    <string name="set_custom_ping_target">Custom ping target (optional)</string>
+    <string name="set_custom_ping_target">Custom ping targets</string>
     <string name="ip_or_hostname">IP or hostname</string>
-    <string name="ping_target_description">Used if no internal IP is available (e.g., in full-tunnel configs). Leaving
-        blank defaults to Cloudflare.
-    </string>
+    <string name="ping_target_description">Defaults to an internal tunnel IP for split configurations or Cloudflare for full tunnel configurations.</string>
     <string name="tunnel_ping_interval">Tunnel ping interval</string>
     <string name="attempts_per_interval">Ping attempts per interval</string>
     <string name="ping_timeout">Tunnel ping timeout</string>
@@ -411,5 +409,6 @@
     <string name="ping">Ping</string>
     <string name="ping_monitor">Ping monitor</string>
     <string name="backup_and_restore">Backup and restore</string>
-    <string name="reliability">Reliability</string>
+    <string name="ping_target">Ping target</string>
+    <string name="set_ping_target">Set ping target</string>
 </resources>

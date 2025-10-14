@@ -10,7 +10,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
@@ -41,6 +46,11 @@ fun CustomTextField(
     interactionSource: MutableInteractionSource = MutableInteractionSource(),
 ) {
     val space = " "
+    var isFocused by remember { mutableStateOf(false) }
+    val cursorBrush =
+        if (isFocused) SolidColor(MaterialTheme.colorScheme.primary)
+        else SolidColor(Color.Transparent)
+
     BasicTextField(
         value = value,
         textStyle = textStyle,
@@ -48,8 +58,8 @@ fun CustomTextField(
         keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions,
         readOnly = readOnly,
-        cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
-        modifier = modifier,
+        cursorBrush = cursorBrush,
+        modifier = modifier.onFocusChanged { focusState -> isFocused = focusState.isFocused },
         interactionSource = interactionSource,
         enabled = enabled,
         singleLine = singleLine,
@@ -79,7 +89,7 @@ fun CustomTextField(
                         focusedContainerColor = containerColor,
                         unfocusedContainerColor = containerColor,
                         focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        cursorColor = MaterialTheme.colorScheme.onSurface,
+                        cursorColor = MaterialTheme.colorScheme.primary,
                     ),
             enabled = enabled,
             label = label,
@@ -97,12 +107,13 @@ fun CustomTextField(
                                 errorContainerColor = containerColor,
                                 disabledLabelColor = MaterialTheme.colorScheme.onSurface,
                                 disabledContainerColor = containerColor,
-                                focusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
+                                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                                unfocusedIndicatorColor = MaterialTheme.colorScheme.outline,
                                 focusedLabelColor = MaterialTheme.colorScheme.onSurface,
                                 focusedContainerColor = containerColor,
                                 unfocusedContainerColor = containerColor,
                                 focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                                cursorColor = MaterialTheme.colorScheme.onSurface,
+                                cursorColor = MaterialTheme.colorScheme.primary,
                             ),
                     shape = RoundedCornerShape(8.dp),
                     focusedBorderThickness = 0.5.dp,

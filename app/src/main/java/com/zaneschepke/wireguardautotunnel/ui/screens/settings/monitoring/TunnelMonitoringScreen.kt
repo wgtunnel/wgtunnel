@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Adjust
 import androidx.compose.material.icons.outlined.NetworkPing
 import androidx.compose.material.icons.outlined.QueryStats
 import androidx.compose.material.icons.outlined.Replay
@@ -109,6 +110,11 @@ fun TunnelMonitoringScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     )
                 },
                 onClick = { viewModel.setDetailedPingStats(!settingsState.showDetailedPingStats) },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.Adjust, contentDescription = null) },
+                title = stringResource(R.string.set_custom_ping_target),
+                onClick = { navController.push(Route.PingTarget) },
             )
         }
         Column {

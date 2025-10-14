@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
-import com.zaneschepke.wireguardautotunnel.ui.common.SecureScreenFromRecording
+import com.zaneschepke.wireguardautotunnel.ui.common.security.SecureScreenFromRecording
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components.AddPeerButton
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components.InterfaceSection
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components.PeersSection

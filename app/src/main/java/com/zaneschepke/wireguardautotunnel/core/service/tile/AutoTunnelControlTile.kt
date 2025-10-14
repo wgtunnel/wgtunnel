@@ -102,7 +102,6 @@ class AutoTunnelControlTile : TileService(), LifecycleOwner {
         return ret
     }
 
-
     override val lifecycle: Lifecycle
         get() = lifecycleRegistry
 }

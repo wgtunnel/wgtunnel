@@ -39,8 +39,9 @@ constructor(
                         settingsRepository.flow,
                         appStateRepository.flow,
                         tunnelsRepository.globalTunnelFlow,
-                    ) { settings, appState, tunnel ->
-                        SettingUiState(
+                        tunnelsRepository.userTunnelsFlow,
+                    ) { settings, appState, tunnel, tunnels ->
+                        state.copy(
                             settings = settings,
                             isLocalLoggingEnabled = appState.isLocalLogsEnabled,
                             remoteKey = appState.remoteKey,
@@ -49,6 +50,7 @@ constructor(
                             showDetailedPingStats = appState.showDetailedPingStats,
                             isLoading = false,
                             globalTunnelConf = tunnel,
+                            tunnels = tunnels,
                         )
                     }
                     .collect { reduce { it } }
@@ -111,6 +113,10 @@ constructor(
     fun setRemoteEnabled(to: Boolean) = intent {
         appStateRepository.setRemoteKey(UUID.randomUUID().toString())
         appStateRepository.setIsRemoteControlEnabled(to)
+    }
+
+    fun setPingTarget(tunnel: TunnelConf, target: String?) = intent {
+        tunnelsRepository.save(tunnel.copy(pingTarget = target?.ifBlank { null }))
     }
 
     fun setDnsProvider(dnsProvider: DnsProvider) = intent {

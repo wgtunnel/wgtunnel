@@ -73,6 +73,8 @@ sealed class Route : NavKey {
     @Keep @Serializable data object Addresses : Route()
 
     @Keep @Serializable data class PreferredTunnel(val tunnelNetwork: TunnelNetwork) : Route()
+
+    @Keep @Serializable data object PingTarget : Route()
 }
 
 @Serializable
@@ -126,6 +128,7 @@ enum class Tab(
                 Route.Appearance,
                 Route.Language,
                 Route.Display,
+                Route.PingTarget,
                 Route.Logs -> SETTINGS
                 is Route.Support,
                 Route.License,

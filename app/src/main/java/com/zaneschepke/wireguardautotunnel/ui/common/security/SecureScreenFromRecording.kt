@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.ui.common
+package com.zaneschepke.wireguardautotunnel.ui.common.security
 
 import android.view.WindowManager
 import androidx.compose.runtime.Composable

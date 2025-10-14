@@ -180,7 +180,6 @@ class TunnelControlTile : TileService(), LifecycleOwner {
         return ret
     }
 
-
     override val lifecycle: Lifecycle
         get() = lifecycleRegistry
 }

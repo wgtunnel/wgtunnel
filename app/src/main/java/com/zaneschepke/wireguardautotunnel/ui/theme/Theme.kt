@@ -10,10 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 
 private val DarkColorScheme =
@@ -94,16 +94,13 @@ fun WireguardAutoTunnelTheme(theme: Theme = Theme.AUTOMATIC, content: @Composabl
 
     val view = LocalView.current
     if (!view.isInEditMode) {
-        @Suppress("DEPRECATION")
         SideEffect {
             val window = (view.context as Activity).window
             WindowCompat.setDecorFitsSystemWindows(window, false)
-            window.navigationBarColor = Color.Transparent.toArgb()
-            window.statusBarColor = Color.Transparent.toArgb()
-            WindowCompat.getInsetsController(window, window.decorView).apply {
-                isAppearanceLightStatusBars = !isDark
-                isAppearanceLightNavigationBars = !isDark
-            }
+            // For API 33+, use WindowInsetsControllerCompat for appearance control
+            val insetsController = WindowInsetsControllerCompat(window, window.decorView)
+            insetsController.isAppearanceLightStatusBars = !isDark
+            insetsController.isAppearanceLightNavigationBars = !isDark
         }
     }
 
