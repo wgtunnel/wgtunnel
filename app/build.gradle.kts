@@ -182,6 +182,7 @@ dependencies {
     // Networking and serialization
     implementation(libs.bundles.ktor.client)
     implementation(libs.bundles.kotlinx.serialization)
+    implementation(libs.ipaddress)
 
     // State management
     implementation(libs.bundles.orbit.mvi)

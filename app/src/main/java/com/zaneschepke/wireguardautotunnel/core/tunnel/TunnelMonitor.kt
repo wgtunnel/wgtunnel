@@ -15,6 +15,9 @@ import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import dagger.hilt.android.scopes.ServiceScoped
+import inet.ipaddr.AddressValueException
+import inet.ipaddr.IPAddress
+import inet.ipaddr.IPAddressString
 import io.ktor.util.collections.*
 import javax.inject.Inject
 import kotlin.collections.mapValues
@@ -157,21 +160,49 @@ constructor(
 
                             val host =
                                 tunnelConf.pingTarget
-                                    ?: {
-                                            val parts = allowedIpStr.split("/")
-                                            val internalIp =
-                                                if (parts.size == 2) parts[0] else allowedIpStr
+                                    ?: run {
+                                        val parts = allowedIpStr.split("/")
+                                        val internalIp =
+                                            if (parts.size == 2) parts[0] else allowedIpStr
+                                        val prefix =
+                                            if (parts.size == 2) parts[1].toIntOrNull() ?: 32
+                                            else 32
+                                        val cleanedIp = internalIp.removeSurrounding("[", "]")
+                                        val defaultCloudflare =
+                                            if (cleanedIp.contains(":")) CLOUDFLARE_IPV6_IP
+                                            else CLOUDFLARE_IPV4_IP
 
-                                            val prefix =
-                                                if (parts.size == 2) parts[1].toIntOrNull() ?: 32
-                                                else 32
-                                            if (prefix <= 1) {
-                                                CLOUDFLARE_IPV4_IP
-                                            } else {
-                                                internalIp.removeSurrounding("[", "]")
+                                        if (prefix <= 1) {
+                                            defaultCloudflare
+                                        } else {
+                                            try {
+                                                val addrStr = IPAddressString(cleanedIp)
+                                                val addr: IPAddress =
+                                                    addrStr.address
+                                                        ?: throw AddressValueException(
+                                                            "Invalid IP: $cleanedIp"
+                                                        )
+                                                val isIpv6 = addr.isIPv6
+                                                val cloudflareIp =
+                                                    if (isIpv6) CLOUDFLARE_IPV6_IP
+                                                    else CLOUDFLARE_IPV4_IP
+                                                val max = if (isIpv6) 128 else 32
+
+                                                if (prefix == max) {
+                                                    addr.toCanonicalString()
+                                                } else {
+                                                    val nextAddr: IPAddress? = addr.increment(1)
+                                                    nextAddr?.toCanonicalString() ?: cloudflareIp
+                                                }
+                                            } catch (e: AddressValueException) {
+                                                Timber.e(
+                                                    e,
+                                                    "Failed to parse or increment IP: $cleanedIp",
+                                                )
+                                                defaultCloudflare
                                             }
                                         }
-                                        .invoke()
+                                    }
 
                             val attemptTime = System.currentTimeMillis()
                             runCatching {
@@ -297,7 +328,6 @@ constructor(
 
         const val CLOUDFLARE_IPV6_IP = "2606:4700:4700::1111"
         const val CLOUDFLARE_IPV4_IP = "1.1.1.1"
-
         const val STATS_DELAY = 1_000L
     }
 }
