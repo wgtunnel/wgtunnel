@@ -70,7 +70,6 @@
     <string name="error_ssid_exists">SSID already exists</string>
     <string name="error_root_denied">Root shell denied</string>
     <string name="error_no_file_explorer">No file explorer installed</string>
-    <string name="location_services_missing_message">The app is not detecting any location services enabled on your device. Depending on the device, this could cause the untrusted wifi feature to fail to read the wifi name. Would you like to continue anyways?</string>
     <string name="auto_tunnel_title">Auto-tunnel service</string>
     <string name="delete_tunnel">Delete tunnel</string>
     <string name="delete_tunnel_message">Are you sure you would like to delete the selected tunnels?</string>
@@ -79,17 +78,13 @@
     <string name="no_email_detected">No email app detected</string>
     <string name="no_browser_detected">No browser detected</string>
     <string name="open_issue">Open an issue</string>
-    <string name="read_logs">Read the logs</string>
     <string name="auto">(Auto)</string>
     <string name="incorrect_pin">Pin is incorrect</string>
     <string name="pin_created">Pin successfully created</string>
     <string name="enter_pin">Enter PIN</string>
     <string name="create_pin">Create PIN</string>
     <string name="enable_app_lock">Enable app lock</string>
-    <string name="restart_on_ping">Restart on ping fail (beta)</string>
-    <string name="mobile_data_tunnel">Set as mobile data tunnel</string>
     <string name="set_primary_tunnel">Tunnel used when no preferred tunnel is configured</string>
-    <string name="use_tunnel_on_wifi_name">Use tunnel on wifi name</string>
     <string name="edit_tunnel">Edit tunnel</string>
     <string name="settings">Settings</string>
     <string name="support">Support</string>
@@ -140,12 +135,10 @@
 	<string name="monitoring_state_changes">Monitoring state changes</string>
 	<string name="donate">Donate to project</string>
 	<string name="local_logging">Local logs monitor</string>
-	<string name="enable_local_logging">Enable local logging</string>
     <string name="add_from_clipboard">Add from clipboard</string>
 	<string name="stop_on_no_internet">Stop on no internet</string>
 	<string name="stop_on_internet_loss">Stop tunnel on internet loss</string>
 	<string name="ethernet_tunnel">Ethernet tunnel</string>
-	<string name="set_ethernet_tunnel">Set as ethernet tunnel</string>
 	<string name="native_kill_switch">Native kill switch</string>
     <string name="allow_lan_traffic">Allow LAN traffic</string>
 	<string name="bypass_lan_for_kill_switch">Bypass LAN for kill switch</string>
@@ -155,7 +148,6 @@
 	<string name="auto_tunnel_channel_description">A channel for auto-tunnel state notifications</string>
 	<string name="stop">Stop</string>
 	<string name="splt_tunneling">Split tunneling</string>
-	<string name="tunnel_specific_settings">Tunnel specific settings</string>
 	<string name="show_scripts">Show scripts</string>
 	<string name="pre_up">Pre up</string>
 	<string name="post_up">Post up</string>
@@ -192,10 +184,8 @@
     <string name="camera_permission_required">Camera permission required</string>
 	<string name="export_failed">Export failed</string>
 	<string name="tunnel_error_template">Tunnel failed with: %1$s</string>
-	<string name="wifi_name_template">Active: %1$s</string>
 	<string name="remote_key_template">Key: %1$s</string>
     <string name="version_template">Version: %1$s</string>
-    <string name="security_template">Security: %1$s</string>
     <string name="current_template">Current: %1$s</string>
     <string name="flavor_template">Flavor: %1$s</string>
     <string name="expiremental_template">%1$s (experimental)</string>
@@ -280,9 +270,6 @@
     <string name="ping_timeout">Tunnel ping timeout</string>
     <string name="timeout_all_attempts">Total timeout for all attempts</string>
     <string name="display_detailed_ping_stats">Display detailed ping stats</string>
-    <string name="monitoring_ping">Enable ping tunnel monitoring</string>
-    <string name="rx_template">"RX: %1$s MB"</string>
-    <string name="tx_template">"TX: %1$s MB"</string>
     <string name="reachable_template">Reachable: %1$s</string>
     <string name="ping_success_template">Last successful ping: %1$s</string>
     <string name="sec_ago_template">%1$s seconds ago</string>
@@ -324,7 +311,6 @@
     <string name="comma_separated">Comma separated</string>
     <string name="server_port">Server:Port</string>
     <string name="new_tunnel">New tunnel</string>
-    <string name="system_features">System features</string>
     <string name="read_failed">Failed to read data.</string>
     <string name="invalid_key">Invalid key</string>
     <string name="invalid_number">Invalid number</string>
@@ -411,4 +397,12 @@
     <string name="backup_and_restore">Backup and restore</string>
     <string name="ping_target">Ping target</string>
     <string name="set_ping_target">Set ping target</string>
+    <string name="mobile_data">Mobile data</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="unknown">Unknown</string>
+    <string name="no_network">No network connected</string>
+    <string name="active_network">Active Network:&#160;</string>
+    <string name="security_type">Security:&#160;</string>
+    <string name="network_name">Network:&#160;</string>
+    <string name="wifi">Wi-Fi</string>
 </resources>

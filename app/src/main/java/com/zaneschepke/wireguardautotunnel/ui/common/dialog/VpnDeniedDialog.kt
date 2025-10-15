@@ -1,14 +1,15 @@
 package com.zaneschepke.wireguardautotunnel.ui.common.dialog
 
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.withLink
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.util.extensions.launchVpnSettings
 
@@ -19,11 +20,17 @@ fun VpnDeniedDialog(show: Boolean, onDismiss: () -> Unit) {
         val alwaysOnDescription = buildAnnotatedString {
             append(stringResource(R.string.always_on_message))
             append(" ")
-            pushStringAnnotation(tag = "vpnSettings", annotation = "")
-            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+            withLink(
+                LinkAnnotation.Clickable(
+                    tag = "vpnSettings",
+                    styles =
+                        TextLinkStyles(style = SpanStyle(color = MaterialTheme.colorScheme.primary)),
+                ) {
+                    context.launchVpnSettings()
+                }
+            ) {
                 append(stringResource(id = R.string.vpn_settings))
             }
-            pop()
             append(" ")
             append(stringResource(R.string.always_on_message2))
             append(".")
@@ -33,18 +40,13 @@ fun VpnDeniedDialog(show: Boolean, onDismiss: () -> Unit) {
             onAttest = { onDismiss() },
             title = { Text(text = stringResource(R.string.vpn_denied_dialog_title)) },
             body = {
-                ClickableText(
+                Text(
                     text = alwaysOnDescription,
                     style =
                         MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.outline
                         ),
-                ) {
-                    alwaysOnDescription
-                        .getStringAnnotations(tag = "vpnSettings", it, it)
-                        .firstOrNull()
-                        ?.let { context.launchVpnSettings() }
-                }
+                )
             },
             confirmText = { Text(text = stringResource(R.string.okay)) },
         )

@@ -1,6 +1,5 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.settings.globals
 
-import android.R.attr.onClick
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

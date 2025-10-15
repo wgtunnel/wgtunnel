@@ -1,6 +1,5 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components
 
-import android.R.attr.text
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*

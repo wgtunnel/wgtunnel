@@ -84,7 +84,6 @@
     <string name="hide_amnezia_properties">Peida Amnezia seadistused</string>
     <string name="donate">Toeta projekti rahaliselt</string>
     <string name="local_logging">Kohalik logimine</string>
-    <string name="enable_local_logging">Logi andmed nutiseadmes</string>
     <string name="add_from_clipboard">Lisa lõikelaualt</string>
     <string name="appearance">Välimus</string>
     <string name="notifications">Teavitused</string>
@@ -118,7 +117,6 @@
     <string name="no_email_detected">E-posti rakendust ei õnnestu tuvastada</string>
     <string name="no_browser_detected">Veebibrauserit ei õnnestu tuvastada</string>
     <string name="open_issue">Alusta veateate koostamist</string>
-    <string name="read_logs">Loe logisid</string>
     <string name="auto">(automaatne)</string>
     <string name="incorrect_pin">PIN-kood pole õige</string>
     <string name="pin_created">PIN-koodi loomine õnnestus</string>
@@ -140,10 +138,8 @@
     <string name="skip">Jäta vahele</string>
     <string name="export_failed">Eksportimine ei õnnestunud</string>
     <string name="tunnel_error_template">Viga tunneli töös: %1$s</string>
-    <string name="wifi_name_template">Aktiivne: %1$s</string>
     <string name="remote_key_template">Võti: %1$s</string>
     <string name="version_template">Versioon: %1$s</string>
-    <string name="security_template">Turvalisus: %1$s</string>
     <string name="flavor_template">Levitusviis: %1$s</string>
     <string name="config_error">Vigane seadistus</string>
     <string name="kernel_name_error">Viga kerneli mooduli nimes</string>
@@ -164,7 +160,6 @@
     <string name="learn_more">Lisateave</string>
     <string name="monitoring_state_changes">Jälgin oleku muudatusi</string>
     <string name="tunnel_running">Tunnel töötab</string>
-    <string name="tunnel_specific_settings">Tunnelikohased seadistused</string>
     <string name="start_auto">Käivita automaatne tunneldus</string>
     <string name="stop_auto">Peata automaatne tunneldus</string>
     <string name="quick_actions">Kiirtoimingud</string>
@@ -178,9 +173,6 @@
     <string name="stop_on_no_internet">Peata internetiühenduse puudumisel</string>
     <string name="stop_on_internet_loss">Peata tunnel internetiühenduse kadumisel</string>
     <string name="enable_app_lock">Kasuta rakenduse lukustust</string>
-    <string name="restart_on_ping">Pingimise mittetoimimisel käivita uuesti (beeta)</string>
-    <string name="mobile_data_tunnel">Määra mobiilse andmeside tunneliks</string>
-    <string name="use_tunnel_on_wifi_name">Kasuta tunnelit WiFi nime puhul</string>
     <string name="kernel">Tuum/Kernel</string>
     <string name="mobile_tunnel">Mobiilside andmetunnel</string>
     <string name="launch_app_settings">Käivita rakenduse seadistused</string>
@@ -213,7 +205,6 @@
     <string name="current_template">Praegune: %1$s</string>
     <string name="multiple">Mitmikvalik</string>
     <string name="enabled_app_shortcuts">Kasuta rakenduse otseteid</string>
-    <string name="location_services_missing_message">Rakendus ei suuda sinu nutiseadmes tuvastada asukohateenuste toimimist. Sõltuvalt sinu nutiseadmest võib see tähendada, et ebausaldusväärse WiFi-ühenduse identifitseerimine nime alusel ei pruugi toimida. Kas sa ikkagi soovid jätkata?</string>
     <string name="auto_tunnel_title">Tunneli automaatne loomine</string>
     <string name="auto_tunnel_not_running">Tunneli automaatne käivitamine pole kasutusel</string>
     <string name="auto_tunnel_running">Tunneli automaatne käivitamine on kasutusel</string>

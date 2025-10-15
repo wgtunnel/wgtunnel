@@ -7,11 +7,7 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
-import com.zaneschepke.wireguardautotunnel.domain.state.FailureReason
-import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
-import com.zaneschepke.wireguardautotunnel.domain.state.PingState
-import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
-import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
+import com.zaneschepke.wireguardautotunnel.domain.state.*
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import dagger.hilt.android.scopes.ServiceScoped
@@ -20,7 +16,6 @@ import inet.ipaddr.IPAddress
 import inet.ipaddr.IPAddressString
 import io.ktor.util.collections.*
 import javax.inject.Inject
-import kotlin.collections.mapValues
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber

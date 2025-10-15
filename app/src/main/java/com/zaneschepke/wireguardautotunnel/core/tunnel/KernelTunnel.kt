@@ -16,17 +16,13 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.asTunnelState
 import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendCoreException
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
 class KernelTunnel

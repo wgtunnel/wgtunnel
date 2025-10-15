@@ -7,13 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Adjust
-import androidx.compose.material.icons.outlined.NetworkPing
-import androidx.compose.material.icons.outlined.QueryStats
-import androidx.compose.material.icons.outlined.Replay
-import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.material.icons.outlined.TimerOff
-import androidx.compose.material.icons.outlined.ViewHeadline
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text

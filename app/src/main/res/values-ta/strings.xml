@@ -46,7 +46,6 @@
     <string name="no_email_detected">மின்னஞ்சல் பயன்பாடு எதுவும் கண்டறியப்படவில்லை</string>
     <string name="no_browser_detected">உலாவி கண்டறியப்படவில்லை</string>
     <string name="open_issue">ஒரு சிக்கலைத் திறக்கவும்</string>
-    <string name="read_logs">பதிவுகளைப் படியுங்கள்</string>
     <string name="auto">(ஆட்டோ)</string>
     <string name="incorrect_pin">முள் தவறானது</string>
     <string name="pin_created">முள் வெற்றிகரமாக உருவாக்கப்பட்டது</string>
@@ -101,12 +100,10 @@
     <string name="monitoring_state_changes">மாநில மாற்றங்களை கண்காணித்தல்</string>
     <string name="donate">திட்டத்திற்கு நன்கொடை</string>
     <string name="local_logging">உள்ளூர்வாசிகள்</string>
-    <string name="enable_local_logging">உள்ளக பதிவுகளை இயக்கவும்</string>
     <string name="add_from_clipboard">கிளிப்போர்டில் இருந்து சேர்க்கவும்</string>
     <string name="stop_on_no_internet">இணையத்தில் நிறுத்துங்கள்</string>
     <string name="stop_on_internet_loss">இணைய இழப்பில் சுரங்கப்பாதையை நிறுத்துங்கள்</string>
     <string name="ethernet_tunnel">ஈத்தர்நெட் சுரங்கப்பாதை</string>
-    <string name="set_ethernet_tunnel">ஈத்தர்நெட் சுரங்கப்பாதையாக அமைக்கவும்</string>
     <string name="native_kill_switch">சொந்த கொலை சுவிட்ச்</string>
     <string name="allow_lan_traffic">லேன் போக்குவரத்தை அனுமதிக்கவும்</string>
     <string name="bypass_lan_for_kill_switch">கொலை சுவிட்சுக்கு பைபாச் லேன்</string>
@@ -114,7 +111,6 @@
     <string name="auto_tunnel_channel_description">ஆட்டோ-டன்னல் மாநில அறிவிப்புகளுக்கான சேனல்</string>
     <string name="stop">நிறுத்து</string>
     <string name="splt_tunneling">பிளவு சுரங்கப்பாதை</string>
-    <string name="tunnel_specific_settings">சுரங்கப்பாதை குறிப்பிட்ட அமைப்புகள்</string>
     <string name="show_scripts">ச்கிரிப்ட்களைக் காட்டு</string>
     <string name="pre_up">முன் மேல்</string>
     <string name="post_up">பின் மேல்</string>
@@ -146,13 +142,9 @@
     <string name="optional">(விரும்பினால்)</string>
     <string name="preshared_key">முன் பகிரப்பட்ட விசை</string>
     <string name="email_description">எனக்கு மின்னஞ்சல் அனுப்புங்கள்</string>
-    <string name="location_services_missing_message">உங்கள் சாதனத்தில் இயக்கப்பட்ட எந்த இருப்பிட சேவைகளையும் பயன்பாடு கண்டறியவில்லை. சாதனத்தைப் பொறுத்து, இது நம்பத்தகாத வைஃபை அம்சத்தை வைஃபை பெயரைப் படிக்கத் தவறிவிடும். எப்படியும் தொடர விரும்புகிறீர்களா?</string>
     <string name="auto_tunnel_title">ஆட்டோ-டன்னல் பணி</string>
     <string name="delete_tunnel">சுரங்கப்பாதையை நீக்கு</string>
-    <string name="restart_on_ping">பிங் தோல்வியை மறுதொடக்கம் செய்யுங்கள் (பீட்டா)</string>
-    <string name="mobile_data_tunnel">மொபைல் தரவு சுரங்கப்பாதையாக அமைக்கவும்</string>
     <string name="set_primary_tunnel">முதன்மை சுரங்கப்பாதையாக அமைக்கவும்</string>
-    <string name="use_tunnel_on_wifi_name">வைஃபை பெயரில் சுரங்கப்பாதை பயன்படுத்தவும்</string>
     <string name="edit_tunnel">சுரங்கப்பாதை திருத்து</string>
     <string name="dynamic">மாறும்</string>
     <string name="quick_actions">விரைவான செயல்கள்</string>
@@ -178,7 +170,6 @@
     <string name="dropdown">கீழ்தோன்றும்</string>
     <string name="export_logs">சேமிக்கப்பட்ட பதிவுகளை ஏற்றுமதி செய்யுங்கள்</string>
     <string name="delete">நீக்கு</string>
-    <string name="wifi_name_template">செயலில்: %1$s</string>
     <string name="export_failed">ஏற்றுமதி தோல்வியடைந்தது</string>
     <string name="remote_key_template">விசை: %1$s</string>
     <string name="config_error">கட்டமைப்பு பிழை</string>

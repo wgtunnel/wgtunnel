@@ -63,7 +63,6 @@
     <string name="error_ssid_exists">SSID zaten mevcut</string>
     <string name="error_root_denied">Root kabuğu reddedildi</string>
     <string name="error_no_file_explorer">Dosya gezgini yüklü değil</string>
-    <string name="location_services_missing_message">Uygulama, cihazınızda etkinleştirilmiş herhangi bir konum servisi algılamıyor. Cihaza bağlı olarak, bu durum güvenilmeyen wifi özelliğinin wifi adını okuyamamasını sağlayabilir. Yine de devam etmek ister misiniz?</string>
     <string name="auto_tunnel_title">Otomatik tünel servisi</string>
     <string name="delete_tunnel">Tüneli sil</string>
     <string name="delete_tunnel_message">Bu tüneli silmek istediğinizden emin misiniz?</string>
@@ -72,17 +71,13 @@
     <string name="no_email_detected">E-posta uygulaması algılanmadı</string>
     <string name="no_browser_detected">Tarayıcı algılanmadı</string>
     <string name="open_issue">Bir sorun aç</string>
-    <string name="read_logs">Günlükleri oku</string>
     <string name="auto">(Otomatik)</string>
     <string name="incorrect_pin">Pin yanlış</string>
     <string name="pin_created">Pin başarıyla oluşturuldu</string>
     <string name="enter_pin">Pin’inizi girin</string>
     <string name="create_pin">Pin oluştur</string>
     <string name="enable_app_lock">Uygulama kilidini etkinleştir</string>
-    <string name="restart_on_ping">Ping başarısız olduğunda yeniden başlat (beta)</string>
-    <string name="mobile_data_tunnel">Mobil veri tüneli olarak ayarla</string>
     <string name="set_primary_tunnel">Birincil tünel olarak ayarla</string>
-    <string name="use_tunnel_on_wifi_name">Wifi adında tünel kullan</string>
     <string name="edit_tunnel">Tüneli düzenle</string>
     <string name="settings">Ayarlar</string>
     <string name="support">Destek</string>
@@ -134,12 +129,10 @@
     <string name="monitoring_state_changes">Durum değişikliklerini izleme</string>
     <string name="donate">Projeye bağış yap</string>
     <string name="local_logging">Yerel günlüğe kaydetme</string>
-    <string name="enable_local_logging">Yerel günlüğe kaydetmeyi etkinleştir</string>
     <string name="add_from_clipboard">Panodan ekle</string>
     <string name="stop_on_no_internet">İnternet olmadığında durdur</string>
     <string name="stop_on_internet_loss">İnternet kaybında tüneli durdur</string>
     <string name="ethernet_tunnel">Ethernet tüneli</string>
-    <string name="set_ethernet_tunnel">Ethernet tüneli olarak ayarla</string>
     <string name="native_kill_switch">Yerel kill switch</string>
     <string name="allow_lan_traffic">LAN trafiğine izin ver</string>
     <string name="bypass_lan_for_kill_switch">Kill switch için LAN’ı atla</string>
@@ -149,7 +142,6 @@
     <string name="auto_tunnel_channel_description">Otomatik tünel durum bildirimleri için bir kanal</string>
     <string name="stop">durdur</string>
     <string name="splt_tunneling">Bölünmüş tünelleme</string>
-    <string name="tunnel_specific_settings">Tünele özgü ayarlar</string>
     <string name="show_scripts">Komut dosyalarını göster</string>
     <string name="pre_up">Ön çalıştırma</string>
     <string name="post_up">Sonra çalıştırma</string>

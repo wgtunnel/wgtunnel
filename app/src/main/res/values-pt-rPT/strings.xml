@@ -10,7 +10,6 @@
     <string name="docs_description">Ler a documentação</string>
     <string name="no_email_detected">Nenhuma aplicação de email detetado</string>
     <string name="always_on_vpn_support">Permitir VPN sempre ligada</string>
-    <string name="read_logs">Ler os registos</string>
     <string name="auto_tunneling">Auto-túnel</string>
     <string name="optional">(opcional)</string>
     <string name="settings">Configurações</string>
@@ -38,7 +37,6 @@
     <string name="pin_created">Pin criado com sucesso</string>
     <string name="enter_pin">Digite o seu pin</string>
     <string name="enable_app_lock">Ligar bloqueio de aplicação</string>
-    <string name="restart_on_ping">Reiniciar em falha de ping (beta)</string>
     <string name="edit_tunnel">Editar túnel</string>
     <string name="kernel">Kernel</string>
     <string name="junk_packet_count">Quantidade de pacotes-lixo</string>
@@ -68,7 +66,6 @@
     <string name="init_packet_junk_size">Tamanho de pacote-lixo inicial</string>
     <string name="vpn_denied_dialog_title">Permissão negada</string>
     <string name="vpn_settings">Configurações do sistema VPN</string>
-    <string name="location_services_missing_message">A aplicação não detetou o serviço de localização ativado no seu dispositivo. Dependendo do dispositivo, isto pode causar que a função de Wi-Fi não confiável falhe em ler o nome do Wi-Fi. Quer continuar mesmo assim?</string>
     <string name="auto_tunnel_title">Serviço de Auto-túnel</string>
     <string name="error_no_file_explorer">Nenhum explorador de ficheiros instalado</string>
     <string name="app_name">WG Tunnel</string>
@@ -91,8 +88,6 @@
     <string name="seconds">segundos</string>
     <string name="no_browser_detected">Nenhum navegador detetado</string>
     <string name="open_issue">Abrir um problema</string>
-    <string name="mobile_data_tunnel">Selecionar como túnel em dados móveis</string>
-    <string name="use_tunnel_on_wifi_name">Usar túnel em wifi com nome</string>
     <string name="see_the">Veja o</string>
     <string name="getting_started_guide">guia de início rápido</string>
     <string name="always_on_message2">para ter certeza que VPN Sempre-ligada é desligada para todas as outras aplicações e tente novamente</string>
@@ -118,7 +113,6 @@
     <string name="automatic">Automático</string>
     <string name="language">Idioma</string>
     <string name="display_theme">Tema</string>
-    <string name="enable_local_logging">Ativar registo local</string>
     <string name="mobile_tunnel">Túnel com dados móveis</string>
     <string name="learn_more">Saber mais</string>
     <string name="wildcards_active">Wildcards ativos</string>
@@ -129,10 +123,8 @@
     <string name="add_from_clipboard">Adicionar da área de transferência</string>
     <string name="stop_on_internet_loss">Interrompa o túnel quando a internet não estiver disponível</string>
     <string name="ethernet_tunnel">Túnel ethernet</string>
-    <string name="set_ethernet_tunnel">Definir como túnel ethernet</string>
     <string name="stop">pausar</string>
     <string name="splt_tunneling">Tunelamento dividido</string>
-    <string name="tunnel_specific_settings">Configurações específicas no túnel</string>
     <string name="show_scripts">Mostrar scripts</string>
     <string name="advanced_settings">Configurações avançadas</string>
     <string name="hide_amnezia_properties">Ocultar propriedades Amnezia</string>

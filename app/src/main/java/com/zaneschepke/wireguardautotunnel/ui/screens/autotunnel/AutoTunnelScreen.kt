@@ -8,12 +8,20 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -23,11 +31,14 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.domain.enums.NetworkType
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
+import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.navigation.TunnelNetwork
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
@@ -37,6 +48,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val navController = LocalNavController.current
+    val clipboard = rememberClipboardHelper()
     val autoTunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     if (autoTunnelState.isLoading) return
@@ -96,6 +108,84 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 stringResource(R.string.networks),
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
+            val activeNetworkType by
+                remember(autoTunnelState.connectivityState) {
+                    derivedStateOf {
+                        val connectivity = autoTunnelState.connectivityState
+                        when {
+                            connectivity?.ethernetConnected == true -> NetworkType.ETHERNET
+                            connectivity?.wifiState?.connected == true -> NetworkType.WIFI
+                            connectivity?.cellularConnected == true -> NetworkType.MOBILE_DATA
+                            else -> NetworkType.NONE
+                        }
+                    }
+                }
+
+            val localizedNetworkType =
+                when (activeNetworkType) {
+                    NetworkType.WIFI -> stringResource(R.string.wifi)
+                    NetworkType.ETHERNET -> stringResource(R.string.ethernet)
+                    NetworkType.MOBILE_DATA -> stringResource(R.string.mobile_data)
+                    NetworkType.NONE -> stringResource(R.string.no_network)
+                }
+
+            val ssid by
+                remember(autoTunnelState.connectivityState) {
+                    derivedStateOf {
+                        autoTunnelState.connectivityState?.wifiState?.ssid
+                            ?: context.getString(R.string.unknown)
+                    }
+                }
+
+            SurfaceRow(
+                leading = {
+                    Icon(ImageVector.vectorResource(R.drawable.globe), contentDescription = null)
+                },
+                title =
+                    buildAnnotatedString {
+                        append(stringResource(R.string.active_network))
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append(localizedNetworkType)
+                        }
+                    },
+                description =
+                    if (activeNetworkType == NetworkType.WIFI) {
+                        {
+                            Column {
+                                DescriptionText(
+                                    buildAnnotatedString {
+                                        append(stringResource(R.string.security_type))
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                            append(
+                                                autoTunnelState.connectivityState
+                                                    ?.wifiState
+                                                    ?.securityType
+                                                    ?.name ?: stringResource(R.string.unknown)
+                                            )
+                                        }
+                                    }
+                                )
+                                DescriptionText(
+                                    buildAnnotatedString {
+                                        append(stringResource(R.string.network_name))
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                            append(ssid)
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    } else null,
+                trailing =
+                    if (activeNetworkType == NetworkType.WIFI) {
+                        { Icon(Icons.Outlined.CopyAll, contentDescription = null) }
+                    } else null,
+                onClick =
+                    if (activeNetworkType == NetworkType.WIFI) {
+                        { clipboard.copy(ssid, context.getString(R.string.wifi)) }
+                    } else null,
+            )
+
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Wifi, contentDescription = null) },
                 title = stringResource(R.string.tunnel_on_wifi),
@@ -107,7 +197,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                     )
                 },
                 description = {
-                    Text(
+                    DescriptionText(
                         buildAnnotatedString {
                             append(stringResource(R.string.preferred_tunnel_label))
                             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
@@ -116,11 +206,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                                     else stringResource(R.string._default)
                                 )
                             }
-                        },
-                        style =
-                            MaterialTheme.typography.bodySmall.copy(
-                                color = MaterialTheme.colorScheme.outline
-                            ),
+                        }
                     )
                 },
                 onClick = { navController.push(Route.WifiPreferences) },
@@ -136,18 +222,14 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                     )
                 },
                 description = {
-                    Text(
+                    DescriptionText(
                         buildAnnotatedString {
                             append(stringResource(R.string.preferred_tunnel_label))
                             mobileDataTunnel?.tunName?.let { append(it) }
                                 ?: withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                                     append(stringResource(R.string._default))
                                 }
-                        },
-                        style =
-                            MaterialTheme.typography.bodySmall.copy(
-                                color = MaterialTheme.colorScheme.outline
-                            ),
+                        }
                     )
                 },
                 onClick = { navController.push(Route.PreferredTunnel(TunnelNetwork.MOBILE_DATA)) },
@@ -163,18 +245,14 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                     )
                 },
                 description = {
-                    Text(
+                    DescriptionText(
                         buildAnnotatedString {
                             append(stringResource(R.string.preferred_tunnel_label))
                             ethernetTunnel?.tunName?.let { append(it) }
                                 ?: withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                                     append(stringResource(R.string._default))
                                 }
-                        },
-                        style =
-                            MaterialTheme.typography.bodySmall.copy(
-                                color = MaterialTheme.colorScheme.outline
-                            ),
+                        }
                     )
                 },
                 onClick = { navController.push(Route.PreferredTunnel(TunnelNetwork.ETHERNET)) },

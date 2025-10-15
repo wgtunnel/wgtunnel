@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.util.extensions
 
-import java.util.Locale
+import java.util.*
 import timber.log.Timber
 
 val hasNumberInParentheses = """^(.+?)\((\d+)\)$""".toRegex()

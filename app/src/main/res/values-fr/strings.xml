@@ -62,8 +62,6 @@
     <string name="incorrect_pin">Code PIN incorrect</string>
     <string name="enter_pin">Entrez votre code NIP</string>
     <string name="create_pin">Créer un NIP</string>
-    <string name="restart_on_ping">Redémarrer après l\'échec du ping (beta)</string>
-    <string name="mobile_data_tunnel">Définir comme tunnel de données mobiles</string>
     <string name="support">Support</string>
     <string name="junk_packet_minimum_size">Taille minimum des paquets indésirables</string>
     <string name="init_packet_junk_size">Initialiser la taille des paquets indésirables</string>
@@ -82,15 +80,12 @@
     <string name="enabled_app_shortcuts">Activer les raccourcis</string>
     <string name="unknown_error">Une erreur inconnue s\'est produite</string>
     <string name="email_subject">Assistance WG Tunnel</string>
-    <string name="location_services_missing_message">L\'application détecte qu\'aucun service de localisation n\'est activé sur votre appareil. Selon votre appareil, cela peut empêcher la fonctionnalité « Wi-Fi approuvés » de lire le nom du Wi-Fi. Souhaitez-vous tout de même continuer ?</string>
     <string name="yes">Oui</string>
     <string name="all">tout</string>
     <string name="set_primary_tunnel">Définir comme tunnel principal</string>
-    <string name="read_logs">Lire les journaux</string>
     <string name="auto">(auto)</string>
     <string name="pin_created">Code PIN bien créé</string>
     <string name="enable_app_lock">Activer le verrouillage de l\'appli</string>
-    <string name="use_tunnel_on_wifi_name">Utiliser ce tunnel selon le nom du wifi</string>
     <string name="edit_tunnel">Éditer le tunnel</string>
     <string name="settings">Réglages</string>
     <string name="junk_packet_count">Nombre de paquets indésirables</string>
@@ -126,10 +121,8 @@
     <string name="monitoring_state_changes">Surveille les changements d’état</string>
     <string name="donate">Faire un don au projet</string>
     <string name="local_logging">Journalisation locale</string>
-    <string name="enable_local_logging">Activer la journalisation locale</string>
     <string name="start_auto">Démarrer l\'auto-tunnel</string>
     <string name="exclude_lan">Exclure le LAN</string>
-    <string name="tunnel_specific_settings">Réglages spécifiques du tunnel</string>
     <string name="show_scripts">Voir les scripts</string>
     <string name="hide_scripts">Cacher les scripts</string>
     <string name="remove_amnezia_compatibility">Retirer la prise en charge d\'Amnezia</string>
@@ -138,7 +131,6 @@
     <string name="stop_on_no_internet">Arrêt en l\'absence d\'internet</string>
     <string name="stop_on_internet_loss">Couper les tunnels en l\'absence d\'internet</string>
     <string name="ethernet_tunnel">Tunnel ethernet</string>
-    <string name="set_ethernet_tunnel">Définir comme tunnel ethernet</string>
     <string name="native_kill_switch">Arrêt d\'urgence natif</string>
     <string name="allow_lan_traffic">Autoriser le trafic LAN</string>
     <string name="bypass_lan_for_kill_switch">Contourner le LAN en cas d\'arêt d\'urgence</string>
