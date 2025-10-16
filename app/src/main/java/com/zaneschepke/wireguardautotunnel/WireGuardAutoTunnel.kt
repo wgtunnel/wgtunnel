@@ -12,9 +12,7 @@ import com.zaneschepke.wireguardautotunnel.core.worker.ServiceWorker
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
-import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.util.ReleaseTree
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
@@ -25,7 +23,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.amnezia.awg.backend.GoBackend
 import timber.log.Timber
 
 @HiltAndroidApp
@@ -42,8 +39,6 @@ class WireGuardAutoTunnel : Application(), Configuration.Provider {
 
     @Inject @IoDispatcher lateinit var ioDispatcher: CoroutineDispatcher
 
-    @Inject lateinit var settingsRepository: GeneralSettingRepository
-    @Inject lateinit var tunnelsRepository: TunnelRepository
     @Inject lateinit var monitoringRepository: MonitoringSettingsRepository
 
     @Inject lateinit var notificationMonitor: NotificationMonitor
@@ -73,18 +68,6 @@ class WireGuardAutoTunnel : Application(), Configuration.Provider {
                 if (monitoringSettings.isLocalLogsEnabled) logReader.start()
             }
             launch { notificationMonitor.handleApplicationNotifications() }
-        }
-
-        GoBackend.setAlwaysOnCallback {
-            applicationScope.launch {
-                val settings = settingsRepository.getGeneralSettings()
-                if (settings.isAlwaysOnVpnEnabled) {
-                    val tunnel = tunnelsRepository.getDefaultTunnel()
-                    tunnel?.let { tunnelManager.startTunnel(it) }
-                } else {
-                    Timber.w("Always-on VPN is not enabled in app settings")
-                }
-            }
         }
 
         ServiceWorker.start(this)
