@@ -5,7 +5,7 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
@@ -49,19 +49,20 @@ constructor(
                 combine(
                         appStateRepository.flow,
                         tunnelRepository.userTunnelsFlow.map { tuns ->
-                            tuns.associate { it.id to it.tunName }
+                            tuns.associate { it.id to it.name }
                         },
                         serviceManager.autoTunnelService.map { it != null },
                         settingsRepository.flow,
                     ) { appState, tunnelNames, autoTunnelActive, settings ->
                         state.copy(
-                            theme = appState.theme,
-                            locale = appState.locale ?: LocaleUtil.OPTION_PHONE_LANGUAGE,
-                            pinLockEnabled = appState.isPinLockEnabled,
+                            theme = settings.theme,
+                            locale = settings.locale ?: LocaleUtil.OPTION_PHONE_LANGUAGE,
+                            pinLockEnabled = settings.isPinLockEnabled,
                             isAutoTunnelActive = autoTunnelActive,
                             tunnelNames = tunnelNames,
                             settings = settings,
                             isLocationDisclosureShown = appState.isLocationDisclosureShown,
+                            isBatteryOptimizationShown = appState.isBatteryOptimizationDisableShown,
                             isAppLoaded = true,
                         )
                     }
@@ -81,37 +82,45 @@ constructor(
             }
         }
 
-    fun startTunnel(tunnelConf: TunnelConf) = intent {
+    fun startTunnel(tunnelConfig: TunnelConfig) = intent {
         if (state.settings.appMode == AppMode.VPN) {
             if (!serviceManager.hasVpnPermission())
                 return@intent postSideEffect(
-                    GlobalSideEffect.RequestVpnPermission(AppMode.VPN, tunnelConf)
+                    GlobalSideEffect.RequestVpnPermission(AppMode.VPN, tunnelConfig)
                 )
         }
-        tunnelManager.startTunnel(tunnelConf)
+        tunnelManager.startTunnel(tunnelConfig)
     }
 
     fun postSideEffect(localSideEffect: LocalSideEffect) = intent {
         postSideEffect(localSideEffect)
     }
 
-    fun setTheme(theme: Theme) = intent { appStateRepository.setTheme(theme) }
+    fun setLocationDisclosureShown() = intent {
+        appStateRepository.setLocationDisclosureShown(true)
+    }
+
+    fun setTheme(theme: Theme) = intent {
+        settingsRepository.upsert(state.settings.copy(theme = theme))
+    }
 
     fun setLocale(locale: String) = intent {
-        appStateRepository.setLocale(locale)
+        settingsRepository.upsert(state.settings.copy(locale = locale))
         postSideEffect(GlobalSideEffect.ConfigChanged)
     }
 
     fun setPinLockEnabled(enabled: Boolean) = intent {
         if (!enabled) PinManager.clearPin()
-        appStateRepository.setPinLockEnabled(enabled)
+        settingsRepository.upsert(state.settings.copy(isPinLockEnabled = enabled))
     }
 
     fun setSelectedTunnelCount(count: Int) = intent {
         reduce { state.copy(selectedTunnelCount = count) }
     }
 
-    fun stopTunnel(tunnelConf: TunnelConf) = intent { tunnelManager.stopTunnel(tunnelConf.id) }
+    fun stopTunnel(tunnelConfig: TunnelConfig) = intent {
+        tunnelManager.stopTunnel(tunnelConfig.id)
+    }
 
     fun setAppMode(appMode: AppMode) = intent {
         when (appMode) {
@@ -133,14 +142,14 @@ constructor(
                 if (!accepted) return@intent
             }
         }
-        settingsRepository.save(state.settings.copy(appMode = appMode))
+        settingsRepository.upsert(state.settings.copy(appMode = appMode))
     }
 
     suspend fun postSideEffect(globalSideEffect: GlobalSideEffect) {
         globalEffectRepository.post(globalSideEffect)
     }
 
-    fun authenticated() = intent { reduce { state.copy(isAuthorized = true) } }
+    fun authenticated() = intent { reduce { state.copy(isPinVerified = true) } }
 
     suspend fun postGlobalSideEffect(sideEffect: GlobalSideEffect) {
         globalEffectRepository.post(sideEffect)

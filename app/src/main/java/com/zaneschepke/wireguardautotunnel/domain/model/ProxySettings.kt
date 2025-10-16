@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
-data class AppProxySettings(
+data class ProxySettings(
     val id: Long = 0,
     val socks5ProxyEnabled: Boolean = false,
     val socks5ProxyBindAddress: String? = null,

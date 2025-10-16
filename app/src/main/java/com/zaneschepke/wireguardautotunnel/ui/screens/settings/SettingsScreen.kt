@@ -172,7 +172,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     )
                 },
                 onClick = {
-                    settingsState.globalTunnelConf?.let {
+                    settingsState.globalTunnelConfig?.let {
                         navController.push(Route.TunnelGlobals(it.id))
                     }
                 },

@@ -1,18 +1,15 @@
 package com.zaneschepke.wireguardautotunnel
 
 import ProxySettingsScreen
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -26,7 +23,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,7 +37,7 @@ import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.data.AppDatabase
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
@@ -69,10 +65,10 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.displa
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.language.LanguageScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.dns.DnsSettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.globals.TunnelGlobalsScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.integrations.AndroidIntegrationsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.TunnelMonitoringScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.logs.LogsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.ping.PingTargetScreen
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.system.AndroidIntegrationsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.SupportScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.DonateScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.crypto.AddressesScreen
@@ -109,7 +105,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var roomBackup: RoomBackup
 
     @OptIn(ExperimentalMaterial3Api::class)
-    @SuppressLint("BatteryLife")
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
@@ -144,7 +139,7 @@ class MainActivity : AppCompatActivity() {
             var showVpnPermissionDialog by remember { mutableStateOf(false) }
             var vpnPermissionDenied by remember { mutableStateOf(false) }
             var requestingAppMode by remember {
-                mutableStateOf<Pair<AppMode?, TunnelConf?>>(Pair(null, null))
+                mutableStateOf<Pair<AppMode?, TunnelConfig?>>(Pair(null, null))
             }
 
             val startingStack = buildList {
@@ -183,30 +178,11 @@ class MainActivity : AppCompatActivity() {
                     },
                 )
 
-            val batteryActivity =
-                rememberLauncherForActivityResult(
-                    ActivityResultContracts.StartActivityForResult()
-                ) { _: ActivityResult ->
-                    viewModel.disableBatteryOptimizationsShown()
-                }
-
-            fun requestDisableBatteryOptimizations() {
-                batteryActivity.launch(
-                    Intent().apply {
-                        action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-                        data = "package:${this@MainActivity.packageName}".toUri()
-                    }
-                )
-            }
-
             LaunchedEffect(Unit) {
                 viewModel.globalSideEffect.collect { sideEffect ->
                     when (sideEffect) {
                         GlobalSideEffect.ConfigChanged -> restartApp()
                         GlobalSideEffect.PopBackStack -> navController.pop()
-                        GlobalSideEffect.RequestBatteryOptimizationDisabled ->
-                            requestDisableBatteryOptimizations()
-
                         is GlobalSideEffect.RequestVpnPermission -> {
                             requestingAppMode = Pair(sideEffect.requestingMode, sideEffect.config)
                             vpnActivity.launch(VpnService.prepare(this@MainActivity))
@@ -229,9 +205,9 @@ class MainActivity : AppCompatActivity() {
             if (!appState.isAppLoaded) return@setContent
 
             var showLock by remember {
-                mutableStateOf(appState.pinLockEnabled && !appState.isAuthorized)
+                mutableStateOf(appState.pinLockEnabled && !appState.isPinVerified)
             }
-            LaunchedEffect(appState.isAuthorized) { if (appState.isAuthorized) showLock = false }
+            LaunchedEffect(appState.isPinVerified) { if (appState.isPinVerified) showLock = false }
 
             CompositionLocalProvider(
                 LocalIsAndroidTV provides isTv,

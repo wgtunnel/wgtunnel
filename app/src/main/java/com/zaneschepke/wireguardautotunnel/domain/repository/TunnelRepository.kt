@@ -1,49 +1,48 @@
 package com.zaneschepke.wireguardautotunnel.domain.repository
 
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.util.extensions.Tunnels
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import kotlinx.coroutines.flow.Flow
 
 interface TunnelRepository {
-    val flow: Flow<List<TunnelConf>>
+    val flow: Flow<List<TunnelConfig>>
 
-    val userTunnelsFlow: Flow<List<TunnelConf>>
+    val userTunnelsFlow: Flow<List<TunnelConfig>>
 
-    val globalTunnelFlow: Flow<TunnelConf?>
+    val globalTunnelFlow: Flow<TunnelConfig?>
 
-    suspend fun getAll(): Tunnels
+    suspend fun getAll(): List<TunnelConfig>
 
-    suspend fun save(tunnelConf: TunnelConf)
+    suspend fun save(tunnelConfig: TunnelConfig)
 
-    suspend fun saveAll(tunnelConfList: List<TunnelConf>)
+    suspend fun saveAll(tunnelConfigList: List<TunnelConfig>)
 
-    suspend fun updatePrimaryTunnel(tunnelConf: TunnelConf?)
+    suspend fun updatePrimaryTunnel(tunnelConfig: TunnelConfig?)
 
     suspend fun resetActiveTunnels()
 
-    suspend fun updateMobileDataTunnel(tunnelConf: TunnelConf?)
+    suspend fun updateMobileDataTunnel(tunnelConfig: TunnelConfig?)
 
-    suspend fun updateEthernetTunnel(tunnelConf: TunnelConf?)
+    suspend fun updateEthernetTunnel(tunnelConfig: TunnelConfig?)
 
-    suspend fun delete(tunnelConf: TunnelConf)
+    suspend fun delete(tunnelConfig: TunnelConfig)
 
-    suspend fun getById(id: Int): TunnelConf?
+    suspend fun getById(id: Int): TunnelConfig?
 
-    suspend fun getActive(): Tunnels
+    suspend fun getActive(): List<TunnelConfig>
 
-    suspend fun getDefaultTunnel(): TunnelConf?
+    suspend fun getDefaultTunnel(): TunnelConfig?
 
-    suspend fun getStartTunnel(): TunnelConf?
+    suspend fun getStartTunnel(): TunnelConfig?
 
     suspend fun count(): Int
 
-    suspend fun findByTunnelName(name: String): TunnelConf?
+    suspend fun findByTunnelName(name: String): TunnelConfig?
 
-    suspend fun findByTunnelNetworksName(name: String): Tunnels
+    suspend fun findByTunnelNetworksName(name: String): List<TunnelConfig>
 
-    suspend fun findByMobileDataTunnel(): Tunnels
+    suspend fun findByMobileDataTunnel(): List<TunnelConfig>
 
-    suspend fun findPrimary(): Tunnels
+    suspend fun findPrimary(): List<TunnelConfig>
 
-    suspend fun delete(tunnels: List<TunnelConf>)
+    suspend fun delete(tunnels: List<TunnelConfig>)
 }

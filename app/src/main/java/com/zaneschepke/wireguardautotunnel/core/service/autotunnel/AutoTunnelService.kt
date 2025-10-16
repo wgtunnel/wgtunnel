@@ -14,16 +14,18 @@ import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotification
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
-import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
+import com.zaneschepke.wireguardautotunnel.domain.model.AutoTunnelSettings
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.AutoTunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.NetworkState
 import com.zaneschepke.wireguardautotunnel.util.Constants
-import com.zaneschepke.wireguardautotunnel.util.extensions.Tunnels
 import com.zaneschepke.wireguardautotunnel.util.extensions.to
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,7 +50,8 @@ class AutoTunnelService : LifecycleService() {
 
     @Inject lateinit var tunnelManager: TunnelManager
 
-    @Inject lateinit var settingsRepository: Provider<GeneralSettingRepository>
+    @Inject lateinit var autoTunnelRepository: Provider<AutoTunnelSettingsRepository>
+    @Inject lateinit var settingsRepository: GeneralSettingRepository
     @Inject lateinit var tunnelsRepository: TunnelRepository
 
     private val defaultState = AutoTunnelState()
@@ -128,7 +131,7 @@ class AutoTunnelService : LifecycleService() {
                     .distinctUntilChanged()
 
             val settingsFlow =
-                combineSettings().map { StateChange.SettingsChange(it.first, it.second) }
+                combineSettings().map { StateChange.SettingsChange(it.first, it.second, it.third) }
 
             val tunnelsFlow =
                 tunnelManager.activeTunnels.map { StateChange.ActiveTunnelsChange(it) }
@@ -205,32 +208,17 @@ class AutoTunnelService : LifecycleService() {
             previous.isMobileDataConnected != new.isMobileDataConnected)
     }
 
-    // all relevant settings to auto tunnel
-    private fun areAutoTunnelSettingsTheSame(old: GeneralSettings, new: GeneralSettings): Boolean {
-        return (old.isTunnelOnWifiEnabled == new.isTunnelOnWifiEnabled &&
-            old.isTunnelOnMobileDataEnabled == new.isTunnelOnMobileDataEnabled &&
-            old.isTunnelOnEthernetEnabled == new.isTunnelOnEthernetEnabled &&
-            old.trustedNetworkSSIDs == new.trustedNetworkSSIDs &&
-            old.isPingEnabled == new.isPingEnabled &&
-            old.debounceDelaySeconds == new.debounceDelaySeconds &&
-            old.wifiDetectionMethod == new.wifiDetectionMethod &&
-            old.isVpnKillSwitchEnabled == new.isVpnKillSwitchEnabled &&
-            old.isLanOnKillSwitchEnabled == new.isLanOnKillSwitchEnabled &&
-            old.isDisableKillSwitchOnTrustedEnabled == new.isDisableKillSwitchOnTrustedEnabled &&
-            old.isStopOnNoInternetEnabled == new.isStopOnNoInternetEnabled &&
-            old.appMode == new.appMode)
-    }
-
-    private fun combineSettings(): Flow<Pair<GeneralSettings, Tunnels>> {
+    private fun combineSettings(): Flow<Triple<AppMode, AutoTunnelSettings, List<TunnelConfig>>> {
         return combine(
-                settingsRepository.get().flow.distinctUntilChanged(::areAutoTunnelSettingsTheSame),
+                settingsRepository.flow.map { it.appMode }.distinctUntilChanged(),
+                autoTunnelRepository.get().flow,
                 tunnelsRepository.flow.map { tunnels ->
                     // isActive is ignored for equality checks so user can manually toggle off
                     // tunnel with auto-tunnel
                     tunnels.map { it.copy(isActive = false) }
                 },
-            ) { settings, tunnels ->
-                Pair(settings, tunnels)
+            ) { appMode, autoTunnel, tunnels ->
+                Triple(appMode, autoTunnel, tunnels)
             }
             .distinctUntilChanged()
     }
@@ -339,7 +327,7 @@ class AutoTunnelService : LifecycleService() {
                     }
             ) {
                 is AutoTunnelEvent.Start ->
-                    (event.tunnelConf ?: tunnelsRepository.getDefaultTunnel())?.let {
+                    (event.tunnelConfig ?: tunnelsRepository.getDefaultTunnel())?.let {
                         tunnelManager.startTunnel(it)
                     }
                 is AutoTunnelEvent.Stop -> tunnelManager.stopActiveTunnels()
@@ -350,7 +338,7 @@ class AutoTunnelService : LifecycleService() {
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private val debouncedConnectivityStateFlow: Flow<ConnectivityState> by lazy {
-        settingsRepository
+        autoTunnelRepository
             .get()
             .flow
             .map { it.debounceDelaySeconds.toMillis() }

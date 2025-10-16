@@ -59,14 +59,14 @@ fun SortScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
             LocalSideEffect.Sort -> {
                 sortAscending =
                     when (sortAscending) {
-                        null -> !editableTunnels.isSortedBy { it.tunName }
+                        null -> !editableTunnels.isSortedBy { it.name }
                         true -> false
                         false -> null
                     }
                 editableTunnels =
                     when (sortAscending) {
-                        true -> editableTunnels.sortedBy { it.tunName }
-                        false -> editableTunnels.sortedByDescending { it.tunName }
+                        true -> editableTunnels.sortedBy { it.name }
+                        false -> editableTunnels.sortedByDescending { it.name }
                         null -> tunnelsState.tunnels
                     }
             }
@@ -101,7 +101,7 @@ fun SortScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
             ReorderableItem(reorderableLazyListState, tunnel.id) { isDragging ->
                 ExpandingRowListItem(
                     leading = {},
-                    text = tunnel.tunName,
+                    text = tunnel.name,
                     trailing = {
                         if (!isTv)
                             Icon(Icons.Default.DragHandle, stringResource(R.string.drag_handle))

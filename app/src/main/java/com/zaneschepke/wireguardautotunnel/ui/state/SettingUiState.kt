@@ -1,7 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
 import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 
 data class SettingUiState(
     val settings: GeneralSettings = GeneralSettings(),
@@ -11,6 +11,6 @@ data class SettingUiState(
     val isPinLockEnabled: Boolean = false,
     val showDetailedPingStats: Boolean = false,
     val isLoading: Boolean = true,
-    val globalTunnelConf: TunnelConf? = null,
-    val tunnels: List<TunnelConf> = emptyList(),
+    val globalTunnelConfig: TunnelConfig? = null,
+    val tunnels: List<TunnelConfig> = emptyList(),
 )

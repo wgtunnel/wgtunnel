@@ -13,7 +13,7 @@ import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.util.extensions.distinctByKeys
 import dagger.hilt.android.AndroidEntryPoint
@@ -78,7 +78,7 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
     }
 
     // TODO Would be cool to have this include kill switch
-    private fun updateServiceNotification(activeConfigs: List<TunnelConf>) {
+    private fun updateServiceNotification(activeConfigs: List<TunnelConfig>) {
         val notification =
             when (activeConfigs.size) {
                 0 -> onCreateNotification()
@@ -106,15 +106,15 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
         super.onDestroy()
     }
 
-    private fun createTunnelNotification(tunnelConf: TunnelConf): Notification {
+    private fun createTunnelNotification(tunnelConfig: TunnelConfig): Notification {
         return notificationManager.createNotification(
             WireGuardNotification.NotificationChannels.VPN,
-            title = "${getString(R.string.tunnel_running)} - ${tunnelConf.tunName}",
+            title = "${getString(R.string.tunnel_running)} - ${tunnelConfig.name}",
             actions =
                 listOf(
                     notificationManager.createNotificationAction(
                         NotificationAction.TUNNEL_OFF,
-                        tunnelConf.id,
+                        tunnelConfig.id,
                     )
                 ),
             onGoing = true,

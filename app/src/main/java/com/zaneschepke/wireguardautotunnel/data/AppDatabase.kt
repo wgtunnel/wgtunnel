@@ -3,16 +3,20 @@ package com.zaneschepke.wireguardautotunnel.data
 import androidx.room.*
 import androidx.room.migration.AutoMigrationSpec
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.zaneschepke.wireguardautotunnel.data.dao.ProxySettingsDao
-import com.zaneschepke.wireguardautotunnel.data.dao.SettingsDao
-import com.zaneschepke.wireguardautotunnel.data.dao.TunnelConfigDao
-import com.zaneschepke.wireguardautotunnel.data.entity.ProxySettings
-import com.zaneschepke.wireguardautotunnel.data.entity.Settings
-import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.data.dao.*
+import com.zaneschepke.wireguardautotunnel.data.entity.*
 
 @Database(
-    entities = [Settings::class, TunnelConfig::class, ProxySettings::class],
-    version = 23,
+    entities =
+        [
+            TunnelConfig::class,
+            ProxySettings::class,
+            GeneralSettings::class,
+            AutoTunnelSettings::class,
+            MonitoringSettings::class,
+            DnsSettings::class,
+        ],
+    version = 24,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -42,11 +46,17 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
 )
 @TypeConverters(DatabaseConverters::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun settingDao(): SettingsDao
-
     abstract fun tunnelConfigDoa(): TunnelConfigDao
 
     abstract fun proxySettingsDoa(): ProxySettingsDao
+
+    abstract fun generalSettingsDao(): GeneralSettingsDao
+
+    abstract fun autoTunnelSettingsDao(): AutoTunnelSettingsDao
+
+    abstract fun monitoringSettingsDao(): MonitoringSettingsDao
+
+    abstract fun dnsSettingsDao(): DnsSettingsDao
 }
 
 @DeleteColumn(tableName = "Settings", columnName = "default_tunnel")

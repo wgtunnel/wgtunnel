@@ -54,21 +54,22 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     var showLocationDialog by remember { mutableStateOf(false) }
     var currentText by rememberSaveable { mutableStateOf("") }
 
-    LaunchedEffect(autoTunnelState.settings.trustedNetworkSSIDs) { currentText = "" }
+    LaunchedEffect(autoTunnelState.autoTunnelSettings.trustedNetworkSSIDs) { currentText = "" }
 
     val warnings by
         remember(
             autoTunnelState.connectivityState?.wifiState,
-            autoTunnelState.settings.trustedNetworkSSIDs,
-            autoTunnelState.settings.wifiDetectionMethod,
+            autoTunnelState.autoTunnelSettings.trustedNetworkSSIDs,
+            autoTunnelState.autoTunnelSettings.wifiDetectionMethod,
             autoTunnelState.tunnels,
         ) {
             derivedStateOf {
                 val wifiState = autoTunnelState.connectivityState?.wifiState
                 val needsLocation =
-                    autoTunnelState.settings.wifiDetectionMethod.needsLocationPermissions()
+                    autoTunnelState.autoTunnelSettings.wifiDetectionMethod
+                        .needsLocationPermissions()
                 val hasConfigs =
-                    autoTunnelState.settings.trustedNetworkSSIDs.isNotEmpty() ||
+                    autoTunnelState.autoTunnelSettings.trustedNetworkSSIDs.isNotEmpty() ||
                         autoTunnelState.tunnels.any { it.tunnelNetworks.isNotEmpty() }
 
                 val showServicesWarning =
@@ -137,7 +138,9 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                     DescriptionText(
                         stringResource(
                             R.string.current_template,
-                            autoTunnelState.settings.wifiDetectionMethod.asTitleString(context),
+                            autoTunnelState.autoTunnelSettings.wifiDetectionMethod.asTitleString(
+                                context
+                            ),
                         )
                     )
                 },
@@ -154,12 +157,14 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 },
                 trailing = {
                     ScaledSwitch(
-                        checked = autoTunnelState.settings.isWildcardsEnabled,
+                        checked = autoTunnelState.autoTunnelSettings.isWildcardsEnabled,
                         onClick = { viewModel.setWildcardsEnabled(it) },
                     )
                 },
                 onClick = {
-                    viewModel.setWildcardsEnabled(!autoTunnelState.settings.isWildcardsEnabled)
+                    viewModel.setWildcardsEnabled(
+                        !autoTunnelState.autoTunnelSettings.isWildcardsEnabled
+                    )
                 },
             )
         }
@@ -169,13 +174,14 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 title = stringResource(R.string.trusted_wifi_names),
                 expandedContent = {
                     TrustedNetworkTextBox(
-                        autoTunnelState.settings.trustedNetworkSSIDs,
+                        autoTunnelState.autoTunnelSettings.trustedNetworkSSIDs,
                         onDelete = { viewModel.removeTrustedNetworkName(it) },
                         currentText = currentText,
                         onSave = { ssid -> viewModel.saveTrustedNetworkName(ssid) },
                         onValueChange = { currentText = it },
                         supporting = {
-                            if (autoTunnelState.settings.isWildcardsEnabled) WildcardsLabel()
+                            if (autoTunnelState.autoTunnelSettings.isWildcardsEnabled)
+                                WildcardsLabel()
                         },
                         modifier = Modifier.padding(top = 4.dp),
                     )

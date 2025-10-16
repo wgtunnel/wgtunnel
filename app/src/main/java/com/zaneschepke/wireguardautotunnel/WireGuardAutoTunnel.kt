@@ -12,8 +12,8 @@ import com.zaneschepke.wireguardautotunnel.core.worker.ServiceWorker
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.util.ReleaseTree
 import dagger.hilt.android.HiltAndroidApp
@@ -44,7 +44,7 @@ class WireGuardAutoTunnel : Application(), Configuration.Provider {
 
     @Inject lateinit var settingsRepository: GeneralSettingRepository
     @Inject lateinit var tunnelsRepository: TunnelRepository
-    @Inject lateinit var appStateRepository: AppStateRepository
+    @Inject lateinit var monitoringRepository: MonitoringSettingsRepository
 
     @Inject lateinit var notificationMonitor: NotificationMonitor
 
@@ -68,13 +68,16 @@ class WireGuardAutoTunnel : Application(), Configuration.Provider {
         }
 
         applicationScope.launch(ioDispatcher) {
-            launch { if (appStateRepository.isLocalLogsEnabled()) logReader.start() }
+            launch {
+                val monitoringSettings = monitoringRepository.getMonitoringSettings()
+                if (monitoringSettings.isLocalLogsEnabled) logReader.start()
+            }
             launch { notificationMonitor.handleApplicationNotifications() }
         }
 
         GoBackend.setAlwaysOnCallback {
             applicationScope.launch {
-                val settings = settingsRepository.get()
+                val settings = settingsRepository.getGeneralSettings()
                 if (settings.isAlwaysOnVpnEnabled) {
                     val tunnel = tunnelsRepository.getDefaultTunnel()
                     tunnel?.let { tunnelManager.startTunnel(it) }

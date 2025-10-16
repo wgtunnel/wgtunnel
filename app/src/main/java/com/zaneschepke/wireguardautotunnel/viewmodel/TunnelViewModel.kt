@@ -2,7 +2,6 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
@@ -21,7 +20,6 @@ class TunnelViewModel
 @AssistedInject
 constructor(
     private val tunnelRepository: TunnelRepository,
-    private val settingsRepository: GeneralSettingRepository,
     private val globalEffectRepository: GlobalEffectRepository,
     private val tunnelManager: TunnelManager,
     @Assisted val tunnelId: Int,
@@ -37,16 +35,8 @@ constructor(
                         it.firstOrNull { tun -> tun.id == tunnelId }
                     },
                     tunnelManager.activeTunnels.map { it.containsKey(tunnelId) },
-                    settingsRepository.flow,
-                ) { tunnel, active, settings ->
-                    state.copy(
-                        tunnel = tunnel,
-                        isActive = active,
-                        isLoading = tunnel == null,
-                        isWildcardsEnabled = settings.isWildcardsEnabled,
-                        isPingEnabled = settings.isPingEnabled,
-                        appMode = settings.appMode,
-                    )
+                ) { tunnel, active ->
+                    state.copy(tunnel = tunnel, isActive = active, isLoading = tunnel == null)
                 }
                 .collect { reduce { it } }
         }

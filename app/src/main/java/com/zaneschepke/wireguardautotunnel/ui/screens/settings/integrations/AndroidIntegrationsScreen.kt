@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.ui.screens.settings.system
+package com.zaneschepke.wireguardautotunnel.ui.screens.settings.integrations
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -42,6 +42,8 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val context = LocalContext.current
 
     val settingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+
+    if (settingsState.isLoading) return
 
     val clipboard = rememberClipboardHelper()
 

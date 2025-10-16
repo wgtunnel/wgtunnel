@@ -38,7 +38,7 @@ fun ConfigScreen(viewModel: ConfigViewModel) {
         )
     }
 
-    var tunnelName by remember { mutableStateOf(configUiState.tunnel?.tunName ?: "") }
+    var tunnelName by remember { mutableStateOf(configUiState.tunnel?.name ?: "") }
     val isGlobalConfig = rememberSaveable { tunnelName == TunnelConfig.GLOBAL_CONFIG_NAME }
 
     val isTunnelNameTaken by

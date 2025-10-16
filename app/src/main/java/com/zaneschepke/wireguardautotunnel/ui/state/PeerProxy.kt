@@ -1,7 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
 import com.wireguard.config.Peer
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.util.extensions.joinAndTrim
 
 data class PeerProxy(
@@ -9,7 +9,7 @@ data class PeerProxy(
     val preSharedKey: String = "",
     val persistentKeepalive: String = "",
     val endpoint: String = "",
-    val allowedIps: String = TunnelConf.ALL_IPS.joinAndTrim(),
+    val allowedIps: String = TunnelConfig.ALL_IPS.joinAndTrim(),
 ) {
     fun toWgPeer(): Peer {
         return Peer.Builder()
@@ -36,15 +36,15 @@ data class PeerProxy(
     }
 
     fun isLanExcluded(): Boolean {
-        return this.allowedIps.contains(TunnelConf.LAN_BYPASS_ALLOWED_IPS.joinAndTrim())
+        return this.allowedIps.contains(TunnelConfig.LAN_BYPASS_ALLOWED_IPS.joinAndTrim())
     }
 
     fun includeLan(): PeerProxy {
-        return this.copy(allowedIps = TunnelConf.ALL_IPS.joinAndTrim())
+        return this.copy(allowedIps = TunnelConfig.ALL_IPS.joinAndTrim())
     }
 
     fun excludeLan(): PeerProxy {
-        return this.copy(allowedIps = TunnelConf.LAN_BYPASS_ALLOWED_IPS.joinAndTrim())
+        return this.copy(allowedIps = TunnelConfig.LAN_BYPASS_ALLOWED_IPS.joinAndTrim())
     }
 
     companion object {

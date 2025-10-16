@@ -55,7 +55,7 @@ fun TunnelOptionsScreen(viewModel: TunnelViewModel) {
     }
 
     if (showQrModal) {
-        QrCodeDialog(tunnelConf = tunnel, onDismiss = { showQrModal = false })
+        QrCodeDialog(tunnelConfig = tunnel, onDismiss = { showQrModal = false })
     }
 
     Column(

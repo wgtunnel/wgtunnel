@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ClickableIconButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
@@ -57,7 +57,7 @@ fun PreferredTunnelScreen(
 
     if (autoTunnelState.isLoading) return
 
-    var selectedTunnel by remember { mutableStateOf<TunnelConf?>(null) }
+    var selectedTunnel by remember { mutableStateOf<TunnelConfig?>(null) }
 
     val currentSelection =
         remember(autoTunnelState.tunnels) {
@@ -121,7 +121,7 @@ fun PreferredTunnelScreen(
         }
         items(autoTunnelState.tunnels, key = { it.id }) { tunnel ->
             SurfaceRow(
-                title = tunnel.tunName,
+                title = tunnel.name,
                 trailing =
                     if (currentSelection?.id == tunnel.id) {
                         {
@@ -196,7 +196,10 @@ fun PreferredTunnelScreen(
                                         },
                                         containerColor = MaterialTheme.colorScheme.surface,
                                         supportingText =
-                                            if (autoTunnelState.settings.isWildcardsEnabled) {
+                                            if (
+                                                autoTunnelState.autoTunnelSettings
+                                                    .isWildcardsEnabled
+                                            ) {
                                                 { WildcardsLabel() }
                                             } else null,
                                         modifier =

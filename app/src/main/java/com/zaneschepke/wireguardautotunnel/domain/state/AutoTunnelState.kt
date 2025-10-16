@@ -1,18 +1,20 @@
 package com.zaneschepke.wireguardautotunnel.domain.state
 
 import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.StateChange
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent.DoNothing
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent.Start
-import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.AutoTunnelSettings
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.util.extensions.isMatchingToWildcardList
 
 data class AutoTunnelState(
     val activeTunnels: Map<Int, TunnelState> = emptyMap(),
     val networkState: NetworkState = NetworkState(),
-    val settings: GeneralSettings = GeneralSettings(),
-    val tunnels: List<TunnelConf> = emptyList(),
+    val settings: AutoTunnelSettings = AutoTunnelSettings(),
+    val appMode: AppMode = AppMode.VPN,
+    val tunnels: List<TunnelConfig> = emptyList(),
 ) {
 
     fun determineAutoTunnelEvent(stateChange: StateChange): AutoTunnelEvent {
@@ -20,7 +22,7 @@ data class AutoTunnelState(
             is StateChange.NetworkChange,
             is StateChange.SettingsChange -> {
                 // Compute desired tunnel based on network conditions
-                var desiredTunnel: TunnelConf? = null
+                var desiredTunnel: TunnelConfig? = null
                 if (networkState.isEthernetConnected && settings.isTunnelOnEthernetEnabled) {
                     desiredTunnel = preferredEthernetTunnel()
                 } else if (isMobileDataActive() && settings.isTunnelOnMobileDataEnabled) {
@@ -68,19 +70,19 @@ data class AutoTunnelState(
             networkState.isMobileDataConnected
     }
 
-    private fun preferredMobileDataTunnel(): TunnelConf? {
+    private fun preferredMobileDataTunnel(): TunnelConfig? {
         return tunnels.firstOrNull { it.isMobileDataTunnel }
             ?: tunnels.firstOrNull { it.isPrimaryTunnel }
             ?: tunnels.firstOrNull()
     }
 
-    private fun preferredEthernetTunnel(): TunnelConf? {
+    private fun preferredEthernetTunnel(): TunnelConfig? {
         return tunnels.firstOrNull { it.isEthernetTunnel }
             ?: tunnels.firstOrNull { it.isPrimaryTunnel }
             ?: tunnels.firstOrNull()
     }
 
-    private fun preferredWifiTunnel(): TunnelConf? {
+    private fun preferredWifiTunnel(): TunnelConfig? {
         return getTunnelWithMatchingTunnelNetwork()
             ?: tunnels.firstOrNull { it.isPrimaryTunnel }
             ?: tunnels.firstOrNull()
@@ -112,7 +114,7 @@ data class AutoTunnelState(
         }
     }
 
-    private fun getTunnelWithMatchingTunnelNetwork(): TunnelConf? {
+    private fun getTunnelWithMatchingTunnelNetwork(): TunnelConfig? {
         return networkState.wifiName?.let { wifiName ->
             tunnels.firstOrNull { hasTrustedWifiName(wifiName, it.tunnelNetworks) }
         }

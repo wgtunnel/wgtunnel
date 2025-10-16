@@ -1,44 +1,44 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import kotlinx.coroutines.flow.MutableStateFlow
 
-fun Map<TunnelConf, TunnelState>.allDown(): Boolean {
+fun Map<TunnelConfig, TunnelState>.allDown(): Boolean {
     return this.all { it.value.status.isDown() }
 }
 
-fun Map<TunnelConf, TunnelState>.hasActive(): Boolean {
+fun Map<TunnelConfig, TunnelState>.hasActive(): Boolean {
     return this.any { it.value.status.isUp() }
 }
 
-fun Map<TunnelConf, TunnelState>.getValueById(id: Int): TunnelState? {
+fun Map<TunnelConfig, TunnelState>.getValueById(id: Int): TunnelState? {
     val key = this.keys.find { it.id == id }
     return key?.let { this@getValueById[it] }
 }
 
-fun Map<TunnelConf, TunnelState>.getKeyById(id: Int): TunnelConf? {
+fun Map<TunnelConfig, TunnelState>.getKeyById(id: Int): TunnelConfig? {
     return this.keys.find { it.id == id }
 }
 
-fun Map<TunnelConf, TunnelState>.isUp(tunnelConf: TunnelConf): Boolean {
-    return this.getValueById(tunnelConf.id)?.status?.isUp() ?: false
+fun Map<TunnelConfig, TunnelState>.isUp(tunnelConfig: TunnelConfig): Boolean {
+    return this.getValueById(tunnelConfig.id)?.status?.isUp() ?: false
 }
 
-fun MutableStateFlow<Map<TunnelConf, TunnelState>>.exists(id: Int): Boolean {
+fun MutableStateFlow<Map<TunnelConfig, TunnelState>>.exists(id: Int): Boolean {
     return this.value.any { it.key.id == id }
 }
 
-fun MutableStateFlow<Map<TunnelConf, TunnelState>>.isUp(id: Int): Boolean {
+fun MutableStateFlow<Map<TunnelConfig, TunnelState>>.isUp(id: Int): Boolean {
     return this.value.any { it.key.id == id && it.value.status == TunnelStatus.Up }
 }
 
-fun MutableStateFlow<Map<TunnelConf, TunnelState>>.isStarting(id: Int): Boolean {
+fun MutableStateFlow<Map<TunnelConfig, TunnelState>>.isStarting(id: Int): Boolean {
     return this.value.any { it.key.id == id && it.value.status == TunnelStatus.Starting }
 }
 
-fun MutableStateFlow<Map<TunnelConf, TunnelState>>.findTunnel(id: Int): TunnelConf? {
+fun MutableStateFlow<Map<TunnelConfig, TunnelState>>.findTunnel(id: Int): TunnelConfig? {
     return this.value.keys.find { it.id == id }
 }
 

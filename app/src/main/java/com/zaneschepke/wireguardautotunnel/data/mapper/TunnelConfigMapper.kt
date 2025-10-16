@@ -1,46 +1,40 @@
 package com.zaneschepke.wireguardautotunnel.data.mapper
 
-import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig as Entity
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig as Domain
 
-object TunnelConfigMapper {
-    fun toTunnelConf(tunnelConfig: TunnelConfig): TunnelConf {
-        return with(tunnelConfig) {
-            TunnelConf(
-                id,
-                name,
-                wgQuick,
-                tunnelNetworks,
-                isMobileDataTunnel,
-                isPrimaryTunnel,
-                amQuick,
-                isActive,
-                pingTarget,
-                restartOnPingFailure,
-                isEthernetTunnel,
-                isIpv4Preferred,
-                position,
-            )
-        }
-    }
+fun Entity.toDomain(): Domain =
+    Domain(
+        id = id,
+        name = name,
+        wgQuick = wgQuick,
+        tunnelNetworks = tunnelNetworks,
+        isMobileDataTunnel = isMobileDataTunnel,
+        isPrimaryTunnel = isPrimaryTunnel,
+        amQuick = amQuick,
+        isActive = isActive,
+        restartOnPingFailure = restartOnPingFailure,
+        pingTarget = pingTarget,
+        isEthernetTunnel = isEthernetTunnel,
+        isIpv4Preferred = isIpv4Preferred,
+        position = position,
+        autoTunnelApps = autoTunnelApps,
+    )
 
-    fun toTunnelConfig(tunnelConf: TunnelConf): TunnelConfig {
-        return with(tunnelConf) {
-            TunnelConfig(
-                id,
-                tunName,
-                wgQuick,
-                tunnelNetworks,
-                isMobileDataTunnel,
-                isPrimaryTunnel,
-                amQuick,
-                isActive,
-                restartOnPingFailure,
-                pingTarget,
-                isEthernetTunnel,
-                isIpv4Preferred,
-                position,
-            )
-        }
-    }
-}
+fun Domain.toEntity(): Entity =
+    Entity(
+        id = id,
+        name = name,
+        wgQuick = wgQuick,
+        tunnelNetworks = tunnelNetworks,
+        isMobileDataTunnel = isMobileDataTunnel,
+        isPrimaryTunnel = isPrimaryTunnel,
+        amQuick = amQuick,
+        isActive = isActive,
+        restartOnPingFailure = restartOnPingFailure,
+        pingTarget = pingTarget,
+        isEthernetTunnel = isEthernetTunnel,
+        isIpv4Preferred = isIpv4Preferred,
+        position = position,
+        autoTunnelApps = autoTunnelApps,
+    )

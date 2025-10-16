@@ -6,7 +6,7 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
@@ -37,7 +37,7 @@ abstract class BaseTunnel(
     private val tunMutex = Mutex()
     private val tunStatusMutex = Mutex()
 
-    abstract fun tunnelStateFlow(tunnelConf: TunnelConf): Flow<TunnelStatus>
+    abstract fun tunnelStateFlow(tunnelConfig: TunnelConfig): Flow<TunnelStatus>
 
     abstract override fun setBackendMode(backendMode: BackendMode)
 
@@ -45,7 +45,7 @@ abstract class BaseTunnel(
 
     abstract override suspend fun forceStopTunnel(tunnelId: Int)
 
-    abstract override fun handleDnsReresolve(tunnelConf: TunnelConf): Boolean
+    abstract override fun handleDnsReresolve(tunnelConfig: TunnelConfig): Boolean
 
     abstract override fun getStatistics(tunnelId: Int): TunnelStatistics?
 
@@ -98,29 +98,32 @@ abstract class BaseTunnel(
         }
     }
 
-    override suspend fun startTunnel(tunnelConf: TunnelConf) {
+    override suspend fun startTunnel(tunnelConfig: TunnelConfig) {
         tunMutex.withLock {
-            if (activeTuns.value.containsKey(tunnelConf.id) || tunJobs.containsKey(tunnelConf.id)) {
-                return Timber.w("Tunnel is already running: ${tunnelConf.tunName}")
+            if (
+                activeTuns.value.containsKey(tunnelConfig.id) ||
+                    tunJobs.containsKey(tunnelConfig.id)
+            ) {
+                return Timber.w("Tunnel is already running: ${tunnelConfig.name}")
             }
 
-            updateTunnelStatus(tunnelConf.id, TunnelStatus.Starting)
+            updateTunnelStatus(tunnelConfig.id, TunnelStatus.Starting)
 
             val job =
                 applicationScope.launch(ioDispatcher) {
                     try {
-                        tunnelStateFlow(tunnelConf).collect { status ->
-                            updateTunnelStatus(tunnelConf.id, status)
+                        tunnelStateFlow(tunnelConfig).collect { status ->
+                            updateTunnelStatus(tunnelConfig.id, status)
                         }
                     } catch (e: BackendCoreException) {
-                        errors.emit(tunnelConf.tunName to e)
-                        updateTunnelStatus(tunnelConf.id, TunnelStatus.Down)
+                        errors.emit(tunnelConfig.name to e)
+                        updateTunnelStatus(tunnelConfig.id, TunnelStatus.Down)
                     } catch (_: CancellationException) {}
                 }
-            tunJobs[tunnelConf.id] = job
+            tunJobs[tunnelConfig.id] = job
             job.invokeOnCompletion {
-                tunJobs.remove(tunnelConf.id)
-                activeTuns.update { it - tunnelConf.id }
+                tunJobs.remove(tunnelConfig.id)
+                activeTuns.update { it - tunnelConfig.id }
             }
         }
     }

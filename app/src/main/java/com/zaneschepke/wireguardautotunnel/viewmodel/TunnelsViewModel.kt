@@ -5,12 +5,10 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelsUiState
@@ -37,8 +35,7 @@ class TunnelsViewModel
 @Inject
 constructor(
     private val tunnelRepository: TunnelRepository,
-    private val generalSettingRepository: GeneralSettingRepository,
-    private val appStateRepository: AppStateRepository,
+    private val monitoringRepository: MonitoringSettingsRepository,
     private val fileUtils: FileUtils,
     private val globalEffectRepository: GlobalEffectRepository,
     private val tunnelManager: TunnelManager,
@@ -51,17 +48,14 @@ constructor(
         ) {
             combine(
                     tunnelRepository.userTunnelsFlow,
-                    generalSettingRepository.flow,
-                    appStateRepository.flow,
                     tunnelManager.activeTunnels,
-                ) { tunnels, settings, appState, activeTunnels ->
+                    monitoringRepository.flow,
+                ) { tunnels, activeTunnels, monitoring ->
                     state.copy(
                         tunnels = tunnels,
                         activeTunnels = activeTunnels,
-                        appMode = settings.appMode,
-                        isPingEnabled = settings.isPingEnabled,
-                        isWildcardsEnabled = settings.isWildcardsEnabled,
-                        showPingStats = appState.showDetailedPingStats,
+                        isPingEnabled = monitoring.isPingEnabled,
+                        showPingStats = monitoring.showDetailedPingStats,
                         isLoading = false,
                     )
                 }
@@ -72,7 +66,7 @@ constructor(
         globalEffectRepository.post(globalSideEffect)
     }
 
-    fun saveSortChanges(tunnels: List<TunnelConf>) = intent {
+    fun saveSortChanges(tunnels: List<TunnelConfig>) = intent {
         tunnelRepository.saveAll(tunnels.mapIndexed { index, conf -> conf.copy(position = index) })
         postSideEffect(
             GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.config_changes_saved))
@@ -83,7 +77,7 @@ constructor(
     fun importTunnelConfigs(configs: Map<QuickConfig, TunnelName>) = intent {
         try {
             val tunnelConfigs =
-                configs.map { (config, name) -> TunnelConf.tunnelConfFromQuick(config, name) }
+                configs.map { (config, name) -> TunnelConfig.tunnelConfFromQuick(config, name) }
             tunnelRepository.saveTunnelsUniquely(tunnelConfigs, state.tunnels)
         } catch (_: IOException) {
             postSideEffect(
@@ -164,7 +158,7 @@ constructor(
 
     fun copySelectedTunnel() = intent {
         val selected = state.selectedTunnels.firstOrNull() ?: return@intent
-        val copy = TunnelConf.tunnelConfFromQuick(selected.amQuick, selected.tunName)
+        val copy = TunnelConfig.tunnelConfFromQuick(selected.amQuick, selected.name)
         tunnelRepository.saveTunnelsUniquely(listOf(copy), state.tunnels)
         clearSelectedTunnels()
     }
@@ -209,17 +203,17 @@ constructor(
             .onFailure(onFailure)
     }
 
-    suspend fun createWgFiles(tunnels: Collection<TunnelConf>): List<File> =
+    suspend fun createWgFiles(tunnels: Collection<TunnelConfig>): List<File> =
         tunnels.mapNotNull { config ->
             if (config.wgQuick.isNotBlank()) {
-                fileUtils.createFile(config.tunName, config.wgQuick)
+                fileUtils.createFile(config.name, config.wgQuick)
             } else null
         }
 
-    suspend fun createAmFiles(tunnels: Collection<TunnelConf>): List<File> =
+    suspend fun createAmFiles(tunnels: Collection<TunnelConfig>): List<File> =
         tunnels.mapNotNull { config ->
-            if (config.amQuick != TunnelConfig.AM_QUICK_DEFAULT && config.amQuick.isNotBlank()) {
-                fileUtils.createFile(config.tunName, config.amQuick)
+            if (config.amQuick.isNotBlank()) {
+                fileUtils.createFile(config.name, config.amQuick)
             } else null
         }
 }

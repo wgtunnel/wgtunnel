@@ -1,5 +1,10 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel
 
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,12 +32,14 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.NetworkType
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
+import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
@@ -48,10 +55,28 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val navController = LocalNavController.current
+    val shareViewModel = LocalSharedVm.current
     val clipboard = rememberClipboardHelper()
+
+    val sharedUiState by shareViewModel.container.stateFlow.collectAsStateWithLifecycle()
     val autoTunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     if (autoTunnelState.isLoading) return
+
+    val batteryActivity =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            shareViewModel.disableBatteryOptimizationsShown()
+        }
+
+    @SuppressLint("BatteryLife")
+    fun requestDisableBatteryOptimizations() {
+        batteryActivity.launch(
+            Intent().apply {
+                action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+                data = "package:${context.packageName}".toUri()
+            }
+        )
+    }
 
     val (ethernetTunnel, mobileDataTunnel, mappedTunnels) =
         remember(autoTunnelState.tunnels) {
@@ -85,11 +110,18 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                             )
                     }
                 }
+
+            fun onAutoTunnelClick() {
+                if (sharedUiState.isBatteryOptimizationShown)
+                    return requestDisableBatteryOptimizations()
+                viewModel.toggleAutoTunnel(sharedUiState.settings.appMode)
+            }
+
             SurfaceRow(
                 leading = { Icon(icon, null) },
                 title = title,
                 trailing = {
-                    Button({ viewModel.toggleAutoTunnel() }) {
+                    Button({ onAutoTunnelClick() }) {
                         Text(
                             buttonText,
                             fontWeight = FontWeight.Bold,
@@ -100,7 +132,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                         )
                     }
                 },
-                onClick = { viewModel.toggleAutoTunnel() },
+                onClick = { onAutoTunnelClick() },
             )
         }
         Column {
@@ -191,7 +223,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 title = stringResource(R.string.tunnel_on_wifi),
                 trailing = { modifier ->
                     SwitchWithDivider(
-                        checked = autoTunnelState.settings.isTunnelOnWifiEnabled,
+                        checked = autoTunnelState.autoTunnelSettings.isTunnelOnWifiEnabled,
                         onClick = { viewModel.setAutoTunnelOnWifiEnabled(it) },
                         modifier = modifier,
                     )
@@ -216,7 +248,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 title = stringResource(R.string.tunnel_mobile_data),
                 trailing = { modifier ->
                     SwitchWithDivider(
-                        checked = autoTunnelState.settings.isTunnelOnMobileDataEnabled,
+                        checked = autoTunnelState.autoTunnelSettings.isTunnelOnMobileDataEnabled,
                         onClick = { viewModel.setTunnelOnCellular(it) },
                         modifier = modifier,
                     )
@@ -225,7 +257,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                     DescriptionText(
                         buildAnnotatedString {
                             append(stringResource(R.string.preferred_tunnel_label))
-                            mobileDataTunnel?.tunName?.let { append(it) }
+                            mobileDataTunnel?.name?.let { append(it) }
                                 ?: withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                                     append(stringResource(R.string._default))
                                 }
@@ -239,7 +271,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 title = stringResource(R.string.tunnel_on_ethernet),
                 trailing = { modifier ->
                     SwitchWithDivider(
-                        checked = autoTunnelState.settings.isTunnelOnEthernetEnabled,
+                        checked = autoTunnelState.autoTunnelSettings.isTunnelOnEthernetEnabled,
                         onClick = { viewModel.setTunnelOnEthernet(it) },
                         modifier = modifier,
                     )
@@ -248,7 +280,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                     DescriptionText(
                         buildAnnotatedString {
                             append(stringResource(R.string.preferred_tunnel_label))
-                            ethernetTunnel?.tunName?.let { append(it) }
+                            ethernetTunnel?.name?.let { append(it) }
                                 ?: withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                                     append(stringResource(R.string._default))
                                 }
@@ -277,13 +309,13 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 },
                 trailing = {
                     ScaledSwitch(
-                        checked = autoTunnelState.settings.isStopOnNoInternetEnabled,
+                        checked = autoTunnelState.autoTunnelSettings.isStopOnNoInternetEnabled,
                         onClick = { viewModel.setStopOnNoInternetEnabled(it) },
                     )
                 },
                 onClick = {
                     viewModel.setStopOnNoInternetEnabled(
-                        !autoTunnelState.settings.isStopOnNoInternetEnabled
+                        !autoTunnelState.autoTunnelSettings.isStopOnNoInternetEnabled
                     )
                 },
             )

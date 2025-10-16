@@ -11,8 +11,9 @@ data class SharedAppUiState(
     val pinLockEnabled: Boolean = false,
     val tunnelNames: Map<Int, String> = emptyMap(),
     val selectedTunnelCount: Int = 0,
-    val isAuthorized: Boolean = false,
+    val isPinVerified: Boolean = false,
     val isAutoTunnelActive: Boolean = false,
     val isLocationDisclosureShown: Boolean = false,
+    val isBatteryOptimizationShown: Boolean = false,
     val settings: GeneralSettings = GeneralSettings(),
 )

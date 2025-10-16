@@ -2,10 +2,7 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
-import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
-import com.zaneschepke.wireguardautotunnel.data.model.DnsProvider
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
@@ -24,7 +21,6 @@ class SettingsViewModel
 constructor(
     private val settingsRepository: GeneralSettingRepository,
     private val shortcutManager: ShortcutManager,
-    private val appStateRepository: AppStateRepository,
     private val tunnelsRepository: TunnelRepository,
     private val globalEffectRepository: GlobalEffectRepository,
 ) : ContainerHost<SettingUiState, Nothing>, ViewModel() {
@@ -37,19 +33,16 @@ constructor(
             intent {
                 combine(
                         settingsRepository.flow,
-                        appStateRepository.flow,
                         tunnelsRepository.globalTunnelFlow,
                         tunnelsRepository.userTunnelsFlow,
-                    ) { settings, appState, tunnel, tunnels ->
+                    ) { settings, tunnel, tunnels ->
                         state.copy(
                             settings = settings,
-                            isLocalLoggingEnabled = appState.isLocalLogsEnabled,
-                            remoteKey = appState.remoteKey,
-                            isRemoteEnabled = appState.isRemoteControlEnabled,
-                            isPinLockEnabled = appState.isPinLockEnabled,
-                            showDetailedPingStats = appState.showDetailedPingStats,
+                            remoteKey = settings.remoteKey,
+                            isRemoteEnabled = settings.isRemoteControlEnabled,
+                            isPinLockEnabled = settings.isPinLockEnabled,
                             isLoading = false,
-                            globalTunnelConf = tunnel,
+                            globalTunnelConfig = tunnel,
                             tunnels = tunnels,
                         )
                     }
@@ -57,13 +50,9 @@ constructor(
             }
         }
 
-    fun setPingEnabled(to: Boolean) = intent {
-        settingsRepository.save(state.settings.copy(isPingEnabled = to))
-    }
-
     fun setShortcutsEnabled(to: Boolean) = intent {
         if (to) shortcutManager.addShortcuts() else shortcutManager.removeShortcuts()
-        settingsRepository.save(state.settings.copy(isShortcutsEnabled = to))
+        settingsRepository.upsert(state.settings.copy(isShortcutsEnabled = to))
     }
 
     suspend fun postSideEffect(globalSideEffect: GlobalSideEffect) {
@@ -71,57 +60,29 @@ constructor(
     }
 
     fun setAlwaysOnVpnEnabled(to: Boolean) = intent {
-        settingsRepository.save(state.settings.copy(isAlwaysOnVpnEnabled = to))
+        settingsRepository.upsert(state.settings.copy(isAlwaysOnVpnEnabled = to))
     }
 
     fun setRestoreOnBootEnabled(to: Boolean) = intent {
-        settingsRepository.save(state.settings.copy(isRestoreOnBootEnabled = to))
+        settingsRepository.upsert(state.settings.copy(isRestoreOnBootEnabled = to))
     }
 
     fun setLanKillSwitchEnabled(to: Boolean) = intent {
-        settingsRepository.save(state.settings.copy(isLanOnKillSwitchEnabled = to))
+        settingsRepository.upsert(state.settings.copy(isLanOnKillSwitchEnabled = to))
     }
 
     fun setTunnelGlobals(to: Boolean) = intent {
-        settingsRepository.save(state.settings.copy(isTunnelGlobalsEnabled = to))
-        if (state.globalTunnelConf == null)
-            tunnelsRepository.save(TunnelConf.generateDefaultGlobalConfig())
+        settingsRepository.upsert(state.settings.copy(isTunnelGlobalsEnabled = to))
+        if (state.globalTunnelConfig == null)
+            tunnelsRepository.save(TunnelConfig.generateDefaultGlobalConfig())
     }
-
-    fun setTunnelPingIntervalSeconds(to: Int) = intent {
-        settingsRepository.save(state.settings.copy(tunnelPingIntervalSeconds = to))
-    }
-
-    fun setTunnelPingAttempts(to: Int) = intent {
-        settingsRepository.save(state.settings.copy(tunnelPingAttempts = to))
-    }
-
-    fun setTunnelPingTimeoutSeconds(to: Int?) = intent {
-        settingsRepository.save(state.settings.copy(tunnelPingTimeoutSeconds = to))
-    }
-
-    fun setDnsProtocol(to: DnsProtocol) = intent {
-        settingsRepository.save(state.settings.copy(dnsProtocol = to))
-    }
-
-    fun setDetailedPingStats(to: Boolean) = intent {
-        appStateRepository.setShowDetailedPingStats(to)
-    }
-
-    fun setLocalLogging(to: Boolean) = intent { appStateRepository.setLocalLogsEnabled(to) }
 
     fun setRemoteEnabled(to: Boolean) = intent {
-        appStateRepository.setRemoteKey(UUID.randomUUID().toString())
-        appStateRepository.setIsRemoteControlEnabled(to)
-    }
-
-    fun setPingTarget(tunnel: TunnelConf, target: String?) = intent {
-        tunnelsRepository.save(tunnel.copy(pingTarget = target?.ifBlank { null }))
-    }
-
-    fun setDnsProvider(dnsProvider: DnsProvider) = intent {
-        settingsRepository.save(
-            state.settings.copy(dnsEndpoint = dnsProvider.asAddress(state.settings.dnsProtocol))
+        settingsRepository.upsert(
+            state.settings.copy(
+                isRemoteControlEnabled = to,
+                remoteKey = UUID.randomUUID().toString(),
+            )
         )
     }
 }

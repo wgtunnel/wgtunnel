@@ -35,7 +35,7 @@ fun WifiDetectionMethodScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) 
             IconSurfaceButton(
                 title = title,
                 onClick = { viewModel.setWifiDetectionMethod(it) },
-                selected = autoTunnelState.settings.wifiDetectionMethod == it,
+                selected = autoTunnelState.autoTunnelSettings.wifiDetectionMethod == it,
                 description = description,
             )
         }

@@ -10,7 +10,7 @@ import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelSer
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
-import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.util.extensions.requestAutoTunnelTileServiceUpdate
 import com.zaneschepke.wireguardautotunnel.util.extensions.requestTunnelTileServiceStateUpdate
 import jakarta.inject.Inject
@@ -30,7 +30,7 @@ constructor(
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     @ApplicationScope applicationScope: CoroutineScope,
     private val mainDispatcher: CoroutineDispatcher,
-    private val settingsRepository: GeneralSettingRepository,
+    private val autoTunnelSettingsRepository: AutoTunnelSettingsRepository,
 ) {
 
     private val autoTunnelMutex = Mutex()
@@ -49,7 +49,9 @@ constructor(
         }
         applicationScope.launch(ioDispatcher) {
             combine(
-                    settingsRepository.flow.map { it.isAutoTunnelEnabled }.distinctUntilChanged(),
+                    autoTunnelSettingsRepository.flow
+                        .map { it.isAutoTunnelEnabled }
+                        .distinctUntilChanged(),
                     _autoTunnelService,
                 ) { enabled, service ->
                     enabled to (service != null)

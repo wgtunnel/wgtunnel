@@ -1,9 +1,9 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 
 data class ConfigUiState(
-    val unavailableNames: Set<String> = emptySet(),
+    val unavailableNames: List<String> = emptyList(),
     val isLoading: Boolean = true,
-    val tunnel: TunnelConf? = null,
+    val tunnel: TunnelConfig? = null,
 )

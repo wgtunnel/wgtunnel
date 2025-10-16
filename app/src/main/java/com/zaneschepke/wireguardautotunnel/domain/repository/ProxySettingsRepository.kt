@@ -1,12 +1,12 @@
 package com.zaneschepke.wireguardautotunnel.domain.repository
 
-import com.zaneschepke.wireguardautotunnel.domain.model.AppProxySettings
+import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
 import kotlinx.coroutines.flow.Flow
 
 interface ProxySettingsRepository {
-    suspend fun save(proxySettings: AppProxySettings)
+    suspend fun upsert(proxySettings: ProxySettings)
 
-    val flow: Flow<AppProxySettings>
+    val flow: Flow<ProxySettings>
 
-    suspend fun get(): AppProxySettings
+    suspend fun getProxySettings(): ProxySettings
 }

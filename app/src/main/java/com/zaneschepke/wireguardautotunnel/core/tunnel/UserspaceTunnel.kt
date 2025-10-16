@@ -6,9 +6,9 @@ import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
-import com.zaneschepke.wireguardautotunnel.domain.model.AppProxySettings
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.domain.repository.DnsSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.AmneziaStatistics
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
@@ -44,17 +44,17 @@ constructor(
     @ApplicationScope applicationScope: CoroutineScope,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val proxySettingsRepository: ProxySettingsRepository,
-    private val settingsRepository: GeneralSettingRepository,
+    private val dnsSettingsRepository: DnsSettingsRepository,
     private val backend: Backend,
 ) : BaseTunnel(applicationScope, ioDispatcher) {
 
     private val runtimeTunnels = ConcurrentHashMap<Int, AwgTunnel>()
 
-    override fun tunnelStateFlow(tunnelConf: TunnelConf): Flow<TunnelStatus> = callbackFlow {
+    override fun tunnelStateFlow(tunnelConfig: TunnelConfig): Flow<TunnelStatus> = callbackFlow {
         val stateChannel = Channel<AwgTunnel.State>()
 
-        val runtimeTunnel = RuntimeAwgTunnel(tunnelConf, stateChannel)
-        runtimeTunnels[tunnelConf.id] = runtimeTunnel
+        val runtimeTunnel = RuntimeAwgTunnel(tunnelConfig, stateChannel)
+        runtimeTunnels[tunnelConfig.id] = runtimeTunnel
 
         val consumerJob = launch {
             stateChannel.consumeAsFlow().collect { awgState -> trySend(awgState.asTunnelState()) }
@@ -62,19 +62,19 @@ constructor(
 
         try {
             withTimeout(STARTUP_TIMEOUT_MS) {
-                updateTunnelStatus(tunnelConf.id, TunnelStatus.Starting)
+                updateTunnelStatus(tunnelConfig.id, TunnelStatus.Starting)
 
                 val proxies: List<Proxy> =
                     when (backend) {
                         is ProxyGoBackend -> {
-                            val proxySettings = proxySettingsRepository.get()
+                            val proxySettings = proxySettingsRepository.getProxySettings()
                             Timber.d("Adding proxy configs")
                             buildList {
                                 if (proxySettings.socks5ProxyEnabled) {
                                     add(
                                         Socks5Proxy(
                                             proxySettings.socks5ProxyBindAddress
-                                                ?: AppProxySettings.DEFAULT_SOCKS_BIND_ADDRESS,
+                                                ?: ProxySettings.DEFAULT_SOCKS_BIND_ADDRESS,
                                             proxySettings.proxyUsername,
                                             proxySettings.proxyPassword,
                                         )
@@ -84,7 +84,7 @@ constructor(
                                     add(
                                         HttpProxy(
                                             proxySettings.httpProxyBindAddress
-                                                ?: AppProxySettings.DEFAULT_HTTP_BIND_ADDRESS,
+                                                ?: ProxySettings.DEFAULT_HTTP_BIND_ADDRESS,
                                             proxySettings.proxyUsername,
                                             proxySettings.proxyPassword,
                                         )
@@ -94,8 +94,8 @@ constructor(
                         }
                         else -> emptyList()
                     }
-                val setting = settingsRepository.get()
-                val config = tunnelConf.toAmConfig()
+                val setting = dnsSettingsRepository.getDnsSettings()
+                val config = tunnelConfig.toAmConfig()
                 val updatedConfig =
                     Config.Builder()
                         .apply {
@@ -113,9 +113,9 @@ constructor(
                 backend.setState(runtimeTunnel, AwgTunnel.State.UP, updatedConfig)
             }
         } catch (e: TimeoutCancellationException) {
-            Timber.e("Startup timed out for ${tunnelConf.tunName} (likely DNS hang)")
-            errors.emit(tunnelConf.tunName to BackendCoreException.DNS)
-            forceStopTunnel(tunnelConf.id)
+            Timber.e("Startup timed out for ${tunnelConfig.name} (likely DNS hang)")
+            errors.emit(tunnelConfig.name to BackendCoreException.DNS)
+            forceStopTunnel(tunnelConfig.id)
             close()
         } catch (e: BackendException) {
             close(e.toBackendCoreException())
@@ -130,11 +130,11 @@ constructor(
             try {
                 backend.setState(runtimeTunnel, AwgTunnel.State.DOWN, null)
             } catch (e: BackendException) {
-                errors.tryEmit(tunnelConf.tunName to e.toBackendCoreException())
+                errors.tryEmit(tunnelConfig.name to e.toBackendCoreException())
             } finally {
                 consumerJob.cancel()
                 stateChannel.close()
-                runtimeTunnels.remove(tunnelConf.id)
+                runtimeTunnels.remove(tunnelConfig.id)
                 trySend(TunnelStatus.Down)
                 close()
             }
@@ -157,10 +157,9 @@ constructor(
         return backend.backendMode.asBackendMode()
     }
 
-    override fun handleDnsReresolve(tunnelConf: TunnelConf): Boolean {
-        val tunnel =
-            runtimeTunnels.get(tunnelConf.id) ?: throw BackendCoreException.ServiceNotRunning
-        return backend.resolveDDNS(tunnelConf.toAmConfig(), tunnel.isIpv4ResolutionPreferred)
+    override fun handleDnsReresolve(tunnelConfig: TunnelConfig): Boolean {
+        val tunnel = runtimeTunnels[tunnelConfig.id] ?: throw BackendCoreException.ServiceNotRunning
+        return backend.resolveDDNS(tunnelConfig.toAmConfig(), tunnel.isIpv4ResolutionPreferred)
     }
 
     override suspend fun runningTunnelNames(): Set<String> {

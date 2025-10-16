@@ -27,14 +27,14 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
-import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.MonitoringViewModel
 
 @Composable
-fun TunnelMonitoringScreen(viewModel: SettingsViewModel = hiltViewModel()) {
+fun TunnelMonitoringScreen(viewModel: MonitoringViewModel = hiltViewModel()) {
     val navController = LocalNavController.current
-    val settingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val monitoringUiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
-    if (settingsState.isLoading) return
+    if (monitoringUiState.isLoading) return
 
     Column(
         horizontalAlignment = Alignment.Start,
@@ -51,16 +51,18 @@ fun TunnelMonitoringScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 title = stringResource(R.string.ping_monitor),
                 trailing = {
                     ScaledSwitch(
-                        checked = settingsState.settings.isPingEnabled,
+                        checked = monitoringUiState.monitoringSettings.isPingEnabled,
                         onClick = { viewModel.setPingEnabled(it) },
                     )
                 },
-                onClick = { viewModel.setPingEnabled(!settingsState.settings.isPingEnabled) },
+                onClick = {
+                    viewModel.setPingEnabled(!monitoringUiState.monitoringSettings.isPingEnabled)
+                },
             )
             LabelledDropdown(
                 title = stringResource(R.string.tunnel_ping_interval),
                 leading = { Icon(Icons.Outlined.Timer, contentDescription = null) },
-                currentValue = settingsState.settings.tunnelPingIntervalSeconds,
+                currentValue = monitoringUiState.monitoringSettings.tunnelPingIntervalSeconds,
                 onSelected = { selected ->
                     selected?.let { viewModel.setTunnelPingIntervalSeconds(it) }
                 },
@@ -70,7 +72,7 @@ fun TunnelMonitoringScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             LabelledDropdown(
                 title = stringResource(R.string.attempts_per_interval),
                 leading = { Icon(Icons.Outlined.Replay, contentDescription = null) },
-                currentValue = settingsState.settings.tunnelPingAttempts,
+                currentValue = monitoringUiState.monitoringSettings.tunnelPingAttempts,
                 onSelected = { selected -> selected?.let { viewModel.setTunnelPingAttempts(it) } },
                 options = (1..5).toList(),
                 optionToString = { it?.toString() ?: stringResource(R.string._default) },
@@ -78,7 +80,7 @@ fun TunnelMonitoringScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             LabelledDropdown(
                 title = stringResource(R.string.ping_timeout),
                 leading = { Icon(Icons.Outlined.TimerOff, contentDescription = null) },
-                currentValue = settingsState.settings.tunnelPingTimeoutSeconds,
+                currentValue = monitoringUiState.monitoringSettings.tunnelPingTimeoutSeconds,
                 description = {
                     Text(
                         text = stringResource(R.string.timeout_all_attempts),
@@ -99,11 +101,15 @@ fun TunnelMonitoringScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 title = stringResource(R.string.display_detailed_ping_stats),
                 trailing = {
                     ScaledSwitch(
-                        checked = settingsState.showDetailedPingStats,
+                        checked = monitoringUiState.monitoringSettings.showDetailedPingStats,
                         onClick = { viewModel.setDetailedPingStats(it) },
                     )
                 },
-                onClick = { viewModel.setDetailedPingStats(!settingsState.showDetailedPingStats) },
+                onClick = {
+                    viewModel.setDetailedPingStats(
+                        !monitoringUiState.monitoringSettings.showDetailedPingStats
+                    )
+                },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Adjust, contentDescription = null) },
@@ -121,7 +127,7 @@ fun TunnelMonitoringScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 title = stringResource(R.string.local_logging),
                 trailing = { modifier ->
                     SwitchWithDivider(
-                        checked = settingsState.isLocalLoggingEnabled,
+                        checked = monitoringUiState.monitoringSettings.isLocalLogsEnabled,
                         onClick = { viewModel.setLocalLogging(it) },
                         modifier = modifier,
                     )

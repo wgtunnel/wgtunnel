@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import java.io.IOException
@@ -16,6 +15,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
+private const val preferencesKey = "preferences"
+val Context.dataStore by preferencesDataStore(name = preferencesKey)
+
 class DataStoreManager(
     private val context: Context,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
@@ -23,19 +25,7 @@ class DataStoreManager(
     companion object {
         val locationDisclosureShown = booleanPreferencesKey("LOCATION_DISCLOSURE_SHOWN")
         val batteryDisableShown = booleanPreferencesKey("BATTERY_OPTIMIZE_DISABLE_SHOWN")
-        val pinLockEnabled = booleanPreferencesKey("PIN_LOCK_ENABLED")
-        val expandedTunnelIds = stringPreferencesKey("EXPANDED_TUNNEL_IDS")
-        val isLocalLogsEnabled = booleanPreferencesKey("LOCAL_LOGS_ENABLED")
-        val locale = stringPreferencesKey("LOCALE")
-        val theme = stringPreferencesKey("THEME")
-        val isRemoteControlEnabled = booleanPreferencesKey("IS_REMOTE_CONTROL_ENABLED")
-        val remoteKey = stringPreferencesKey("REMOTE_KEY")
-        val showDetailedPingStats = booleanPreferencesKey("SHOW_DETAILED_PING_STATS")
     }
-
-    // preferences
-    private val preferencesKey = "preferences"
-    private val Context.dataStore by preferencesDataStore(name = preferencesKey)
 
     suspend fun init() {
         withContext(ioDispatcher) {

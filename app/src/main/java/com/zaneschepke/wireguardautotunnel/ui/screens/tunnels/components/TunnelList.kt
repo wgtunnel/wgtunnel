@@ -91,7 +91,7 @@ fun TunnelList(
                         modifier = Modifier.size(14.dp),
                     )
                 },
-                title = tunnel.tunName,
+                title = tunnel.name,
                 onClick = {
                     if (tunnelsState.selectedTunnels.isNotEmpty()) {
                         viewModel.toggleSelectedTunnel(tunnel.id)

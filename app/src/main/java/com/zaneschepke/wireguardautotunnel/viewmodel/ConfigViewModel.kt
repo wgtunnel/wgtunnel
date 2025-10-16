@@ -2,7 +2,7 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
@@ -36,11 +36,7 @@ constructor(
             tunnelRepository.flow.collect { tuns ->
                 reduce {
                     val tunnel = tuns.firstOrNull { it.id == tunnelId }
-                    ConfigUiState(
-                        tuns.filter { it.id != tunnelId }.map { it.tunName }.toSet(),
-                        false,
-                        tunnel,
-                    )
+                    ConfigUiState(tuns.filter { it.id != tunnelId }.map { it.name }, false, tunnel)
                 }
             }
         }
@@ -52,18 +48,21 @@ constructor(
             )
         runCatching {
                 val (wg, am) = configProxy.buildConfigs()
-                val tunnelConf =
+                val tunnelConfig =
                     if (tunnelId == null) {
-                        TunnelConf.tunnelConfFromQuick(am.toAwgQuickString(true, false), tunnelName)
+                        TunnelConfig.tunnelConfFromQuick(
+                            am.toAwgQuickString(true, false),
+                            tunnelName,
+                        )
                     } else {
                         state.tunnel?.copy(
-                            tunName = tunnelName,
+                            name = tunnelName,
                             amQuick = am.toAwgQuickString(true, false),
                             wgQuick = wg.toWgQuickString(true),
                         )
                     }
-                if (tunnelConf != null) {
-                    tunnelRepository.save(tunnelConf)
+                if (tunnelConfig != null) {
+                    tunnelRepository.save(tunnelConfig)
                     postSideEffect(
                         GlobalSideEffect.Toast(
                             StringValue.StringResource(R.string.config_changes_saved)

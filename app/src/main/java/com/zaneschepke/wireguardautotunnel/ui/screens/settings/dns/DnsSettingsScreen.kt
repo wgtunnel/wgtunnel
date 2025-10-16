@@ -23,14 +23,14 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
 import com.zaneschepke.wireguardautotunnel.data.model.DnsProvider
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
-import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.DnsViewModel
 
 @Composable
-fun DnsSettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
+fun DnsSettingsScreen(viewModel: DnsViewModel = hiltViewModel()) {
     val context = LocalContext.current
-    val settingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val dnsUiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
-    if (settingsState.isLoading) return
+    if (dnsUiState.isLoading) return
 
     Column(
         horizontalAlignment = Alignment.Start,
@@ -41,17 +41,17 @@ fun DnsSettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             LabelledDropdown(
                 title = stringResource(R.string.dns_protocol),
                 leading = { Icon(Icons.Outlined.Dns, contentDescription = null) },
-                currentValue = settingsState.settings.dnsProtocol,
+                currentValue = dnsUiState.dnsSettings.dnsProtocol,
                 onSelected = { selected -> selected?.let { viewModel.setDnsProtocol(it) } },
                 options = DnsProtocol.entries,
                 optionToString = { (it ?: DnsProtocol.SYSTEM).asString(context) },
             )
-            AnimatedVisibility(settingsState.settings.dnsProtocol != DnsProtocol.SYSTEM) {
+            AnimatedVisibility(dnsUiState.dnsSettings.dnsProtocol != DnsProtocol.SYSTEM) {
                 LabelledDropdown(
                     title = stringResource(R.string.dns_provider),
                     leading = { Icon(Icons.Outlined.Cloud, contentDescription = null) },
                     currentValue =
-                        settingsState.settings.dnsEndpoint?.let { DnsProvider.fromAddress(it) }
+                        dnsUiState.dnsSettings.dnsEndpoint?.let { DnsProvider.fromAddress(it) }
                             ?: DnsProvider.CLOUDFLARE,
                     onSelected = { selected -> selected?.let { viewModel.setDnsProvider(it) } },
                     options = DnsProvider.entries,

@@ -4,8 +4,9 @@ import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.*
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
@@ -26,6 +27,7 @@ class TunnelMonitor
 constructor(
     private val settingsRepository: GeneralSettingRepository,
     private val tunnelsRepository: TunnelRepository,
+    private val monitoringSettingsRepository: MonitoringSettingsRepository,
     private val networkMonitor: NetworkMonitor,
     private val networkUtils: NetworkUtils,
     private val logReader: LogReader,
@@ -51,14 +53,14 @@ constructor(
     }
 
     private suspend fun startLogsMonitor(
-        tunnelConf: TunnelConf,
+        tunnelConfig: TunnelConfig,
         updateTunnelStatus:
             suspend (
                 Int, TunnelStatus?, TunnelStatistics?, Map<String, PingState>?, LogHealthState?,
             ) -> Unit,
     ) {
         logReader.liveLogs
-            .filter { log -> log.tag.contains(tunnelConf.tunName) }
+            .filter { log -> log.tag.contains(tunnelConfig.name) }
             .mapNotNull { log ->
                 val now = System.currentTimeMillis()
 
@@ -74,13 +76,13 @@ constructor(
             }
             .distinctUntilChangedBy { it.isHealthy } // Only emit when health changes
             .collect { logHealthState ->
-                Timber.d("Tunnel log health updated for ${tunnelConf.tunName}: $logHealthState")
-                updateTunnelStatus(tunnelConf.id, null, null, null, logHealthState)
+                Timber.d("Tunnel log health updated for ${tunnelConfig.name}: $logHealthState")
+                updateTunnelStatus(tunnelConfig.id, null, null, null, logHealthState)
             }
     }
 
     private suspend fun startPingMonitor(
-        tunnelConf: TunnelConf,
+        tunnelConfig: TunnelConfig,
         tunStateFlow: StateFlow<TunnelState?>,
         updateTunnelStatus:
             suspend (
@@ -112,23 +114,20 @@ constructor(
             .distinctUntilChanged()
             .stateIn(this)
 
-        settingsRepository.flow
-            .distinctUntilChanged { old, new ->
-                old.isPingEnabled == new.isPingEnabled &&
-                    old.tunnelPingIntervalSeconds == new.tunnelPingIntervalSeconds &&
-                    old.tunnelPingAttempts == new.tunnelPingAttempts &&
-                    old.tunnelPingTimeoutSeconds == new.tunnelPingTimeoutSeconds &&
-                    old.appMode == new.appMode
+        combine(
+                settingsRepository.flow.distinctUntilChangedBy { it.appMode },
+                monitoringSettingsRepository.flow,
+            ) { settings, monitorSettings ->
+                Pair(settings.appMode, monitorSettings)
             }
-            .collectLatest { settings ->
+            .collectLatest { (appMode, settings) ->
                 if (!settings.isPingEnabled) return@collectLatest
                 // TODO for now until we get monitoring for these modes
-                if (settings.appMode == AppMode.LOCK_DOWN || settings.appMode == AppMode.PROXY)
-                    return@collectLatest
+                if (appMode == AppMode.LOCK_DOWN || appMode == AppMode.PROXY) return@collectLatest
 
-                Timber.d("Starting pinger for ${tunnelConf.tunName} with settings")
+                Timber.d("Starting pinger for ${tunnelConfig.name} with settings")
 
-                val config = tunnelConf.toAmConfig()
+                val config = tunnelConfig.toAmConfig()
 
                 val pingablePeers = config.peers.filter { it.allowedIps.isNotEmpty() }
                 if (pingablePeers.isEmpty()) return@collectLatest
@@ -154,7 +153,7 @@ constructor(
                             }
 
                             val host =
-                                tunnelConf.pingTarget
+                                tunnelConfig.pingTarget
                                     ?: run {
                                         val parts = allowedIpStr.split("/")
                                         val internalIp =
@@ -244,7 +243,7 @@ constructor(
                                 .onFailure {
                                     Timber.e(
                                         it,
-                                        "Ping failed for peer ${peer.publicKey} in ${tunnelConf.tunName} to host $host",
+                                        "Ping failed for peer ${peer.publicKey} in ${tunnelConfig.name} to host $host",
                                     )
                                     updates[key] =
                                         previousState.copy(
@@ -259,7 +258,7 @@ constructor(
                     if (updates.isNotEmpty()) {
                         ensureActive()
                         pingStatsFlow.update { updates }
-                        updateTunnelStatus(tunnelConf.id, null, null, updates, null)
+                        updateTunnelStatus(tunnelConfig.id, null, null, updates, null)
                     }
                 }
 
@@ -284,7 +283,7 @@ constructor(
                             }
                         }
                         ensureActive()
-                        updateTunnelStatus(tunnelConf.id, null, null, pingStatsFlow.value, null)
+                        updateTunnelStatus(tunnelConfig.id, null, null, pingStatsFlow.value, null)
                     }
                     delay(settings.tunnelPingIntervalSeconds.toMillis())
                 }

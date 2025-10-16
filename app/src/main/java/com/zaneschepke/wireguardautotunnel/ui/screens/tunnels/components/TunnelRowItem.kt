@@ -18,7 +18,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.ui.common.ExpandingRowListItem
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
@@ -28,9 +28,9 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.asColor
 fun TunnelRowItem(
     state: TunnelState,
     isSelected: Boolean,
-    tunnel: TunnelConf,
+    tunnel: TunnelConfig,
     onTvClick: () -> Unit,
-    onToggleSelectedTunnel: (TunnelConf) -> Unit,
+    onToggleSelectedTunnel: (TunnelConfig) -> Unit,
     onSwitchClick: (Boolean) -> Unit,
     isTv: Boolean,
     isPingEnabled: Boolean,
@@ -76,7 +76,7 @@ fun TunnelRowItem(
     val combinedContentDescription =
         stringResource(
             R.string.tunnel_item_description,
-            tunnel.tunName,
+            tunnel.name,
             typeDescription,
             statusDescription,
         )
@@ -103,7 +103,7 @@ fun TunnelRowItem(
                 )
             }
         },
-        text = tunnel.tunName,
+        text = tunnel.name,
         expanded = {
             if (state.status != TunnelStatus.Down) {
                 TunnelStatisticsRow(state, isPingEnabled, showDetailedStats)

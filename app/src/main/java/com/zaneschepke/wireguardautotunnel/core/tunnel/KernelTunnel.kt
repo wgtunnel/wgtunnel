@@ -9,7 +9,7 @@ import com.zaneschepke.wireguardautotunnel.di.Kernel
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.domain.state.WireGuardStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTunnelState
@@ -36,13 +36,13 @@ constructor(
     private val runtimeTunnels = ConcurrentHashMap<Int, WgTunnel>()
 
     // TODO Add DNS settings
-    override fun tunnelStateFlow(tunnelConf: TunnelConf): Flow<TunnelStatus> = callbackFlow {
-        if (!tunnelConf.isNameKernelCompatible) close(BackendCoreException.TunnelNameTooLong)
+    override fun tunnelStateFlow(tunnelConfig: TunnelConfig): Flow<TunnelStatus> = callbackFlow {
+        if (!tunnelConfig.isNameKernelCompatible) close(BackendCoreException.TunnelNameTooLong)
 
         val stateChannel = Channel<WgTunnel.State>()
 
-        val runtimeTunnel = RuntimeWgTunnel(tunnelConf, stateChannel)
-        runtimeTunnels[tunnelConf.id] = runtimeTunnel
+        val runtimeTunnel = RuntimeWgTunnel(tunnelConfig, stateChannel)
+        runtimeTunnels[tunnelConfig.id] = runtimeTunnel
 
         val consumerJob = launch {
             stateChannel.consumeAsFlow().collect { state -> trySend(state.asTunnelState()) }
@@ -50,13 +50,13 @@ constructor(
 
         try {
             withTimeout(STARTUP_TIMEOUT_MS) {
-                updateTunnelStatus(tunnelConf.id, TunnelStatus.Starting)
-                backend.setState(runtimeTunnel, WgTunnel.State.UP, tunnelConf.toWgConfig())
+                updateTunnelStatus(tunnelConfig.id, TunnelStatus.Starting)
+                backend.setState(runtimeTunnel, WgTunnel.State.UP, tunnelConfig.toWgConfig())
             }
         } catch (e: TimeoutCancellationException) {
-            Timber.e("Startup timed out for ${tunnelConf.tunName}")
-            errors.emit(tunnelConf.tunName to BackendCoreException.DNS)
-            forceStopTunnel(tunnelConf.id)
+            Timber.e("Startup timed out for ${tunnelConfig.name}")
+            errors.emit(tunnelConfig.name to BackendCoreException.DNS)
+            forceStopTunnel(tunnelConfig.id)
             close()
         } catch (e: BackendException) {
             close(e.toBackendCoreException())
@@ -72,11 +72,11 @@ constructor(
             try {
                 backend.setState(runtimeTunnel, WgTunnel.State.DOWN, null)
             } catch (e: BackendException) {
-                errors.tryEmit(tunnelConf.tunName to e.toBackendCoreException())
+                errors.tryEmit(tunnelConfig.name to e.toBackendCoreException())
             } finally {
                 consumerJob.cancel()
                 stateChannel.close()
-                runtimeTunnels.remove(tunnelConf.id)
+                runtimeTunnels.remove(tunnelConfig.id)
                 trySend(TunnelStatus.Down)
                 close()
             }
@@ -101,7 +101,7 @@ constructor(
         return BackendMode.Inactive
     }
 
-    override fun handleDnsReresolve(tunnelConf: TunnelConf): Boolean {
+    override fun handleDnsReresolve(tunnelConfig: TunnelConfig): Boolean {
         throw NotImplementedError()
     }
 

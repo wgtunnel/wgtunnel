@@ -33,7 +33,7 @@ fun AutoTunnelAdvancedScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
             leading = { Icon(Icons.Outlined.PauseCircle, null) },
             onSelected = { selected -> viewModel.setDebounceDelay(selected!!) },
             options = (0..10).toList(),
-            currentValue = autoTunnelState.settings.debounceDelaySeconds,
+            currentValue = autoTunnelState.autoTunnelSettings.debounceDelaySeconds,
             optionToString = { it?.toString() ?: stringResource(R.string._default) },
         )
     }

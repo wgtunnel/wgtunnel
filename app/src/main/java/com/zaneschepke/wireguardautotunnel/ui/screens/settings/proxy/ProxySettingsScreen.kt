@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.domain.model.AppProxySettings
+import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
@@ -38,7 +38,7 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
     val sharedViewModel = LocalSharedVm.current
     val proxySettingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
-    if (!proxySettingsState.stateInitialized) return
+    if (proxySettingsState.isLoading) return
 
     val proxySettings by
         remember(proxySettingsState) { mutableStateOf(proxySettingsState.proxySettings) }
@@ -79,7 +79,7 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
         when (sideEffect) {
             LocalSideEffect.SaveChanges -> {
                 viewModel.save(
-                    AppProxySettings(
+                    ProxySettings(
                         socks5ProxyEnabled = socks5Enabled,
                         socks5ProxyBindAddress = socksBindAddress,
                         httpProxyEnabled = httpEnabled,
@@ -115,7 +115,7 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
                     hint =
                         stringResource(
                             R.string.defaults_to_template,
-                            AppProxySettings.DEFAULT_SOCKS_BIND_ADDRESS,
+                            ProxySettings.DEFAULT_SOCKS_BIND_ADDRESS,
                         ),
                     label = stringResource(R.string.socks_5_bind_address),
                     value = socksBindAddress,
@@ -140,7 +140,7 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
                     hint =
                         stringResource(
                             R.string.defaults_to_template,
-                            AppProxySettings.DEFAULT_HTTP_BIND_ADDRESS,
+                            ProxySettings.DEFAULT_HTTP_BIND_ADDRESS,
                         ),
                     label = stringResource(R.string.http_bind_address),
                     value = httpBindAddress,

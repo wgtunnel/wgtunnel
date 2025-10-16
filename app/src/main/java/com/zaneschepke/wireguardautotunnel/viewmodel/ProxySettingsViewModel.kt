@@ -2,7 +2,7 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.domain.model.AppProxySettings
+import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
@@ -28,11 +28,11 @@ constructor(
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
             proxySettingsRepository.flow.collect {
-                reduce { state.copy(proxySettings = it, stateInitialized = true) }
+                reduce { state.copy(proxySettings = it, isLoading = false) }
             }
         }
 
-    fun save(proxySettings: AppProxySettings) = intent {
+    fun save(proxySettings: ProxySettings) = intent {
         val updated =
             state.proxySettings.copy(
                 socks5ProxyEnabled = proxySettings.socks5ProxyEnabled,
@@ -102,7 +102,7 @@ constructor(
             return@intent reduce { state.copy(isPasswordError = true) }
         }
         // Save if all validations pass
-        proxySettingsRepository.save(updated)
+        proxySettingsRepository.upsert(updated)
         postSideEffect(
             GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.config_changes_saved))
         )

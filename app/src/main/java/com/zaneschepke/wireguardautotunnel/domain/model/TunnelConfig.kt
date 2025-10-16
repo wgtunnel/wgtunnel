@@ -12,29 +12,29 @@ import org.amnezia.awg.config.Interface
 import org.amnezia.awg.config.Peer
 import org.amnezia.awg.crypto.KeyPair
 
-data class TunnelConf(
+data class TunnelConfig(
     val id: Int = 0,
-    val tunName: String,
+    val name: String,
     val wgQuick: String,
-    val tunnelNetworks: Set<String> = emptySet(),
+    val tunnelNetworks: Set<String> = setOf(),
     val isMobileDataTunnel: Boolean = false,
     val isPrimaryTunnel: Boolean = false,
-    val amQuick: String,
+    val amQuick: String = "",
     val isActive: Boolean = false,
-    val pingTarget: String? = null,
     val restartOnPingFailure: Boolean = false,
+    var pingTarget: String? = null,
     val isEthernetTunnel: Boolean = false,
     val isIpv4Preferred: Boolean = true,
     val position: Int = 0,
+    val autoTunnelApps: Set<String> = setOf(),
 ) {
-
-    val isNameKernelCompatible: Boolean = (tunName.length <= 15)
+    val isNameKernelCompatible: Boolean = (name.length <= 15)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is TunnelConf) return false
+        if (other !is TunnelConfig) return false
         return id == other.id &&
-            tunName == other.tunName &&
+            name == other.name &&
             wgQuick == other.wgQuick &&
             amQuick == other.amQuick &&
             isPrimaryTunnel == other.isPrimaryTunnel &&
@@ -48,7 +48,7 @@ data class TunnelConf(
 
     override fun hashCode(): Int {
         var result = id
-        result = 31 * result + tunName.hashCode()
+        result = 31 * result + name.hashCode()
         result = 31 * result + wgQuick.hashCode()
         result = 31 * result + amQuick.hashCode()
         return result
@@ -66,7 +66,7 @@ data class TunnelConf(
         return configFromWgQuick(wgQuick)
     }
 
-    fun copyWithGlobalValues(globalTunnel: TunnelConf): TunnelConf {
+    fun copyWithGlobalValues(globalTunnel: TunnelConfig): TunnelConfig {
         val existingConfig = toAmConfig()
         val globalConfig = globalTunnel.toAmConfig()
 
@@ -200,11 +200,11 @@ data class TunnelConf(
             }
         }
 
-        fun tunnelConfFromQuick(amQuick: String, name: String? = null): TunnelConf {
+        fun tunnelConfFromQuick(amQuick: String, name: String? = null): TunnelConfig {
             val config = configFromAmQuick(amQuick)
             val wgQuick = config.toWgQuickString(true)
-            return TunnelConf(
-                tunName = name ?: config.defaultName(),
+            return TunnelConfig(
+                name = name ?: config.defaultName(),
                 wgQuick = wgQuick,
                 amQuick = amQuick,
             )
@@ -213,17 +213,17 @@ data class TunnelConf(
         private fun tunnelConfFromAmConfig(
             config: org.amnezia.awg.config.Config,
             name: String? = null,
-        ): TunnelConf {
+        ): TunnelConfig {
             val amQuick = config.toAwgQuickString(true, false)
             val wgQuick = config.toWgQuickString(true)
-            return TunnelConf(
-                tunName = name ?: config.defaultName(),
+            return TunnelConfig(
+                name = name ?: config.defaultName(),
                 wgQuick = wgQuick,
                 amQuick = amQuick,
             )
         }
 
-        fun generateDefaultGlobalConfig(): TunnelConf {
+        fun generateDefaultGlobalConfig(): TunnelConfig {
             val keyPair = KeyPair()
             val config =
                 org.amnezia.awg.config.Config.Builder()
@@ -247,8 +247,8 @@ data class TunnelConf(
                         )
                     }
                     .build()
-            return TunnelConf(
-                tunName = GLOBAL_CONFIG_NAME,
+            return TunnelConfig(
+                name = GLOBAL_CONFIG_NAME,
                 amQuick = config.toAwgQuickString(false, false),
                 wgQuick = config.toWgQuickString(false),
             )

@@ -6,9 +6,8 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.AppDatabase
 import com.zaneschepke.wireguardautotunnel.data.DataStoreManager
 import com.zaneschepke.wireguardautotunnel.data.DatabaseCallback
-import com.zaneschepke.wireguardautotunnel.data.dao.ProxySettingsDao
-import com.zaneschepke.wireguardautotunnel.data.dao.SettingsDao
-import com.zaneschepke.wireguardautotunnel.data.dao.TunnelConfigDao
+import com.zaneschepke.wireguardautotunnel.data.dao.*
+import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_23_24
 import com.zaneschepke.wireguardautotunnel.data.network.GitHubApi
 import com.zaneschepke.wireguardautotunnel.data.network.KtorClient
 import com.zaneschepke.wireguardautotunnel.data.network.KtorGitHubApi
@@ -55,6 +54,7 @@ class RepositoryModule {
                 AppDatabase::class.java,
                 context.getString(R.string.db_name),
             )
+            .addMigrations(MIGRATION_23_24(context))
             .fallbackToDestructiveMigration(true)
             .addCallback(callback)
             .build()
@@ -62,8 +62,26 @@ class RepositoryModule {
 
     @Singleton
     @Provides
-    fun provideSettingsDoa(appDatabase: AppDatabase): SettingsDao {
-        return appDatabase.settingDao()
+    fun provideSettingsDoa(appDatabase: AppDatabase): GeneralSettingsDao {
+        return appDatabase.generalSettingsDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideDnsSettingsDao(appDatabase: AppDatabase): DnsSettingsDao {
+        return appDatabase.dnsSettingsDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideAutoTunnelDao(appDatabase: AppDatabase): AutoTunnelSettingsDao {
+        return appDatabase.autoTunnelSettingsDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideMonitoringDao(appDatabase: AppDatabase): MonitoringSettingsDao {
+        return appDatabase.monitoringSettingsDao()
     }
 
     @Singleton
@@ -89,11 +107,38 @@ class RepositoryModule {
 
     @Singleton
     @Provides
-    fun provideSettingsRepository(
-        settingsDao: SettingsDao,
+    fun provideGeneralSettingsRepository(
+        settingsDao: GeneralSettingsDao,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
     ): GeneralSettingRepository {
         return RoomSettingsRepository(settingsDao, ioDispatcher)
+    }
+
+    @Singleton
+    @Provides
+    fun provideMonitoringSettingsRepository(
+        monitoringSettingsDao: MonitoringSettingsDao,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
+    ): MonitoringSettingsRepository {
+        return RoomMonitoringSettingsRepository(monitoringSettingsDao, ioDispatcher)
+    }
+
+    @Singleton
+    @Provides
+    fun provideDnsSettingsRepository(
+        dnsSettingsDao: DnsSettingsDao,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
+    ): DnsSettingsRepository {
+        return RoomDnsSettingsRepository(dnsSettingsDao, ioDispatcher)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAutoTunnelSettingsRepository(
+        autoTunnelSettingsDao: AutoTunnelSettingsDao,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
+    ): AutoTunnelSettingsRepository {
+        return RoomAutoTunnelSettingsRepository(autoTunnelSettingsDao, ioDispatcher)
     }
 
     @Singleton

@@ -4,7 +4,7 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface TunnelProvider {
     /** Starts the specified tunnel configuration. */
-    suspend fun startTunnel(tunnelConf: TunnelConf)
+    suspend fun startTunnel(tunnelConfig: TunnelConfig)
 
     /**
      * Stops the specified tunnel.
@@ -34,7 +34,7 @@ interface TunnelProvider {
 
     suspend fun runningTunnelNames(): Set<String>
 
-    fun handleDnsReresolve(tunnelConf: TunnelConf): Boolean
+    fun handleDnsReresolve(tunnelConfig: TunnelConfig): Boolean
 
     fun getStatistics(tunnelId: Int): TunnelStatistics?
 

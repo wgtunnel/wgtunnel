@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(indices = [Index(value = ["name"], unique = true)])
+@Entity(tableName = "tunnel_config", indices = [Index(value = ["name"], unique = true)])
 data class TunnelConfig(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "name") val name: String,
@@ -16,7 +16,7 @@ data class TunnelConfig(
     val isMobileDataTunnel: Boolean = false,
     @ColumnInfo(name = "is_primary_tunnel", defaultValue = "false")
     val isPrimaryTunnel: Boolean = false,
-    @ColumnInfo(name = "am_quick", defaultValue = "") val amQuick: String = AM_QUICK_DEFAULT,
+    @ColumnInfo(name = "am_quick", defaultValue = "") val amQuick: String = "",
     @ColumnInfo(name = "is_Active", defaultValue = "false") val isActive: Boolean = false,
     @ColumnInfo(name = "restart_on_ping_failure", defaultValue = "false")
     val restartOnPingFailure: Boolean = false,
@@ -31,7 +31,6 @@ data class TunnelConfig(
 ) {
 
     companion object {
-        const val AM_QUICK_DEFAULT = ""
         const val GLOBAL_CONFIG_NAME = "4675ab06-903a-438b-8485-6ea4187a9512"
     }
 }

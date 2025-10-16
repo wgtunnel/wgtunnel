@@ -19,13 +19,13 @@ import androidx.compose.ui.window.DialogProperties
 import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.util.extensions.setScreenBrightness
 import io.github.alexzhirkevich.qrose.options.*
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 
 @Composable
-fun QrCodeDialog(tunnelConf: TunnelConf, onDismiss: () -> Unit) {
+fun QrCodeDialog(tunnelConfig: TunnelConfig, onDismiss: () -> Unit) {
     val context = LocalContext.current
     val activity = context as? MainActivity
 
@@ -35,11 +35,11 @@ fun QrCodeDialog(tunnelConf: TunnelConf, onDismiss: () -> Unit) {
         onDispose { activity?.setScreenBrightness(-1f) }
     }
 
-    QrCodeAlertDialog(tunnelConf = tunnelConf, onDismiss = onDismiss)
+    QrCodeAlertDialog(tunnelConfig = tunnelConfig, onDismiss = onDismiss)
 }
 
 @Composable
-private fun QrCodeAlertDialog(tunnelConf: TunnelConf, onDismiss: () -> Unit) {
+private fun QrCodeAlertDialog(tunnelConfig: TunnelConfig, onDismiss: () -> Unit) {
     AlertDialog(
         containerColor = Color.White,
         onDismissRequest = onDismiss,
@@ -50,23 +50,23 @@ private fun QrCodeAlertDialog(tunnelConf: TunnelConf, onDismiss: () -> Unit) {
         },
         title = {
             Text(
-                text = tunnelConf.tunName,
+                text = tunnelConfig.name,
                 color = Color.Black,
                 style = MaterialTheme.typography.titleLarge,
             )
         },
-        text = { QrCodeContent(tunnelConf = tunnelConf) },
+        text = { QrCodeContent(tunnelConfig = tunnelConfig) },
         properties = DialogProperties(usePlatformDefaultWidth = true),
     )
 }
 
 @Composable
-private fun QrCodeContent(tunnelConf: TunnelConf) {
+private fun QrCodeContent(tunnelConfig: TunnelConfig) {
     var selectedOption by remember { mutableStateOf(ConfigType.WG) }
     val qrCodeText =
         when (selectedOption) {
-            ConfigType.AM -> tunnelConf.toAmConfig().toAwgQuickString(true, false)
-            ConfigType.WG -> tunnelConf.toWgConfig().toWgQuickString(true)
+            ConfigType.AM -> tunnelConfig.toAmConfig().toAwgQuickString(true, false)
+            ConfigType.WG -> tunnelConfig.toWgConfig().toWgQuickString(true)
         }
 
     Column(

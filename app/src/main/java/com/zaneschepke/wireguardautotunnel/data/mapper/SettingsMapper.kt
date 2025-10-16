@@ -1,79 +1,39 @@
 package com.zaneschepke.wireguardautotunnel.data.mapper
 
-import com.zaneschepke.wireguardautotunnel.data.entity.Settings
-import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
-import com.zaneschepke.wireguardautotunnel.data.model.DnsSettings
-import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
-import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
+import com.zaneschepke.wireguardautotunnel.data.entity.GeneralSettings as Entity
+import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings as Domain
+import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
 
-fun Settings.toAppSettings(): GeneralSettings {
-    return GeneralSettings(
+fun Entity.toDomain(): Domain =
+    Domain(
         id = id,
-        isAutoTunnelEnabled = isAutoTunnelEnabled,
-        isTunnelOnMobileDataEnabled = isTunnelOnMobileDataEnabled,
-        trustedNetworkSSIDs = trustedNetworkSSIDs,
-        isAlwaysOnVpnEnabled = isAlwaysOnVpnEnabled,
-        isTunnelOnEthernetEnabled = isTunnelOnEthernetEnabled,
         isShortcutsEnabled = isShortcutsEnabled,
-        isTunnelOnWifiEnabled = isTunnelOnWifiEnabled,
         isRestoreOnBootEnabled = isRestoreOnBootEnabled,
         isMultiTunnelEnabled = isMultiTunnelEnabled,
-        isPingEnabled = isPingEnabled,
-        isWildcardsEnabled = isWildcardsEnabled,
-        isStopOnNoInternetEnabled = isStopOnNoInternetEnabled,
-        isLanOnKillSwitchEnabled = isLanOnKillSwitchEnabled,
-        debounceDelaySeconds = debounceDelaySeconds,
-        isDisableKillSwitchOnTrustedEnabled = isDisableKillSwitchOnTrustedEnabled,
-        isTunnelOnUnsecureEnabled = isTunnelOnUnsecureEnabled,
-        wifiDetectionMethod = WifiDetectionMethod.fromValue(wifiDetectionMethod.value),
-        tunnelPingIntervalSeconds = tunnelPingIntervalSeconds,
-        tunnelPingAttempts = tunnelPingAttempts,
-        tunnelPingTimeoutSeconds = tunnelPingTimeoutSeconds,
-        appMode = appMode,
-        dnsProtocol = dnsProtocol,
-        dnsEndpoint = dnsEndpoint,
         isTunnelGlobalsEnabled = isTunnelGlobalsEnabled,
-    )
-}
-
-fun GeneralSettings.toSettings(): Settings {
-    return Settings(
-        id = id,
-        isAutoTunnelEnabled = isAutoTunnelEnabled,
-        isTunnelOnMobileDataEnabled = isTunnelOnMobileDataEnabled,
-        trustedNetworkSSIDs = trustedNetworkSSIDs,
+        appMode = appMode,
+        theme = Theme.valueOf(theme.uppercase()),
+        locale = locale,
+        remoteKey = remoteKey,
+        isRemoteControlEnabled = isRemoteControlEnabled,
+        isPinLockEnabled = isPinLockEnabled,
         isAlwaysOnVpnEnabled = isAlwaysOnVpnEnabled,
-        isTunnelOnEthernetEnabled = isTunnelOnEthernetEnabled,
+        isLanOnKillSwitchEnabled = isLanOnKillSwitchEnabled,
+    )
+
+fun Domain.toEntity(): Entity =
+    Entity(
+        id = id,
         isShortcutsEnabled = isShortcutsEnabled,
-        isTunnelOnWifiEnabled = isTunnelOnWifiEnabled,
         isRestoreOnBootEnabled = isRestoreOnBootEnabled,
         isMultiTunnelEnabled = isMultiTunnelEnabled,
-        isPingEnabled = isPingEnabled,
-        isWildcardsEnabled = isWildcardsEnabled,
-        isStopOnNoInternetEnabled = isStopOnNoInternetEnabled,
-        isLanOnKillSwitchEnabled = isLanOnKillSwitchEnabled,
-        debounceDelaySeconds = debounceDelaySeconds,
-        isDisableKillSwitchOnTrustedEnabled = isDisableKillSwitchOnTrustedEnabled,
-        isTunnelOnUnsecureEnabled = isTunnelOnUnsecureEnabled,
-        wifiDetectionMethod = WifiDetectionMethod.fromValue(wifiDetectionMethod.value),
-        tunnelPingIntervalSeconds = tunnelPingIntervalSeconds,
-        tunnelPingAttempts = tunnelPingAttempts,
-        tunnelPingTimeoutSeconds = tunnelPingTimeoutSeconds,
-        appMode = appMode,
-        dnsProtocol = dnsProtocol,
-        dnsEndpoint = dnsEndpoint,
         isTunnelGlobalsEnabled = isTunnelGlobalsEnabled,
+        appMode = appMode,
+        theme = theme.name,
+        locale = locale,
+        remoteKey = remoteKey,
+        isRemoteControlEnabled = isRemoteControlEnabled,
+        isPinLockEnabled = isPinLockEnabled,
+        isAlwaysOnVpnEnabled = isAlwaysOnVpnEnabled,
+        isLanOnKillSwitchEnabled = isLanOnKillSwitchEnabled,
     )
-}
-
-fun GeneralSettings.toDomain(): DnsSettings {
-    return DnsSettings(
-        protocol =
-            DnsProtocol.entries.toTypedArray().getOrElse(dnsProtocol.value) { DnsProtocol.SYSTEM },
-        endpoint = dnsEndpoint,
-    )
-}
-
-fun DnsSettings.toAppSettings(existing: GeneralSettings): GeneralSettings {
-    return existing.copy(dnsProtocol = protocol, dnsEndpoint = endpoint)
-}
