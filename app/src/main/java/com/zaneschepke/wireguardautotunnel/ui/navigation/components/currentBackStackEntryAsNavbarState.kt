@@ -211,7 +211,7 @@ fun currentRouteAsNavbarState(
                         },
                     )
                 is Config -> {
-                    val tunnelName = sharedState.tunnelNames[route.id]
+                    val tunnelName = sharedState.tunnels.find { it.id == route.id }?.name
                     NavbarState(
                         topLeading = {
                             IconButton(onClick = { navController.pop() }) {
@@ -236,7 +236,7 @@ fun currentRouteAsNavbarState(
                     )
                 }
                 is SplitTunnel -> {
-                    val tunnelName = sharedState.tunnelNames[route.id]
+                    val tunnelName = sharedState.tunnels.find { it.id == route.id }?.name
                     NavbarState(
                         topLeading = {
                             IconButton(onClick = { navController.pop() }) {
@@ -337,7 +337,7 @@ fun currentRouteAsNavbarState(
                         showBottomItems = true,
                     )
                 is TunnelOptions -> {
-                    val tunnelName = sharedState.tunnelNames[route.id]
+                    val tunnelName = sharedState.tunnels.find { it.id == route.id }?.name
                     NavbarState(
                         topLeading = {
                             IconButton(onClick = { navController.pop() }) {
@@ -369,7 +369,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topTitle = context.getString(R.string.tunnels),
                         topTrailing = {
-                            when (sharedState.selectedTunnelCount) {
+                            when (sharedState.selectedTunnels.size) {
                                 0 ->
                                     Row {
                                         IconButton(onClick = { navController.push(Sort) }) {
@@ -423,7 +423,7 @@ fun currentRouteAsNavbarState(
                                             }
                                         }
 
-                                        if (sharedState.selectedTunnelCount == 1) {
+                                        if (sharedState.selectedTunnels.size == 1) {
                                             IconButton(
                                                 onClick = {
                                                     sharedViewModel.postSideEffect(

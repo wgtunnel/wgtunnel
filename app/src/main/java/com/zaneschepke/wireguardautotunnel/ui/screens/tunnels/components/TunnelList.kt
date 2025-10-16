@@ -25,19 +25,17 @@ import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
-import com.zaneschepke.wireguardautotunnel.ui.state.TunnelsUiState
+import com.zaneschepke.wireguardautotunnel.ui.state.SharedAppUiState
 import com.zaneschepke.wireguardautotunnel.util.extensions.asColor
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TunnelList(
-    tunnelsState: TunnelsUiState,
+    sharedState: SharedAppUiState,
     modifier: Modifier = Modifier,
-    viewModel: TunnelsViewModel,
-    sharedViewModel: SharedAppViewModel,
+    viewModel: SharedAppViewModel,
 ) {
     val navController = LocalNavController.current
     val context = LocalContext.current
@@ -50,7 +48,7 @@ fun TunnelList(
             modifier
                 .pointerInput(Unit) {
                     detectTapGestures {
-                        if (tunnelsState.tunnels.isEmpty()) return@detectTapGestures
+                        if (sharedState.tunnels.isEmpty()) return@detectTapGestures
                         viewModel.clearSelectedTunnels()
                     }
                 }
@@ -60,17 +58,17 @@ fun TunnelList(
         reverseLayout = false,
         flingBehavior = ScrollableDefaults.flingBehavior(),
     ) {
-        if (tunnelsState.tunnels.isEmpty()) {
+        if (sharedState.tunnels.isEmpty()) {
             item { GettingStartedLabel(onClick = { context.openWebUrl(it) }) }
         }
-        items(tunnelsState.tunnels, key = { it.id }) { tunnel ->
+        items(sharedState.tunnels, key = { it.id }) { tunnel ->
             val tunnelState =
-                remember(tunnelsState.activeTunnels) {
-                    tunnelsState.activeTunnels[tunnel.id] ?: TunnelState()
+                remember(sharedState.activeTunnels) {
+                    sharedState.activeTunnels[tunnel.id] ?: TunnelState()
                 }
             val selected =
-                remember(tunnelsState.selectedTunnels) {
-                    tunnelsState.selectedTunnels.any { it.id == tunnel.id }
+                remember(sharedState.selectedTunnels) {
+                    sharedState.selectedTunnels.any { it.id == tunnel.id }
                 }
             var leadingIconColor by
                 remember(
@@ -93,7 +91,7 @@ fun TunnelList(
                 },
                 title = tunnel.name,
                 onClick = {
-                    if (tunnelsState.selectedTunnels.isNotEmpty()) {
+                    if (sharedState.selectedTunnels.isNotEmpty()) {
                         viewModel.toggleSelectedTunnel(tunnel.id)
                     } else {
                         navController.push(Route.TunnelOptions(tunnel.id))
@@ -106,8 +104,8 @@ fun TunnelList(
                         {
                             TunnelStatisticsRow(
                                 tunnelState,
-                                tunnelsState.isPingEnabled,
-                                tunnelsState.showPingStats,
+                                sharedState.isPingEnabled,
+                                sharedState.showPingStats,
                             )
                         }
                     } else null,
@@ -116,8 +114,8 @@ fun TunnelList(
                     SwitchWithDivider(
                         checked = tunnelState.status.isUpOrStarting(),
                         onClick = { checked ->
-                            if (checked) sharedViewModel.startTunnel(tunnel)
-                            else sharedViewModel.stopTunnel(tunnel)
+                            if (checked) viewModel.startTunnel(tunnel)
+                            else viewModel.stopTunnel(tunnel)
                         },
                         modifier = modifier,
                     )

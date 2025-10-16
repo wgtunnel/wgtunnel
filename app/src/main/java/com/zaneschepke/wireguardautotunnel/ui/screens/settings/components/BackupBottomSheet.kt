@@ -8,14 +8,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.sheet.CustomBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.common.sheet.SheetOption
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BackupBottomSheet(onDismiss: () -> Unit) {
+fun BackupBottomSheet(onBackup: () -> Unit, onRestore: () -> Unit, onDismiss: () -> Unit) {
     val context = LocalContext.current
 
     CustomBottomSheet(
@@ -23,18 +22,12 @@ fun BackupBottomSheet(onDismiss: () -> Unit) {
             SheetOption(
                 ImageVector.vectorResource(R.drawable.database),
                 stringResource(R.string.backup_application),
-                onClick = {
-                    onDismiss()
-                    (context as? MainActivity)?.performBackup()
-                },
+                onClick = onBackup,
             ),
             SheetOption(
                 Icons.Outlined.Restore,
                 stringResource(R.string.restore_application),
-                onClick = {
-                    onDismiss()
-                    (context as? MainActivity)?.performRestore()
-                },
+                onClick = onRestore,
             ),
         )
     ) {

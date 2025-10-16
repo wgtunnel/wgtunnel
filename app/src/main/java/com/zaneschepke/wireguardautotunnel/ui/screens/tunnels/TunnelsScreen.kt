@@ -8,7 +8,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
@@ -26,29 +25,22 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components.UrlImpo
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
-import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
-fun TunnelsScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
-    val sharedViewModel = LocalSharedVm.current
+fun TunnelsScreen() {
+    val viewModel = LocalSharedVm.current
     val navController = LocalNavController.current
     val clipboard = rememberClipboardHelper()
 
-    val tunnelsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val sharedState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     var showExportSheet by rememberSaveable { mutableStateOf(false) }
     var showImportSheet by rememberSaveable { mutableStateOf(false) }
     var showDeleteModal by rememberSaveable { mutableStateOf(false) }
     var showUrlDialog by rememberSaveable { mutableStateOf(false) }
 
-    if (tunnelsState.isLoading) return
-
-    LaunchedEffect(tunnelsState.selectedTunnels) {
-        sharedViewModel.setSelectedTunnelCount(tunnelsState.selectedTunnels.size)
-    }
-
-    sharedViewModel.collectSideEffect { sideEffect ->
+    viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             LocalSideEffect.Sheet.ImportTunnels -> showImportSheet = true
             LocalSideEffect.Modal.DeleteTunnels -> showDeleteModal = true
@@ -62,7 +54,7 @@ fun TunnelsScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
     val tunnelFileImportResultLauncher =
         rememberFileImportLauncherForResult(
             onNoFileExplorer = {
-                sharedViewModel.showSnackMessage(
+                viewModel.showSnackMessage(
                     StringValue.StringResource(R.string.error_no_file_explorer)
                 )
             },
@@ -82,7 +74,7 @@ fun TunnelsScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted
             ->
             if (!isGranted) {
-                sharedViewModel.showSnackMessage(
+                viewModel.showSnackMessage(
                     StringValue.StringResource(R.string.camera_permission_required)
                 )
                 return@rememberLauncherForActivityResult
@@ -142,5 +134,5 @@ fun TunnelsScreen(viewModel: TunnelsViewModel = hiltViewModel()) {
         )
     }
 
-    TunnelList(tunnelsState, Modifier.fillMaxSize(), viewModel, sharedViewModel)
+    TunnelList(sharedState, Modifier.fillMaxSize(), viewModel)
 }

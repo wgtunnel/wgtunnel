@@ -91,6 +91,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import de.raphaelebner.roomdatabasebackup.core.RoomBackup
 import java.util.*
 import javax.inject.Inject
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import xyz.teamgravity.pin_lock_compose.PinManager
 
@@ -179,7 +180,7 @@ class MainActivity : AppCompatActivity() {
                 )
 
             LaunchedEffect(Unit) {
-                viewModel.globalSideEffect.collect { sideEffect ->
+                viewModel.globalSideEffect.collectLatest { sideEffect ->
                     when (sideEffect) {
                         GlobalSideEffect.ConfigChanged -> restartApp()
                         GlobalSideEffect.PopBackStack -> navController.pop()

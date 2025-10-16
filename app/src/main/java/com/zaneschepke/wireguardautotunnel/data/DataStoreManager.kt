@@ -22,6 +22,7 @@ class DataStoreManager(
     private val preferencesKey = "preferences"
     val Context.dataStore by preferencesDataStore(name = preferencesKey)
     val dataStore = context.dataStore
+
     companion object {
         val locationDisclosureShown = booleanPreferencesKey("LOCATION_DISCLOSURE_SHOWN")
         val batteryDisableShown = booleanPreferencesKey("BATTERY_OPTIMIZE_DISABLE_SHOWN")
@@ -51,7 +52,8 @@ class DataStoreManager(
 
     suspend fun <T> removeFromDataStore(key: Preferences.Key<T>) {
         withContext(ioDispatcher) {
-            try { dataStore.edit { it.remove(key) }
+            try {
+                dataStore.edit { it.remove(key) }
             } catch (e: IOException) {
                 Timber.e(e)
             } catch (e: Exception) {

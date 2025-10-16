@@ -23,6 +23,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
@@ -39,6 +40,7 @@ import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.asString
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
 import com.zaneschepke.wireguardautotunnel.util.extensions.capitalize
+import com.zaneschepke.wireguardautotunnel.util.extensions.showToast
 import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 import java.util.*
 
@@ -50,6 +52,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
 
     val locale = remember { Locale.getDefault() }
 
+    val sharedState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
     val settingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     if (settingsState.isLoading) return
@@ -77,7 +80,20 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             }
         }
 
-    if (showBackupSheet) BackupBottomSheet { showBackupSheet = false }
+    fun performBackupRestore(action: () -> Unit) {
+        if (sharedState.activeTunnels.isNotEmpty() || sharedState.isAutoTunnelActive)
+            return context.showToast(R.string.all_services_disabled)
+        showBackupSheet = false
+        action()
+    }
+
+    if (showBackupSheet)
+        BackupBottomSheet(
+            { performBackupRestore { (context as? MainActivity)?.performBackup() } },
+            { performBackupRestore { (context as? MainActivity)?.performRestore() } },
+        ) {
+            showBackupSheet = false
+        }
     if (showAppModeSheet)
         AppModeBottomSheet(sharedViewModel::setAppMode, settingsState.settings.appMode) {
             showAppModeSheet = false
