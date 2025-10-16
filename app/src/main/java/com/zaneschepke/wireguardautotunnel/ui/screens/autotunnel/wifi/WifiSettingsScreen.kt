@@ -103,7 +103,6 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
             WarningBanner(
                 stringResource(R.string.location_services_not_detected),
                 warnings.first,
-                modifier = Modifier.padding(horizontal = 16.dp),
                 trailing = {
                     TextButton({ context.launchLocationServicesSettings() }) {
                         Text(
@@ -113,11 +112,11 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                         )
                     }
                 },
+                onClick = { context.launchLocationServicesSettings() }
             )
             WarningBanner(
                 stringResource(R.string.location_permissions_missing),
                 warnings.second,
-                modifier = Modifier.padding(horizontal = 16.dp),
                 trailing = {
                     TextButton({ showLocationDialog = true }) {
                         Text(
@@ -127,6 +126,7 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                         )
                     }
                 },
+                onClick = { showLocationDialog = true }
             )
         }
         Column {
