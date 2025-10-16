@@ -17,9 +17,11 @@ interface NotificationManager {
         actions: Collection<NotificationCompat.Action> = emptyList(),
         description: String = "",
         showTimestamp: Boolean = true,
-        importance: Int = NotificationManager.IMPORTANCE_HIGH,
+        importance: Int = NotificationManager.IMPORTANCE_LOW,
         onGoing: Boolean = false,
         onlyAlertOnce: Boolean = true,
+        groupKey: String? = null,
+        isGroupSummary: Boolean = false,
     ): Notification
 
     fun createNotification(
@@ -28,9 +30,11 @@ interface NotificationManager {
         actions: Collection<NotificationCompat.Action> = emptyList(),
         description: StringValue,
         showTimestamp: Boolean = true,
-        importance: Int = NotificationManager.IMPORTANCE_HIGH,
+        importance: Int = NotificationManager.IMPORTANCE_LOW,
         onGoing: Boolean = false,
         onlyAlertOnce: Boolean = true,
+        groupKey: String? = null,
+        isGroupSummary: Boolean = false,
     ): Notification
 
     fun createNotificationAction(
@@ -43,6 +47,8 @@ interface NotificationManager {
     fun show(notificationId: Int, notification: Notification)
 
     companion object {
+        const val VPN_GROUP_KEY = "VPN_GROUP"
+        const val AUTO_TUNNEL_GROUP_KEY = "AUTO_TUNNEL_GROUP"
         const val AUTO_TUNNEL_LOCATION_PERMISSION_ID = 123
         const val AUTO_TUNNEL_LOCATION_SERVICES_ID = 124
         // For auto tunnel foreground notification

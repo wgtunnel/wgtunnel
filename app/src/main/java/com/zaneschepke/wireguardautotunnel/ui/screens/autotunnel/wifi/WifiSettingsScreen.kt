@@ -112,7 +112,7 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                         )
                     }
                 },
-                onClick = { context.launchLocationServicesSettings() }
+                onClick = { context.launchLocationServicesSettings() },
             )
             WarningBanner(
                 stringResource(R.string.location_permissions_missing),
@@ -126,7 +126,7 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                         )
                     }
                 },
-                onClick = { showLocationDialog = true }
+                onClick = { showLocationDialog = true },
             )
         }
         Column {

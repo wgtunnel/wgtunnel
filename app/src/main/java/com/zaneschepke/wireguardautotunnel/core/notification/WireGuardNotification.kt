@@ -3,12 +3,10 @@ package com.zaneschepke.wireguardautotunnel.core.notification
 import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -22,7 +20,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class WireGuardNotification @Inject constructor(@ApplicationContext override val context: Context) :
-    com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager {
+    NotificationManager {
 
     enum class NotificationChannels {
         VPN,
@@ -40,8 +38,10 @@ class WireGuardNotification @Inject constructor(@ApplicationContext override val
         importance: Int,
         onGoing: Boolean,
         onlyAlertOnce: Boolean,
+        groupKey: String?,
+        isGroupSummary: Boolean,
     ): Notification {
-        notificationManager.createNotificationChannel(channel.asChannel())
+        notificationManager.createNotificationChannel(channel.asChannel(importance))
         return channel
             .asBuilder()
             .apply {
@@ -59,9 +59,15 @@ class WireGuardNotification @Inject constructor(@ApplicationContext override val
                 setContentText(description)
                 setOnlyAlertOnce(onlyAlertOnce)
                 setOngoing(onGoing)
-                setPriority(NotificationCompat.PRIORITY_HIGH)
+                setPriority(NotificationCompat.PRIORITY_LOW)
                 setShowWhen(showTimestamp)
                 setSmallIcon(R.drawable.ic_notification)
+                if (groupKey != null) {
+                    setGroup(groupKey)
+                    if (isGroupSummary) {
+                        setGroupSummary(true)
+                    }
+                }
             }
             .build()
     }
@@ -75,6 +81,8 @@ class WireGuardNotification @Inject constructor(@ApplicationContext override val
         importance: Int,
         onGoing: Boolean,
         onlyAlertOnce: Boolean,
+        groupKey: String?,
+        isGroupSummary: Boolean,
     ): Notification {
         return createNotification(
             channel,
@@ -142,34 +150,24 @@ class WireGuardNotification @Inject constructor(@ApplicationContext override val
         }
     }
 
-    private fun NotificationChannels.asChannel(): NotificationChannel {
+    private fun NotificationChannels.asChannel(importance: Int): NotificationChannel {
         return when (this) {
             NotificationChannels.VPN -> {
                 NotificationChannel(
                         context.getString(R.string.vpn_channel_id),
                         context.getString(R.string.vpn_channel_name),
-                        NotificationManager.IMPORTANCE_HIGH,
+                        importance,
                     )
-                    .apply {
-                        description = context.getString(R.string.vpn_channel_description)
-                        enableLights(true)
-                        lightColor = Color.WHITE
-                        enableVibration(false)
-                        vibrationPattern = longArrayOf(100, 200, 300)
-                    }
+                    .apply { description = context.getString(R.string.vpn_channel_description) }
             }
             NotificationChannels.AUTO_TUNNEL -> {
                 NotificationChannel(
                         context.getString(R.string.auto_tunnel_channel_id),
                         context.getString(R.string.auto_tunnel_channel_name),
-                        NotificationManager.IMPORTANCE_HIGH,
+                        importance,
                     )
                     .apply {
                         description = context.getString(R.string.auto_tunnel_channel_description)
-                        enableLights(true)
-                        lightColor = Color.WHITE
-                        enableVibration(false)
-                        vibrationPattern = longArrayOf(100, 200, 300)
                     }
             }
         }

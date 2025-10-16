@@ -118,6 +118,8 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
                     )
                 ),
             onGoing = true,
+            groupKey = NotificationManager.VPN_GROUP_KEY,
+            isGroupSummary = true,
         )
     }
 
@@ -129,6 +131,8 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
                 listOf(
                     notificationManager.createNotificationAction(NotificationAction.TUNNEL_OFF, 0)
                 ),
+            groupKey = NotificationManager.VPN_GROUP_KEY,
+            isGroupSummary = true,
         )
     }
 
@@ -136,6 +140,8 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
         return notificationManager.createNotification(
             WireGuardNotification.NotificationChannels.VPN,
             title = getString(R.string.tunnel_starting),
+            groupKey = NotificationManager.VPN_GROUP_KEY,
+            isGroupSummary = true,
         )
     }
 }

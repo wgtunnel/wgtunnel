@@ -112,6 +112,8 @@ class AutoTunnelService : LifecycleService() {
                         )
                     ),
                 onGoing = true,
+                groupKey = NotificationManager.AUTO_TUNNEL_GROUP_KEY,
+                isGroupSummary = true,
             )
         ServiceCompat.startForeground(
             this,

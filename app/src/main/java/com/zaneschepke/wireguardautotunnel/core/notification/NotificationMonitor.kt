@@ -37,6 +37,7 @@ constructor(
                                         error.toStringRes(),
                                     )
                             },
+                        groupKey = NotificationManager.VPN_GROUP_KEY,
                     )
                 notificationManager.show(
                     NotificationManager.TUNNEL_ERROR_NOTIFICATION_ID,
@@ -53,6 +54,7 @@ constructor(
                         WireGuardNotification.NotificationChannels.VPN,
                         title = StringValue.DynamicString(tunName),
                         description = message.toStringValue(),
+                        groupKey = NotificationManager.VPN_GROUP_KEY,
                     )
                 notificationManager.show(
                     NotificationManager.TUNNEL_MESSAGES_NOTIFICATION_ID,
