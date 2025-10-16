@@ -121,6 +121,8 @@ constructor(
         context.bindService(intent, autoTunnelServiceConnection, Context.BIND_AUTO_CREATE)
     }
 
+    suspend fun startAutoTunnelService() = autoTunnelMutex.withLock { startServiceInternal() }
+
     private fun stopServiceInternal() {
         _autoTunnelService.value?.stop()
         try {

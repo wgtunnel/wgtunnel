@@ -178,6 +178,7 @@ dependencies {
     implementation(libs.bundles.hilt.android)
     implementation(libs.bundles.androidx.work)
     ksp(libs.hilt.android.compiler)
+    ksp(libs.androidx.hilt.compiler)
 
     // Networking and serialization
     implementation(libs.bundles.ktor.client)

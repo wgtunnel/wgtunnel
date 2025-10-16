@@ -26,7 +26,6 @@ data class LogMessage(
                     logcatLine,
                 )
             } else {
-                // TODO improve this
                 val parts = logcatLine.trim().split(" ").filter { it.isNotEmpty() }
                 val epochParts = parts[0].split(".").map { it.toLong() }
                 val message = parts.subList(5, parts.size).joinToString(" ")

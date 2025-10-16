@@ -47,7 +47,6 @@ constructor(
         }
     }
 
-    // TODO this needs to be changed
     override suspend fun doWork(): Result =
         withContext(ioDispatcher) {
             Timber.i("Service worker started")
@@ -55,7 +54,7 @@ constructor(
                 Timber.i("Checking to see if auto-tunnel has been killed by system")
                 if (isAutoTunnelEnabled && serviceManager.autoTunnelService.value == null) {
                     Timber.i("Service has been killed by system, restoring.")
-                    autoTunnelSettingsRepository.updateAutoTunnelEnabled(true)
+                    serviceManager.startAutoTunnelService()
                 }
             }
             Result.success()
