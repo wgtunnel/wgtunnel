@@ -237,6 +237,7 @@ constructor(
     }
 
     override suspend fun startTunnel(tunnelConfig: TunnelConfig) {
+        if (activeTunnels.value.containsKey(tunnelConfig.id)) return
         val provider = tunnelProviderFlow.value
         val isKernel = provider is KernelTunnel
 
