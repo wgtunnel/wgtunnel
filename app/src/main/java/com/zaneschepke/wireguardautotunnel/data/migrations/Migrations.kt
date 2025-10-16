@@ -1,19 +1,19 @@
 package com.zaneschepke.wireguardautotunnel.data.migrations
 
 import android.content.ContentValues
-import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.zaneschepke.wireguardautotunnel.data.dataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 val MIGRATION_23_24 =
-    fun(context: Context): Migration {
+    fun(dataStore: DataStore<Preferences>): Migration {
         return object : Migration(23, 24) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 Timber.d("Starting migration from 23 to 24")
@@ -235,7 +235,7 @@ val MIGRATION_23_24 =
 
                 try {
                     runBlocking {
-                        val preferences = context.dataStore.data.first()
+                        val preferences = dataStore.data.first()
                         val pinLockEnabled = booleanPreferencesKey("PIN_LOCK_ENABLED")
                         val isLocalLogsEnabled = booleanPreferencesKey("LOCAL_LOGS_ENABLED")
                         val locale = stringPreferencesKey("LOCALE")

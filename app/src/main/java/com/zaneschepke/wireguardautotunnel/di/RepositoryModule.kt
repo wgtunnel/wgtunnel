@@ -48,13 +48,14 @@ class RepositoryModule {
     fun provideDatabase(
         @ApplicationContext context: Context,
         callback: DatabaseCallback,
+        dataStoreManager: DataStoreManager,
     ): AppDatabase {
         return Room.databaseBuilder(
                 context,
                 AppDatabase::class.java,
                 context.getString(R.string.db_name),
             )
-            .addMigrations(MIGRATION_23_24(context))
+            .addMigrations(MIGRATION_23_24(dataStoreManager.dataStore))
             .fallbackToDestructiveMigration(true)
             .addCallback(callback)
             .build()
