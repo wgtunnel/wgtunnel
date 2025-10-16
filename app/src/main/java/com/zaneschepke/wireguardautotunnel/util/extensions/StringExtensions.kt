@@ -110,3 +110,7 @@ inline fun String?.ifNotBlank(block: (String) -> Unit): String? {
     }
     return this
 }
+
+fun String.isTextTooLargeForQr(maxBytes: Int = 1200): Boolean {
+    return toByteArray(Charsets.UTF_8).size > maxBytes
+}

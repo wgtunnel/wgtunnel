@@ -405,4 +405,5 @@
     <string name="security_type">Security:&#160;</string>
     <string name="network_name">Network:&#160;</string>
     <string name="wifi">Wi-Fi</string>
+    <string name="text_too_large_for_qr">Text is too large to display QR.</string>
 </resources>
