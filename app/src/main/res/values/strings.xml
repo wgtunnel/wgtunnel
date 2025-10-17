@@ -101,7 +101,7 @@
     <string name="unsure_how">if you are unsure how to proceed</string>
     <string name="see_the">See the</string>
     <string name="getting_started_guide">getting started guide</string>
-    <string name="restart_at_boot">Restart on boot</string>
+    <string name="restart_at_boot">Start on boot</string>
     <string name="vpn_denied_dialog_title">Permission Denied</string>
 	<string name="vpn_settings">VPN system settings</string>
 	<string name="always_on_message">VPN connection permission has been denied. Please check the</string>
@@ -409,5 +409,8 @@
     <string name="all_services_disabled">Auto-tunnel and tunnels must be disabled to perform this action.</string>
     <string name="ddns_success_message">Dynamic DNS endpoint successfully updated.</string>
     <string name="reliability">Reliability</string>
-    <string name="debounce_description">Delay between rapid changes</string>
+    <string name="debounce_description">Delay between rapid network changes</string>
+    <string name="aovpn_description">Allows Android to start tunnels</string>
+    <string name="tunnel_boot_description">Start the default tunnel on boot</string>
+    <string name="remote_key">Remote key</string>
 </resources>

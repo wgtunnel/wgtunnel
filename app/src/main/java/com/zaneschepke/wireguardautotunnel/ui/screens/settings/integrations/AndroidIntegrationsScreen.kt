@@ -1,25 +1,19 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.settings.integrations
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Launch
 import androidx.compose.material.icons.filled.AppShortcut
 import androidx.compose.material.icons.filled.SmartToy
-import androidx.compose.material.icons.outlined.AdminPanelSettings
-import androidx.compose.material.icons.outlined.Restore
-import androidx.compose.material.icons.outlined.VpnLock
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -34,6 +28,7 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.security.SecureScreenFromRecording
+import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.util.extensions.launchVpnSettings
 import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 
@@ -74,6 +69,7 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 onClick = {
                     viewModel.setAlwaysOnVpnEnabled(!settingsState.settings.isAlwaysOnVpnEnabled)
                 },
+                description = { DescriptionText(stringResource(R.string.aovpn_description)) },
             )
         }
         Column {
@@ -95,6 +91,7 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                         !settingsState.settings.isRestoreOnBootEnabled
                     )
                 },
+                description = { DescriptionText(stringResource(R.string.tunnel_boot_description)) },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Filled.AppShortcut, contentDescription = null) },
@@ -117,25 +114,50 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                         onClick = { viewModel.setRemoteEnabled(it) },
                     )
                 },
-                description = {
-                    settingsState.remoteKey?.let { key ->
-                        AnimatedVisibility(visible = settingsState.isRemoteEnabled) {
+                title = stringResource(R.string.enable_remote_app_control),
+                onClick = { viewModel.setRemoteEnabled(!settingsState.isRemoteEnabled) },
+            )
+            AnimatedVisibility(settingsState.isRemoteEnabled) {
+                settingsState.remoteKey?.let { key ->
+                    var passwordProtected by remember { mutableStateOf(true) }
+                    val keyText by
+                        remember(passwordProtected) {
+                            derivedStateOf {
+                                if (passwordProtected) "•".repeat(key.length) else key
+                            }
+                        }
+                    SurfaceRow(
+                        leading = { Icon(Icons.Outlined.Key, contentDescription = null) },
+                        title = stringResource(R.string.remote_key),
+                        description = {
                             Text(
-                                text = stringResource(R.string.remote_key_template, key),
+                                text = keyText,
                                 style =
                                     MaterialTheme.typography.bodySmall.copy(
                                         color = MaterialTheme.colorScheme.outline
                                     ),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.clickable { clipboard.copy(key) },
+                                overflow = TextOverflow.Clip,
                             )
-                        }
-                    }
-                },
-                title = stringResource(R.string.enable_remote_app_control),
-                onClick = { viewModel.setRemoteEnabled(!settingsState.isRemoteEnabled) },
-            )
+                        },
+                        trailing = {
+                            Row {
+                                IconButton(onClick = { passwordProtected = !passwordProtected }) {
+                                    Icon(
+                                        Icons.Outlined.RemoveRedEye,
+                                        contentDescription = stringResource(R.string.show_password),
+                                    )
+                                }
+                                IconButton(onClick = { clipboard.copy(key) }) {
+                                    Icon(
+                                        Icons.Outlined.ContentCopy,
+                                        contentDescription = stringResource(R.string.copy),
+                                    )
+                                }
+                            }
+                        },
+                    )
+                }
+            }
         }
     }
 }

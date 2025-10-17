@@ -200,16 +200,16 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     onClick = { navController.push(Route.ProxySettings) },
                 )
             }
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.Android, null) },
+                title = stringResource(R.string.android_integrations),
+                onClick = { navController.push(Route.AndroidIntegrations) },
+            )
         }
         Column {
             GroupLabel(
                 stringResource(R.string.general),
                 modifier = Modifier.padding(horizontal = 16.dp),
-            )
-            SurfaceRow(
-                leading = { Icon(Icons.Outlined.Android, null) },
-                title = stringResource(R.string.android_integrations),
-                onClick = { navController.push(Route.AndroidIntegrations) },
             )
             SurfaceRow(
                 leading = {
