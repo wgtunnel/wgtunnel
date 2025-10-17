@@ -23,7 +23,6 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
-import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
@@ -45,19 +44,6 @@ fun TunnelMonitoringScreen(viewModel: MonitoringViewModel = hiltViewModel()) {
             GroupLabel(
                 stringResource(R.string.ping),
                 modifier = Modifier.padding(horizontal = 16.dp),
-            )
-            SurfaceRow(
-                leading = { Icon(Icons.Outlined.NetworkPing, contentDescription = null) },
-                title = stringResource(R.string.ping_monitor),
-                trailing = {
-                    ScaledSwitch(
-                        checked = monitoringUiState.monitoringSettings.isPingEnabled,
-                        onClick = { viewModel.setPingEnabled(it) },
-                    )
-                },
-                onClick = {
-                    viewModel.setPingEnabled(!monitoringUiState.monitoringSettings.isPingEnabled)
-                },
             )
             LabelledDropdown(
                 title = stringResource(R.string.tunnel_ping_interval),
@@ -115,24 +101,6 @@ fun TunnelMonitoringScreen(viewModel: MonitoringViewModel = hiltViewModel()) {
                 leading = { Icon(Icons.Outlined.Adjust, contentDescription = null) },
                 title = stringResource(R.string.set_custom_ping_target),
                 onClick = { navController.push(Route.PingTarget) },
-            )
-        }
-        Column {
-            GroupLabel(
-                stringResource(R.string.other),
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
-            SurfaceRow(
-                leading = { Icon(Icons.Outlined.ViewHeadline, contentDescription = null) },
-                title = stringResource(R.string.local_logging),
-                trailing = { modifier ->
-                    SwitchWithDivider(
-                        checked = monitoringUiState.monitoringSettings.isLocalLogsEnabled,
-                        onClick = { viewModel.setLocalLogging(it) },
-                        modifier = modifier,
-                    )
-                },
-                onClick = { navController.push(Route.Logs) },
             )
         }
     }

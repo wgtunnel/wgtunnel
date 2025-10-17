@@ -1,7 +1,10 @@
 package com.zaneschepke.wireguardautotunnel.ui.common.button
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme

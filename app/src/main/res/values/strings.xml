@@ -413,4 +413,6 @@
     <string name="aovpn_description">Allows Android to start tunnels</string>
     <string name="tunnel_boot_description">Start the default tunnel on boot</string>
     <string name="remote_key">Remote key</string>
+    <string name="tunnel_mapping_description">Map tunnels as preferred by Wi-Fi name</string>
+    <string name="monitoring">Monitoring</string>
 </resources>

@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
@@ -35,6 +37,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 @Composable
 fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val context = LocalContext.current
+    val isTv = LocalIsAndroidTV.current
 
     val settingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
@@ -44,33 +47,41 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
 
     SecureScreenFromRecording()
 
+    val isAlwaysOnEnabled = settingsState.settings.isAlwaysOnVpnEnabled
+
+    LaunchedEffect(isAlwaysOnEnabled) {
+        if (isAlwaysOnEnabled) viewModel.setRestoreOnBootEnabled(false)
+    }
+
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
     ) {
-        Column {
-            GroupLabel(stringResource(id = R.string.vpn), Modifier.padding(horizontal = 16.dp))
-            SurfaceRow(
-                leading = { Icon(Icons.Outlined.AdminPanelSettings, contentDescription = null) },
-                title = stringResource(R.string.native_kill_switch),
-                trailing = { Icon(Icons.AutoMirrored.Outlined.Launch, null) },
-                onClick = { context.launchVpnSettings() },
-            )
-            SurfaceRow(
-                leading = { Icon(Icons.Outlined.VpnLock, contentDescription = null) },
-                trailing = {
-                    ScaledSwitch(
-                        checked = settingsState.settings.isAlwaysOnVpnEnabled,
-                        onClick = { viewModel.setAlwaysOnVpnEnabled(it) },
-                    )
-                },
-                title = stringResource(R.string.always_on_vpn_support),
-                onClick = {
-                    viewModel.setAlwaysOnVpnEnabled(!settingsState.settings.isAlwaysOnVpnEnabled)
-                },
-                description = { DescriptionText(stringResource(R.string.aovpn_description)) },
-            )
+        if (!isTv) {
+            Column {
+                GroupLabel(stringResource(id = R.string.vpn), Modifier.padding(horizontal = 16.dp))
+                SurfaceRow(
+                    leading = {
+                        Icon(Icons.Outlined.AdminPanelSettings, contentDescription = null)
+                    },
+                    title = stringResource(R.string.native_kill_switch),
+                    trailing = { Icon(Icons.AutoMirrored.Outlined.Launch, null) },
+                    onClick = { context.launchVpnSettings() },
+                )
+                SurfaceRow(
+                    leading = { Icon(Icons.Outlined.VpnLock, contentDescription = null) },
+                    trailing = {
+                        ScaledSwitch(
+                            checked = isAlwaysOnEnabled,
+                            onClick = { viewModel.setAlwaysOnVpnEnabled(it) },
+                        )
+                    },
+                    title = stringResource(R.string.always_on_vpn_support),
+                    onClick = { viewModel.setAlwaysOnVpnEnabled(!isAlwaysOnEnabled) },
+                    description = { DescriptionText(stringResource(R.string.aovpn_description)) },
+                )
+            }
         }
         Column {
             GroupLabel(
@@ -78,11 +89,20 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 Modifier.padding(horizontal = 16.dp),
             )
             SurfaceRow(
-                leading = { Icon(Icons.Outlined.Restore, contentDescription = null) },
+                leading = {
+                    Icon(
+                        Icons.Outlined.Restore,
+                        contentDescription = null,
+                        tint =
+                            if (isAlwaysOnEnabled) Color.Gray
+                            else MaterialTheme.colorScheme.onSurface,
+                    )
+                },
                 trailing = {
                     ScaledSwitch(
                         checked = settingsState.settings.isRestoreOnBootEnabled,
                         onClick = { viewModel.setRestoreOnBootEnabled(it) },
+                        enabled = !isAlwaysOnEnabled,
                     )
                 },
                 title = stringResource(R.string.restart_at_boot),
@@ -91,6 +111,7 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                         !settingsState.settings.isRestoreOnBootEnabled
                     )
                 },
+                enabled = !isAlwaysOnEnabled,
                 description = { DescriptionText(stringResource(R.string.tunnel_boot_description)) },
             )
             SurfaceRow(

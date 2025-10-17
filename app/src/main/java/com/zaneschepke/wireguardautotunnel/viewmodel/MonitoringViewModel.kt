@@ -25,7 +25,7 @@ constructor(
             MonitoringUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
-            combine(monitoringSettingsRepository.flow, tunnelRepository.flow) {
+            combine(monitoringSettingsRepository.flow, tunnelRepository.userTunnelsFlow) {
                     monitoringSettings,
                     tunnels ->
                     state.copy(
@@ -36,10 +36,6 @@ constructor(
                 }
                 .collect { reduce { it } }
         }
-
-    fun setPingEnabled(to: Boolean) = intent {
-        monitoringSettingsRepository.upsert(state.monitoringSettings.copy(isPingEnabled = to))
-    }
 
     fun setTunnelPingIntervalSeconds(to: Int) = intent {
         monitoringSettingsRepository.upsert(
@@ -61,10 +57,6 @@ constructor(
         monitoringSettingsRepository.upsert(
             state.monitoringSettings.copy(showDetailedPingStats = to)
         )
-    }
-
-    fun setLocalLogging(to: Boolean) = intent {
-        monitoringSettingsRepository.upsert(state.monitoringSettings.copy(isLocalLogsEnabled = to))
     }
 
     fun setPingTarget(tunnel: TunnelConfig, target: String?) = intent {

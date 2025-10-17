@@ -193,6 +193,9 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Map, contentDescription = null) },
                 title = stringResource(R.string.tunnel_mapping),
+                description = {
+                    DescriptionText(stringResource(R.string.tunnel_mapping_description))
+                },
                 onClick = { navController.push(Route.PreferredTunnel(TunnelNetwork.WIFI)) },
             )
         }

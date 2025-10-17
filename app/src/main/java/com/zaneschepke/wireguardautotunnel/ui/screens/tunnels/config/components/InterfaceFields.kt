@@ -1,7 +1,5 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components
 
-import android.R.attr.enabled
-import android.R.attr.singleLine
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions

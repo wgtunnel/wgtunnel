@@ -5,6 +5,7 @@ import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.SettingUiState
@@ -22,6 +23,7 @@ constructor(
     private val settingsRepository: GeneralSettingRepository,
     private val shortcutManager: ShortcutManager,
     private val tunnelsRepository: TunnelRepository,
+    private val monitoringRepository: MonitoringSettingsRepository,
     private val globalEffectRepository: GlobalEffectRepository,
 ) : ContainerHost<SettingUiState, Nothing>, ViewModel() {
 
@@ -35,7 +37,8 @@ constructor(
                         settingsRepository.flow,
                         tunnelsRepository.globalTunnelFlow,
                         tunnelsRepository.userTunnelsFlow,
-                    ) { settings, tunnel, tunnels ->
+                        monitoringRepository.flow,
+                    ) { settings, tunnel, tunnels, monitoring ->
                         state.copy(
                             settings = settings,
                             remoteKey = settings.remoteKey,
@@ -43,6 +46,7 @@ constructor(
                             isPinLockEnabled = settings.isPinLockEnabled,
                             isLoading = false,
                             globalTunnelConfig = tunnel,
+                            monitoring = monitoring,
                             tunnels = tunnels,
                         )
                     }
@@ -75,6 +79,14 @@ constructor(
         settingsRepository.upsert(state.settings.copy(isTunnelGlobalsEnabled = to))
         if (state.globalTunnelConfig == null)
             tunnelsRepository.save(TunnelConfig.generateDefaultGlobalConfig())
+    }
+
+    fun setLocalLogging(to: Boolean) = intent {
+        monitoringRepository.upsert(state.monitoring.copy(isLocalLogsEnabled = to))
+    }
+
+    fun setPingEnabled(to: Boolean) = intent {
+        monitoringRepository.upsert(state.monitoring.copy(isPingEnabled = to))
     }
 
     fun setRemoteEnabled(to: Boolean) = intent {

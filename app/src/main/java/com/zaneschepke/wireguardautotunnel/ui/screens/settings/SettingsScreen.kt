@@ -16,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -60,20 +61,13 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     var showBackupSheet by rememberSaveable { mutableStateOf(false) }
     var showAppModeSheet by rememberSaveable { mutableStateOf(false) }
 
-    val appMode by
-        rememberSaveable(settingsState.settings.appMode) {
-            mutableStateOf(settingsState.settings.appMode)
-        }
-    val monitoringEnabled by
-        rememberSaveable(appMode) {
-            mutableStateOf(appMode == AppMode.VPN || appMode == AppMode.KERNEL)
-        }
+    val appMode = settingsState.settings.appMode
     val dnsEnabled by rememberSaveable(appMode) { mutableStateOf(appMode != AppMode.KERNEL) }
 
     val showProxySettings by
-        remember(settingsState.settings.appMode) {
+        remember(appMode) {
             derivedStateOf {
-                when (settingsState.settings.appMode) {
+                when (appMode) {
                     AppMode.PROXY -> true
                     else -> false
                 }
@@ -98,6 +92,18 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
         AppModeBottomSheet(sharedViewModel::setAppMode, settingsState.settings.appMode) {
             showAppModeSheet = false
         }
+
+    val isPingMonitoringAvailable by
+        remember(settingsState.settings.appMode) {
+            derivedStateOf {
+                settingsState.settings.appMode != AppMode.PROXY &&
+                    settingsState.settings.appMode != AppMode.LOCK_DOWN
+            }
+        }
+
+    LaunchedEffect(isPingMonitoringAvailable) {
+        if (!isPingMonitoringAvailable) viewModel.setPingEnabled(false)
+    }
 
     Column(
         horizontalAlignment = Alignment.Start,
@@ -153,15 +159,14 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     },
                 )
             }
-
             SurfaceRow(
-                leading = { Icon(Icons.Outlined.MonitorHeart, null) },
-                title = stringResource(R.string.tunnel_monitoring),
-                enabled = monitoringEnabled,
-                onClick = { navController.push(Route.TunnelMonitoring) },
-            )
-            SurfaceRow(
-                leading = { Icon(Icons.Outlined.Dns, null) },
+                leading = {
+                    Icon(
+                        Icons.Outlined.Dns,
+                        null,
+                        tint = if (dnsEnabled) MaterialTheme.colorScheme.onSurface else Color.Gray,
+                    )
+                },
                 title = stringResource(R.string.dns_settings),
                 enabled = dnsEnabled,
                 onClick = {
@@ -207,6 +212,45 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             )
         }
         Column {
+            GroupLabel(
+                stringResource(R.string.monitoring),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            SurfaceRow(
+                leading = {
+                    Icon(
+                        Icons.Outlined.NetworkPing,
+                        contentDescription = null,
+                        tint =
+                            if (isPingMonitoringAvailable) MaterialTheme.colorScheme.onSurface
+                            else Color.Gray,
+                    )
+                },
+                title = stringResource(R.string.ping_monitor),
+                enabled = isPingMonitoringAvailable,
+                trailing = {
+                    SwitchWithDivider(
+                        checked = settingsState.monitoring.isPingEnabled,
+                        onClick = { viewModel.setPingEnabled(it) },
+                        enabled = isPingMonitoringAvailable,
+                    )
+                },
+                onClick = { navController.push(Route.TunnelMonitoring) },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.ViewHeadline, contentDescription = null) },
+                title = stringResource(R.string.local_logging),
+                trailing = { modifier ->
+                    SwitchWithDivider(
+                        checked = settingsState.monitoring.isLocalLogsEnabled,
+                        onClick = { viewModel.setLocalLogging(it) },
+                        modifier = modifier,
+                    )
+                },
+                onClick = { navController.push(Route.Logs) },
+            )
+        }
+        Column(modifier = Modifier.padding(bottom = 16.dp)) {
             GroupLabel(
                 stringResource(R.string.general),
                 modifier = Modifier.padding(horizontal = 16.dp),

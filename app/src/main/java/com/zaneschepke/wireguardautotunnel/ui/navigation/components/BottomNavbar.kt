@@ -1,7 +1,5 @@
 package com.zaneschepke.wireguardautotunnel.ui.navigation.components
 
-import android.R.attr.button
-import android.R.attr.theme
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

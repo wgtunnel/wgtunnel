@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
 import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
+import com.zaneschepke.wireguardautotunnel.domain.model.MonitoringSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 
 data class SettingUiState(
@@ -13,4 +14,5 @@ data class SettingUiState(
     val isLoading: Boolean = true,
     val globalTunnelConfig: TunnelConfig? = null,
     val tunnels: List<TunnelConfig> = emptyList(),
+    val monitoring: MonitoringSettings = MonitoringSettings(),
 )

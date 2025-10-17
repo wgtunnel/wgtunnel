@@ -334,7 +334,7 @@ fun currentRouteAsNavbarState(
                                 )
                             }
                         },
-                        topTitle = context.getString(R.string.tunnel_monitoring),
+                        topTitle = context.getString(R.string.ping_monitor),
                         showBottomItems = true,
                     )
                 is TunnelOptions -> {
