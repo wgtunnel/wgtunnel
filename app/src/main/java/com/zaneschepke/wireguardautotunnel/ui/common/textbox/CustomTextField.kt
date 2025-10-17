@@ -11,6 +11,9 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -34,7 +37,7 @@ fun CustomTextField(
     keyboardActions: KeyboardActions = KeyboardActions(),
     supportingText: @Composable (() -> Unit)? = null,
     leading: @Composable (() -> Unit)? = null,
-    trailing: @Composable (() -> Unit)? = null,
+    trailing: @Composable ((Modifier) -> Unit)? = null,
     isError: Boolean = false,
     readOnly: Boolean = false,
     enabled: Boolean = true,
@@ -46,6 +49,9 @@ fun CustomTextField(
     val cursorBrush =
         if (isFocused) SolidColor(MaterialTheme.colorScheme.primary)
         else SolidColor(Color.Transparent)
+    val editable = enabled && !readOnly
+    val mainFocusRequester = remember { FocusRequester() }
+    val trailingFocusRequester = remember { FocusRequester() }
 
     BasicTextField(
         value = value,
@@ -55,7 +61,16 @@ fun CustomTextField(
         keyboardOptions = keyboardOptions,
         readOnly = readOnly,
         cursorBrush = cursorBrush,
-        modifier = modifier.onFocusChanged { focusState -> isFocused = focusState.isFocused },
+        modifier =
+            modifier
+                .focusRequester(mainFocusRequester)
+                .focusProperties {
+                    canFocus = editable
+                    if (canFocus && trailing != null) {
+                        right = trailingFocusRequester
+                    }
+                }
+                .onFocusChanged { focusState -> isFocused = focusState.isFocused },
         interactionSource = interactionSource,
         enabled = enabled,
         singleLine = singleLine,
@@ -73,7 +88,18 @@ fun CustomTextField(
             },
             contentPadding = OutlinedTextFieldDefaults.contentPadding(top = 0.dp, bottom = 0.dp),
             leadingIcon = leading,
-            trailingIcon = trailing,
+            trailingIcon = {
+                // TODO Android TV bug where this isn't clickable, need to revisit
+                if (trailing != null) {
+                    trailing(
+                        Modifier.focusRequester(trailingFocusRequester).focusProperties {
+                            if (editable) {
+                                left = mainFocusRequester
+                            }
+                        }
+                    )
+                }
+            },
             singleLine = singleLine,
             supportingText = supportingText,
             colors =

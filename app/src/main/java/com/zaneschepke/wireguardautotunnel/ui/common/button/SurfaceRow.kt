@@ -41,7 +41,7 @@ fun SurfaceRow(
         modifier =
             modifier
                 .fillMaxWidth()
-                .focusGroup()
+                //                .focusGroup()
                 .indication(interactionSource, ripple())
                 .background(
                     if (!selected) MaterialTheme.colorScheme.surface
@@ -60,7 +60,11 @@ fun SurfaceRow(
             Row(
                 modifier =
                     Modifier.focusRequester(mainFocusRequester)
-                        .focusProperties { right = trailingFocusRequester }
+                        .focusProperties {
+                            if (onClick != null) {
+                                right = trailingFocusRequester
+                            }
+                        }
                         .run {
                             if (onClick != null) {
                                 combinedClickable(
@@ -74,7 +78,13 @@ fun SurfaceRow(
                                 this
                             }
                         }
-                        .focusable(),
+                        .run {
+                            if (onClick != null) {
+                                focusable()
+                            } else {
+                                this
+                            }
+                        },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start,
             ) {
@@ -107,7 +117,9 @@ fun SurfaceRow(
                 if (trailing != null) {
                     trailing(
                         Modifier.focusRequester(trailingFocusRequester).focusProperties {
-                            left = mainFocusRequester
+                            if (onClick != null) {
+                                left = mainFocusRequester
+                            }
                         }
                     )
                 }

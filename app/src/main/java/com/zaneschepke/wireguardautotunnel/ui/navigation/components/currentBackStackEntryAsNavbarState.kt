@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Sort
+import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -137,7 +138,7 @@ fun currentRouteAsNavbarState(
                                 )
                             }
                         },
-                        showBottomItems = true,
+                        showBottomItems = false,
                         topTitle = context.getString(R.string.logs),
                         topTrailing = {
                             IconButton(
@@ -432,7 +433,7 @@ fun currentRouteAsNavbarState(
                                                 }
                                             ) {
                                                 Icon(
-                                                    Icons.Rounded.CopyAll,
+                                                    Icons.Outlined.CopyAll,
                                                     stringResource(R.string.copy),
                                                 )
                                             }

@@ -1,5 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components
 
+import android.R.attr.enabled
+import android.R.attr.singleLine
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,6 +22,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.wireguard.crypto.KeyPair
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox
 import com.zaneschepke.wireguardautotunnel.ui.state.InterfaceProxy
@@ -33,13 +36,17 @@ fun InterfaceFields(
     showScripts: Boolean,
     showAmneziaValues: Boolean,
     onInterfaceChange: (InterfaceProxy) -> Unit,
+    showKey: Boolean,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val isTv = LocalIsAndroidTV.current
     val clipboardManager = rememberClipboardHelper()
     val keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
     val keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
     val locale = Locale.getDefault()
     var showPrivateKey by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(showKey) { showPrivateKey = showKey }
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         if (!isGlobalConfig)
@@ -54,36 +61,44 @@ fun InterfaceFields(
                 visualTransformation =
                     if (showPrivateKey) VisualTransformation.None
                     else PasswordVisualTransformation(),
-                trailing = {
-                    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 4.dp) {
-                        Row(modifier = Modifier.padding(end = 4.dp)) {
-                            IconButton(onClick = { showPrivateKey = !showPrivateKey }) {
-                                Icon(
-                                    Icons.Outlined.RemoveRedEye,
-                                    stringResource(R.string.show_password),
-                                )
-                            }
-                            IconButton(
-                                enabled = true,
-                                onClick = {
-                                    val keypair = KeyPair()
-                                    onInterfaceChange(
-                                        interfaceState.copy(
-                                            privateKey = keypair.privateKey.toBase64(),
-                                            publicKey = keypair.publicKey.toBase64(),
-                                        )
-                                    )
-                                },
+                trailing =
+                    if (!isTv) {
+                        { modifier ->
+                            CompositionLocalProvider(
+                                LocalMinimumInteractiveComponentSize provides 4.dp
                             ) {
-                                Icon(
-                                    Icons.Rounded.Refresh,
-                                    stringResource(R.string.rotate_keys),
-                                    tint = MaterialTheme.colorScheme.onSurface,
-                                )
+                                Row(modifier = Modifier.padding(end = 4.dp)) {
+                                    IconButton(
+                                        onClick = { showPrivateKey = !showPrivateKey },
+                                        modifier,
+                                    ) {
+                                        Icon(
+                                            Icons.Outlined.RemoveRedEye,
+                                            stringResource(R.string.show_password),
+                                        )
+                                    }
+                                    IconButton(
+                                        enabled = true,
+                                        onClick = {
+                                            val keypair = KeyPair()
+                                            onInterfaceChange(
+                                                interfaceState.copy(
+                                                    privateKey = keypair.privateKey.toBase64(),
+                                                    publicKey = keypair.publicKey.toBase64(),
+                                                )
+                                            )
+                                        },
+                                    ) {
+                                        Icon(
+                                            Icons.Rounded.Refresh,
+                                            stringResource(R.string.rotate_keys),
+                                            tint = MaterialTheme.colorScheme.onSurface,
+                                        )
+                                    }
+                                }
                             }
                         }
-                    }
-                },
+                    } else null,
                 enabled = true,
                 singleLine = true,
                 keyboardOptions = keyboardOptions,
@@ -100,15 +115,20 @@ fun InterfaceFields(
                 enabled = false,
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                trailing = {
-                    IconButton(onClick = { clipboardManager.copy(interfaceState.publicKey) }) {
-                        Icon(
-                            Icons.Rounded.ContentCopy,
-                            stringResource(R.string.copy_public_key),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-                },
+                trailing =
+                    if (!isTv) {
+                        { modifier ->
+                            IconButton(
+                                onClick = { clipboardManager.copy(interfaceState.publicKey) }
+                            ) {
+                                Icon(
+                                    Icons.Rounded.ContentCopy,
+                                    stringResource(R.string.copy_public_key),
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
+                        }
+                    } else null,
                 keyboardOptions = keyboardOptions,
                 keyboardActions = keyboardActions,
             )

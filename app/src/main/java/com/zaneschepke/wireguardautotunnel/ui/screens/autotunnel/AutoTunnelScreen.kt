@@ -210,7 +210,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                     } else null,
                 trailing =
                     if (activeNetworkType == NetworkType.WIFI) {
-                        { Icon(Icons.Outlined.CopyAll, contentDescription = null) }
+                        { Icon(Icons.Outlined.ContentCopy, contentDescription = null) }
                     } else null,
                 onClick =
                     if (activeNetworkType == NetworkType.WIFI) {
@@ -289,24 +289,10 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 },
                 onClick = { navController.push(Route.PreferredTunnel(TunnelNetwork.ETHERNET)) },
             )
-        }
-        Column {
-            GroupLabel(
-                stringResource(R.string.other),
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.PublicOff, contentDescription = null) },
                 title = stringResource(R.string.stop_on_no_internet),
-                description = {
-                    Text(
-                        stringResource(R.string.stop_on_internet_loss),
-                        style =
-                            MaterialTheme.typography.bodySmall.copy(
-                                MaterialTheme.colorScheme.outline
-                            ),
-                    )
-                },
+                description = { DescriptionText(stringResource(R.string.stop_on_internet_loss)) },
                 trailing = {
                     ScaledSwitch(
                         checked = autoTunnelState.autoTunnelSettings.isStopOnNoInternetEnabled,
@@ -318,6 +304,12 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                         !autoTunnelState.autoTunnelSettings.isStopOnNoInternetEnabled
                     )
                 },
+            )
+        }
+        Column {
+            GroupLabel(
+                stringResource(R.string.other),
+                modifier = Modifier.padding(horizontal = 16.dp),
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.RestartAlt, contentDescription = null) },
