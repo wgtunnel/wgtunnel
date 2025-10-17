@@ -5,14 +5,11 @@ import com.zaneschepke.wireguardautotunnel.util.StringValue
 
 sealed class BackendMessage {
 
-    data object BounceSuccess : BackendMessage()
-
-    data object BounceRecovery : BackendMessage()
+    data object DynamicDnsSuccess : BackendMessage()
 
     fun toStringRes() =
         when (this) {
-            BounceRecovery -> R.string.pinger_bounce_recovery
-            BounceSuccess -> R.string.pinger_bounce_successful
+            DynamicDnsSuccess -> R.string.ddns_success_message
         }
 
     fun toStringValue() = StringValue.StringResource(this.toStringRes())

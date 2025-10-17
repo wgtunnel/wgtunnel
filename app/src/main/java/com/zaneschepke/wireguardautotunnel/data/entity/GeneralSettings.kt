@@ -28,4 +28,6 @@ data class GeneralSettings(
     val isAlwaysOnVpnEnabled: Boolean = false,
     @ColumnInfo(name = "is_lan_on_kill_switch_enabled", defaultValue = "0")
     val isLanOnKillSwitchEnabled: Boolean = false,
+    @ColumnInfo(name = "custom_split_packages", defaultValue = "{}")
+    val customSplitPackages: Map<String, String> = emptyMap(),
 )

@@ -320,6 +320,19 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 },
             )
             SurfaceRow(
+                leading = { Icon(Icons.Outlined.RestartAlt, contentDescription = null) },
+                title = stringResource(R.string.restart_at_boot),
+                trailing = {
+                    ScaledSwitch(
+                        checked = autoTunnelState.autoTunnelSettings.startOnBoot,
+                        onClick = { viewModel.setStartAtBoot(it) },
+                    )
+                },
+                onClick = {
+                    viewModel.setStartAtBoot(!autoTunnelState.autoTunnelSettings.startOnBoot)
+                },
+            )
+            SurfaceRow(
                 leading = { Icon(Icons.Outlined.Settings, contentDescription = null) },
                 title = stringResource(R.string.advanced_settings),
                 onClick = { navController.push(Route.AdvancedAutoTunnel) },

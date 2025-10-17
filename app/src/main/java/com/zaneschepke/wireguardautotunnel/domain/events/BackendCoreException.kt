@@ -22,8 +22,6 @@ sealed class BackendCoreException : Exception() {
 
     data object UapiUpdateFailed : BackendCoreException()
 
-    data class BounceFailed(val error: BackendCoreException) : BackendCoreException()
-
     fun toStringRes() =
         when (this) {
             Config -> R.string.config_error
@@ -34,18 +32,10 @@ sealed class BackendCoreException : Exception() {
             ServiceNotRunning -> R.string.service_running_error
             Unknown -> R.string.unknown_error
             TunnelNameTooLong -> R.string.error_tunnel_name
-            is BounceFailed -> R.string.bounce_failed_template
             UapiUpdateFailed -> R.string.active_tunnel_update_failed
         }
 
     fun toStringValue(): StringValue {
-        return when (val backendError = this) {
-            is BounceFailed ->
-                StringValue.StringResource(
-                    backendError.toStringRes(),
-                    backendError.error.toStringRes(),
-                )
-            else -> StringValue.StringResource(backendError.toStringRes())
-        }
+        return StringValue.StringResource(toStringRes())
     }
 }

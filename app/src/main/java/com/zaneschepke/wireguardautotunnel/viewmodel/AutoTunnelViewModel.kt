@@ -120,6 +120,10 @@ constructor(
         autoTunnelRepository.upsert(state.autoTunnelSettings.copy(isTunnelOnEthernetEnabled = to))
     }
 
+    fun setStartAtBoot(to: Boolean) = intent {
+        autoTunnelRepository.upsert(state.autoTunnelSettings.copy(startOnBoot = to))
+    }
+
     fun setDebounceDelay(to: Int) = intent {
         autoTunnelRepository.upsert(state.autoTunnelSettings.copy(debounceDelaySeconds = to))
     }

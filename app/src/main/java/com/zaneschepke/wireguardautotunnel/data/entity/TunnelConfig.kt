@@ -27,7 +27,7 @@ data class TunnelConfig(
     val isIpv4Preferred: Boolean = true,
     @ColumnInfo(name = "position", defaultValue = "0") val position: Int = 0,
     @ColumnInfo(name = "auto_tunnel_apps", defaultValue = "[]")
-    val autoTunnelApps: Set<String> = setOf(),
+    val autoTunnelApps: Set<String> = emptySet(),
 ) {
 
     companion object {

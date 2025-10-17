@@ -17,4 +17,5 @@ data class GeneralSettings(
     val isPinLockEnabled: Boolean = false,
     val isAlwaysOnVpnEnabled: Boolean = false,
     val isLanOnKillSwitchEnabled: Boolean = false,
+    val customSplitPackages: Map<String, String> = emptyMap(),
 )

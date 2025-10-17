@@ -9,11 +9,7 @@ import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.*
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.SharedAppUiState
@@ -32,9 +28,6 @@ import java.io.IOException
 import java.net.URL
 import java.time.Instant
 import javax.inject.Inject
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.map
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map

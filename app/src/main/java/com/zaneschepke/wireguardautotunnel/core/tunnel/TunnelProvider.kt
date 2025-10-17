@@ -40,9 +40,9 @@ interface TunnelProvider {
 
     val activeTunnels: StateFlow<Map<Int, TunnelState>>
 
-    val errorEvents: SharedFlow<Pair<String, BackendCoreException>>
+    val errorEvents: SharedFlow<Pair<String?, BackendCoreException>>
 
-    val messageEvents: SharedFlow<Pair<String, BackendMessage>>
+    val messageEvents: SharedFlow<Pair<String?, BackendMessage>>
 
     suspend fun updateTunnelStatus(
         tunnelId: Int,

@@ -28,4 +28,5 @@ data class AutoTunnelSettings(
     val isTunnelOnUnsecureEnabled: Boolean = false,
     @ColumnInfo(name = "wifi_detection_method", defaultValue = "0")
     val wifiDetectionMethod: WifiDetectionMethod = WifiDetectionMethod.fromValue(0),
+    @ColumnInfo(name = "start_on_boot", defaultValue = "0") val startOnBoot: Boolean = false,
 )

@@ -116,9 +116,11 @@ constructor(
     }
 
     private fun startServiceInternal() {
-        val intent = Intent(context, AutoTunnelService::class.java)
-        context.startForegroundService(intent)
-        context.bindService(intent, autoTunnelServiceConnection, Context.BIND_AUTO_CREATE)
+        if (autoTunnelService.value == null) {
+            val intent = Intent(context, AutoTunnelService::class.java)
+            context.startForegroundService(intent)
+            context.bindService(intent, autoTunnelServiceConnection, Context.BIND_AUTO_CREATE)
+        }
     }
 
     suspend fun startAutoTunnelService() = autoTunnelMutex.withLock { startServiceInternal() }

@@ -3,7 +3,6 @@ package com.zaneschepke.wireguardautotunnel.core.notification
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.WireGuardAutoTunnel
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import jakarta.inject.Inject
 import kotlinx.coroutines.coroutineScope
@@ -27,16 +26,14 @@ constructor(
                 val notification =
                     notificationManager.createNotification(
                         WireGuardNotification.NotificationChannels.VPN,
-                        title = StringValue.DynamicString(tunName),
+                        title =
+                            tunName?.let { StringValue.DynamicString(it) }
+                                ?: StringValue.StringResource(R.string.tunnel),
                         description =
-                            when (error) {
-                                is BackendCoreException.BounceFailed -> error.toStringValue()
-                                else ->
-                                    StringValue.StringResource(
-                                        R.string.tunnel_error_template,
-                                        error.toStringRes(),
-                                    )
-                            },
+                            StringValue.StringResource(
+                                R.string.tunnel_error_template,
+                                error.toStringRes(),
+                            ),
                         groupKey = NotificationManager.VPN_GROUP_KEY,
                     )
                 notificationManager.show(
@@ -52,7 +49,9 @@ constructor(
                 val notification =
                     notificationManager.createNotification(
                         WireGuardNotification.NotificationChannels.VPN,
-                        title = StringValue.DynamicString(tunName),
+                        title =
+                            tunName?.let { StringValue.DynamicString(it) }
+                                ?: StringValue.StringResource(R.string.tunnel),
                         description = message.toStringValue(),
                         groupKey = NotificationManager.VPN_GROUP_KEY,
                     )

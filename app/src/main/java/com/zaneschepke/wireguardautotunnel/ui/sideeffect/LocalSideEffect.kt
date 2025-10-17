@@ -11,8 +11,6 @@ sealed class LocalSideEffect {
 
         data object ExportTunnels : Sheet()
 
-        data object BackupApp : Sheet()
-
         data object LoggerActions : Sheet()
     }
 
@@ -20,6 +18,8 @@ sealed class LocalSideEffect {
         data object QR : Modal()
 
         data object DeleteTunnels : Modal()
+
+        data object AddCustomApp : Modal()
     }
 
     sealed class SelectedTunnels : LocalSideEffect() {

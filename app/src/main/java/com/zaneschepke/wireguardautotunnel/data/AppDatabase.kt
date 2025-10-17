@@ -16,7 +16,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.*
             MonitoringSettings::class,
             DnsSettings::class,
         ],
-    version = 24,
+    version = 25,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -41,6 +41,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.*
             AutoMigration(from = 20, to = 21, spec = FixProxySettingsMigration::class),
             AutoMigration(from = 21, to = 22),
             AutoMigration(from = 22, to = 23),
+            AutoMigration(from = 24, to = 25),
         ],
     exportSchema = true,
 )

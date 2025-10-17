@@ -407,4 +407,7 @@
     <string name="wifi">Wi-Fi</string>
     <string name="text_too_large_for_qr">Text is too large to display QR.</string>
     <string name="all_services_disabled">Auto-tunnel and tunnels must be disabled to perform this action.</string>
+    <string name="ddns_success_message">Dynamic DNS endpoint successfully updated.</string>
+    <string name="reliability">Reliability</string>
+    <string name="debounce_description">Delay between rapid changes</string>
 </resources>

@@ -1,5 +1,8 @@
 package com.zaneschepke.wireguardautotunnel.domain.state
 
+import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.ActiveTunnelsChange
+import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.NetworkChange
+import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.SettingsChange
 import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.StateChange
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
@@ -19,8 +22,8 @@ data class AutoTunnelState(
 
     fun determineAutoTunnelEvent(stateChange: StateChange): AutoTunnelEvent {
         when (stateChange) {
-            is StateChange.NetworkChange,
-            is StateChange.SettingsChange -> {
+            is NetworkChange,
+            is SettingsChange -> {
                 // Compute desired tunnel based on network conditions
                 var desiredTunnel: TunnelConfig? = null
                 if (networkState.isEthernetConnected && settings.isTunnelOnEthernetEnabled) {
@@ -44,21 +47,16 @@ data class AutoTunnelState(
                 // Handle tunnel start/stop/change
                 if (desiredTunnel != null) {
                     if (currentTunnel != desiredTunnel.id) {
-                        // Start or switch to the desired tunnel (overrides any kill switch)
                         return Start(desiredTunnel)
                     }
-                    // If already active and matching, fall through to kill switch check (though
-                    // unlikely needed)
                 } else {
                     if (currentTunnel != null) {
-                        // Stop the active tunnel (then next emission can handle kill switch if
-                        // needed)
                         return AutoTunnelEvent.Stop
                     }
                 }
             }
 
-            is StateChange.ActiveTunnelsChange -> Unit
+            is ActiveTunnelsChange -> Unit
         }
         return DoNothing
     }

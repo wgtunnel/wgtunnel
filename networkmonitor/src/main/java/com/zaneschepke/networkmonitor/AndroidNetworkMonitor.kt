@@ -17,13 +17,13 @@ import androidx.core.content.ContextCompat
 import com.wireguard.android.util.RootShell
 import com.zaneschepke.networkmonitor.shizuku.ShizukuShell
 import com.zaneschepke.networkmonitor.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
-import java.util.concurrent.ConcurrentHashMap
 
 class AndroidNetworkMonitor(
     private val appContext: Context,
@@ -323,6 +323,13 @@ class AndroidNetworkMonitor(
             .also { Timber.d("Current SSID via ${method.name}: $it") }
     }
 
+    // prevent false positive late mobile data changes to combat android api quirks
+    private fun isLateCellularChange(previous: ConnectivityState, new: ConnectivityState): Boolean {
+        return (previous.wifiState.connected != new.wifiState.connected &&
+            previous.wifiState.ssid == new.wifiState.ssid &&
+            previous.cellularConnected != new.cellularConnected)
+    }
+
     override val connectivityStateFlow: SharedFlow<ConnectivityState> =
         combine(
                 wifiFlow.scan(
@@ -376,6 +383,22 @@ class AndroidNetworkMonitor(
                         ethernetConnected = ethernetConnected,
                     )
                     .also { Timber.d("Connectivity Status: $it") }
+            }
+            .scan(
+                ConnectivityState(
+                    WifiState(
+                        locationPermissionsGranted = hasRequiredLocationPermissions(),
+                        locationServicesEnabled =
+                            locationManager?.isLocationServicesEnabled() ?: false,
+                    )
+                )
+            ) { previous, current ->
+                if (isLateCellularChange(previous, current)) {
+                    Timber.d("Skipping late cellular change")
+                    previous
+                } else {
+                    current
+                }
             }
             .distinctUntilChanged()
             .shareIn(applicationScope, SharingStarted.Eagerly, replay = 1)

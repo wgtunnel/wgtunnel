@@ -16,6 +16,7 @@ fun Entity.toDomain(): Domain =
         debounceDelaySeconds = debounceDelaySeconds,
         isTunnelOnUnsecureEnabled = isTunnelOnUnsecureEnabled,
         wifiDetectionMethod = wifiDetectionMethod,
+        startOnBoot = startOnBoot,
     )
 
 fun Domain.toEntity(): Entity =
@@ -31,4 +32,5 @@ fun Domain.toEntity(): Entity =
         debounceDelaySeconds = debounceDelaySeconds,
         isTunnelOnUnsecureEnabled = isTunnelOnUnsecureEnabled,
         wifiDetectionMethod = wifiDetectionMethod,
+        startOnBoot = startOnBoot,
     )

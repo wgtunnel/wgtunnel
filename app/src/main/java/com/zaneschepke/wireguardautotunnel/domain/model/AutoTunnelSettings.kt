@@ -14,4 +14,5 @@ data class AutoTunnelSettings(
     val debounceDelaySeconds: Int = 3,
     val isTunnelOnUnsecureEnabled: Boolean = false,
     val wifiDetectionMethod: WifiDetectionMethod = WifiDetectionMethod.fromValue(0),
+    val startOnBoot: Boolean = false,
 )
