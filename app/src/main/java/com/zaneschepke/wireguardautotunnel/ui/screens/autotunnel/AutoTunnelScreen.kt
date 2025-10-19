@@ -112,7 +112,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 }
 
             fun onAutoTunnelClick() {
-                if (sharedUiState.isBatteryOptimizationShown)
+                if (!sharedUiState.isBatteryOptimizationShown)
                     return requestDisableBatteryOptimizations()
                 viewModel.toggleAutoTunnel(sharedUiState.settings.appMode)
             }
