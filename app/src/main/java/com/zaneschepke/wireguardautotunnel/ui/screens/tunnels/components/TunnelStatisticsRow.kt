@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.ui.common.label.lowercaseLabel
 import com.zaneschepke.wireguardautotunnel.util.NumberUtils
@@ -24,6 +25,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun TunnelStatisticsRow(
+    tunnel: TunnelConfig,
     tunnelState: TunnelState,
     pingEnabled: Boolean,
     showDetailedStats: Boolean,
@@ -31,6 +33,16 @@ fun TunnelStatisticsRow(
     val context = LocalContext.current
     val textStyle = MaterialTheme.typography.bodySmall
     val textColor = MaterialTheme.colorScheme.outline
+
+    // needs to be set as peer stats for duplicates return as a single set of stats
+    val peers by remember(tunnel) {
+        derivedStateOf {
+            TunnelConfig.configFromWgQuick(tunnel.wgQuick)
+                .peers
+                .map { it.publicKey.toBase64() }
+                .toSet()
+        }
+    }
 
     var currentTimeMillis by remember { mutableLongStateOf(System.currentTimeMillis()) }
     LaunchedEffect(Unit) {
@@ -52,7 +64,7 @@ fun TunnelStatisticsRow(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalAlignment = Alignment.Start,
         ) {
-            stats.getPeers().forEach { peerBase64 ->
+            peers.forEach { peerBase64 ->
                 key(peerBase64) {
                     val peerStats = remember(stats, peerBase64) { stats.peerStats(peerBase64) }
                     peerStats?.let { stats ->

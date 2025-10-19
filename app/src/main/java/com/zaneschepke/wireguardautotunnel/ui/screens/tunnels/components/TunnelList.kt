@@ -103,6 +103,7 @@ fun TunnelList(
                     if (!tunnelState.status.isDown()) {
                         {
                             TunnelStatisticsRow(
+                                tunnel,
                                 tunnelState,
                                 sharedState.isPingEnabled,
                                 sharedState.showPingStats,
