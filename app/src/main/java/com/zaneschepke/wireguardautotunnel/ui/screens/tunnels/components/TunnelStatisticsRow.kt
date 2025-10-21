@@ -35,14 +35,15 @@ fun TunnelStatisticsRow(
     val textColor = MaterialTheme.colorScheme.outline
 
     // needs to be set as peer stats for duplicates return as a single set of stats
-    val peers by remember(tunnel) {
-        derivedStateOf {
-            TunnelConfig.configFromWgQuick(tunnel.wgQuick)
-                .peers
-                .map { it.publicKey.toBase64() }
-                .toSet()
+    val peers by
+        remember(tunnel) {
+            derivedStateOf {
+                TunnelConfig.configFromWgQuick(tunnel.wgQuick)
+                    .peers
+                    .map { it.publicKey.toBase64() }
+                    .toSet()
+            }
         }
-    }
 
     var currentTimeMillis by remember { mutableLongStateOf(System.currentTimeMillis()) }
     LaunchedEffect(Unit) {
