@@ -162,7 +162,7 @@ jobs:
           files: |
             ${{ github.workspace }}/temp/**/*.apk
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
 
   publish-fdroid-public:
     runs-on: ubuntu-latest

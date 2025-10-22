@@ -1,10 +1,13 @@
 name: notifications
+permissions:
+  contents: write
+  packages: write
 
 on:
   issues:
     types: [opened, closed]
   release:
-    types: [published]
+    types: [published, prereleased]
 
 jobs:
   notify:
@@ -43,15 +46,23 @@ jobs:
             --data-urlencode "text=$TEXT"
 
       - name: Send to Telegram - New Release
-        if: github.event_name == 'release' && github.event.action == 'published'
+        if: github.event_name == 'release' && (github.event.action == 'published' || (github.event.action == 'prereleased' && github.event.release.name == 'nightly'))
         env:
           NAME: ${{ github.event.release.name }}
           TAG: ${{ github.event.release.tag_name }}
           BODY: ${{ github.event.release.body || 'No notes provided' }}
           URL: ${{ github.event.release.html_url }}
+          ACTION: ${{ github.event.action }}
         run: |
           BODY_TRUNC="${BODY:0:200}"  # Truncate to avoid spam
-          TEXT=$(echo -e "🚀 New Release *$NAME* ($TAG)\n\n$BODY_TRUNC\n\n[View Release]($URL)")
+          if [ "$ACTION" == "prereleased" ]; then
+            ICON="🌙"
+            PREFIX="New Nightly Release"
+          else
+            ICON="🚀"
+            PREFIX="New Release"
+          fi
+          TEXT=$(echo -e "$ICON $PREFIX *$NAME* ($TAG)\n\n$BODY_TRUNC\n\n[View Release]($URL)")
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
             -d chat_id="${{ vars.TELEGRAM_CHAT_ID }}" \
             ${{ vars.TELEGRAM_THREAD_ID && format('-d message_thread_id="{0}"', vars.TELEGRAM_THREAD_ID) || '' }} \
@@ -106,15 +117,23 @@ jobs:
             -d "$PAYLOAD"
 
       - name: Send to Matrix - New Release
-        if: github.event_name == 'release' && github.event.action == 'published'
+        if: github.event_name == 'release' && (github.event.action == 'published' || (github.event.action == 'prereleased' && github.event.release.name == 'nightly'))
         env:
           NAME: ${{ github.event.release.name }}
           TAG: ${{ github.event.release.tag_name }}
           BODY: ${{ github.event.release.body || 'No notes provided' }}
           URL: ${{ github.event.release.html_url }}
+          ACTION: ${{ github.event.action }}
         run: |
-          PLAIN_MESSAGE=$(echo -e "🚀 New Release $NAME ($TAG)\n\n$BODY\n\nView Release: $URL")
-          HTML_MESSAGE=$(echo -e "<p>🚀 New Release <strong>$NAME</strong> ($TAG)</p><p>$BODY</p><p><a href=\"$URL\">View Release</a></p>")
+          if [ "$ACTION" == "prereleased" ]; then
+            ICON="🌙"
+            PREFIX="New Nightly Release"
+          else
+            ICON="🚀"
+            PREFIX="New Release"
+          fi
+          PLAIN_MESSAGE=$(echo -e "$ICON $PREFIX $NAME ($TAG)\n\n$BODY\n\nView Release: $URL")
+          HTML_MESSAGE=$(echo -e "<p>$ICON $PREFIX <strong>$NAME</strong> ($TAG)</p><p>$BODY</p><p><a href=\"$URL\">View Release</a></p>")
           PLAIN_MESSAGE="${PLAIN_MESSAGE:0:220}"
           PAYLOAD=$(jq -n --arg body "$PLAIN_MESSAGE" --arg formatted "$HTML_MESSAGE" '{
             "msgtype": "m.text",
