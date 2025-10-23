@@ -46,7 +46,7 @@ jobs:
             --data-urlencode "text=$TEXT"
 
       - name: Send to Telegram - New Release
-        if: github.event_name == 'release' && (github.event.action == 'published' || (github.event.action == 'prereleased' && github.event.release.name == 'nightly'))
+        if: github.event_name == 'release' && ((github.event.action == 'published' && !github.event.release.prerelease) || (github.event.action == 'prereleased' && github.event.release.prerelease && github.event.release.name == 'nightly'))
         env:
           NAME: ${{ github.event.release.name }}
           TAG: ${{ github.event.release.tag_name }}
@@ -117,7 +117,7 @@ jobs:
             -d "$PAYLOAD"
 
       - name: Send to Matrix - New Release
-        if: github.event_name == 'release' && (github.event.action == 'published' || (github.event.action == 'prereleased' && github.event.release.name == 'nightly'))
+        if: github.event_name == 'release' && ((github.event.action == 'published' && !github.event.release.prerelease) || (github.event.action == 'prereleased' && github.event.release.prerelease && github.event.release.name == 'nightly'))
         env:
           NAME: ${{ github.event.release.name }}
           TAG: ${{ github.event.release.tag_name }}
