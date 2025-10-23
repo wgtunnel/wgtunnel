@@ -26,6 +26,9 @@ jobs:
           echo "new_commits=$NEW_COMMITS" >> $GITHUB_OUTPUT
 
   build-standalone-nightly:
+    needs:
+      - check_commits
+    if: ${{ needs.check_commits.outputs.has_new_commits > 0 && inputs.release_type != 'none' }}
     uses: ./.github/workflows/build.yml
     secrets: inherit
     with:
@@ -34,7 +37,6 @@ jobs:
 
   publish:
     needs:
-      - check_commits
       - build-standalone-nightly
     if: ${{ needs.check_commits.outputs.has_new_commits > 0 && inputs.release_type != 'none' }}
     name: publish-nightly
