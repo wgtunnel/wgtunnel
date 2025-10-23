@@ -28,7 +28,6 @@ data class TunnelConfig(
     val position: Int = 0,
     val autoTunnelApps: Set<String> = setOf(),
 ) {
-    val isNameKernelCompatible: Boolean = (name.length <= 15)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

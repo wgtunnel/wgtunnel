@@ -60,6 +60,7 @@ fun ConfigScreen(viewModel: ConfigViewModel) {
         InterfaceSection(
             isGlobalConfig,
             configProxy = configProxy,
+            configUiState.isRunning,
             tunnelName,
             isTunnelNameTaken,
             onInterfaceChange = { configProxy = configProxy.copy(`interface` = it) },

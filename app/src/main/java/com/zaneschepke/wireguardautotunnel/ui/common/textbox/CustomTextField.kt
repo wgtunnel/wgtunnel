@@ -52,10 +52,18 @@ fun CustomTextField(
     val editable = enabled && !readOnly
     val mainFocusRequester = remember { FocusRequester() }
     val trailingFocusRequester = remember { FocusRequester() }
+    val disabledAlpha = 0.38f
+    val disabledBorderAlpha = 0.12f
+    val effectiveTextStyle =
+        if (enabled) {
+            textStyle
+        } else {
+            textStyle.copy(color = textStyle.color.copy(alpha = disabledAlpha))
+        }
 
     BasicTextField(
         value = value,
-        textStyle = textStyle,
+        textStyle = effectiveTextStyle,
         onValueChange = { onValueChange(it) },
         keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions,
@@ -105,7 +113,18 @@ fun CustomTextField(
             colors =
                 TextFieldDefaults.colors()
                     .copy(
-                        disabledLabelColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor =
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = disabledAlpha),
+                        disabledLabelColor =
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = disabledAlpha),
+                        disabledPlaceholderColor =
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = disabledAlpha),
+                        disabledLeadingIconColor =
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = disabledAlpha),
+                        disabledTrailingIconColor =
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = disabledAlpha),
+                        disabledSupportingTextColor =
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = disabledAlpha),
                         disabledContainerColor = containerColor,
                         focusedLabelColor = MaterialTheme.colorScheme.onSurface,
                         focusedContainerColor = containerColor,
@@ -127,8 +146,13 @@ fun CustomTextField(
                         TextFieldDefaults.colors()
                             .copy(
                                 errorContainerColor = containerColor,
-                                disabledLabelColor = MaterialTheme.colorScheme.onSurface,
+                                disabledLabelColor =
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = disabledAlpha),
                                 disabledContainerColor = containerColor,
+                                disabledIndicatorColor =
+                                    MaterialTheme.colorScheme.onSurface.copy(
+                                        alpha = disabledBorderAlpha
+                                    ),
                                 focusedIndicatorColor = MaterialTheme.colorScheme.primary,
                                 unfocusedIndicatorColor = MaterialTheme.colorScheme.outline,
                                 focusedLabelColor = MaterialTheme.colorScheme.onSurface,

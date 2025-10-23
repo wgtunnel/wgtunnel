@@ -18,6 +18,7 @@ import com.wireguard.crypto.KeyPair
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.InterfaceProxy
@@ -27,6 +28,7 @@ import java.util.*
 fun InterfaceSection(
     isGlobalConfig: Boolean,
     configProxy: ConfigProxy,
+    isRunning: Boolean,
     tunnelName: String,
     isTunnelNameTaken: Boolean,
     onInterfaceChange: (InterfaceProxy) -> Unit,
@@ -126,9 +128,18 @@ fun InterfaceSection(
                 if (!isGlobalConfig)
                     ConfigurationTextBox(
                         value = tunnelName,
+                        enabled = !isRunning,
                         onValueChange = onTunnelNameChange,
                         label = stringResource(R.string.name),
                         isError = isTunnelNameTaken,
+                        supportingText =
+                            if (isRunning) {
+                                {
+                                    DescriptionText(
+                                        stringResource(R.string.tunnel_running_name_message)
+                                    )
+                                }
+                            } else null,
                         hint =
                             stringResource(
                                     R.string.hint_template,

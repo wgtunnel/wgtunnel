@@ -415,4 +415,7 @@
     <string name="remote_key">Remote key</string>
     <string name="tunnel_mapping_description">Map tunnels as preferred by Wi-Fi name</string>
     <string name="monitoring">Monitoring</string>
+    <string name="kernel_name_dots">Tunnel name cannot be \'.\' or \'..\' in kernel mode</string>
+    <string name="kernel_name_special_characters">Tunnel name in kernel mode cannot have spaces or certain special characters (allowed: alphanumeric, _, =, +, ., -)</string>
+    <string name="tunnel_running_name_message">Name unchangeable while tunnel is active.</string>
 </resources>

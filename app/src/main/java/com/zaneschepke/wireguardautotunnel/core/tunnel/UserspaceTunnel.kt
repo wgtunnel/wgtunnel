@@ -5,7 +5,11 @@ import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
-import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
+import com.zaneschepke.wireguardautotunnel.domain.events.DnsFailure
+import com.zaneschepke.wireguardautotunnel.domain.events.InvalidConfig
+import com.zaneschepke.wireguardautotunnel.domain.events.ServiceNotRunning
+import com.zaneschepke.wireguardautotunnel.domain.events.UnknownError
+import com.zaneschepke.wireguardautotunnel.domain.events.VpnUnauthorized
 import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.DnsSettingsRepository
@@ -114,16 +118,16 @@ constructor(
             }
         } catch (e: TimeoutCancellationException) {
             Timber.e("Startup timed out for ${tunnelConfig.name} (likely DNS hang)")
-            errors.emit(tunnelConfig.name to BackendCoreException.DNS)
+            errors.emit(tunnelConfig.name to DnsFailure())
             forceStopTunnel(tunnelConfig.id)
             close()
         } catch (e: BackendException) {
             close(e.toBackendCoreException())
         } catch (e: IllegalArgumentException) {
-            close(BackendCoreException.Config)
+            close(InvalidConfig())
         } catch (e: Exception) {
             Timber.e(e, "Error while setting tunnel state")
-            close(BackendCoreException.Unknown)
+            close(UnknownError())
         }
 
         awaitClose {
@@ -149,7 +153,7 @@ constructor(
             throw e.toBackendCoreException()
             // TODO this should be mapped to BackendException in the lib
         } catch (e: IOException) {
-            throw BackendCoreException.NotAuthorized
+            throw VpnUnauthorized()
         }
     }
 
@@ -158,7 +162,7 @@ constructor(
     }
 
     override fun handleDnsReresolve(tunnelConfig: TunnelConfig): Boolean {
-        val tunnel = runtimeTunnels[tunnelConfig.id] ?: throw BackendCoreException.ServiceNotRunning
+        val tunnel = runtimeTunnels[tunnelConfig.id] ?: throw ServiceNotRunning()
         return backend.resolveDDNS(tunnelConfig.toAmConfig(), tunnel.isIpv4ResolutionPreferred)
     }
 

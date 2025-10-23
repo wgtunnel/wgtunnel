@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
@@ -14,6 +15,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.combine
 import org.amnezia.awg.config.BadConfigException
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
@@ -25,6 +27,7 @@ class ConfigViewModel
 constructor(
     private val tunnelRepository: TunnelRepository,
     private val globalEffectRepository: GlobalEffectRepository,
+    private val tunnelManager: TunnelManager,
     @Assisted val tunnelId: Int?,
 ) : ContainerHost<ConfigUiState, Nothing>, ViewModel() {
 
@@ -33,12 +36,18 @@ constructor(
             ConfigUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
-            tunnelRepository.flow.collect { tuns ->
-                reduce {
+            combine(tunnelManager.activeTunnels, tunnelRepository.flow) { activeTunnels, tuns ->
                     val tunnel = tuns.firstOrNull { it.id == tunnelId }
-                    ConfigUiState(tuns.filter { it.id != tunnelId }.map { it.name }, false, tunnel)
+                    val tunnelNames = tuns.filter { it.id != tunnelId }.map { it.name }
+                    val isRunning = activeTunnels.containsKey(tunnelId)
+                    state.copy(
+                        unavailableNames = tunnelNames,
+                        isLoading = false,
+                        tunnel = tunnel,
+                        isRunning = isRunning,
+                    )
                 }
-            }
+                .collect { state -> reduce { state } }
         }
 
     fun saveConfigProxy(configProxy: ConfigProxy, tunnelName: String) = intent {

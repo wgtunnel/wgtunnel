@@ -8,6 +8,7 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
+import com.zaneschepke.wireguardautotunnel.domain.events.NotAuthorized
 import com.zaneschepke.wireguardautotunnel.domain.model.AutoTunnelSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
@@ -308,7 +309,7 @@ constructor(
             if (serviceManager.hasVpnPermission()) {
                 proxyUserspaceTunnel.setBackendMode(BackendMode.KillSwitch(allowedIps))
             } else {
-                throw BackendCoreException.NotAuthorized
+                throw NotAuthorized()
             }
         } catch (e: BackendCoreException) {
             localErrorEvents.tryEmit(null to e)
@@ -357,7 +358,7 @@ constructor(
                         tunnels.filter { it.isActive }.forEach { conf -> startTunnel(conf) }
                 }
             } else {
-                localErrorEvents.emit(null to BackendCoreException.NotAuthorized)
+                localErrorEvents.emit(null to NotAuthorized())
             }
         }
 
@@ -385,7 +386,7 @@ constructor(
                     }
                     defaultTunnel?.let { startTunnel(it) }
                 } else {
-                    localErrorEvents.emit(null to BackendCoreException.NotAuthorized)
+                    localErrorEvents.emit(null to NotAuthorized())
                 }
             }
         }

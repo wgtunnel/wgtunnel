@@ -3,18 +3,23 @@ package com.zaneschepke.wireguardautotunnel.core.tunnel
 import com.wireguard.android.backend.Backend
 import com.wireguard.android.backend.BackendException
 import com.wireguard.android.backend.Tunnel as WgTunnel
+import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.di.Kernel
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
-import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
+import com.zaneschepke.wireguardautotunnel.domain.events.DnsFailure
+import com.zaneschepke.wireguardautotunnel.domain.events.InvalidConfig
+import com.zaneschepke.wireguardautotunnel.domain.events.KernelTunnelName
+import com.zaneschepke.wireguardautotunnel.domain.events.UnknownError
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.domain.state.WireGuardStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTunnelState
 import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendCoreException
 import java.util.concurrent.ConcurrentHashMap
+import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -35,9 +40,22 @@ constructor(
 
     private val runtimeTunnels = ConcurrentHashMap<Int, WgTunnel>()
 
+    private fun validateWireGuardInterfaceName(name: String): Result<Unit> {
+        if (name.isEmpty() || name.length > 15)
+            return Result.failure(KernelTunnelName(R.string.kernel_name_error))
+        if (name == "." || name == "..") {
+            return Result.failure(KernelTunnelName(R.string.kernel_name_dots))
+        }
+        val pattern = Pattern.compile("^[a-zA-Z0-9_=+.-]{1,15}$")
+        if (!pattern.matcher(name).matches()) {
+            return Result.failure(KernelTunnelName(R.string.kernel_name_special_characters))
+        }
+        return Result.success(Unit)
+    }
+
     // TODO Add DNS settings
     override fun tunnelStateFlow(tunnelConfig: TunnelConfig): Flow<TunnelStatus> = callbackFlow {
-        if (!tunnelConfig.isNameKernelCompatible) close(BackendCoreException.TunnelNameTooLong)
+        validateWireGuardInterfaceName(tunnelConfig.name).onFailure { close(it) }
 
         val stateChannel = Channel<WgTunnel.State>()
 
@@ -55,17 +73,17 @@ constructor(
             }
         } catch (e: TimeoutCancellationException) {
             Timber.e("Startup timed out for ${tunnelConfig.name}")
-            errors.emit(tunnelConfig.name to BackendCoreException.DNS)
+            errors.emit(tunnelConfig.name to DnsFailure())
             forceStopTunnel(tunnelConfig.id)
             close()
         } catch (e: BackendException) {
             close(e.toBackendCoreException())
         } catch (e: IllegalArgumentException) {
             Timber.e(e, "Invalid backend arguments")
-            close(BackendCoreException.Config)
+            close(InvalidConfig())
         } catch (e: Exception) {
             Timber.e(e, "Error while setting tunnel state")
-            close(BackendCoreException.Unknown)
+            close(UnknownError())
         }
 
         awaitClose {

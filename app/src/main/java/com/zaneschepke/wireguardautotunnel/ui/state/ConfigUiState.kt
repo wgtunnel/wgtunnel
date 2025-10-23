@@ -6,4 +6,5 @@ data class ConfigUiState(
     val unavailableNames: List<String> = emptyList(),
     val isLoading: Boolean = true,
     val tunnel: TunnelConfig? = null,
+    val isRunning: Boolean = false,
 )

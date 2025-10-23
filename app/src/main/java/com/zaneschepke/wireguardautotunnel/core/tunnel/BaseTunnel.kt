@@ -106,9 +106,6 @@ abstract class BaseTunnel(
             ) {
                 return Timber.w("Tunnel is already running: ${tunnelConfig.name}")
             }
-
-            updateTunnelStatus(tunnelConfig.id, TunnelStatus.Starting)
-
             val job =
                 applicationScope.launch(ioDispatcher) {
                     try {

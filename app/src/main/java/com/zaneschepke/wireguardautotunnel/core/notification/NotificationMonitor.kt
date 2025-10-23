@@ -32,7 +32,7 @@ constructor(
                         description =
                             StringValue.StringResource(
                                 R.string.tunnel_error_template,
-                                error.toStringRes(),
+                                error.toStringValue(),
                             ),
                         groupKey = NotificationManager.VPN_GROUP_KEY,
                     )
