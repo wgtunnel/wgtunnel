@@ -17,7 +17,7 @@ data class PeerProxy(
                 parsePublicKey(publicKey)
                 if (preSharedKey.isNotBlank()) parsePreSharedKey(preSharedKey)
                 if (persistentKeepalive.isNotBlank()) parsePersistentKeepalive(persistentKeepalive)
-                parseEndpoint(endpoint)
+                if (endpoint.isNotBlank()) parseEndpoint(endpoint)
                 parseAllowedIPs(allowedIps)
             }
             .build()
@@ -29,7 +29,7 @@ data class PeerProxy(
                 parsePublicKey(publicKey)
                 if (preSharedKey.isNotBlank()) parsePreSharedKey(preSharedKey)
                 if (persistentKeepalive.isNotBlank()) parsePersistentKeepalive(persistentKeepalive)
-                parseEndpoint(endpoint)
+                if (endpoint.isNotBlank()) parseEndpoint(endpoint)
                 parseAllowedIPs(allowedIps)
             }
             .build()
