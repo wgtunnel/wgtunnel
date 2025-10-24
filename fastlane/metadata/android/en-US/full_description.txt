@@ -1,15 +1,15 @@
-- **Tunnel Import Methods**: Easily add tunnels using .conf files, ZIP archives, manual entry, or QR code scanning.
-- **Auto-Tunneling**: Automatically activate tunnels based on Wi-Fi SSID, Ethernet connections, or mobile data networks.
-- **Split Tunneling**: Flexible support for routing specific apps or traffic through the VPN.
-- **WireGuard Modes**: Full compatibility with WireGuard in both kernel and userspace implementations.
-- **AmneziaWG Integration**: Userspace mode for AmneziaWG, providing robust censorship evasion.
-- **Always-On VPN**: Ensures continuous protection with Android's Always-On VPN feature.
-- **Quick Controls**: Quick Settings tile and home screen shortcuts for easy VPN toggling.
-- **Automation Support**: Intent-based automation for controlling tunnels.
-- **Auto-Restore**: Seamlessly restores auto-tunneling and active tunnels after device restarts or app updates.
-- **Proxying Options**: Built-in HTTP and SOCKS5 proxy support within tunnels.
-- **Lockdown Mode**: Custom kill switch for maximum leak prevention and security.
-- **Dynamic DNS Handling**: Detects and updates DNS changes without tunnel restarts.
-- **Monitoring Tools**: Advanced tunnel monitoring features for tunnel performance monitoring.
-- **Android TV Support**: Android TV support for secure streaming and browsing.
-- **Advanced DNS**: DNS over HTTPS support for tunnel endpoint resolutions.
+- Tunnel Import Methods: Easily add tunnels using .conf files, ZIP archives, manual entry, or QR code scanning.
+- Auto-Tunneling: Automatically activate tunnels based on Wi-Fi SSID, Ethernet connections, or mobile data networks.
+- Split Tunneling: Flexible support for routing specific apps or traffic through the VPN.
+- WireGuard Modes: Full compatibility with WireGuard in both kernel and userspace implementations.
+- AmneziaWG Integration: Userspace mode for AmneziaWG, providing robust censorship evasion.
+- Always-On VPN: Ensures continuous protection with Android's Always-On VPN feature.
+- Quick Controls: Quick Settings tile and home screen shortcuts for easy VPN toggling.
+- Automation Support: Intent-based automation for controlling tunnels.
+- Auto-Restore: Seamlessly restores auto-tunneling and active tunnels after device restarts or app updates.
+- Proxying Options: Built-in HTTP and SOCKS5 proxy support within tunnels.
+- Lockdown Mode: Custom kill switch for maximum leak prevention and security.
+- Dynamic DNS Handling: Detects and updates DNS changes without tunnel restarts.
+- Monitoring Tools: Advanced tunnel monitoring features for tunnel performance monitoring.
+- Android TV Support: Android TV support for secure streaming and browsing.
+- Advanced DNS: DNS over HTTPS support for tunnel endpoint resolutions.
