@@ -12,17 +12,17 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.*
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
-import dagger.hilt.android.scopes.ServiceScoped
 import inet.ipaddr.AddressValueException
 import inet.ipaddr.IPAddress
 import inet.ipaddr.IPAddressString
 import io.ktor.util.collections.*
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
 
-@ServiceScoped
+@Singleton
 class TunnelMonitor
 @Inject
 constructor(

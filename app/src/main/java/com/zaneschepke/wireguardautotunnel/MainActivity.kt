@@ -33,8 +33,6 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.zaneschepke.networkmonitor.NetworkMonitor
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.data.AppDatabase
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
@@ -99,8 +97,6 @@ import xyz.teamgravity.pin_lock_compose.PinManager
 class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var appStateRepository: AppStateRepository
-    @Inject lateinit var tunnelManager: TunnelManager
-    @Inject lateinit var networkMonitor: NetworkMonitor
     @Inject lateinit var appDatabase: AppDatabase
 
     private lateinit var roomBackup: RoomBackup
@@ -442,7 +438,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         WireGuardAutoTunnel.setUiActive(true)
-        networkMonitor.checkPermissionsAndUpdateState()
     }
 
     override fun onPause() {

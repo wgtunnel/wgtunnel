@@ -93,6 +93,7 @@ class AutoTunnelService : LifecycleService() {
 
     override fun onDestroy() {
         serviceManager.handleAutoTunnelServiceDestroy()
+        networkMonitor.destroy()
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         super.onDestroy()
     }

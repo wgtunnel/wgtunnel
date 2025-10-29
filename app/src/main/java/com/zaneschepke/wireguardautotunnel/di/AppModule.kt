@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.di
 
 import android.content.Context
+import android.os.PowerManager
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.logcatter.LogcatReader
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
@@ -65,5 +66,10 @@ class AppModule {
         notificationManager: NotificationManager,
     ): NotificationMonitor {
         return NotificationMonitor(tunnelManager, notificationManager)
+    }
+
+    @Provides
+    fun providePowerManager(@ApplicationContext context: Context): PowerManager {
+        return context.getSystemService(Context.POWER_SERVICE) as PowerManager
     }
 }

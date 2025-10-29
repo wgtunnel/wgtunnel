@@ -40,8 +40,6 @@ class AndroidNetworkMonitor(
 
     companion object {
         const val LOCATION_SERVICES_FILTER: String = "android.location.PROVIDERS_CHANGED"
-        const val WIFI_STATE_CHANGED_ACTION = "android.net.wifi.WIFI_STATE_CHANGED"
-        const val CONNECTIVITY_CHANGE = "android.net.conn.CONNECTIVITY_CHANGE"
         const val ANDROID_UNKNOWN_SSID: String = "<unknown ssid>"
 
         const val SHELL_COMMAND_TIMEOUT_MS = 2_000L
@@ -79,11 +77,10 @@ class AndroidNetworkMonitor(
 
     private var permissionReceiver: BroadcastReceiver? = null
     private var locationServicesReceiver: BroadcastReceiver? = null
-    private var wifiStateReceiver: BroadcastReceiver? = null
-    private var cellularDataReceiver: BroadcastReceiver? = null
     private var wifiCallback: ConnectivityManager.NetworkCallback? = null
     private var cellularCallback: ConnectivityManager.NetworkCallback? = null
     private var ethernetCallback: ConnectivityManager.NetworkCallback? = null
+    private var wifiInterfaceCallback: ConnectivityManager.NetworkCallback? = null // NEW
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val wifiFlow: Flow<TransportEvent> =
@@ -213,6 +210,36 @@ class AndroidNetworkMonitor(
         awaitClose {
             runCatching { connectivityManager?.unregisterNetworkCallback(wifiCallback!!) }
                 .onFailure { Timber.e(it, "Error unregistering network callback") }
+        }
+    }
+
+    private val wifiInterfaceFlow: Flow<Boolean> = callbackFlow {
+        val localCallback =
+            object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    Timber.d("Wi-Fi Interface onAvailable (Adapter ON): network=$network")
+                    trySend(true)
+                }
+
+                override fun onLost(network: Network) {
+                    Timber.d("Wi-Fi Interface onLost (Adapter OFF): network=$network")
+                    trySend(false)
+                }
+            }
+        wifiInterfaceCallback = localCallback
+
+        // wifi Transport only
+        val request =
+            NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI).build()
+
+        connectivityManager?.registerNetworkCallback(request, wifiInterfaceCallback!!)
+
+        @Suppress("DEPRECATION") val isWifiInitiallyOn = wifiManager?.isWifiEnabled == true
+        trySend(isWifiInitiallyOn)
+
+        awaitClose {
+            runCatching { connectivityManager?.unregisterNetworkCallback(wifiInterfaceCallback!!) }
+                .onFailure { Timber.e(it, "Error unregistering Wi-Fi interface callback") }
         }
     }
 
@@ -374,11 +401,21 @@ class AndroidNetworkMonitor(
                 },
                 cellularFlow,
                 ethernetFlow,
-            ) { wifi, cellular, ethernet ->
+                wifiInterfaceFlow,
+            ) { wifiState, cellular, ethernet, isWifiInterfaceOn ->
                 val cellularConnected = cellular is TransportEvent.Available
                 val ethernetConnected = ethernet is TransportEvent.Available
+
+                // if wifi is off, force wifi state to disconnected
+                val finalWifiState =
+                    if (!isWifiInterfaceOn) {
+                        wifiState.copy(connected = false, securityType = null, ssid = null)
+                    } else {
+                        wifiState
+                    }
+
                 ConnectivityState(
-                        wifi,
+                        finalWifiState,
                         cellularConnected = cellularConnected,
                         ethernetConnected = ethernetConnected,
                     )
@@ -474,73 +511,19 @@ class AndroidNetworkMonitor(
                 receiverFlags,
             )
         }
-
-        wifiStateReceiver =
-            object : BroadcastReceiver() {
-                override fun onReceive(context: Context, intent: Intent) {
-                    if (intent.action == WIFI_STATE_CHANGED_ACTION) {
-                        val wifiState =
-                            intent.getIntExtra(
-                                WifiManager.EXTRA_WIFI_STATE,
-                                WifiManager.WIFI_STATE_UNKNOWN,
-                            )
-                        Timber.d("WiFi state changed to: $wifiState")
-                        when (wifiState) {
-                            WifiManager.WIFI_STATE_DISABLED -> {
-                                Timber.d("WiFi disabled, forcing requery")
-                                activeWifiNetworks.clear()
-                                permissionsChangedFlow.update { !permissionsChangedFlow.value }
-                            }
-                            WifiManager.WIFI_STATE_ENABLED -> {
-                                Timber.d("WiFi enabled, forcing requery")
-                                permissionsChangedFlow.update { !permissionsChangedFlow.value }
-                            }
-                        }
-                    }
-                }
-            }
-        wifiStateReceiver?.let {
-            appContext.registerReceiver(it, IntentFilter(WIFI_STATE_CHANGED_ACTION), receiverFlags)
-        }
-
-        cellularDataReceiver =
-            object : BroadcastReceiver() {
-                override fun onReceive(context: Context, intent: Intent) {
-                    if (intent.action == CONNECTIVITY_CHANGE) {
-                        Timber.d("Connectivity change detected")
-                        val activeNet = connectivityManager?.activeNetwork
-                        val caps = activeNet?.let { connectivityManager.getNetworkCapabilities(it) }
-                        if (
-                            caps?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) == true &&
-                                caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                        ) {
-                            if (activeCellularNetworks.isEmpty()) {
-                                activeCellularNetworks[activeNet.toString()] = Pair(activeNet, caps)
-                                // callback should handle change, no emit needed
-
-                            }
-                        } else if (activeCellularNetworks.isNotEmpty()) {
-                            val lostNetworks = activeCellularNetworks.values.mapNotNull { it.first }
-                            activeCellularNetworks.clear()
-                            // callback should handle change, no emit needed
-                        }
-                    }
-                }
-            }
-        cellularDataReceiver?.let {
-            appContext.registerReceiver(it, IntentFilter(CONNECTIVITY_CHANGE), receiverFlags)
-        }
     }
 
     override fun destroy() {
         runCatching {
                 permissionReceiver?.let { appContext.unregisterReceiver(it) }
                 locationServicesReceiver?.let { appContext.unregisterReceiver(it) }
-                wifiStateReceiver?.let { appContext.unregisterReceiver(it) }
-                cellularDataReceiver?.let { appContext.unregisterReceiver(it) }
+
                 wifiCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
                 cellularCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
                 ethernetCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
+                wifiInterfaceCallback?.let {
+                    connectivityManager?.unregisterNetworkCallback(it)
+                } // NEW
             }
             .onFailure { Timber.e(it, "Error during cleanup") }
         Timber.d("NetworkMonitor cleaned up")

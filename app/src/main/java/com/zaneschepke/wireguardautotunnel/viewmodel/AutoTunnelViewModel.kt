@@ -35,6 +35,10 @@ constructor(
     private val rootShellUtils: RootShellUtils,
 ) : ContainerHost<AutoTunnelUiState, Nothing>, ViewModel() {
 
+    init {
+        networkMonitor.checkPermissionsAndUpdateState()
+    }
+
     override val container =
         container<AutoTunnelUiState, Nothing>(
             AutoTunnelUiState(),

@@ -161,30 +161,6 @@ class TunnelModule {
         )
     }
 
-    @Provides
-    @Singleton
-    fun provideNetworkMonitor(
-        @ApplicationContext context: Context,
-        autoTunnelSettingsRepository: AutoTunnelSettingsRepository,
-        @ApplicationScope applicationScope: CoroutineScope,
-        @AppShell appShell: RootShell,
-    ): NetworkMonitor {
-        return AndroidNetworkMonitor(
-            context,
-            object : AndroidNetworkMonitor.ConfigurationListener {
-                override val detectionMethod: Flow<AndroidNetworkMonitor.WifiDetectionMethod>
-                    get() =
-                        autoTunnelSettingsRepository.flow
-                            .distinctUntilChangedBy { it.wifiDetectionMethod }
-                            .map { it.wifiDetectionMethod.to() }
-
-                override val rootShell: RootShell
-                    get() = appShell
-            },
-            applicationScope,
-        )
-    }
-
     @Singleton
     @Provides
     fun provideServiceManager(
@@ -206,7 +182,7 @@ class TunnelModule {
     @Singleton
     @Provides
     fun provideTunnelMonitor(
-        @ApplicationContext context: Context,
+        powerManager: PowerManager,
         networkMonitor: NetworkMonitor,
         networkUtils: NetworkUtils,
         logReader: LogReader,
@@ -221,7 +197,31 @@ class TunnelModule {
             networkMonitor,
             networkUtils,
             logReader,
-            context.getSystemService(Context.POWER_SERVICE) as PowerManager,
+            powerManager,
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideNetworkMonitor(
+        @ApplicationContext context: Context,
+        autoTunnelSettingsRepository: AutoTunnelSettingsRepository,
+        @ApplicationScope applicationScope: CoroutineScope,
+        @AppShell appShell: RootShell,
+    ): NetworkMonitor {
+        return AndroidNetworkMonitor(
+            context,
+            object : AndroidNetworkMonitor.ConfigurationListener {
+                override val detectionMethod: Flow<AndroidNetworkMonitor.WifiDetectionMethod>
+                    get() =
+                        autoTunnelSettingsRepository.flow
+                            .distinctUntilChangedBy { it.wifiDetectionMethod }
+                            .map { it.wifiDetectionMethod.to() }
+
+                override val rootShell: RootShell
+                    get() = appShell
+            },
+            applicationScope,
         )
     }
 }
