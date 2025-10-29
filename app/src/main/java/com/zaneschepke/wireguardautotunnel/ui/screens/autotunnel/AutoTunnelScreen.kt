@@ -40,9 +40,9 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.NetworkType
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
+import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
@@ -294,7 +294,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 title = stringResource(R.string.stop_on_no_internet),
                 description = { DescriptionText(stringResource(R.string.stop_on_internet_loss)) },
                 trailing = {
-                    ScaledSwitch(
+                    ThemedSwitch(
                         checked = autoTunnelState.autoTunnelSettings.isStopOnNoInternetEnabled,
                         onClick = { viewModel.setStopOnNoInternetEnabled(it) },
                     )
@@ -315,7 +315,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 leading = { Icon(Icons.Outlined.RestartAlt, contentDescription = null) },
                 title = stringResource(R.string.restart_at_boot),
                 trailing = {
-                    ScaledSwitch(
+                    ThemedSwitch(
                         checked = autoTunnelState.autoTunnelSettings.startOnBoot,
                         onClick = { viewModel.setStartAtBoot(it) },
                     )

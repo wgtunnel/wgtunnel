@@ -15,6 +15,7 @@ import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
+import com.zaneschepke.wireguardautotunnel.ui.theme.CoolGray
 import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
 import com.zaneschepke.wireguardautotunnel.ui.theme.Straw
 
@@ -75,7 +76,7 @@ fun AppMode.asIcon(): ImageVector {
 
 fun TunnelState.Health.asColor(): Color {
     return when (this) {
-        TunnelState.Health.UNKNOWN -> Color.Gray
+        TunnelState.Health.UNKNOWN -> CoolGray
         TunnelState.Health.UNHEALTHY -> AlertRed
         TunnelState.Health.HEALTHY -> SilverTree
         TunnelState.Health.STALE -> Straw

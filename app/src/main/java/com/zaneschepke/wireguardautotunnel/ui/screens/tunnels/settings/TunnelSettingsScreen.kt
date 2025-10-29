@@ -29,13 +29,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
+import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.components.QrCodeDialog
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
+import com.zaneschepke.wireguardautotunnel.ui.theme.Disabled
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -43,6 +44,8 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun TunnelSettingsScreen(viewModel: TunnelViewModel) {
     val navController = LocalNavController.current
     val sharedViewModel = LocalSharedVm.current
+
+    val sharedUiState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     val tunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
@@ -82,7 +85,7 @@ fun TunnelSettingsScreen(viewModel: TunnelViewModel) {
                     )
                 },
                 trailing = {
-                    ScaledSwitch(
+                    ThemedSwitch(
                         checked = tunnel.isPrimaryTunnel,
                         onClick = { viewModel.togglePrimaryTunnel() },
                     )
@@ -91,9 +94,25 @@ fun TunnelSettingsScreen(viewModel: TunnelViewModel) {
             )
             SurfaceRow(
                 leading = {
-                    Icon(Icons.AutoMirrored.Outlined.CallSplit, contentDescription = null)
+                    Icon(
+                        Icons.AutoMirrored.Outlined.CallSplit,
+                        contentDescription = null,
+                        tint =
+                            if (sharedUiState.proxyEnabled) Disabled
+                            else MaterialTheme.colorScheme.onSurface,
+                    )
                 },
+                enabled = !sharedUiState.proxyEnabled,
                 title = stringResource(R.string.splt_tunneling),
+                description =
+                    if (sharedUiState.proxyEnabled) {
+                        {
+                            DescriptionText(
+                                stringResource(R.string.unavailable_in_mode),
+                                disabled = true,
+                            )
+                        }
+                    } else null,
                 onClick = { navController.push(Route.SplitTunnel(id = tunnel.id)) },
             )
         }
@@ -109,7 +128,7 @@ fun TunnelSettingsScreen(viewModel: TunnelViewModel) {
                     DescriptionText(stringResource(R.string.ddns_auto_update_description))
                 },
                 trailing = {
-                    ScaledSwitch(
+                    ThemedSwitch(
                         checked = tunnel.restartOnPingFailure,
                         onClick = { viewModel.setRestartOnPing(it) },
                     )
@@ -122,7 +141,7 @@ fun TunnelSettingsScreen(viewModel: TunnelViewModel) {
                 },
                 title = stringResource(R.string.prefer_ipv6_resolution),
                 trailing = {
-                    ScaledSwitch(
+                    ThemedSwitch(
                         checked = !tunnel.isIpv4Preferred,
                         onClick = { viewModel.setIpv4Preferred(!it) },
                     )
@@ -130,10 +149,32 @@ fun TunnelSettingsScreen(viewModel: TunnelViewModel) {
                 onClick = { viewModel.setIpv4Preferred(!tunnel.isIpv4Preferred) },
             )
             SurfaceRow(
-                leading = { Icon(Icons.Outlined.DataUsage, contentDescription = null) },
+                leading = {
+                    Icon(
+                        Icons.Outlined.DataUsage,
+                        contentDescription = null,
+                        tint =
+                            if (sharedUiState.proxyEnabled) Disabled
+                            else MaterialTheme.colorScheme.onSurface,
+                    )
+                },
                 title = stringResource(R.string.metered_tunnel),
+                enabled = !sharedUiState.proxyEnabled,
+                description =
+                    if (sharedUiState.proxyEnabled) {
+                        {
+                            DescriptionText(
+                                stringResource(R.string.unavailable_in_mode),
+                                disabled = true,
+                            )
+                        }
+                    } else null,
                 trailing = {
-                    ScaledSwitch(checked = tunnel.isMetered, onClick = { viewModel.setMetered(it) })
+                    ThemedSwitch(
+                        checked = tunnel.isMetered,
+                        onClick = { viewModel.setMetered(it) },
+                        enabled = !sharedUiState.proxyEnabled,
+                    )
                 },
                 onClick = { viewModel.setMetered(!tunnel.isMetered) },
             )

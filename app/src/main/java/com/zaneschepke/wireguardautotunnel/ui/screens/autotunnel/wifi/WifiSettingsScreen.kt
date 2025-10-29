@@ -26,8 +26,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.WarningBanner
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
+import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
@@ -156,7 +156,7 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                     )
                 },
                 trailing = {
-                    ScaledSwitch(
+                    ThemedSwitch(
                         checked = autoTunnelState.autoTunnelSettings.isWildcardsEnabled,
                         onClick = { viewModel.setWildcardsEnabled(it) },
                     )

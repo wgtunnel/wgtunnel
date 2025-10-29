@@ -20,6 +20,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import com.zaneschepke.wireguardautotunnel.ui.theme.Disabled
 
 @Composable
 fun SurfaceRow(
@@ -44,7 +45,6 @@ fun SurfaceRow(
         modifier =
             modifier
                 .fillMaxWidth()
-                //                .focusGroup()
                 .indication(interactionSource, ripple())
                 .background(
                     if (!selected) MaterialTheme.colorScheme.surface
@@ -109,9 +109,7 @@ fun SurfaceRow(
                     Text(
                         text = title,
                         style = MaterialTheme.typography.bodyLarge,
-                        color =
-                            if (enabled) MaterialTheme.colorScheme.onSurface
-                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                        color = if (enabled) MaterialTheme.colorScheme.onSurface else Disabled,
                     )
                     if (description != null) {
                         description()

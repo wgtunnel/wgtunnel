@@ -19,6 +19,8 @@ val AlertRed = Color(0xFFCF6679)
 
 val Straw = Color(0xFFD4C483)
 
+val Disabled = CoolGray.copy(alpha = 0.4f)
+
 sealed class ThemeColors(
     val background: Color,
     val surface: Color,

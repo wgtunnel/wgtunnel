@@ -20,5 +20,6 @@ data class SharedAppUiState(
     val isAutoTunnelActive: Boolean = false,
     val isLocationDisclosureShown: Boolean = false,
     val isBatteryOptimizationShown: Boolean = false,
+    val proxyEnabled: Boolean = false,
     val settings: GeneralSettings = GeneralSettings(),
 )

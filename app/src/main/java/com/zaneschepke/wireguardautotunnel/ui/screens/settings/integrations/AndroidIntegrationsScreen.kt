@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -25,8 +24,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
+import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.security.SecureScreenFromRecording
@@ -72,7 +71,7 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 SurfaceRow(
                     leading = { Icon(Icons.Outlined.VpnLock, contentDescription = null) },
                     trailing = {
-                        ScaledSwitch(
+                        ThemedSwitch(
                             checked = isAlwaysOnEnabled,
                             onClick = { viewModel.setAlwaysOnVpnEnabled(it) },
                         )
@@ -94,12 +93,12 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                         Icons.Outlined.Restore,
                         contentDescription = null,
                         tint =
-                            if (isAlwaysOnEnabled) Color.Gray
+                            if (isAlwaysOnEnabled) MaterialTheme.colorScheme.outline
                             else MaterialTheme.colorScheme.onSurface,
                     )
                 },
                 trailing = {
-                    ScaledSwitch(
+                    ThemedSwitch(
                         checked = settingsState.settings.isRestoreOnBootEnabled,
                         onClick = { viewModel.setRestoreOnBootEnabled(it) },
                         enabled = !isAlwaysOnEnabled,
@@ -117,7 +116,7 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             SurfaceRow(
                 leading = { Icon(Icons.Filled.AppShortcut, contentDescription = null) },
                 trailing = {
-                    ScaledSwitch(
+                    ThemedSwitch(
                         checked = settingsState.settings.isShortcutsEnabled,
                         onClick = { viewModel.setShortcutsEnabled(it) },
                     )
@@ -130,7 +129,7 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             SurfaceRow(
                 leading = { Icon(Icons.Filled.SmartToy, contentDescription = null) },
                 trailing = {
-                    ScaledSwitch(
+                    ThemedSwitch(
                         checked = settingsState.isRemoteEnabled,
                         onClick = { viewModel.setRemoteEnabled(it) },
                     )

@@ -27,7 +27,7 @@ fun SwitchWithDivider(
             color = MaterialTheme.colorScheme.outline,
         )
         Box(modifier = Modifier.pointerInput(Unit) { detectTapGestures {} }) {
-            ScaledSwitch(
+            ThemedSwitch(
                 checked = checked,
                 onClick = onClick,
                 enabled = enabled,

@@ -21,8 +21,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
+import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
@@ -86,7 +86,7 @@ fun TunnelMonitoringScreen(viewModel: MonitoringViewModel = hiltViewModel()) {
                 leading = { Icon(Icons.Outlined.QueryStats, contentDescription = null) },
                 title = stringResource(R.string.display_detailed_ping_stats),
                 trailing = {
-                    ScaledSwitch(
+                    ThemedSwitch(
                         checked = monitoringUiState.monitoringSettings.showDetailedPingStats,
                         onClick = { viewModel.setDetailedPingStats(it) },
                     )

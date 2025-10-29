@@ -24,8 +24,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
+import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.security.SecureScreenFromRecording
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox
@@ -105,7 +105,7 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
                 leading = { Icon(Icons.Outlined.Forward5, contentDescription = null) },
                 title = stringResource(R.string.socks_5_proxy),
                 trailing = {
-                    ScaledSwitch(checked = socks5Enabled, onClick = { socks5Enabled = it })
+                    ThemedSwitch(checked = socks5Enabled, onClick = { socks5Enabled = it })
                 },
                 onClick = { socks5Enabled = !socks5Enabled },
             )
@@ -132,7 +132,7 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Http, contentDescription = null) },
                 title = stringResource(R.string.http_proxy),
-                trailing = { ScaledSwitch(checked = httpEnabled, onClick = { httpEnabled = it }) },
+                trailing = { ThemedSwitch(checked = httpEnabled, onClick = { httpEnabled = it }) },
                 onClick = { httpEnabled = !httpEnabled },
             )
             if (httpEnabled) {

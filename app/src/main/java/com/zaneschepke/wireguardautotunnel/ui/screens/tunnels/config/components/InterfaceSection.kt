@@ -66,10 +66,11 @@ fun InterfaceSection(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                GroupLabel(
-                    stringResource(R.string.interface_),
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                )
+                if (!isGlobalConfig)
+                    GroupLabel(
+                        stringResource(R.string.interface_),
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
                 if (!isGlobalConfig)
                     Row {
                         if (isTv) {

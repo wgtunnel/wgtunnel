@@ -154,8 +154,10 @@ private fun ConfigTypeSelector(
                 )
             val activeContainerColor = Color.White
             val inactiveContainerColor = Color.White
-            val activeContentColor = if (isEnabled) Color.Black else Color.Gray
-            val inactiveContentColor = if (isEnabled) Color.Black else Color.Gray
+            val activeContentColor =
+                if (isEnabled) Color.Black else MaterialTheme.colorScheme.outline
+            val inactiveContentColor =
+                if (isEnabled) Color.Black else MaterialTheme.colorScheme.outline
             SegmentedButton(
                 shape =
                     SegmentedButtonDefaults.itemShape(
@@ -172,7 +174,7 @@ private fun ConfigTypeSelector(
                                 contentDescription = stringResource(R.string.select),
                                 tint =
                                     if (isEnabled) MaterialTheme.colorScheme.primary
-                                    else Color.Gray,
+                                    else MaterialTheme.colorScheme.outline,
                                 modifier = Modifier.size(SegmentedButtonDefaults.IconSize),
                             )
                         },
@@ -180,7 +182,8 @@ private fun ConfigTypeSelector(
                         Icon(
                             imageVector = Icons.Outlined.VpnKey,
                             contentDescription = typeName,
-                            tint = if (isEnabled) Color.Black else Color.Gray,
+                            tint =
+                                if (isEnabled) Color.Black else MaterialTheme.colorScheme.outline,
                             modifier = Modifier.size(SegmentedButtonDefaults.IconSize),
                         )
                     }
@@ -197,7 +200,7 @@ private fun ConfigTypeSelector(
             ) {
                 Text(
                     text = typeName,
-                    color = if (isEnabled) Color.Black else Color.Gray,
+                    color = if (isEnabled) Color.Black else MaterialTheme.colorScheme.outline,
                     style = MaterialTheme.typography.labelMedium,
                 )
             }

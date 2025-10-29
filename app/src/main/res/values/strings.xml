@@ -419,7 +419,7 @@
     <string name="tunnel_running_name_message">Name unchangeable while tunnel is active.</string>
     <string name="metered_tunnel">Metered tunnel</string>
     <string name="lockdown_settings">Lockdown settings</string>
-    <string name="unavailable_in_mode">Unavailable in this app mode</string>
+    <string name="unavailable_in_mode">Unavailable in current mode</string>
     <string name="global_split_tunneling">Global split tunneling</string>
     <string name="global_dns_servers">Global DNS servers</string>
 </resources>

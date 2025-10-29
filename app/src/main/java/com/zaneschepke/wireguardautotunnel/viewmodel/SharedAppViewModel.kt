@@ -76,6 +76,9 @@ constructor(
                             activeTunnels = activeTunnels,
                             isPingEnabled = monitoring.isPingEnabled,
                             showPingStats = monitoring.showDetailedPingStats,
+                            proxyEnabled =
+                                settings.appMode == AppMode.PROXY ||
+                                    settings.appMode == AppMode.LOCK_DOWN,
                             isAppLoaded = true,
                         )
                     }

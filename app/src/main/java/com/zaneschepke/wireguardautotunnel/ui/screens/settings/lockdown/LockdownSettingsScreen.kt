@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
+import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.viewmodel.LockdownViewModel
 
@@ -58,7 +58,7 @@ fun LockdownSettingsScreen(viewModel: LockdownViewModel = hiltViewModel()) {
                     )
                 },
                 trailing = {
-                    ScaledSwitch(
+                    ThemedSwitch(
                         checked = uiState.lockdownSettings.bypassLan,
                         onClick = { viewModel.setBypassLan(it) },
                     )
@@ -69,7 +69,7 @@ fun LockdownSettingsScreen(viewModel: LockdownViewModel = hiltViewModel()) {
                 leading = { Icon(Icons.Outlined.DataUsage, contentDescription = null) },
                 title = stringResource(R.string.metered_tunnel),
                 trailing = {
-                    ScaledSwitch(
+                    ThemedSwitch(
                         checked = uiState.lockdownSettings.metered,
                         onClick = { viewModel.setMetered(it) },
                     )
@@ -82,7 +82,7 @@ fun LockdownSettingsScreen(viewModel: LockdownViewModel = hiltViewModel()) {
                 },
                 title = "Dual-stack",
                 trailing = {
-                    ScaledSwitch(
+                    ThemedSwitch(
                         checked = uiState.lockdownSettings.dualStack,
                         onClick = { viewModel.setDualStack(it) },
                     )

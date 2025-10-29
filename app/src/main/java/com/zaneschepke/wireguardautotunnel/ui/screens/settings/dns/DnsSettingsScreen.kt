@@ -47,7 +47,7 @@ fun DnsSettingsScreen(viewModel: DnsViewModel = hiltViewModel()) {
 
     Column(
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
     ) {
         Column {
