@@ -5,6 +5,9 @@
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!--for split tunneling-->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+
     <!--foreground service special use for non VPN service tunnels, android 14-->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <!--foreground service special use for VPN service tunnels, android 14-->
@@ -14,6 +17,7 @@
     <!--foreground service permissions-->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
     <!--start service on boot permission-->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
@@ -42,17 +46,6 @@
 
 	<uses-feature android:name="android.hardware.wifi"
 		android:required="false"/>
-
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.MAIN" />
-			<category android:name="android.intent.category.LAUNCHER" />
-        </intent>
-        <intent>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-        </intent>
-    </queries>
     <application
         android:name=".WireGuardAutoTunnel"
         android:allowBackup="false"
