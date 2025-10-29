@@ -28,8 +28,8 @@ data class TunnelConfig(
     @ColumnInfo(name = "position", defaultValue = "0") val position: Int = 0,
     @ColumnInfo(name = "auto_tunnel_apps", defaultValue = "[]")
     val autoTunnelApps: Set<String> = emptySet(),
+    @ColumnInfo(name = "is_metered", defaultValue = "true") val isMetered: Boolean = true,
 ) {
-
     companion object {
         const val GLOBAL_CONFIG_NAME = "4675ab06-903a-438b-8485-6ea4187a9512"
     }

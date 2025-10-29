@@ -165,14 +165,15 @@ fun InterfaceFields(
                         .lowercase(locale),
                 modifier = Modifier.weight(3f),
             )
-            ConfigurationTextBox(
-                value = interfaceState.mtu,
-                onValueChange = { onInterfaceChange(interfaceState.copy(mtu = it)) },
-                label = stringResource(R.string.mtu),
-                hint = stringResource(R.string.auto).lowercase(locale),
-                modifier = Modifier.weight(2f),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            )
+            if (!isGlobalConfig)
+                ConfigurationTextBox(
+                    value = interfaceState.mtu,
+                    onValueChange = { onInterfaceChange(interfaceState.copy(mtu = it)) },
+                    label = stringResource(R.string.mtu),
+                    hint = stringResource(R.string.auto).lowercase(locale),
+                    modifier = Modifier.weight(2f),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                )
         }
         if (showScripts) {
             ConfigurationTextBox(

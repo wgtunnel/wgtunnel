@@ -8,7 +8,7 @@ data class GeneralSettings(
     val isShortcutsEnabled: Boolean = false,
     val isRestoreOnBootEnabled: Boolean = false,
     val isMultiTunnelEnabled: Boolean = false,
-    val isTunnelGlobalsEnabled: Boolean = false,
+    val isGlobalSplitTunnelEnabled: Boolean = false,
     val appMode: AppMode = AppMode.fromValue(0),
     val theme: Theme = Theme.AUTOMATIC,
     val locale: String? = null,
@@ -16,6 +16,5 @@ data class GeneralSettings(
     val isRemoteControlEnabled: Boolean = false,
     val isPinLockEnabled: Boolean = false,
     val isAlwaysOnVpnEnabled: Boolean = false,
-    val isLanOnKillSwitchEnabled: Boolean = false,
-    val customSplitPackages: Map<String, String> = emptyMap(),
+    val isKillSwitchMetered: Boolean = true,
 )

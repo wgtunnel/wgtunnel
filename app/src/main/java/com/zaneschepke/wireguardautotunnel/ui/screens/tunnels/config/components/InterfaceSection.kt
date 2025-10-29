@@ -70,56 +70,57 @@ fun InterfaceSection(
                     stringResource(R.string.interface_),
                     modifier = Modifier.padding(horizontal = 16.dp),
                 )
-                Row {
-                    if (isTv && !isGlobalConfig) {
-                        IconButton(onClick = { showPrivateKey = !showPrivateKey }) {
-                            Icon(
-                                Icons.Outlined.RemoveRedEye,
-                                stringResource(R.string.show_password),
-                            )
-                        }
-                        IconButton(
-                            enabled = true,
-                            onClick = {
-                                val keypair = KeyPair()
-                                onInterfaceChange(
-                                    configProxy.`interface`.copy(
-                                        privateKey = keypair.privateKey.toBase64(),
-                                        publicKey = keypair.publicKey.toBase64(),
-                                    )
+                if (!isGlobalConfig)
+                    Row {
+                        if (isTv) {
+                            IconButton(onClick = { showPrivateKey = !showPrivateKey }) {
+                                Icon(
+                                    Icons.Outlined.RemoveRedEye,
+                                    stringResource(R.string.show_password),
                                 )
-                            },
-                        ) {
-                            Icon(
-                                Icons.Rounded.Refresh,
-                                stringResource(R.string.rotate_keys),
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
+                            }
+                            IconButton(
+                                enabled = true,
+                                onClick = {
+                                    val keypair = KeyPair()
+                                    onInterfaceChange(
+                                        configProxy.`interface`.copy(
+                                            privateKey = keypair.privateKey.toBase64(),
+                                            publicKey = keypair.publicKey.toBase64(),
+                                        )
+                                    )
+                                },
+                            ) {
+                                Icon(
+                                    Icons.Rounded.Refresh,
+                                    stringResource(R.string.rotate_keys),
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
                         }
+                        InterfaceDropdown(
+                            expanded = isDropDownExpanded,
+                            onExpandedChange = { isDropDownExpanded = it },
+                            showScripts = showScripts,
+                            showAmneziaValues = showAmneziaValues,
+                            isAmneziaCompatibilitySet = isAmneziaCompatibilitySet,
+                            onToggleScripts = { showScripts = !showScripts },
+                            onToggleAmneziaValues = { showAmneziaValues = !showAmneziaValues },
+                            onToggleAmneziaCompatibility = { toggleAmneziaCompat() },
+                            onMimicQuic = {
+                                showAmneziaValues = true
+                                onMimicQuic()
+                            },
+                            onMimicDns = {
+                                showAmneziaValues = true
+                                onMimicDns()
+                            },
+                            onMimicSip = {
+                                showAmneziaValues = true
+                                onMimicSip()
+                            },
+                        )
                     }
-                    InterfaceDropdown(
-                        expanded = isDropDownExpanded,
-                        onExpandedChange = { isDropDownExpanded = it },
-                        showScripts = showScripts,
-                        showAmneziaValues = showAmneziaValues,
-                        isAmneziaCompatibilitySet = isAmneziaCompatibilitySet,
-                        onToggleScripts = { showScripts = !showScripts },
-                        onToggleAmneziaValues = { showAmneziaValues = !showAmneziaValues },
-                        onToggleAmneziaCompatibility = { toggleAmneziaCompat() },
-                        onMimicQuic = {
-                            showAmneziaValues = true
-                            onMimicQuic()
-                        },
-                        onMimicDns = {
-                            showAmneziaValues = true
-                            onMimicDns()
-                        },
-                        onMimicSip = {
-                            showAmneziaValues = true
-                            onMimicSip()
-                        },
-                    )
-                }
             }
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),

@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.di
 
 import android.content.Context
+import android.os.PowerManager
 import com.wireguard.android.backend.WgQuickBackend
 import com.wireguard.android.util.RootShell
 import com.wireguard.android.util.ToolsInstaller
@@ -85,8 +86,9 @@ class TunnelModule {
         @ApplicationScope applicationScope: CoroutineScope,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
         backend: com.wireguard.android.backend.Backend,
+        runConfigHelper: RunConfigHelper,
     ): TunnelProvider {
-        return KernelTunnel(applicationScope, ioDispatcher, backend)
+        return KernelTunnel(applicationScope, ioDispatcher, runConfigHelper, backend)
     }
 
     @Provides
@@ -94,18 +96,11 @@ class TunnelModule {
     @Userspace
     fun provideUserspaceProvider(
         @ApplicationScope applicationScope: CoroutineScope,
-        proxySettingsRepository: ProxySettingsRepository,
-        dnsSettingsRepository: DnsSettingsRepository,
+        runConfigHelper: RunConfigHelper,
         @Userspace backend: Backend,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
     ): TunnelProvider {
-        return UserspaceTunnel(
-            applicationScope,
-            ioDispatcher,
-            proxySettingsRepository,
-            dnsSettingsRepository,
-            backend,
-        )
+        return UserspaceTunnel(applicationScope, ioDispatcher, backend, runConfigHelper)
     }
 
     @Provides
@@ -113,18 +108,11 @@ class TunnelModule {
     @ProxyUserspace
     fun provideProxyUserspaceProvider(
         @ApplicationScope applicationScope: CoroutineScope,
-        dnsSettingsRepository: DnsSettingsRepository,
-        proxySettingsRepository: ProxySettingsRepository,
+        runConfigHelper: RunConfigHelper,
         @ProxyUserspace backend: Backend,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
     ): TunnelProvider {
-        return UserspaceTunnel(
-            applicationScope,
-            ioDispatcher,
-            proxySettingsRepository,
-            dnsSettingsRepository,
-            backend,
-        )
+        return UserspaceTunnel(applicationScope, ioDispatcher, backend, runConfigHelper)
     }
 
     @Provides
@@ -135,6 +123,7 @@ class TunnelModule {
         @ProxyUserspace proxyTunnel: TunnelProvider,
         serviceManager: ServiceManager,
         tunnelRepository: TunnelRepository,
+        lockdownSettingsRepository: LockdownSettingsRepository,
         settingsRepository: GeneralSettingRepository,
         autoTunnelSettingsRepository: AutoTunnelSettingsRepository,
         tunnelMonitor: TunnelMonitor,
@@ -148,10 +137,27 @@ class TunnelModule {
             serviceManager,
             settingsRepository,
             autoTunnelSettingsRepository,
+            lockdownSettingsRepository,
             tunnelRepository,
             tunnelMonitor,
             applicationScope,
             ioDispatcher,
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideTunnelConfigHelper(
+        settingsRepository: GeneralSettingRepository,
+        proxySettingsRepository: ProxySettingsRepository,
+        dnsSettingsRepository: DnsSettingsRepository,
+        tunnelRepository: TunnelRepository,
+    ): RunConfigHelper {
+        return RunConfigHelper(
+            settingsRepository,
+            proxySettingsRepository,
+            dnsSettingsRepository,
+            tunnelRepository,
         )
     }
 
@@ -200,6 +206,7 @@ class TunnelModule {
     @Singleton
     @Provides
     fun provideTunnelMonitor(
+        @ApplicationContext context: Context,
         networkMonitor: NetworkMonitor,
         networkUtils: NetworkUtils,
         logReader: LogReader,
@@ -214,6 +221,7 @@ class TunnelModule {
             networkMonitor,
             networkUtils,
             logReader,
+            context.getSystemService(Context.POWER_SERVICE) as PowerManager,
         )
     }
 }

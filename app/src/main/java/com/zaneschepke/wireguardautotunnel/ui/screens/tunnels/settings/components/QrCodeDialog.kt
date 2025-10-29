@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.tunneloptions.components
+package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

@@ -71,12 +71,8 @@ constructor(
         settingsRepository.upsert(state.settings.copy(isRestoreOnBootEnabled = to))
     }
 
-    fun setLanKillSwitchEnabled(to: Boolean) = intent {
-        settingsRepository.upsert(state.settings.copy(isLanOnKillSwitchEnabled = to))
-    }
-
-    fun setTunnelGlobals(to: Boolean) = intent {
-        settingsRepository.upsert(state.settings.copy(isTunnelGlobalsEnabled = to))
+    fun setGlobalSplitTunneling(to: Boolean) = intent {
+        settingsRepository.upsert(state.settings.copy(isGlobalSplitTunnelEnabled = to))
         if (state.globalTunnelConfig == null)
             tunnelsRepository.save(TunnelConfig.generateDefaultGlobalConfig())
     }

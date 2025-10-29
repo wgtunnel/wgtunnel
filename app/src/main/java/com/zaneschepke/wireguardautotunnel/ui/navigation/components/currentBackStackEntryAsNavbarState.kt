@@ -113,6 +113,19 @@ fun currentRouteAsNavbarState(
                         showBottomItems = true,
                         topTitle = context.getString(R.string.language),
                     )
+                LockdownSettings ->
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        showBottomItems = true,
+                        topTitle = context.getString(R.string.lockdown_settings),
+                    )
                 License ->
                     NavbarState(
                         topLeading = {
@@ -211,8 +224,11 @@ fun currentRouteAsNavbarState(
                             }
                         },
                     )
-                is Config -> {
-                    val tunnelName = sharedState.tunnels.find { it.id == route.id }?.name
+                is Config,
+                is ConfigGlobal -> {
+                    val tunnelName =
+                        if (route is Config) sharedState.tunnels.find { it.id == route.id }?.name
+                        else context.getString(R.string.global_dns_servers)
                     NavbarState(
                         topLeading = {
                             IconButton(onClick = { navController.pop() }) {
@@ -236,8 +252,12 @@ fun currentRouteAsNavbarState(
                         },
                     )
                 }
-                is SplitTunnel -> {
-                    val tunnelName = sharedState.tunnels.find { it.id == route.id }?.name
+                is SplitTunnel,
+                is SplitTunnelGlobal -> {
+                    val tunnelName =
+                        if (route is SplitTunnel)
+                            sharedState.tunnels.find { it.id == route.id }?.name
+                        else context.getString(R.string.global_split_tunneling)
                     NavbarState(
                         topLeading = {
                             IconButton(onClick = { navController.pop() }) {
@@ -258,52 +278,6 @@ fun currentRouteAsNavbarState(
                             }
                         },
                         showBottomItems = true,
-                    )
-                }
-                is SplitTunnelGlobal -> {
-                    NavbarState(
-                        topLeading = {
-                            IconButton(onClick = { navController.pop() }) {
-                                Icon(
-                                    Icons.AutoMirrored.Rounded.ArrowBack,
-                                    stringResource(R.string.back),
-                                )
-                            }
-                        },
-                        topTitle = context.getString(R.string.splt_tunneling),
-                        topTrailing = {
-                            IconButton(
-                                onClick = {
-                                    sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
-                                }
-                            ) {
-                                Icon(Icons.Rounded.Save, stringResource(R.string.save))
-                            }
-                        },
-                        showBottomItems = true,
-                    )
-                }
-                is ConfigGlobal -> {
-                    NavbarState(
-                        topLeading = {
-                            IconButton(onClick = { navController.pop() }) {
-                                Icon(
-                                    Icons.AutoMirrored.Rounded.ArrowBack,
-                                    stringResource(R.string.back),
-                                )
-                            }
-                        },
-                        showBottomItems = true,
-                        topTitle = context.getString(R.string.configuration),
-                        topTrailing = {
-                            IconButton(
-                                onClick = {
-                                    sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
-                                }
-                            ) {
-                                Icon(Icons.Rounded.Save, stringResource(R.string.save))
-                            }
-                        },
                     )
                 }
                 Support ->
@@ -337,7 +311,7 @@ fun currentRouteAsNavbarState(
                         topTitle = context.getString(R.string.ping_monitor),
                         showBottomItems = true,
                     )
-                is TunnelOptions -> {
+                is TunnelSettings -> {
                     val tunnelName = sharedState.tunnels.find { it.id == route.id }?.name
                     NavbarState(
                         topLeading = {
@@ -494,20 +468,6 @@ fun currentRouteAsNavbarState(
                             }
                         },
                         topTitle = context.getString(R.string.addresses),
-                        showBottomItems = true,
-                    )
-                }
-                is TunnelGlobals -> {
-                    NavbarState(
-                        topLeading = {
-                            IconButton(onClick = { navController.pop() }) {
-                                Icon(
-                                    Icons.AutoMirrored.Rounded.ArrowBack,
-                                    stringResource(R.string.back),
-                                )
-                            }
-                        },
-                        topTitle = context.getString(R.string.global_overrides),
                         showBottomItems = true,
                     )
                 }

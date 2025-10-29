@@ -1,7 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig as Entity
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.di.*
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
@@ -14,6 +13,7 @@ import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.LockdownSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
@@ -40,6 +40,7 @@ constructor(
     private val serviceManager: ServiceManager,
     private val settingsRepository: GeneralSettingRepository,
     private val autoTunnelSettingsRepository: AutoTunnelSettingsRepository,
+    private val lockdownSettingsRepository: LockdownSettingsRepository,
     private val tunnelsRepository: TunnelRepository,
     private val tunnelMonitor: TunnelMonitor,
     @ApplicationScope private val applicationScope: CoroutineScope,
@@ -70,12 +71,6 @@ constructor(
         val condition: (SideEffectState) -> Boolean,
     )
 
-    private suspend fun getSettings(): GeneralSettings =
-        settingsRepository.flow.filterNotNull().first { it != GeneralSettings() }
-
-    private suspend fun getTunnels(): List<TunnelConfig> =
-        tunnelsRepository.flow.first { it.isNotEmpty() }
-
     private val tunnelProviderFlow: StateFlow<TunnelProvider> = run {
         val currentBackend = AtomicReference(userspaceTunnel)
         val currentSettings = AtomicReference(GeneralSettings())
@@ -85,10 +80,7 @@ constructor(
             .filterNotNull()
             // ignore default state
             .filterNot { it == GeneralSettings() }
-            .distinctUntilChanged { old, new ->
-                old.appMode == new.appMode &&
-                    old.isLanOnKillSwitchEnabled == new.isLanOnKillSwitchEnabled
-            }
+            .distinctUntilChangedBy { it.appMode }
             .map { settings ->
                 Timber.d("App mode changes with ${settings.appMode}")
                 val backend =
@@ -109,7 +101,7 @@ constructor(
                     handleModeChangeCleanup(previousBackend, previousSettings.appMode)
                 }
                 if (settings.appMode == AppMode.LOCK_DOWN) {
-                    handleLockDownModeInit(settings.isLanOnKillSwitchEnabled)
+                    handleLockDownModeInit()
                 }
             }
             .map { (_, backend) -> backend }
@@ -236,17 +228,7 @@ constructor(
                 activeTunnels.first { it.isEmpty() }
             } ?: run { activeTunnels.value.keys.forEach { id -> provider.forceStopTunnel(id) } }
         }
-        val runConfig =
-            tunnelConfig.run {
-                if (getSettings().isTunnelGlobalsEnabled) {
-                    val globalTunnel =
-                        getTunnels().firstOrNull { it.name == Entity.GLOBAL_CONFIG_NAME }
-                            ?: return@run this
-                    return@run copyWithGlobalValues(globalTunnel)
-                }
-                this
-            }
-        tunnelProviderFlow.value.startTunnel(runConfig)
+        tunnelProviderFlow.value.startTunnel(tunnelConfig)
     }
 
     override suspend fun stopTunnel(tunnelId: Int) {
@@ -303,11 +285,21 @@ constructor(
         serviceManager.updateTunnelTile()
     }
 
-    private fun handleLockDownModeInit(withLanBypass: Boolean) {
-        val allowedIps = if (withLanBypass) TunnelConfig.IPV4_PUBLIC_NETWORKS else emptySet()
+    // TODO this can crash if we haven't started foreground service yet, especially for
+    // workerManager
+    private suspend fun handleLockDownModeInit() {
+        val lockdownSettings = lockdownSettingsRepository.getLockdownSettings()
+        val allowedIps =
+            if (lockdownSettings.bypassLan) TunnelConfig.IPV4_PUBLIC_NETWORKS else emptySet()
         try {
             if (serviceManager.hasVpnPermission()) {
-                proxyUserspaceTunnel.setBackendMode(BackendMode.KillSwitch(allowedIps))
+                proxyUserspaceTunnel.setBackendMode(
+                    BackendMode.KillSwitch(
+                        allowedIps,
+                        lockdownSettings.metered,
+                        lockdownSettings.dualStack,
+                    )
+                )
             } else {
                 throw NotAuthorized()
             }
@@ -350,8 +342,7 @@ constructor(
                     AppMode.VPN,
                     AppMode.PROXY,
                     AppMode.LOCK_DOWN -> {
-                        if (mode == AppMode.LOCK_DOWN)
-                            handleLockDownModeInit(settings.isLanOnKillSwitchEnabled)
+                        if (mode == AppMode.LOCK_DOWN) handleLockDownModeInit()
                         tunnels.firstOrNull { it.isActive }?.let { startTunnel(it) }
                     }
                     AppMode.KERNEL ->
@@ -378,8 +369,7 @@ constructor(
                 tunnelsRepository.resetActiveTunnels()
                 if (isVpnAuthorized(settings.appMode)) {
                     when (val mode = settings.appMode) {
-                        AppMode.LOCK_DOWN ->
-                            handleLockDownModeInit(settings.isLanOnKillSwitchEnabled)
+                        AppMode.LOCK_DOWN -> handleLockDownModeInit()
                         AppMode.KERNEL,
                         AppMode.VPN,
                         AppMode.PROXY -> Unit

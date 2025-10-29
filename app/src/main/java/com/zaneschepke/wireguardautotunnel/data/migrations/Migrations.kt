@@ -316,3 +316,98 @@ val MIGRATION_23_24 =
             }
         }
     }
+
+val MIGRATION_25_26 =
+    object : Migration(25, 26) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                """
+                    CREATE TABLE IF NOT EXISTS `lockdown_settings` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `bypass_lan` INTEGER NOT NULL DEFAULT 0,
+                        `metered` INTEGER NOT NULL DEFAULT 0,
+                        `dual_stack` INTEGER NOT NULL DEFAULT 0
+                    )
+                """
+                    .trimIndent()
+            )
+
+            val cursor =
+                db.query("SELECT `is_lan_on_kill_switch_enabled` FROM `general_settings` LIMIT 1")
+            var bypassLan = 0
+            if (cursor.moveToFirst()) {
+                bypassLan = if (cursor.getInt(0) != 0) 1 else 0
+            }
+            cursor.close()
+
+            db.execSQL(
+                """
+                    INSERT INTO `lockdown_settings` (`bypass_lan`, `metered`, `dual_stack`)
+                    VALUES (?, 0, 0)
+                """
+                    .trimIndent(),
+                arrayOf(bypassLan),
+            )
+
+            db.execSQL(
+                """
+                    CREATE TABLE IF NOT EXISTS `general_settings_new` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `is_shortcuts_enabled` INTEGER NOT NULL DEFAULT 0,
+                        `is_restore_on_boot_enabled` INTEGER NOT NULL DEFAULT 0,
+                        `is_multi_tunnel_enabled` INTEGER NOT NULL DEFAULT 0,
+                        `is_tunnel_globals_enabled` INTEGER NOT NULL DEFAULT 0,
+                        `app_mode` INTEGER NOT NULL DEFAULT 0,
+                        `theme` TEXT NOT NULL DEFAULT 'AUTOMATIC',
+                        `locale` TEXT,
+                        `remote_key` TEXT,
+                        `is_remote_control_enabled` INTEGER NOT NULL DEFAULT 0,
+                        `is_pin_lock_enabled` INTEGER NOT NULL DEFAULT 0,
+                        `is_always_on_vpn_enabled` INTEGER NOT NULL DEFAULT 0,
+                        `custom_split_packages` TEXT NOT NULL DEFAULT '{}'
+                    )
+                """
+                    .trimIndent()
+            )
+
+            db.execSQL(
+                """
+                    INSERT INTO `general_settings_new` (
+                        `id`,
+                        `is_shortcuts_enabled`,
+                        `is_restore_on_boot_enabled`,
+                        `is_multi_tunnel_enabled`,
+                        `is_tunnel_globals_enabled`,
+                        `app_mode`,
+                        `theme`,
+                        `locale`,
+                        `remote_key`,
+                        `is_remote_control_enabled`,
+                        `is_pin_lock_enabled`,
+                        `is_always_on_vpn_enabled`,
+                        `custom_split_packages`
+                    )
+                    SELECT
+                        `id`,
+                        `is_shortcuts_enabled`,
+                        `is_restore_on_boot_enabled`,
+                        `is_multi_tunnel_enabled`,
+                        `is_tunnel_globals_enabled`,
+                        `app_mode`,
+                        `theme`,
+                        `locale`,
+                        `remote_key`,
+                        `is_remote_control_enabled`,
+                        `is_pin_lock_enabled`,
+                        `is_always_on_vpn_enabled`,
+                        `custom_split_packages`
+                    FROM `general_settings`
+                """
+                    .trimIndent()
+            )
+
+            db.execSQL("DROP TABLE `general_settings`")
+
+            db.execSQL("ALTER TABLE `general_settings_new` RENAME TO `general_settings`")
+        }
+    }

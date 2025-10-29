@@ -60,7 +60,8 @@ fun Config.defaultName(): String {
 
 fun Backend.BackendMode.asBackendMode(): BackendMode {
     return when (val status = this) {
-        is Backend.BackendMode.KillSwitch -> BackendMode.KillSwitch(status.allowedIps)
+        is Backend.BackendMode.KillSwitch ->
+            BackendMode.KillSwitch(status.allowedIps, status.isMetered, status.isDualStack)
         else -> BackendMode.Inactive
     }
 }
@@ -68,7 +69,8 @@ fun Backend.BackendMode.asBackendMode(): BackendMode {
 fun BackendMode.asAmBackendMode(): Backend.BackendMode {
     return when (val status = this) {
         is BackendMode.Inactive -> Backend.BackendMode.Inactive.INSTANCE
-        is BackendMode.KillSwitch -> Backend.BackendMode.KillSwitch(status.allowedIps)
+        is BackendMode.KillSwitch ->
+            Backend.BackendMode.KillSwitch(status.allowedIps, status.isMetered, status.dualStack)
     }
 }
 

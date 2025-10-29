@@ -15,8 +15,9 @@ import com.zaneschepke.wireguardautotunnel.data.entity.*
             AutoTunnelSettings::class,
             MonitoringSettings::class,
             DnsSettings::class,
+            LockdownSettings::class,
         ],
-    version = 25,
+    version = 27,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -42,6 +43,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.*
             AutoMigration(from = 21, to = 22),
             AutoMigration(from = 22, to = 23),
             AutoMigration(from = 24, to = 25),
+            AutoMigration(from = 26, to = 27, spec = GlobalsMigration::class),
         ],
     exportSchema = true,
 )
@@ -56,6 +58,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun autoTunnelSettingsDao(): AutoTunnelSettingsDao
 
     abstract fun monitoringSettingsDao(): MonitoringSettingsDao
+
+    abstract fun lockdownSettingsDao(): LockdownSettingsDao
 
     abstract fun dnsSettingsDao(): DnsSettingsDao
 }
@@ -112,3 +116,12 @@ class FixProxySettingsMigration : AutoMigrationSpec {
         }
     }
 }
+
+@RenameColumn.Entries(
+    RenameColumn(
+        tableName = "general_settings",
+        fromColumnName = "is_tunnel_globals_enabled",
+        toColumnName = "global_split_tunnel_enabled",
+    )
+)
+class GlobalsMigration : AutoMigrationSpec

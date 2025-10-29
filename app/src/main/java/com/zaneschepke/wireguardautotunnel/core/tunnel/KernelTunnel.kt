@@ -35,6 +35,7 @@ class KernelTunnel
 constructor(
     @ApplicationScope applicationScope: CoroutineScope,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
+    private val runConfigHelper: RunConfigHelper,
     @Kernel private val backend: Backend,
 ) : BaseTunnel(applicationScope, ioDispatcher) {
 
@@ -53,7 +54,6 @@ constructor(
         return Result.success(Unit)
     }
 
-    // TODO Add DNS settings
     override fun tunnelStateFlow(tunnelConfig: TunnelConfig): Flow<TunnelStatus> = callbackFlow {
         validateWireGuardInterfaceName(tunnelConfig.name).onFailure { close(it) }
 
@@ -69,7 +69,8 @@ constructor(
         try {
             withTimeout(STARTUP_TIMEOUT_MS) {
                 updateTunnelStatus(tunnelConfig.id, TunnelStatus.Starting)
-                backend.setState(runtimeTunnel, WgTunnel.State.UP, tunnelConfig.toWgConfig())
+                val runConfig = runConfigHelper.buildWgRunConfig(tunnelConfig)
+                backend.setState(runtimeTunnel, WgTunnel.State.UP, runConfig)
             }
         } catch (e: TimeoutCancellationException) {
             Timber.e("Startup timed out for ${tunnelConfig.name}")

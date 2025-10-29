@@ -7,11 +7,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.CallSplit
 import androidx.compose.material.icons.automirrored.outlined.ViewQuilt
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -30,6 +31,7 @@ import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ScaledSwitch
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SheetButtonWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
@@ -64,14 +66,9 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val appMode = settingsState.settings.appMode
     val dnsEnabled by rememberSaveable(appMode) { mutableStateOf(appMode != AppMode.KERNEL) }
 
-    val showProxySettings by
+    val showModeDivider by
         remember(appMode) {
-            derivedStateOf {
-                when (appMode) {
-                    AppMode.PROXY -> true
-                    else -> false
-                }
-            }
+            derivedStateOf { appMode == AppMode.PROXY || appMode == AppMode.LOCK_DOWN }
         }
 
     fun performBackupRestore(action: () -> Unit) {
@@ -119,11 +116,8 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 leading = {
                     Icon(ImageVector.vectorResource(R.drawable.sdk), contentDescription = null)
                 },
-                trailing = {
-                    Icon(
-                        Icons.Outlined.ExpandMore,
-                        contentDescription = stringResource(R.string.select),
-                    )
+                trailing = { modifier ->
+                    SheetButtonWithDivider(showModeDivider, modifier) { showAppModeSheet = true }
                 },
                 title = stringResource(R.string.backend_mode),
                 description = {
@@ -131,34 +125,15 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                         stringResource(R.string.current_template, appMode.asTitleString(context))
                     )
                 },
-                onClick = { showAppModeSheet = true },
+                onClick = {
+                    when (appMode) {
+                        AppMode.PROXY -> navController.push(Route.ProxySettings)
+                        AppMode.LOCK_DOWN -> navController.push(Route.LockdownSettings)
+                        AppMode.KERNEL,
+                        AppMode.VPN -> showAppModeSheet = true
+                    }
+                },
             )
-            if (appMode == AppMode.LOCK_DOWN) {
-                SurfaceRow(
-                    leading = { Icon(Icons.Outlined.Lan, contentDescription = null) },
-                    title = stringResource(R.string.allow_lan_traffic),
-                    description = {
-                        Text(
-                            text = stringResource(R.string.bypass_lan_for_kill_switch),
-                            style =
-                                MaterialTheme.typography.bodySmall.copy(
-                                    MaterialTheme.colorScheme.outline
-                                ),
-                        )
-                    },
-                    trailing = {
-                        ScaledSwitch(
-                            checked = settingsState.settings.isLanOnKillSwitchEnabled,
-                            onClick = { viewModel.setLanKillSwitchEnabled(it) },
-                        )
-                    },
-                    onClick = {
-                        viewModel.setLanKillSwitchEnabled(
-                            !settingsState.settings.isLanOnKillSwitchEnabled
-                        )
-                    },
-                )
-            }
             SurfaceRow(
                 leading = {
                     Icon(
@@ -182,29 +157,22 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             )
             SurfaceRow(
                 leading = {
-                    Icon(ImageVector.vectorResource(R.drawable.globe), contentDescription = null)
+                    Icon(Icons.AutoMirrored.Outlined.CallSplit, contentDescription = null)
                 },
-                title = stringResource(R.string.global_overrides),
+                title = stringResource(R.string.global_split_tunneling),
                 trailing = { modifier ->
                     SwitchWithDivider(
-                        checked = settingsState.settings.isTunnelGlobalsEnabled,
-                        onClick = { viewModel.setTunnelGlobals(it) },
+                        checked = settingsState.settings.isGlobalSplitTunnelEnabled,
+                        onClick = { viewModel.setGlobalSplitTunneling(it) },
                         modifier = modifier,
                     )
                 },
                 onClick = {
                     settingsState.globalTunnelConfig?.let {
-                        navController.push(Route.TunnelGlobals(it.id))
+                        navController.push(Route.SplitTunnelGlobal(id = it.id))
                     }
                 },
             )
-            if (showProxySettings) {
-                SurfaceRow(
-                    leading = { Icon(ImageVector.vectorResource(R.drawable.proxy), null) },
-                    title = stringResource(R.string.proxy_settings),
-                    onClick = { navController.push(Route.ProxySettings) },
-                )
-            }
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Android, null) },
                 title = stringResource(R.string.android_integrations),
@@ -228,6 +196,10 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 },
                 title = stringResource(R.string.ping_monitor),
                 enabled = isPingMonitoringAvailable,
+                description =
+                    if (!isPingMonitoringAvailable) {
+                        { DescriptionText(stringResource(R.string.unavailable_in_mode)) }
+                    } else null,
                 trailing = {
                     SwitchWithDivider(
                         checked = settingsState.monitoring.isPingEnabled,
@@ -289,11 +261,13 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 leading = { Icon(Icons.Outlined.SettingsBackupRestore, contentDescription = null) },
                 title = stringResource(R.string.backup_and_restore),
                 onClick = { showBackupSheet = true },
-                trailing = {
-                    Icon(
-                        Icons.Outlined.ExpandMore,
-                        contentDescription = stringResource(R.string.select),
-                    )
+                trailing = { modifier ->
+                    IconButton(modifier = modifier, onClick = { showBackupSheet = true }) {
+                        Icon(
+                            Icons.Outlined.ExpandMore,
+                            contentDescription = stringResource(R.string.select),
+                        )
+                    }
                 },
             )
         }

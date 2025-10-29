@@ -33,7 +33,7 @@ constructor(
                     },
                     tunnelManager.activeTunnels.map { it.containsKey(tunnelId) },
                 ) { tunnel, active ->
-                    state.copy(tunnel = tunnel, isActive = active, isLoading = tunnel == null)
+                    state.copy(tunnel = tunnel, isActive = active, isLoading = false)
                 }
                 .collect { reduce { it } }
         }
@@ -49,9 +49,14 @@ constructor(
         tunnelRepository.updatePrimaryTunnel(update)
     }
 
-    fun toggleIpv4Preferred() = intent {
-        val latestTunnel = state.tunnel ?: return@intent
-        tunnelRepository.save(latestTunnel.copy(isIpv4Preferred = !latestTunnel.isIpv4Preferred))
+    fun setIpv4Preferred(to: Boolean) = intent {
+        val tunnel = state.tunnel ?: return@intent
+        tunnelRepository.save(tunnel.copy(isIpv4Preferred = to))
+    }
+
+    fun setMetered(to: Boolean) = intent {
+        val tunnel = state.tunnel ?: return@intent
+        tunnelRepository.save(tunnel.copy(isMetered = to))
     }
 
     @AssistedFactory

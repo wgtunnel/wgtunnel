@@ -19,6 +19,7 @@ fun Entity.toDomain(): Domain =
         isIpv4Preferred = isIpv4Preferred,
         position = position,
         autoTunnelApps = autoTunnelApps,
+        isMetered = isMetered,
     )
 
 fun Domain.toEntity(): Entity =
@@ -37,4 +38,5 @@ fun Domain.toEntity(): Entity =
         isIpv4Preferred = isIpv4Preferred,
         position = position,
         autoTunnelApps = autoTunnelApps,
+        isMetered = isMetered,
     )

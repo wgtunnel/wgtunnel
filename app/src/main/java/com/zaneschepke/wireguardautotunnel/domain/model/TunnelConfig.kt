@@ -27,6 +27,7 @@ data class TunnelConfig(
     val isIpv4Preferred: Boolean = true,
     val position: Int = 0,
     val autoTunnelApps: Set<String> = setOf(),
+    val isMetered: Boolean = true,
 ) {
 
     override fun equals(other: Any?): Boolean {
@@ -42,7 +43,8 @@ data class TunnelConfig(
             pingTarget == other.pingTarget &&
             restartOnPingFailure == other.restartOnPingFailure &&
             tunnelNetworks == other.tunnelNetworks &&
-            isIpv4Preferred == other.isIpv4Preferred
+            isIpv4Preferred == other.isIpv4Preferred &&
+            isMetered == other.isMetered
     }
 
     override fun hashCode(): Int {
@@ -65,7 +67,11 @@ data class TunnelConfig(
         return configFromWgQuick(wgQuick)
     }
 
-    fun copyWithGlobalValues(globalTunnel: TunnelConfig): TunnelConfig {
+    fun copyWithGlobalValues(
+        globalTunnel: TunnelConfig,
+        includeDns: Boolean,
+        includeSpitTunneling: Boolean,
+    ): TunnelConfig {
         val existingConfig = toAmConfig()
         val globalConfig = globalTunnel.toAmConfig()
 
@@ -114,62 +120,14 @@ data class TunnelConfig(
                 setPreDown(existingConfig.`interface`.preDown)
                 setPostDown(existingConfig.`interface`.postDown)
 
-                globalConfig.`interface`.mtu.ifPresent { setMtu(it) }
-                if (globalConfig.`interface`.dnsServers.isNotEmpty()) {
+                if (includeDns) {
                     setDnsServers(globalConfig.`interface`.dnsServers)
-                }
-                if (globalConfig.`interface`.dnsSearchDomains.isNotEmpty()) {
                     setDnsSearchDomains(globalConfig.`interface`.dnsSearchDomains)
                 }
-
-                if (globalConfig.`interface`.excludedApplications.isNotEmpty()) {
+                if (includeSpitTunneling) {
                     setExcludedApplications(globalConfig.`interface`.excludedApplications)
-                }
-                if (!globalConfig.`interface`.includedApplications.isEmpty()) {
                     setIncludedApplications(globalConfig.`interface`.includedApplications)
                 }
-
-                if (globalConfig.`interface`.preUp.isNotEmpty()) {
-                    setPreUp(globalConfig.`interface`.preUp)
-                }
-                if (globalConfig.`interface`.postUp.isNotEmpty()) {
-                    setPostUp(globalConfig.`interface`.postUp)
-                }
-                if (globalConfig.`interface`.preDown.isNotEmpty()) {
-                    setPreDown(globalConfig.`interface`.preDown)
-                }
-                if (globalConfig.`interface`.postDown.isNotEmpty()) {
-                    setPostDown(globalConfig.`interface`.postDown)
-                }
-
-                globalConfig.`interface`.junkPacketCount.ifPresent { setJunkPacketCount(it) }
-                globalConfig.`interface`.junkPacketMinSize.ifPresent { setJunkPacketMinSize(it) }
-                globalConfig.`interface`.junkPacketMaxSize.ifPresent { setJunkPacketMaxSize(it) }
-                globalConfig.`interface`.initPacketJunkSize.ifPresent { setInitPacketJunkSize(it) }
-                globalConfig.`interface`.responsePacketJunkSize.ifPresent {
-                    setResponsePacketJunkSize(it)
-                }
-                globalConfig.`interface`.initPacketMagicHeader.ifPresent {
-                    setInitPacketMagicHeader(it)
-                }
-                globalConfig.`interface`.responsePacketMagicHeader.ifPresent {
-                    setResponsePacketMagicHeader(it)
-                }
-                globalConfig.`interface`.underloadPacketMagicHeader.ifPresent {
-                    setUnderloadPacketMagicHeader(it)
-                }
-                globalConfig.`interface`.transportPacketMagicHeader.ifPresent {
-                    setTransportPacketMagicHeader(it)
-                }
-                globalConfig.`interface`.i1.ifPresent { setI1(it) }
-                globalConfig.`interface`.i2.ifPresent { setI2(it) }
-                globalConfig.`interface`.i3.ifPresent { setI3(it) }
-                globalConfig.`interface`.i4.ifPresent { setI4(it) }
-                globalConfig.`interface`.i5.ifPresent { setI5(it) }
-                globalConfig.`interface`.j1.ifPresent { setJ1(it) }
-                globalConfig.`interface`.j2.ifPresent { setJ2(it) }
-                globalConfig.`interface`.j3.ifPresent { setJ3(it) }
-                globalConfig.`interface`.itime.ifPresent { setItime(it) }
             }
         val newInterface = newInterfaceBuilder.build()
 

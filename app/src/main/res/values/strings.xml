@@ -375,7 +375,6 @@
         the Play Store version of this app. Please browse the project\'s webpages to find where to donate.
     </string>
     <string name="delete_active_message">Cannot delete active tunnel.</string>
-    <string name="global_overrides">Global overrides</string>
     <string name="back">Back</string>
     <string name="configuration">Configuration</string>
     <string name="about">About</string>
@@ -418,4 +417,9 @@
     <string name="kernel_name_dots">Tunnel name cannot be \'.\' or \'..\' in kernel mode</string>
     <string name="kernel_name_special_characters">Tunnel name in kernel mode cannot have spaces or certain special characters (allowed: alphanumeric, _, =, +, ., -)</string>
     <string name="tunnel_running_name_message">Name unchangeable while tunnel is active.</string>
+    <string name="metered_tunnel">Metered tunnel</string>
+    <string name="lockdown_settings">Lockdown settings</string>
+    <string name="unavailable_in_mode">Unavailable in this app mode</string>
+    <string name="global_split_tunneling">Global split tunneling</string>
+    <string name="global_dns_servers">Global DNS servers</string>
 </resources>

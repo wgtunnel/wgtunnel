@@ -10,7 +10,7 @@ fun Entity.toDomain(): Domain =
         isShortcutsEnabled = isShortcutsEnabled,
         isRestoreOnBootEnabled = isRestoreOnBootEnabled,
         isMultiTunnelEnabled = isMultiTunnelEnabled,
-        isTunnelGlobalsEnabled = isTunnelGlobalsEnabled,
+        isGlobalSplitTunnelEnabled = isGlobalSplitTunnelEnabled,
         appMode = appMode,
         theme = Theme.valueOf(theme.uppercase()),
         locale = locale,
@@ -18,8 +18,6 @@ fun Entity.toDomain(): Domain =
         isRemoteControlEnabled = isRemoteControlEnabled,
         isPinLockEnabled = isPinLockEnabled,
         isAlwaysOnVpnEnabled = isAlwaysOnVpnEnabled,
-        isLanOnKillSwitchEnabled = isLanOnKillSwitchEnabled,
-        customSplitPackages = customSplitPackages,
     )
 
 fun Domain.toEntity(): Entity =
@@ -28,7 +26,7 @@ fun Domain.toEntity(): Entity =
         isShortcutsEnabled = isShortcutsEnabled,
         isRestoreOnBootEnabled = isRestoreOnBootEnabled,
         isMultiTunnelEnabled = isMultiTunnelEnabled,
-        isTunnelGlobalsEnabled = isTunnelGlobalsEnabled,
+        isGlobalSplitTunnelEnabled = isGlobalSplitTunnelEnabled,
         appMode = appMode,
         theme = theme.name,
         locale = locale,
@@ -36,6 +34,4 @@ fun Domain.toEntity(): Entity =
         isRemoteControlEnabled = isRemoteControlEnabled,
         isPinLockEnabled = isPinLockEnabled,
         isAlwaysOnVpnEnabled = isAlwaysOnVpnEnabled,
-        isLanOnKillSwitchEnabled = isLanOnKillSwitchEnabled,
-        customSplitPackages = customSplitPackages,
     )

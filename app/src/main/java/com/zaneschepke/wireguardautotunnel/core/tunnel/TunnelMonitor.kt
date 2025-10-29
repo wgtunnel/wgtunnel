@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
+import android.os.PowerManager
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
@@ -31,6 +32,7 @@ constructor(
     private val networkMonitor: NetworkMonitor,
     private val networkUtils: NetworkUtils,
     private val logReader: LogReader,
+    private val powerManager: PowerManager,
 ) {
 
     @OptIn(FlowPreview::class)
@@ -74,7 +76,7 @@ constructor(
                     else -> null
                 }
             }
-            .distinctUntilChangedBy { it.isHealthy } // Only emit when health changes
+            .distinctUntilChangedBy { it.isHealthy }
             .collect { logHealthState ->
                 Timber.d("Tunnel log health updated for ${tunnelConfig.name}: $logHealthState")
                 updateTunnelStatus(tunnelConfig.id, null, null, null, logHealthState)
@@ -199,6 +201,7 @@ constructor(
                                     }
 
                             val attemptTime = System.currentTimeMillis()
+                            val timeout = settings.tunnelPingTimeoutSeconds?.toMillis() ?: 5000L
                             runCatching {
                                     withTimeout(
                                         settings.tunnelPingTimeoutSeconds?.toMillis() ?: 5000L
@@ -270,20 +273,28 @@ constructor(
 
                 while (isActive) {
                     ensureActive()
-                    if (isNetworkConnected.value) {
-                        performPing()
-                    } else {
-                        pingStatsFlow.update { current ->
-                            current.mapValues { entry ->
-                                entry.value.copy(
-                                    isReachable = false,
-                                    failureReason = FailureReason.NoConnectivity,
-                                    lastPingAttemptMillis = System.currentTimeMillis(),
-                                )
+                    if (!powerManager.isDeviceIdleMode) {
+                        if (isNetworkConnected.value) {
+                            performPing()
+                        } else {
+                            pingStatsFlow.update { current ->
+                                current.mapValues { entry ->
+                                    entry.value.copy(
+                                        isReachable = false,
+                                        failureReason = FailureReason.NoConnectivity,
+                                        lastPingAttemptMillis = System.currentTimeMillis(),
+                                    )
+                                }
                             }
+                            ensureActive()
+                            updateTunnelStatus(
+                                tunnelConfig.id,
+                                null,
+                                null,
+                                pingStatsFlow.value,
+                                null,
+                            )
                         }
-                        ensureActive()
-                        updateTunnelStatus(tunnelConfig.id, null, null, pingStatsFlow.value, null)
                     }
                     delay(settings.tunnelPingIntervalSeconds.toMillis())
                 }
@@ -300,9 +311,11 @@ constructor(
     ) = coroutineScope {
         while (isActive) {
             ensureActive()
-            val stats = getStatistics(tunnelId)
-            ensureActive()
-            updateTunnelStatus(tunnelId, null, stats, null, null)
+            if (!powerManager.isDeviceIdleMode) {
+                val stats = getStatistics(tunnelId)
+                ensureActive()
+                updateTunnelStatus(tunnelId, null, stats, null, null)
+            }
             delay(STATS_DELAY)
         }
     }

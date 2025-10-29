@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -12,25 +13,37 @@ import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
 import com.zaneschepke.wireguardautotunnel.data.model.DnsProvider
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
+import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
+import com.zaneschepke.wireguardautotunnel.util.extensions.capitalize
 import com.zaneschepke.wireguardautotunnel.viewmodel.DnsViewModel
+import java.util.*
 
 @Composable
 fun DnsSettingsScreen(viewModel: DnsViewModel = hiltViewModel()) {
     val context = LocalContext.current
+    val navController = LocalNavController.current
     val dnsUiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     if (dnsUiState.isLoading) return
+    val locale = remember { Locale.getDefault() }
 
     Column(
         horizontalAlignment = Alignment.Start,
@@ -38,6 +51,7 @@ fun DnsSettingsScreen(viewModel: DnsViewModel = hiltViewModel()) {
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
     ) {
         Column {
+            GroupLabel(stringResource(R.string.endpoint), Modifier.padding(horizontal = 16.dp))
             LabelledDropdown(
                 title = stringResource(R.string.dns_protocol),
                 leading = { Icon(Icons.Outlined.Dns, contentDescription = null) },
@@ -58,6 +72,28 @@ fun DnsSettingsScreen(viewModel: DnsViewModel = hiltViewModel()) {
                     optionToString = { it?.name ?: DnsProvider.CLOUDFLARE.name },
                 )
             }
+        }
+        Column {
+            GroupLabel(
+                stringResource(R.string.tunnel).capitalize(locale),
+                Modifier.padding(horizontal = 16.dp),
+            )
+            SurfaceRow(
+                leading = {
+                    Icon(ImageVector.vectorResource(R.drawable.host), contentDescription = null)
+                },
+                title = stringResource(R.string.global_dns_servers),
+                trailing = { modifier ->
+                    SwitchWithDivider(
+                        checked = dnsUiState.dnsSettings.isGlobalTunnelDnsEnabled,
+                        onClick = { viewModel.setGlobalTunnelDnsEnabled(it) },
+                        modifier = modifier,
+                    )
+                },
+                onClick = {
+                    dnsUiState.globalConfig?.let { navController.push(Route.ConfigGlobal(it.id)) }
+                },
+            )
         }
     }
 }

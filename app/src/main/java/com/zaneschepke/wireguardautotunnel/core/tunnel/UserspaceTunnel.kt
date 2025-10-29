@@ -1,19 +1,11 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
-import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
-import com.zaneschepke.wireguardautotunnel.domain.events.DnsFailure
-import com.zaneschepke.wireguardautotunnel.domain.events.InvalidConfig
-import com.zaneschepke.wireguardautotunnel.domain.events.ServiceNotRunning
-import com.zaneschepke.wireguardautotunnel.domain.events.UnknownError
-import com.zaneschepke.wireguardautotunnel.domain.events.VpnUnauthorized
-import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
+import com.zaneschepke.wireguardautotunnel.domain.events.*
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
-import com.zaneschepke.wireguardautotunnel.domain.repository.DnsSettingsRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.AmneziaStatistics
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.asAmBackendMode
@@ -21,7 +13,6 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.asBackendMode
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTunnelState
 import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendCoreException
 import java.io.IOException
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlinx.coroutines.*
@@ -33,13 +24,7 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.update
 import org.amnezia.awg.backend.Backend
 import org.amnezia.awg.backend.BackendException
-import org.amnezia.awg.backend.ProxyGoBackend
 import org.amnezia.awg.backend.Tunnel as AwgTunnel
-import org.amnezia.awg.config.Config
-import org.amnezia.awg.config.DnsSettings
-import org.amnezia.awg.config.proxy.HttpProxy
-import org.amnezia.awg.config.proxy.Proxy
-import org.amnezia.awg.config.proxy.Socks5Proxy
 import timber.log.Timber
 
 class UserspaceTunnel
@@ -47,9 +32,8 @@ class UserspaceTunnel
 constructor(
     @ApplicationScope applicationScope: CoroutineScope,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
-    private val proxySettingsRepository: ProxySettingsRepository,
-    private val dnsSettingsRepository: DnsSettingsRepository,
     private val backend: Backend,
+    private val runConfigHelper: RunConfigHelper,
 ) : BaseTunnel(applicationScope, ioDispatcher) {
 
     private val runtimeTunnels = ConcurrentHashMap<Int, AwgTunnel>()
@@ -67,63 +51,17 @@ constructor(
         try {
             withTimeout(STARTUP_TIMEOUT_MS) {
                 updateTunnelStatus(tunnelConfig.id, TunnelStatus.Starting)
-
-                val proxies: List<Proxy> =
-                    when (backend) {
-                        is ProxyGoBackend -> {
-                            val proxySettings = proxySettingsRepository.getProxySettings()
-                            Timber.d("Adding proxy configs")
-                            buildList {
-                                if (proxySettings.socks5ProxyEnabled) {
-                                    add(
-                                        Socks5Proxy(
-                                            proxySettings.socks5ProxyBindAddress
-                                                ?: ProxySettings.DEFAULT_SOCKS_BIND_ADDRESS,
-                                            proxySettings.proxyUsername,
-                                            proxySettings.proxyPassword,
-                                        )
-                                    )
-                                }
-                                if (proxySettings.httpProxyEnabled) {
-                                    add(
-                                        HttpProxy(
-                                            proxySettings.httpProxyBindAddress
-                                                ?: ProxySettings.DEFAULT_HTTP_BIND_ADDRESS,
-                                            proxySettings.proxyUsername,
-                                            proxySettings.proxyPassword,
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                        else -> emptyList()
-                    }
-                val setting = dnsSettingsRepository.getDnsSettings()
-                val config = tunnelConfig.toAmConfig()
-                val updatedConfig =
-                    Config.Builder()
-                        .apply {
-                            setInterface(config.`interface`)
-                            addPeers(config.peers)
-                            addProxies(proxies)
-                            setDnsSettings(
-                                DnsSettings(
-                                    setting.dnsProtocol == DnsProtocol.DOH,
-                                    Optional.ofNullable(setting.dnsEndpoint),
-                                )
-                            )
-                        }
-                        .build()
-                backend.setState(runtimeTunnel, AwgTunnel.State.UP, updatedConfig)
+                val runConfig = runConfigHelper.buildAmRunConfig(tunnelConfig)
+                backend.setState(runtimeTunnel, AwgTunnel.State.UP, runConfig)
             }
-        } catch (e: TimeoutCancellationException) {
+        } catch (_: TimeoutCancellationException) {
             Timber.e("Startup timed out for ${tunnelConfig.name} (likely DNS hang)")
             errors.emit(tunnelConfig.name to DnsFailure())
             forceStopTunnel(tunnelConfig.id)
             close()
         } catch (e: BackendException) {
             close(e.toBackendCoreException())
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             close(InvalidConfig())
         } catch (e: Exception) {
             Timber.e(e, "Error while setting tunnel state")

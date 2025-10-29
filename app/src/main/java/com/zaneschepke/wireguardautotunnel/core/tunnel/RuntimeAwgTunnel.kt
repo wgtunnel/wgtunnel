@@ -16,4 +16,6 @@ class RuntimeAwgTunnel(
     }
 
     override fun isIpv4ResolutionPreferred() = tunnelConfig.isIpv4Preferred
+
+    override fun isMetered() = tunnelConfig.isMetered
 }

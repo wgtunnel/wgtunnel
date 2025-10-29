@@ -94,7 +94,7 @@ fun TunnelList(
                     if (sharedState.selectedTunnels.isNotEmpty()) {
                         viewModel.toggleSelectedTunnel(tunnel.id)
                     } else {
-                        navController.push(Route.TunnelOptions(tunnel.id))
+                        navController.push(Route.TunnelSettings(tunnel.id))
                         viewModel.clearSelectedTunnels()
                     }
                 },

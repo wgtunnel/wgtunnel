@@ -23,7 +23,6 @@ class RoomProxySettingsRepository(
     override val flow =
         proxySettingsDao
             .getProxySettingsFlow()
-            .flowOn(ioDispatcher)
             .map { (it ?: Entity()).toDomain() }
             .flowOn(ioDispatcher)
 

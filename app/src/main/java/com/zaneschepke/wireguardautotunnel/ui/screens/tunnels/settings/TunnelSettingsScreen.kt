@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.tunneloptions
+package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.CallSplit
+import androidx.compose.material.icons.outlined.DataUsage
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
@@ -33,13 +34,13 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
-import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.tunneloptions.components.QrCodeDialog
+import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.components.QrCodeDialog
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
-fun TunnelOptionsScreen(viewModel: TunnelViewModel) {
+fun TunnelSettingsScreen(viewModel: TunnelViewModel) {
     val navController = LocalNavController.current
     val sharedViewModel = LocalSharedVm.current
 
@@ -123,10 +124,18 @@ fun TunnelOptionsScreen(viewModel: TunnelViewModel) {
                 trailing = {
                     ScaledSwitch(
                         checked = !tunnel.isIpv4Preferred,
-                        onClick = { viewModel.toggleIpv4Preferred() },
+                        onClick = { viewModel.setIpv4Preferred(!it) },
                     )
                 },
-                onClick = { viewModel.toggleIpv4Preferred() },
+                onClick = { viewModel.setIpv4Preferred(!tunnel.isIpv4Preferred) },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.DataUsage, contentDescription = null) },
+                title = stringResource(R.string.metered_tunnel),
+                trailing = {
+                    ScaledSwitch(checked = tunnel.isMetered, onClick = { viewModel.setMetered(it) })
+                },
+                onClick = { viewModel.setMetered(!tunnel.isMetered) },
             )
         }
     }

@@ -8,6 +8,7 @@ import com.zaneschepke.wireguardautotunnel.data.DataStoreManager
 import com.zaneschepke.wireguardautotunnel.data.DatabaseCallback
 import com.zaneschepke.wireguardautotunnel.data.dao.*
 import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_23_24
+import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_25_26
 import com.zaneschepke.wireguardautotunnel.data.network.GitHubApi
 import com.zaneschepke.wireguardautotunnel.data.network.KtorClient
 import com.zaneschepke.wireguardautotunnel.data.network.KtorGitHubApi
@@ -56,6 +57,7 @@ class RepositoryModule {
                 context.getString(R.string.db_name),
             )
             .addMigrations(MIGRATION_23_24(dataStoreManager.dataStore))
+            .addMigrations(MIGRATION_25_26)
             .fallbackToDestructiveMigration(true)
             .addCallback(callback)
             .build()
@@ -65,6 +67,12 @@ class RepositoryModule {
     @Provides
     fun provideSettingsDoa(appDatabase: AppDatabase): GeneralSettingsDao {
         return appDatabase.generalSettingsDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLockdownDoa(appDatabase: AppDatabase): LockdownSettingsDao {
+        return appDatabase.lockdownSettingsDao()
     }
 
     @Singleton
@@ -104,6 +112,15 @@ class RepositoryModule {
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
     ): TunnelRepository {
         return RoomTunnelRepository(tunnelConfigDao, ioDispatcher)
+    }
+
+    @Singleton
+    @Provides
+    fun provideLockdownSettingsRepository(
+        lockdownSettingsDao: LockdownSettingsDao,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
+    ): LockdownSettingsRepository {
+        return RoomLockdownSettingsRepository(lockdownSettingsDao, ioDispatcher)
     }
 
     @Singleton
