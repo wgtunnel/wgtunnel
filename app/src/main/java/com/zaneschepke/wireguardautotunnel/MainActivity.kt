@@ -37,6 +37,7 @@ import com.zaneschepke.wireguardautotunnel.data.AppDatabase
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
@@ -87,16 +88,17 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.SplitTunnelViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import de.raphaelebner.roomdatabasebackup.core.RoomBackup
-import java.util.*
-import javax.inject.Inject
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import xyz.teamgravity.pin_lock_compose.PinManager
+import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var appStateRepository: AppStateRepository
+    @Inject lateinit var tunnelRepository: TunnelRepository
     @Inject lateinit var appDatabase: AppDatabase
 
     private lateinit var roomBackup: RoomBackup
@@ -447,6 +449,8 @@ class MainActivity : AppCompatActivity() {
 
     fun performBackup() =
         lifecycleScope.launch {
+            // reset active tuns before backup to prevent trying to start them without permission on restore
+            tunnelRepository.resetActiveTunnels()
             roomBackup
                 .database(appDatabase)
                 .backupLocation(RoomBackup.BACKUP_FILE_LOCATION_CUSTOM_DIALOG)
