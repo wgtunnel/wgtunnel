@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.ui.common.button
 
+import android.view.KeyEvent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -16,10 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.theme.Disabled
 
 @Composable
@@ -29,13 +34,14 @@ fun SurfaceRow(
     onClick: (() -> Unit)? = null,
     description: @Composable (() -> Unit)? = null,
     expandedContent: @Composable (() -> Unit)? = null,
-    onLongClick: () -> Unit = {},
+    onLongClick: (() -> Unit)? = null,
     enabled: Boolean = true,
     selected: Boolean = false,
     leading: @Composable (() -> Unit)? = null,
     trailing: @Composable ((Modifier) -> Unit)? = null,
 ) {
     val density = LocalDensity.current
+    val isTv = LocalIsAndroidTV.current
     var leadingPadding by remember { mutableStateOf(0.dp) }
     val interactionSource = remember { MutableInteractionSource() }
     val mainFocusRequester = remember { FocusRequester() }
@@ -62,7 +68,20 @@ fun SurfaceRow(
         ) {
             Row(
                 modifier =
-                    Modifier.focusRequester(mainFocusRequester)
+                    Modifier.onKeyEvent { event ->
+                            if (onLongClick == null || isTv) {
+                                if (
+                                    event.key == Key.DirectionCenter &&
+                                        event.nativeKeyEvent.action == KeyEvent.ACTION_DOWN
+                                ) {
+                                    // Consume the down event to prevent the default long press
+                                    // behavior
+                                    return@onKeyEvent true
+                                }
+                            }
+                            false
+                        }
+                        .focusRequester(mainFocusRequester)
                         .focusProperties {
                             if (onClick != null) {
                                 right = trailingFocusRequester

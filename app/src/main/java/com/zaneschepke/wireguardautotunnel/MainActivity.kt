@@ -88,11 +88,11 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.SplitTunnelViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import de.raphaelebner.roomdatabasebackup.core.RoomBackup
+import java.util.*
+import javax.inject.Inject
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import xyz.teamgravity.pin_lock_compose.PinManager
-import java.util.*
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -449,7 +449,8 @@ class MainActivity : AppCompatActivity() {
 
     fun performBackup() =
         lifecycleScope.launch {
-            // reset active tuns before backup to prevent trying to start them without permission on restore
+            // reset active tuns before backup to prevent trying to start them without permission on
+            // restore
             tunnelRepository.resetActiveTunnels()
             roomBackup
                 .database(appDatabase)
