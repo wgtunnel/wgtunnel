@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -26,6 +27,15 @@ android {
 
     // fix okhttp proguard issue
     packaging { resources { pickFirsts.add("okhttp3/internal/publicsuffix/publicsuffixes.gz") } }
+
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a")
+            isUniversalApk = true
+        }
+    }
 
     defaultConfig {
         applicationId = Constants.APP_ID
@@ -69,7 +79,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            signingConfig = signingConfigs.getByName(Constants.RELEASE)
+            signingConfig = signingConfigs.getByName("debug")
             resValue("string", "provider", "\"${Constants.APP_NAME}.provider\"")
         }
 
@@ -128,19 +138,33 @@ android {
         allowedLicenseUrls().forEach { allowUrl(it) }
     }
 
-    applicationVariants.all {
+    android.applicationVariants.all {
         val variant = this
-        variant.outputs
-            .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
-            .forEach { output ->
-                val outputFileName =
-                    if (variant.flavorName == "fdroid" && variant.buildType.name == "release") {
-                        "${Constants.APP_NAME}-fdroid-release-${variant.versionName}.apk"
-                    } else {
-                        "${Constants.APP_NAME}-${variant.flavorName}-v${variant.versionName}.apk"
-                    }
-                output.outputFileName = outputFileName
-            }
+
+        val abiNameMap =
+            mapOf(
+                "armeabi-v7a" to "armv7",
+                "arm64-v8a" to "arm64",
+                "x86" to "x86",
+                "x86_64" to "x64",
+            )
+
+        variant.outputs.all {
+            val output = this as BaseVariantOutputImpl
+            val abi = output.getFilter("ABI")
+
+            val baseFileName = "${Constants.APP_NAME}-${variant.flavorName}-v${variant.versionName}"
+
+            val outputFileName =
+                if (!abi.isNullOrEmpty()) {
+                    val shortAbiName = abiNameMap.getOrDefault(abi, abi)
+                    "${baseFileName}-${shortAbiName}.apk"
+                } else {
+                    "${baseFileName}.apk"
+                }
+
+            output.outputFileName = outputFileName
+        }
     }
 }
 
