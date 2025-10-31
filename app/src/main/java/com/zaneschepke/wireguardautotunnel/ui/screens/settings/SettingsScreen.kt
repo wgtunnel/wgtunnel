@@ -212,11 +212,12 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                             )
                         }
                     } else null,
-                trailing = {
+                trailing = { modifier ->
                     SwitchWithDivider(
                         checked = uiState.monitoring.isPingEnabled,
                         onClick = { viewModel.setPingEnabled(it) },
                         enabled = !sharedUiState.proxyEnabled,
+                        modifier = modifier,
                     )
                 },
                 onClick = { navController.push(Route.TunnelMonitoring) },

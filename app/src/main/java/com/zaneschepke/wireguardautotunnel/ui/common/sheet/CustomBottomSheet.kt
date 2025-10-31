@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 
 @Composable
 fun SheetOption(
@@ -50,9 +51,12 @@ fun SheetOption(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomBottomSheet(options: List<SheetOption>, onDismiss: () -> Unit) {
+    val isTv = LocalIsAndroidTV.current
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = isTv)
     ModalBottomSheet(
         containerColor = MaterialTheme.colorScheme.surface,
         onDismissRequest = onDismiss,
+        sheetState = sheetState,
     ) {
         options.forEachIndexed { index, option ->
             SheetOption(option.label, option.leadingIcon, option.onClick, option.selected)

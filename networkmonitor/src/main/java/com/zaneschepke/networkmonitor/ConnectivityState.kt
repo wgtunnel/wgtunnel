@@ -16,7 +16,10 @@ data class WifiState(
     val securityType: WifiSecurityType? = null,
     val locationPermissionsGranted: Boolean,
     val locationServicesEnabled: Boolean,
-)
+) {
+    override fun toString(): String =
+        "connected=$connected, ssid=${if(ssid == AndroidNetworkMonitor.ANDROID_UNKNOWN_SSID || ssid == null) ssid else ssid.first() + "..."} securityType=$securityType, locationPermissionsGranted=$locationPermissionsGranted"
+}
 
 data class Permissions(
     val locationServicesEnabled: Boolean = false,

@@ -419,7 +419,7 @@ class AndroidNetworkMonitor(
                         cellularConnected = cellularConnected,
                         ethernetConnected = ethernetConnected,
                     )
-                    .also { Timber.d("Connectivity Status: $it") }
+                    .also { Timber.i("Connectivity Status: $it") }
             }
             .scan(
                 ConnectivityState(
