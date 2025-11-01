@@ -318,18 +318,6 @@ constructor(
             proxyUserspaceTunnel.setBackendMode(BackendMode.Inactive)
     }
 
-    private fun isVpnAuthorized(
-        mode: AppMode,
-        hasVpnPermission: () -> Boolean = { serviceManager.hasVpnPermission() },
-    ): Boolean {
-        return when (mode) {
-            AppMode.VPN,
-            AppMode.LOCK_DOWN -> hasVpnPermission()
-            AppMode.KERNEL,
-            AppMode.PROXY -> true
-        }
-    }
-
     suspend fun handleRestore() =
         withContext(ioDispatcher) {
             val settings = settingsRepository.getGeneralSettings()
@@ -337,19 +325,19 @@ constructor(
             val tunnels = tunnelsRepository.getAll()
             if (autoTunnelSettings.isAutoTunnelEnabled)
                 return@withContext restoreAutoTunnel(autoTunnelSettings)
-            if (isVpnAuthorized(settings.appMode)) {
-                when (val mode = settings.appMode) {
+            if (settings.appMode == AppMode.LOCK_DOWN) handleLockDownModeInit()
+            if (tunnels.any { it.isActive }) {
+                if (settings.appMode == AppMode.VPN && !serviceManager.hasVpnPermission())
+                    return@withContext localErrorEvents.emit(null to NotAuthorized())
+                when (settings.appMode) {
                     AppMode.VPN,
                     AppMode.PROXY,
                     AppMode.LOCK_DOWN -> {
-                        if (mode == AppMode.LOCK_DOWN) handleLockDownModeInit()
                         tunnels.firstOrNull { it.isActive }?.let { startTunnel(it) }
                     }
                     AppMode.KERNEL ->
                         tunnels.filter { it.isActive }.forEach { conf -> startTunnel(conf) }
                 }
-            } else {
-                localErrorEvents.emit(null to NotAuthorized())
             }
         }
 
@@ -367,17 +355,15 @@ constructor(
                 return@withContext restoreAutoTunnel(autoTunnelSettings)
             if (settings.isRestoreOnBootEnabled) {
                 tunnelsRepository.resetActiveTunnels()
-                if (isVpnAuthorized(settings.appMode)) {
-                    when (val mode = settings.appMode) {
-                        AppMode.LOCK_DOWN -> handleLockDownModeInit()
-                        AppMode.KERNEL,
-                        AppMode.VPN,
-                        AppMode.PROXY -> Unit
-                    }
-                    defaultTunnel?.let { startTunnel(it) }
-                } else {
-                    localErrorEvents.emit(null to NotAuthorized())
+                when (settings.appMode) {
+                    AppMode.LOCK_DOWN -> handleLockDownModeInit()
+                    AppMode.VPN ->
+                        if (!serviceManager.hasVpnPermission())
+                            return@withContext localErrorEvents.emit(null to NotAuthorized())
+                    AppMode.KERNEL,
+                    AppMode.PROXY -> Unit
                 }
+                defaultTunnel?.let { startTunnel(it) }
             }
         }
 
