@@ -1,0 +1,7 @@
+Mida on meil uut:
+- Tunnelite järjestamise vea parandus
+- Parem asukohaõiguste töövoog
+- Asukohaõiguste tuvastamine ja teavitused
+- AndroidTV rakenduste tuvastamise parandus jagatud tunnelduse nimel
+- Parem tunnelduse monitooring ja taaskäivitustest taastamine
+- Veaparandus, kus uinunud seadme puhul tunnel loodi uuesti liiga aeglaselt

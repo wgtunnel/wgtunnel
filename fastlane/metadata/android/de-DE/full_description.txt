@@ -1,14 +1,15 @@
-Funktionen
-
-- Hinzufügen von Tunneln über .conf Dateien, Zip, Manuelle Eingabe oder QR Codes
-- Automatische Verbindung zum VPN basierend auf der WLAN-SSID, Ethernet und mobilen Daten
-- Geteilter Tunnel für Anwendungen mit Suche
-- Unterstützung für Wireguard Userspace- und Kernel-Modus
-- Amnezia Unterstützung für Benutzeroberflächen-Modus zur DPI/Zensurschutz
-- Always-On VPN Unterstützung
-- Export von Amnezia- und WireGuard-Tunnel ins Zip Format
-- Quicktiles zum aktivieren/deaktivieren der VPN Verbindung
-- Feste Shortcuts für den Primären Tunnel für automatische Integration
-- Absichtlicher Automationssupport für alle Tunnel
-- Automatischer Servicestart nach Geräteneustart
-- Akkuerhaltungsfunktionen
+- **Tunnel-Importmethoden**: Einfaches Hinzufügen von Tunneln mithilfe von .conf-Dateien, ZIP-Archiven, manueller Eingabe oder QR-Code-Scanning.
+- **Auto-Tunneling**: Automatische Aktivierung von Tunneln basierend auf WLAN-SSID, Ethernet-Verbindungen oder mobilen Datennetzen.
+- **Split-Tunneling**: Flexible Unterstützung für das Routing bestimmter Apps oder Datenverkehr über das VPN.
+- **WireGuard-Modi**: Vollständige Kompatibilität mit WireGuard sowohl in Kernel- als auch in Userspace-Implementierungen.
+- **AmneziaWG-Integration**: Userspace-Modus für AmneziaWG, der eine robuste Umgehung von Zensur ermöglicht.
+- **Always-On VPN**: Gewährleistet kontinuierlichen Schutz mit der Always-On VPN-Funktion von Android.
+- **Schnellsteuerung**: Kachel für Schnelleinstellungen und Verknüpfungen auf dem Startbildschirm für einfaches Umschalten des VPN.
+- **Automatisierungsunterstützung**: Intent-basierte Automatisierung zur Steuerung von Tunneln.
+- **Automatische Wiederherstellung**: Stellt nach einem Neustart des Geräts oder einer App-Aktualisierung nahtlos das automatische Tunneling und aktive Tunnel wieder her.
+- **Proxy-Optionen**: Integrierte HTTP- und SOCKS5-Proxy-Unterstützung innerhalb von Tunneln.
+- **Lockdown-Modus**: Benutzerdefinierter Notschalter für maximale Lecksicherheit und Sicherheit.
+- **Dynamische DNS-Verarbeitung**: Erkennt und aktualisiert DNS-Änderungen ohne Neustart des Tunnels.
+- **Überwachungstools**: Erweiterte Tunnelüberwachungsfunktionen zur Überwachung der Tunnel-Leistung.
+- **Android TV-Unterstützung**: Android TV-Unterstützung für sicheres Streaming und Surfen.
+- **Erweitertes DNS**: DNS-over-HTTPS-Unterstützung für die Auflösung von Tunnel-Endpunkten.

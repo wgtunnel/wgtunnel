@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="tunnels">Tunele</string>
     <string name="app_name">WG Tunnel</string>
@@ -49,7 +49,7 @@
     <string name="email_subject">Obsługa aplikacji WG Tunnel</string>
     <string name="auto">(Automatycznie)</string>
     <string name="add_from_clipboard">Dodaj ze schowka</string>
-    <string name="delete_tunnel_message">Czy na pewno chcesz usunąć ten tunel?</string>
+    <string name="delete_tunnel_message">Czy na pewno chcesz usunąć wybrane tunele?</string>
     <string name="tunnel_on_wifi">Tunel przez niezaufaną sieć Wi-Fi</string>
     <string name="dns_servers">Serwery DNS</string>
     <string name="error_file_extension">Plik nie jest w formacie .conf lub .zip</string>
@@ -325,4 +325,5 @@
     <string name="donation_closing">Moim marzeniem jest praca nad tym projektem na pełen etat.</string>
     <string name="donation_signoff">Z wdzięcznością,</string>
     <string name="google_donation_message">Niestety, ze względu na politykę Google, linki do darowizn nie są dozwolone w wersji tej aplikacji dostępnej w Google Play. Aby dowiedzieć się, gdzie można przekazać darowiznę, odwiedź strony projektu.</string>
+    <string name="delete_active_message">Nie można usunąć aktywnego tunelu.</string>
 </resources>

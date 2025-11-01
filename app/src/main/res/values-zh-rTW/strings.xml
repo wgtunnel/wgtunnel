@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="error_file_extension">檔案類型不是 .conf 或 .zip</string>
     <string name="language">語言</string>
@@ -31,7 +31,7 @@
     <string name="docs_description">閱讀文件</string>
     <string name="error_ssid_exists">SSID 已經存在</string>
     <string name="delete_tunnel">刪除隧道</string>
-    <string name="delete_tunnel_message">您確定要刪除此隧道？</string>
+    <string name="delete_tunnel_message">您確定要刪除所選的隧道？</string>
     <string name="yes">是</string>
     <string name="no_browser_detected">找不到瀏覽器</string>
     <string name="no_email_detected">找不到電子郵件應用程式</string>
@@ -54,7 +54,7 @@
     <string name="logs">日誌</string>
     <string name="dark">灰色</string>
     <string name="light">亮色</string>
-    <string name="donate">捐款</string>
+    <string name="donate">捐款給此專案</string>
     <string name="appearance">外觀</string>
     <string name="display_theme">主題</string>
     <string name="primary_tunnel">主要隧道</string>
@@ -174,7 +174,7 @@
     <string name="add_peer">新增端點</string>
     <string name="init_packet_magic_header">初始封包魔法標頭</string>
     <string name="response_packet_magic_header">回應封包魔法標頭</string>
-    <string name="always_on_message2">確保 永久連線的 VPN 已經關閉並再試一次</string>
+    <string name="always_on_message2">確保永久連線的 VPN 已經關閉並再試一次</string>
     <string name="enter_config_url">輸入組態 URL</string>
     <string name="error_download_failed">下載組態失敗</string>
     <string name="config_error">無效組態</string>
@@ -219,7 +219,7 @@
     <string name="ping_success_template">上次 ping 成功: %1$s</string>
     <string name="display_detailed_ping_stats">顯示詳細的 ping 統計資訊</string>
     <string name="fix">修復</string>
-    <string name="tunnel_item_description">1$s, %2$s, %3$s</string>
+    <string name="tunnel_item_description">%1$s, %2$s, %3$s</string>
     <string name="start">啟動</string>
     <string name="tunnel">隧道</string>
     <string name="location_permissions">位置存取權</string>

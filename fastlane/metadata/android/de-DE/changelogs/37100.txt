@@ -1,5 +1,0 @@
-Was ist neu?
-- Fehlerbehebung für statischen IPv6-Peer-Endpunkt
-- Fehler bei dynamischen Verknüpfungen behoben
-- Lokalisierungen
-- Fehler beim Hinzufügen von Peers behoben

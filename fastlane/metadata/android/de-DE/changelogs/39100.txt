@@ -1,6 +1,0 @@
-Was ist neu?
-- Behebung des DNS-Fehlers bei fehlender Tunnelkonnektivität
-- Fehler beim Starten des Tunnels behoben
-- Tunnel-QR-Code anzeigen hinzugefügt
-- Aufgelösten Endpunkt zur Statistik hinzugefügt
-- Verschiedene andere Fehlerkorrekturen

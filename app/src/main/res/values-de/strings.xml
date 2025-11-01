@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="error_file_extension">Datei ist keine .conf oder .zip</string>
@@ -55,7 +55,7 @@
     <string name="error_root_denied">Root Shell verweigert</string>
     <string name="error_no_file_explorer">Kein Datei-Explorer installiert</string>
     <string name="auto_tunnel_title">Auto-Tunnel Dienst</string>
-    <string name="delete_tunnel_message">Bist du sicher, dass du den Tunnel löschen möchtest?</string>
+    <string name="delete_tunnel_message">Bist du sicher, dass du die ausgewählten Tunnel löschen möchtest?</string>
     <string name="yes">Ja</string>
     <string name="all">alle</string>
     <string name="no_browser_detected">Keinen Browser erkannt</string>
@@ -324,4 +324,5 @@
     <string name="donation_closing">Es ist mein Traum, Vollzeit für dich an diesem Projekt zu arbeiten.</string>
     <string name="donation_signoff">Dankbar,</string>
     <string name="google_donation_message">Aufgrund der Richtlinien von Google sind Spendenlinks in der Play Store-Version dieser App leider nicht erlaubt. Bitte durchsuche die Webseiten des Projekts, um herauszufinden, wo du spenden kannst.</string>
+    <string name="delete_active_message">Aktiver Tunnel kann nicht gelöscht werden.</string>
 </resources>

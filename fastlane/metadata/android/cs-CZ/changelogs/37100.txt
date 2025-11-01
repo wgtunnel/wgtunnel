@@ -1,5 +1,0 @@
-Co je nového:
-- Oprava chyby statického koncového bodu IPv6 peer
-- Oprava chyby dynamických zkratek
-- Lokalizace
-- Oprava chyby přidávání peerů

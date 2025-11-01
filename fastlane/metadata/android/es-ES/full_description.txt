@@ -1,14 +1,15 @@
-Características
-
-- Añade túneles mediante archivo .conf, zip, entrada manual o código QR
-- Conexión automática a VPN basada en Wi-Fi SSID, ethernet o datos móviles
-- Túneles divididos por aplicación con búsqueda
-- Soporte de WireGuard para los modos kernel y espacio de usuario
-- Soporte de Amnezia para el modo de espacio de usuario para protección DPI/censura
-- Compatible con VPN siempre activa
-- Exportación de túneles Amnezia y WireGuard a zip
-- Compatibilidad con Quick Tile para alternar entre VPN
-- Soporte de accesos directos estáticos para el túnel principal para la integración de automatización.
-- Soporte de automatización de intenciones para todos los túneles
-- Reinicio automático del servicio tras reiniciar
-- Medidas de ahorro de la batería
+- **Métodos de Importación de Túneles**: Añade fácilmente túneles usando archivos `.conf`, archivos `.zip`, entrada manual o escaneo de códigos QR.
+- **Auto-Tunneling**: Activa automáticamente túneles según el SSID de la red Wi-Fi, conexiones Ethernet o redes de datos móviles.
+- **División de Túneles (Split Tunneling)**: Soporte flexible para enrutar aplicaciones o tráfico específicos a través de la VPN.
+- **Modos WireGuard**: Compatibilidad total con WireGuard en implementaciones tanto de kernel como de espacio de usuario.
+- **Integración con AmneziaWG**: Modo en espacio de usuario para AmneziaWG, ofreciendo una sólida evasión de censura.
+- **VPN Siempre Activa**: Garantiza protección continua con la función *Always-On VPN* de Android.
+- **Controles Rápidos**: Acceso desde el panel de Configuración Rápida y accesos directos en la pantalla de inicio para activar o desactivar la VPN fácilmente.
+- **Soporte de Automatización**: Automatización basada en *intents* para controlar túneles.
+- **Restauración Automática**: Restaura sin problemas el auto-tunneling y los túneles activos después de reinicios del dispositivo o actualizaciones de la aplicación.
+- **Opciones de Proxy**: Soporte integrado para proxy HTTP y SOCKS5 dentro de los túneles.
+- **Modo de Bloqueo (Lockdown Mode)**: Interruptor de seguridad personalizado para máxima prevención de fugas y mayor seguridad.
+- **Gestión Dinámica de DNS**: Detecta y actualiza cambios de DNS sin necesidad de reiniciar el túnel.
+- **Herramientas de Monitoreo**: Funciones avanzadas para monitorear el rendimiento de los túneles.
+- **Compatibilidad con Android TV**: Soporte para Android TV para navegación y streaming seguros.
+- **DNS Avanzado**: Soporte para DNS sobre HTTPS en la resolución de los endpoints del túnel.
