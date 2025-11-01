@@ -51,6 +51,7 @@ constructor(
         }
 
     fun saveConfigProxy(configProxy: ConfigProxy, tunnelName: String) = intent {
+        reduce { state.copy(showSaveModal = false) }
         if (state.unavailableNames.contains(tunnelName))
             return@intent postSideEffect(
                 GlobalSideEffect.Toast(StringValue.StringResource(R.string.tunnel_name_taken))
@@ -72,12 +73,15 @@ constructor(
                     }
                 if (tunnelConfig != null) {
                     tunnelRepository.save(tunnelConfig)
+
                     postSideEffect(
                         GlobalSideEffect.Toast(
                             StringValue.StringResource(R.string.config_changes_saved)
                         )
                     )
                     postSideEffect(GlobalSideEffect.PopBackStack)
+
+                    if (state.isRunning) tunnelManager.restartActiveTunnel(tunnelConfig.id)
                 }
             }
             .onFailure {
@@ -94,6 +98,10 @@ constructor(
 
     suspend fun postSideEffect(globalSideEffect: GlobalSideEffect) {
         globalEffectRepository.post(globalSideEffect)
+    }
+
+    fun setShowSaveModal(showSaveModal: Boolean) = intent {
+        reduce { state.copy(showSaveModal = showSaveModal) }
     }
 
     @AssistedFactory

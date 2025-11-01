@@ -38,6 +38,12 @@ constructor(
     fun setLockdownSettings(lockdownSettings: LockdownSettings) = intent {
         reduce { state.copy(showSaveModal = false) }
         lockdownSettingsRepository.upsert(lockdownSettings)
+
+        postSideEffect(GlobalSideEffect.PopBackStack)
+        postSideEffect(
+            GlobalSideEffect.Toast(StringValue.StringResource(R.string.config_changes_saved))
+        )
+
         tunnelManager.setBackendMode(BackendMode.Inactive)
         val allowedIps =
             if (lockdownSettings.bypassLan) TunnelConfig.LAN_BYPASS_ALLOWED_IPS else emptySet()
@@ -47,10 +53,6 @@ constructor(
                 isMetered = lockdownSettings.metered,
                 dualStack = lockdownSettings.dualStack,
             )
-        )
-        postSideEffect(GlobalSideEffect.PopBackStack)
-        postSideEffect(
-            GlobalSideEffect.Toast(StringValue.StringResource(R.string.config_changes_saved))
         )
     }
 

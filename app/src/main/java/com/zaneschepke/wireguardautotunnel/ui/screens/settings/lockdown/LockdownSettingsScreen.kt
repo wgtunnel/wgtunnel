@@ -43,6 +43,8 @@ fun LockdownSettingsScreen(viewModel: LockdownViewModel = hiltViewModel()) {
 
     val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
+    if (uiState.isLoading) return
+
     var metered by remember { mutableStateOf(uiState.lockdownSettings.metered) }
     var dualStack by remember { mutableStateOf(uiState.lockdownSettings.dualStack) }
     var bypassLan by remember { mutableStateOf(uiState.lockdownSettings.bypassLan) }
@@ -50,8 +52,6 @@ fun LockdownSettingsScreen(viewModel: LockdownViewModel = hiltViewModel()) {
     sharedViewModel.collectSideEffect {
         if (it is LocalSideEffect.SaveChanges) viewModel.setShowSaveModal(true)
     }
-
-    if (uiState.isLoading) return
 
     if (uiState.showSaveModal) {
         InfoDialog(

@@ -397,6 +397,46 @@ constructor(
         }
     }
 
+    suspend fun restartActiveTunnel(id: Int) =
+        withContext(ioDispatcher) {
+            val activeIds = activeTunnels.value.keys.toList()
+            if (activeIds.isEmpty()) return@withContext
+            if (!activeIds.contains(id)) return@withContext
+            val tunnel = tunnelsRepository.getById(id) ?: return@withContext
+            restartTunnel(tunnel)
+        }
+
+    suspend fun restartActiveTunnels() =
+        withContext(ioDispatcher) {
+            val activeIds = activeTunnels.value.keys.toList()
+            if (activeIds.isEmpty()) return@withContext
+
+            val tunnels = tunnelsRepository.getAll()
+            if (tunnels.isEmpty()) return@withContext
+
+            supervisorScope {
+                activeIds.forEach { id ->
+                    val tunnel =
+                        tunnels.find { it.id == id }
+                            ?: run {
+                                Timber.w("Tunnel config $id not found; skipping restart")
+                                return@forEach
+                            }
+                    restartTunnel(tunnel)
+                }
+            }
+        }
+
+    private suspend fun restartTunnel(tunnel: TunnelConfig) {
+        runCatching { stopTunnel(tunnel.id) }
+            .onFailure { e -> Timber.e(e, "Failed to stop tunnel ${tunnel.id} during restart") }
+
+        delay(RESTART_TUNNEL_DELAY)
+
+        runCatching { startTunnel(tunnel) }
+            .onFailure { e -> Timber.e(e, "Failed to restart tunnel ${tunnel.id}") }
+    }
+
     private suspend fun handleDynamicDnsMonitoring(
         activeTuns: Map<Int, TunnelState>,
         configs: List<TunnelConfig>,
@@ -513,5 +553,6 @@ constructor(
     companion object {
         const val BASE_BACKOFF = 30_000L
         const val MAX_BACKOFF_TIME = 300_000L
+        const val RESTART_TUNNEL_DELAY = 300L
     }
 }

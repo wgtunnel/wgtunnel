@@ -7,4 +7,5 @@ data class ConfigUiState(
     val isLoading: Boolean = true,
     val tunnel: TunnelConfig? = null,
     val isRunning: Boolean = false,
+    val showSaveModal: Boolean = false,
 )

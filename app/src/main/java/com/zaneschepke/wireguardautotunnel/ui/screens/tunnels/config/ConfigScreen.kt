@@ -5,14 +5,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
+import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.security.SecureScreenFromRecording
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components.AddPeerButton
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.components.InterfaceSection
@@ -21,33 +25,50 @@ import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.PeerProxy
 import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigViewModel
+import java.util.Locale
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun ConfigScreen(viewModel: ConfigViewModel) {
     val sharedViewModel = LocalSharedVm.current
 
-    val configUiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
-    if (configUiState.isLoading) return
+    if (uiState.isLoading) return
+
+    val locale = remember { Locale.getDefault() }
 
     var configProxy by remember {
-        mutableStateOf(
-            configUiState.tunnel?.let { ConfigProxy.from(it.toAmConfig()) } ?: ConfigProxy()
-        )
+        mutableStateOf(uiState.tunnel?.let { ConfigProxy.from(it.toAmConfig()) } ?: ConfigProxy())
     }
 
-    var tunnelName by remember { mutableStateOf(configUiState.tunnel?.name ?: "") }
+    var tunnelName by remember { mutableStateOf(uiState.tunnel?.name ?: "") }
     val isGlobalConfig = rememberSaveable { tunnelName == TunnelConfig.GLOBAL_CONFIG_NAME }
 
     val isTunnelNameTaken by
-        remember(tunnelName) {
-            derivedStateOf { configUiState.unavailableNames.contains(tunnelName) }
-        }
+        remember(tunnelName) { derivedStateOf { uiState.unavailableNames.contains(tunnelName) } }
 
     sharedViewModel.collectSideEffect { sideEffect ->
         if (sideEffect is LocalSideEffect.SaveChanges)
-            viewModel.saveConfigProxy(configProxy, tunnelName)
+            if (uiState.isRunning) viewModel.setShowSaveModal(true)
+            else viewModel.saveConfigProxy(configProxy, tunnelName)
+    }
+
+    if (uiState.showSaveModal) {
+        InfoDialog(
+            onDismiss = { viewModel.setShowSaveModal(false) },
+            onAttest = { viewModel.saveConfigProxy(configProxy, tunnelName) },
+            title = stringResource(R.string.save_changes),
+            body = {
+                Text(
+                    stringResource(
+                        R.string.restart_message_template,
+                        stringResource(R.string.tunnels).lowercase(locale),
+                    )
+                )
+            },
+            confirmText = stringResource(R.string._continue),
+        )
     }
 
     SecureScreenFromRecording()
@@ -60,7 +81,7 @@ fun ConfigScreen(viewModel: ConfigViewModel) {
         InterfaceSection(
             isGlobalConfig,
             configProxy = configProxy,
-            configUiState.isRunning,
+            uiState.isRunning,
             tunnelName,
             isTunnelNameTaken,
             onInterfaceChange = { configProxy = configProxy.copy(`interface` = it) },
