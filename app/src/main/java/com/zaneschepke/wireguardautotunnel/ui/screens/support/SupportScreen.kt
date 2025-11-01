@@ -74,6 +74,11 @@ fun SupportScreen(viewModel: SupportViewModel = hiltViewModel()) {
         Column {
             GroupLabel(stringResource(R.string.resources), Modifier.padding(horizontal = 16.dp))
             SurfaceRow(
+                leading = { Icon(Icons.Outlined.Favorite, contentDescription = null) },
+                title = stringResource(R.string.donate),
+                onClick = { navController.push(Route.Donate) },
+            )
+            SurfaceRow(
                 stringResource(R.string.docs_description),
                 onClick = { context.openWebUrl(context.getString(R.string.docs_url)) },
                 leading = { Icon(Icons.Outlined.Book, contentDescription = null) },
@@ -86,9 +91,11 @@ fun SupportScreen(viewModel: SupportViewModel = hiltViewModel()) {
                 trailing = { Icon(Icons.AutoMirrored.Outlined.Launch, null) },
             )
             SurfaceRow(
-                leading = { Icon(Icons.Outlined.Favorite, contentDescription = null) },
-                title = stringResource(R.string.donate),
-                onClick = { navController.push(Route.Donate) },
+                stringResource(R.string.translation),
+                onClick = { context.openWebUrl(context.getString(R.string.translation_url)) },
+                description = { DescriptionText(stringResource(R.string.help_translate)) },
+                leading = { Icon(Icons.Outlined.Translate, contentDescription = null) },
+                trailing = { Icon(Icons.AutoMirrored.Outlined.Launch, null) },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Balance, contentDescription = null) },
