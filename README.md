@@ -59,13 +59,11 @@ WG Tunnel is an alternative Android client for WireGuard and AmneziaWG, inspired
 
 </div>
 <div style="display: flex; flex-wrap: wrap; justify-content: left; gap: 10px;">
- <img label="Main" src="fastlane/metadata/android/en-US/images/phoneScreenshots/main_screen.png" width="200" />
- <img label="Settings" src="fastlane/metadata/android/en-US/images/phoneScreenshots/settings_screen.png" width="200" />
-  <img label="Auto" src="fastlane/metadata/android/en-US/images/phoneScreenshots/auto_screen.png" width="200" />
-  <img label="Config" src="fastlane/metadata/android/en-US/images/phoneScreenshots/config_screen.png" width="200" />
+    <img label="Main" src="fastlane/metadata/android/en-US/images/phoneScreenshots/main_screen.png" width="200"  alt="Main"/>
+    <img label="Config" src="fastlane/metadata/android/en-US/images/phoneScreenshots/config_screen.png" width="200"  alt="Config"/>
+    <img label="Settings" src="fastlane/metadata/android/en-US/images/phoneScreenshots/settings_screen.png" width="200"  alt="Settings"/>
+    <img label="Auto-tunnel" src="fastlane/metadata/android/en-US/images/phoneScreenshots/auto_screen.png" width="200"  alt="Auto-tunnel"/>
 </div>
-
-<div style="text-align: left;">
 
 ## Features
 
