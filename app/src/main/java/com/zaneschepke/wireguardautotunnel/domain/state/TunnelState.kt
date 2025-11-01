@@ -2,13 +2,12 @@ package com.zaneschepke.wireguardautotunnel.domain.state
 
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
-import org.amnezia.awg.crypto.Key
 
 data class TunnelState(
     val status: TunnelStatus = TunnelStatus.Down,
     val backendState: BackendMode = BackendMode.Inactive,
     val statistics: TunnelStatistics? = null,
-    val pingStates: Map<Key, PingState>? = null,
+    val pingStates: Map<String, PingState>? = null,
     val logHealthState: LogHealthState? = null,
 ) {
 
@@ -37,7 +36,9 @@ data class TunnelState(
 
         // Stats health if no logs or pings
         statistics?.let { stats ->
-            return if (stats.isTunnelStale()) Health.STALE else Health.HEALTHY
+            if (stats.isTunnelStale()) return Health.STALE
+            if (stats.rx() == 0L) return Health.UNKNOWN
+            return Health.HEALTHY
         }
 
         return Health.UNKNOWN

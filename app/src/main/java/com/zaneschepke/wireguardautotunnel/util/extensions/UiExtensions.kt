@@ -1,46 +1,23 @@
 package com.zaneschepke.wireguardautotunnel.util.extensions
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavDestination.Companion.hierarchy
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
-import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
+import com.zaneschepke.wireguardautotunnel.ui.theme.CoolGray
 import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
 import com.zaneschepke.wireguardautotunnel.ui.theme.Straw
-import kotlin.reflect.KClass
-
-@SuppressLint("RestrictedApi")
-fun <T : Route> NavBackStackEntry?.isCurrentRoute(cls: KClass<T>): Boolean {
-    return this?.destination?.hierarchy?.any { it.hasRoute(route = cls) } == true
-}
-
-@Composable
-inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(
-    navController: NavController
-): T {
-    val navGraphRoute = destination.parent?.route ?: return hiltViewModel<T>()
-    val parentEntry = remember(this) { navController.getBackStackEntry(navGraphRoute) }
-    return hiltViewModel(parentEntry)
-}
 
 fun WifiDetectionMethod.asTitleString(context: Context): String {
     return when (this) {
@@ -99,7 +76,7 @@ fun AppMode.asIcon(): ImageVector {
 
 fun TunnelState.Health.asColor(): Color {
     return when (this) {
-        TunnelState.Health.UNKNOWN -> Color.Gray
+        TunnelState.Health.UNKNOWN -> CoolGray
         TunnelState.Health.UNHEALTHY -> AlertRed
         TunnelState.Health.HEALTHY -> SilverTree
         TunnelState.Health.STALE -> Straw

@@ -7,25 +7,19 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationMonitor
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.core.worker.ServiceWorker
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.util.ReleaseTree
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.amnezia.awg.backend.GoBackend
 import timber.log.Timber
 
 @HiltAndroidApp
@@ -42,13 +36,9 @@ class WireGuardAutoTunnel : Application(), Configuration.Provider {
 
     @Inject @IoDispatcher lateinit var ioDispatcher: CoroutineDispatcher
 
-    @Inject lateinit var settingsRepository: GeneralSettingRepository
-    @Inject lateinit var tunnelsRepository: TunnelRepository
-    @Inject lateinit var appStateRepository: AppStateRepository
+    @Inject lateinit var monitoringRepository: MonitoringSettingsRepository
 
     @Inject lateinit var notificationMonitor: NotificationMonitor
-
-    @Inject lateinit var tunnelManager: TunnelManager
 
     override fun onCreate() {
         super.onCreate()
@@ -68,29 +58,14 @@ class WireGuardAutoTunnel : Application(), Configuration.Provider {
         }
 
         applicationScope.launch(ioDispatcher) {
-            launch { if (appStateRepository.isLocalLogsEnabled()) logReader.start() }
+            launch {
+                val monitoringSettings = monitoringRepository.getMonitoringSettings()
+                if (monitoringSettings.isLocalLogsEnabled) logReader.start()
+            }
             launch { notificationMonitor.handleApplicationNotifications() }
         }
 
-        GoBackend.setAlwaysOnCallback {
-            applicationScope.launch {
-                val settings = settingsRepository.get()
-                if (settings.isAlwaysOnVpnEnabled) {
-                    val tunnel = tunnelsRepository.getDefaultTunnel()
-                    tunnel?.let { tunnelManager.startTunnel(it) }
-                } else {
-                    Timber.w("Always-on VPN is not enabled in app settings")
-                }
-            }
-        }
-
         ServiceWorker.start(this)
-    }
-
-    override fun onTerminate() {
-        applicationScope.cancel()
-        tunnelManager.setBackendMode(BackendMode.Inactive)
-        super.onTerminate()
     }
 
     companion object {

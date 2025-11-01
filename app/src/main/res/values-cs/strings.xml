@@ -35,7 +35,6 @@
     <string name="incorrect_pin">PIN je nesprávný</string>
     <string name="create_pin">Vytvořte PIN</string>
     <string name="set_primary_tunnel">Nastavit jako hlavní tunel</string>
-    <string name="use_tunnel_on_wifi_name">Použít tunel pro Wi-Fi</string>
     <string name="edit_tunnel">Upravit tunel</string>
     <string name="junk_packet_count">Junk packet počet</string>
     <string name="junk_packet_minimum_size">Junk packet minimální velikost</string>
@@ -63,19 +62,15 @@
     <string name="base64_key">Base64 klíč</string>
     <string name="docs_description">Přečíst si dokumentaci</string>
     <string name="email_description">Poslat mi email</string>
-    <string name="location_services_missing_message">Aplikace nenašla žádné služby polohy zapnuté na Vašem zařízení. Dle Vašeho zařízení, tohle může způsobit, že funkce nedůvěryhodné Wi-Fi nedokáže přečíst jméno připojené Wi-Fi. Chcete i přesto pokračovat?</string>
     <string name="delete_tunnel">Smazat tunel</string>
     <string name="delete_tunnel_message">Opravdu chcete smazat vybrané tunely?</string>
     <string name="yes">Ano</string>
     <string name="all">Vše</string>
     <string name="no_email_detected">Žádná emailová aplikace nebyla nalezena</string>
     <string name="no_browser_detected">Žádný prohlížeč nebyl nalezen</string>
-    <string name="read_logs">Přečíst si logy</string>
     <string name="pin_created">PIN úspěšně vytvořen</string>
     <string name="enter_pin">Zadejte PIN</string>
     <string name="enable_app_lock">Zapnout zámek aplikace</string>
-    <string name="restart_on_ping">Restartovat při selhání pingu</string>
-    <string name="mobile_data_tunnel">Nastavit jako tunel pro mobilní data</string>
     <string name="settings">Nastavení</string>
     <string name="support">Podpora</string>
     <string name="app_name">WG Tunnel</string>
@@ -95,7 +90,6 @@
     <string name="notifications">Oznámení</string>
     <string name="use_root_shell_for_wifi">Použít root shell pro získání Wi-Fi informací, zabrání potřebě oprávnění k poloze</string>
     <string name="add_from_clipboard">Přidat ze schránky</string>
-    <string name="set_ethernet_tunnel">Nastavit jako tunel pro ethernet</string>
     <string name="allow_lan_traffic">Povolit LAN provoz</string>
     <string name="logs">Logy</string>
     <string name="automatic">Automaticky</string>
@@ -103,7 +97,6 @@
     <string name="mobile_tunnel">Tunel pro mobilní data</string>
     <string name="skip">Přeskočit</string>
     <string name="donate">Přispět na projekt</string>
-    <string name="enable_local_logging">Zapnout místní protokolování</string>
     <string name="stop_on_internet_loss">Zastavit tunel při ztrátě internetu</string>
     <string name="stop_on_no_internet">Zastavit při ztrátě internetu</string>
     <string name="ethernet_tunnel">Ethernet tunel</string>
@@ -126,7 +119,6 @@
     <string name="include_lan">Zahrnout LAN</string>
     <string name="add_wifi_name">Přidat název Wi-Fi</string>
     <string name="vpn_channel_name">Kanál pro oznámení VPN</string>
-    <string name="tunnel_specific_settings">Specifické nastavení tunelu</string>
     <string name="show_scripts">Zobrazit skripty</string>
     <string name="splt_tunneling">Dělené tunelování</string>
     <string name="auto_tunnel_channel_description">Kanál pro oznámení o stavu auto-tunelu</string>
@@ -194,7 +186,6 @@
     <string name="remote_key_template">Klíč: %1$s</string>
     <string name="active">Aktivní</string>
     <string name="service_running_error">Služba není spuštěna</string>
-    <string name="wifi_name_template">Aktivní: %1$s</string>
     <string name="tunnel_error_template">Tunel selhal s: %1$s</string>
     <string name="camera_permission_required">Vyžadováno oprávnění k použití fotoaparátu</string>
     <string name="copy">Kopírovat</string>
@@ -210,7 +201,6 @@
     <string name="pre_down">Před deaktivací</string>
     <string name="post_up">Po aktivaci</string>
     <string name="flavor_template">Varianta: %1$s</string>
-    <string name="security_template">Zabezpečení: %1$s</string>
     <string name="done">Hotovo</string>
     <string name="wireguard">WireGuard</string>
     <string name="amnezia">Amnezia</string>
@@ -247,8 +237,6 @@
     <string name="attempts_per_interval">Pokusů o ping za interval</string>
     <string name="timeout_all_attempts">Celkový časový limit pro všechny pokusy</string>
     <string name="display_detailed_ping_stats">Zobrazit podrobné statistiky pingů</string>
-    <string name="rx_template">RX: %1$s MB</string>
-    <string name="tx_template">TX: %1$s MB</string>
     <string name="ping_success_template">Poslední úspěšný ping: %1$s</string>
     <string name="packets_sent_template">Odeslané pakety: %1$s</string>
     <string name="packet_loss_template">Ztracené pakety: %.2f%%</string>
@@ -277,7 +265,6 @@
     <string name="comma_separated">Oddělené čárkami</string>
     <string name="server_port">Server:Port</string>
     <string name="new_tunnel">Nový tunel</string>
-    <string name="system_features">Systémové funkce</string>
     <string name="read_failed">Nepodařilo se přečíst data.</string>
     <string name="invalid_key">Neplatný klíč</string>
     <string name="invalid_number">Neplatné číslo</string>
@@ -315,7 +302,6 @@
     <string name="set_custom_ping_target">Vlastní cíl pingu (volitelné)</string>
     <string name="tunnel_ping_interval">Interval pingování tunelu</string>
     <string name="ping_timeout">Časový limit pingování tunelu</string>
-    <string name="monitoring_ping">Povolit monitorování pingování tunelu</string>
     <string name="sec_ago_template">Před %1$s s</string>
     <string name="latency_template">Latence: %1$s</string>
     <string name="ping_target_template">Cíl pingu: %1$s</string>

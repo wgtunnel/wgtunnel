@@ -70,7 +70,7 @@ class TunnelControlTile : TileService(), LifecycleOwner {
                     // this would be better managed elsewhere
                     WireGuardAutoTunnel.setLastActiveTunnels(activeIds)
                     val activeTunNames =
-                        tunnels.filter { activeTunnels.keys.contains(it.id) }.map { it.tunName }
+                        tunnels.filter { activeTunnels.keys.contains(it.id) }.map { it.name }
                     updateTileForActiveTunnels(activeTunNames)
                 }
                 else -> updateTileForLastActiveTunnels()
@@ -93,15 +93,14 @@ class TunnelControlTile : TileService(), LifecycleOwner {
         val lastActiveIds = WireGuardAutoTunnel.getLastActiveTunnels()
         when {
             lastActiveIds.isEmpty() -> {
-                tunnelsRepository.getStartTunnel()?.let { config ->
-                    updateTile(config.tunName, false)
-                } ?: setUnavailable()
+                tunnelsRepository.getStartTunnel()?.let { config -> updateTile(config.name, false) }
+                    ?: setUnavailable()
             }
             lastActiveIds.size > 1 -> updateTile(getString(R.string.multiple), false)
             else -> {
                 val tunnelId = lastActiveIds.first()
                 tunnelsRepository.getById(tunnelId)?.let { tunnel ->
-                    updateTile(tunnel.tunName, false)
+                    updateTile(tunnel.name, false)
                 } ?: setUnavailable()
             }
         }
@@ -160,6 +159,15 @@ class TunnelControlTile : TileService(), LifecycleOwner {
         }
     }
 
+    private fun updateTile(name: String, active: Boolean) {
+        runCatching {
+                setTileDescription(name)
+                if (active) return setActive()
+                setInactive()
+            }
+            .onFailure { Timber.e(it) }
+    }
+
     /* This works around an annoying unsolved frameworks bug some people are hitting. */
     override fun onBind(intent: Intent): IBinder? {
         var ret: IBinder? = null
@@ -169,15 +177,6 @@ class TunnelControlTile : TileService(), LifecycleOwner {
             Timber.e("Failed to bind to TunnelControlTile")
         }
         return ret
-    }
-
-    private fun updateTile(name: String, active: Boolean) {
-        runCatching {
-                setTileDescription(name)
-                if (active) return setActive()
-                setInactive()
-            }
-            .onFailure { Timber.e(it) }
     }
 
     override val lifecycle: Lifecycle

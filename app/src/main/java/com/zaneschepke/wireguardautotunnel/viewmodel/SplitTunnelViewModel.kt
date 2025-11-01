@@ -11,20 +11,24 @@ import com.zaneschepke.wireguardautotunnel.ui.state.ConfigProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.InterfaceProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.SplitTunnelUiState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 
-@HiltViewModel
+@HiltViewModel(assistedFactory = SplitTunnelViewModel.Factory::class)
 class SplitTunnelViewModel
-@Inject
+@AssistedInject
 constructor(
     private val tunnelRepository: TunnelRepository,
     private val packageRepository: InstalledPackageRepository,
     private val globalEffectRepository: GlobalEffectRepository,
+    @Assisted val tunnelId: Int,
 ) : ContainerHost<SplitTunnelUiState, Nothing>, ViewModel() {
 
     override val container =
@@ -37,8 +41,11 @@ constructor(
                 emit(packages)
             }
 
-            combine(packagesFlow, tunnelRepository.flow) { packages, tunnels ->
-                    SplitTunnelUiState(packages, true, tunnels)
+            combine(
+                    packagesFlow,
+                    tunnelRepository.flow.map { it.firstOrNull { tun -> tun.id == tunnelId } },
+                ) { packages, tunnel ->
+                    SplitTunnelUiState(packages, false, tunnel)
                 }
                 .collect { reduce { it } }
         }
@@ -47,39 +54,36 @@ constructor(
         globalEffectRepository.post(globalSideEffect)
     }
 
-    fun saveSplitTunnelSelection(tunnelId: Int, splitConfig: Pair<SplitOption, Set<String>>) =
-        intent {
-            val latestTunnel = state.tunnels.find { it.id == tunnelId }
-            if (latestTunnel != null) {
-                val config = latestTunnel.toAmConfig()
-                val (option, pkgs) = splitConfig
-                val configProxy = ConfigProxy.from(config)
-                val interfaceProxy = InterfaceProxy.from(config.`interface`)
-                val (included, excluded) =
-                    when (option) {
-                        SplitOption.INCLUDE -> Pair(pkgs, emptySet<String>())
-                        SplitOption.ALL -> Pair(emptySet(), emptySet())
-                        SplitOption.EXCLUDE -> Pair(emptySet(), pkgs)
-                    }
-                val updatedInterface =
-                    interfaceProxy.copy(
-                        includedApplications = included,
-                        excludedApplications = excluded,
-                    )
-                val updatedConfig = configProxy.copy(`interface` = updatedInterface)
-                val (wg, am) = updatedConfig.buildConfigs()
-                tunnelRepository.save(
-                    latestTunnel.copy(
-                        amQuick = am.toAwgQuickString(true, false),
-                        wgQuick = wg.toWgQuickString(true),
-                    )
-                )
-                postSideEffect(
-                    GlobalSideEffect.Snackbar(
-                        StringValue.StringResource(R.string.config_changes_saved)
-                    )
-                )
-                postSideEffect(GlobalSideEffect.PopBackStack)
+    fun saveSplitTunnelSelection(splitConfig: Pair<SplitOption, Set<String>>) = intent {
+        val tunnel = state.tunnel ?: return@intent
+        val config = tunnel.toAmConfig()
+        val (option, pkgs) = splitConfig
+        val configProxy = ConfigProxy.from(config)
+        val interfaceProxy = InterfaceProxy.from(config.`interface`)
+        val (included, excluded) =
+            when (option) {
+                SplitOption.INCLUDE -> Pair(pkgs, emptySet<String>())
+                SplitOption.ALL -> Pair(emptySet(), emptySet())
+                SplitOption.EXCLUDE -> Pair(emptySet(), pkgs)
             }
-        }
+        val updatedInterface =
+            interfaceProxy.copy(includedApplications = included, excludedApplications = excluded)
+        val updatedConfig = configProxy.copy(`interface` = updatedInterface)
+        val (wg, am) = updatedConfig.buildConfigs()
+        tunnelRepository.save(
+            tunnel.copy(
+                amQuick = am.toAwgQuickString(true, false),
+                wgQuick = wg.toWgQuickString(true),
+            )
+        )
+        postSideEffect(
+            GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.config_changes_saved))
+        )
+        postSideEffect(GlobalSideEffect.PopBackStack)
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(tunnelId: Int): SplitTunnelViewModel
+    }
 }

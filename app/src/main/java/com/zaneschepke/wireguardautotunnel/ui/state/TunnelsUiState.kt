@@ -1,15 +1,8 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
-import com.zaneschepke.wireguardautotunnel.data.model.AppMode
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 
 data class TunnelsUiState(
-    val tunnels: List<TunnelConf> = listOf(),
-    val activeTunnels: Map<Int, TunnelState> = emptyMap(),
-    val isPingEnabled: Boolean = false,
-    val appMode: AppMode = AppMode.VPN,
-    val isWildcardsEnabled: Boolean = false,
-    val showPingStats: Boolean = false,
-    val stateInitialized: Boolean = false,
+    val tunnels: List<TunnelConfig> = emptyList(),
+    val isLoading: Boolean = true,
 )

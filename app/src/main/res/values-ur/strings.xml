@@ -8,7 +8,6 @@
     <string name="copy_public_key">عوامی کلید نقل کریں</string>
     <string name="vpn_channel_name">وی پی این نوٹیفکیشن چینل</string>
     <string name="optional">(اختیاری)</string>
-    <string name="location_services_missing_message">ایپ آپ کے آلے پر فعال مقام کی سروسز کا پتہ نہیں لگا رہی۔ ڈیوائس پر منحصر ہے، یہ غیر بھروسہ مند وائی فائی فیچر کے وائی فائی کا نام پڑھنے میں ناکام ہونے کا سبب بن سکتا ہے۔ کیا آپ بہرحال جاری رکھنا چاہیں گے؟</string>
     <string name="prominent_background_location_title">پس منظر لوکیشن کا انکشاف</string>
     <string name="public_key">عوامی کلید</string>
     <string name="app_name">ڈبلیو جی ٹنل</string>
@@ -56,12 +55,10 @@
     <string name="no_email_detected">کوئی ای میل ایپ نہیں ملی</string>
     <string name="no_browser_detected">کوئی براؤزر نہیں ملا</string>
     <string name="open_issue">ایک مسئلہ کھولیں</string>
-    <string name="read_logs">لاگز پڑھیں</string>
     <string name="auto">(خودکار)</string>
     <string name="incorrect_pin">پن غلط ہے</string>
     <string name="pin_created">پن کامیابی کے ساتھ بن گیا</string>
     <string name="create_pin">پن بنائیں</string>
-    <string name="restart_on_ping">پنگ فیل پر دوبارہ شروع کریں (بی ٹا)</string>
     <string name="set_primary_tunnel">بنیادی ٹنل کے طور پر سیٹ کریں</string>
     <string name="junk_packet_count">جنک پیکٹ کی تعداد</string>
     <string name="init_packet_junk_size">اِنِٹ پیکٹ جنک سائز</string>
@@ -88,12 +85,10 @@
     <string name="start_auto">خودکار ٹنل چلائیں</string>
     <string name="donate">پروجیکٹ کے لیے عطیہ کریں</string>
     <string name="local_logging">مقامی لاگنگ</string>
-    <string name="enable_local_logging">مقامی لاگنگ فعال کریں</string>
     <string name="stop_on_no_internet">بغیر انٹرنیٹ پر روکیں</string>
     <string name="stop_on_internet_loss">انٹرنیٹ لاس پر ٹنل روکیں</string>
     <string name="allow_lan_traffic">لین ٹریفک کی اجازت دیں</string>
     <string name="splt_tunneling">سپلٹ ٹنلنگ</string>
-    <string name="tunnel_specific_settings">ٹنل کی مخصوص ترتیبات</string>
     <string name="show_scripts">اسکرپٹس دکھائیں</string>
     <string name="pre_up">پری اپ</string>
     <string name="post_up">پوسٹ اپ</string>
@@ -118,7 +113,6 @@
     <string name="persistent_keepalive">مسلسل زندہ</string>
     <string name="remove_amnezia_compatibility">ایمنیزیا مطابقت ہٹائیں</string>
     <string name="light">روشن</string>
-    <string name="set_ethernet_tunnel">بطور ایتھرنیٹ ٹنل کے سیٹ کریں</string>
     <string name="launch_app_settings">ایپ ترتیبات لانچ کریں</string>
     <string name="monitoring_state_changes">ریاستی تبدیلیوں کی نگرانی</string>
     <string name="enter_pin">پن درج کریں</string>
@@ -126,11 +120,9 @@
     <string name="handshake">ہینڈشیک</string>
     <string name="response_packet_magic_header">رسپانس پیکٹ میجک ہیڈر</string>
     <string name="unsure_how">اگر آپ کو یقین نہیں کہ کیسے آگے بڑھیں</string>
-    <string name="use_tunnel_on_wifi_name">وائی فائی نام پر ٹنل استعمال کریں</string>
     <string name="use_root_shell_for_wifi">وائی فائی کی معلومات حاصل کرنے کے لیے روٹ شیل کا استعمال کریں، مقام کی اجازت کی ضرورت کو روکتے ہوئے</string>
     <string name="response_packet_junk_size">رسپانس پیکٹ جنک سائز</string>
     <string name="junk_packet_minimum_size">جنک پیکٹ کا کم از کم سائز</string>
-    <string name="mobile_data_tunnel">موبائل ڈیٹا ٹنل کے طور پر سیٹ کریں</string>
     <string name="edit_tunnel">ٹنل میں ترمیم کریں</string>
     <string name="enable_app_lock">ایپ لاک فعال کریں</string>
     <string name="logs">لاگز</string>
@@ -180,7 +172,6 @@
     <string name="camera_permission_required">کیمرے کی اجازت درکار ہے</string>
     <string name="export_failed">برآمد ناکام</string>
     <string name="tunnel_error_template">ٹنل اس کے ساتھ ناکام ہوگئی: %1$s</string>
-    <string name="wifi_name_template">فعال: %1$s</string>
     <string name="config_error">غلط ترتیب</string>
     <string name="dns_resolve_error">ڈی این ایس ریزولوشن ناکام</string>
     <string name="auth_error">غیر مجاز</string>
@@ -209,7 +200,6 @@
     <string name="latest_installed">آپ پہلے ہی تازہ ترین ورژن چلا رہے ہیں۔</string>
     <string name="darker">بہت گہرا</string>
     <string name="amoled">ایمولیڈ</string>
-    <string name="security_template">سیکیورٹی: %1$s</string>
     <string name="update_check_unsupported">اس قسم کی تعمیر کے لیے تازہ کاری معائنہ تعاون یافتہ نہیں ہے۔</string>
     <string name="flavor_template">ذائقہ: %1$s</string>
     <string name="show_qr">کیو آر دکھائیں</string>
@@ -255,9 +245,6 @@
     <string name="ping_timeout">ٹنل پنگ ٹائم آؤٹ</string>
     <string name="timeout_all_attempts">تمام کوششوں کے لیے کل ٹائم آؤٹ</string>
     <string name="display_detailed_ping_stats">پِنگ کے تفصیلی اعدادوشمار دکھائیں</string>
-    <string name="monitoring_ping">پِنگ ٹنل مانیٹرنگ کو فعال کریں</string>
-    <string name="rx_template">آر ایکس: %1$s ایم بی</string>
-    <string name="tx_template">ٹی ایکس: %1$s ایم بی</string>
     <string name="reachable_template">قابل رسائی: %1$s</string>
     <string name="ping_success_template">آخری کامیاب پِنگ: %1$s</string>
     <string name="sec_ago_template">%1$s سیکنڈ پہلے</string>
@@ -303,7 +290,6 @@
     <string name="comma_separated">کوما الگ شدہ</string>
     <string name="server_port">سرور:پورٹ</string>
     <string name="new_tunnel">نئی ٹنل</string>
-    <string name="system_features">سسٹم کی خصوصیات</string>
     <string name="read_failed">ڈیٹا پڑھنے میں ناکام۔</string>
     <string name="invalid_key">غلط کلید</string>
     <string name="invalid_number">غلط نمبر</string>

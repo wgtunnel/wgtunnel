@@ -8,7 +8,6 @@
     <string name="allowed_ips">Sallitut IP-osoitteet</string>
     <string name="create_import">Luo tyhjästä</string>
     <string name="appearance">Ulkoasu</string>
-    <string name="tunnel_specific_settings">Tunnelikohtaiset asetukset</string>
     <string name="dns_servers">DNS-palvelimet</string>
     <string name="app_name">WG Tunnel</string>
     <string name="vpn_channel_name">VPN-ilmoituskanava</string>
@@ -43,7 +42,6 @@
     <string name="email_description">Lähetä minulle sähköpostia</string>
     <string name="error_ssid_exists">SSID on jo luettelossa</string>
     <string name="error_no_file_explorer">Tiedostonhallintasovellusta ei ole asennettuna</string>
-    <string name="location_services_missing_message">Sovellus ei tunnista laitteessasi käytössä olevia sijaintipalveluja. Laitteesta riippuen tämä voi aiheuttaa sen, että epäluotettava wlan-ominaisuus ei pysty lukemaan wlan-nimeä. Haluatko kuitenkin jatkaa?</string>
     <string name="auto_tunnel_title">Automaattinen tunnelointipalvelu</string>
     <string name="delete_tunnel">Poista tunneli</string>
     <string name="yes">Kyllä</string>
@@ -78,7 +76,6 @@
     <string name="all">kaikki</string>
     <string name="never">ei koskaan</string>
     <string name="logs">Lokitiedot</string>
-    <string name="set_ethernet_tunnel">Aseta ethernet-tunneliksi</string>
     <string name="seconds">sekuntia</string>
     <string name="cancel">Peruuta</string>
     <string name="no_browser_detected">Selainta ei tunnistettu</string>
@@ -102,7 +99,6 @@
     <string name="enabled_app_shortcuts">Salli sovelluksen pikakuvakkeet</string>
     <string name="automatic">Automaattinen</string>
     <string name="tunnel_name">Tunnelin nimi</string>
-    <string name="read_logs">Lue lokitiedot</string>
     <string name="mobile_tunnel">Mobiilidatatunneli</string>
     <string name="restart_at_boot">Käynnistä laitteen käynnistyksen yhteydessä</string>
     <string name="always_on_message2">varmistaaksesi, että Aina päällä oleva VPN on kytketty pois päältä kaikkien muiden sovellusten osalta ja yritä uudelleen</string>

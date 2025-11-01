@@ -20,7 +20,6 @@
     <string name="unknown_error">不明なエラーが発生しました</string>
     <string name="error_no_file_explorer">ファイルエクスプローラーはインストールされていません</string>
     <string name="enabled_app_shortcuts">アプリのショートカットを有効にする</string>
-    <string name="location_services_missing_message">アプリがデバイスで有効になっている位置情報サービスを検出しません。 デバイスによっては、信頼されていない無線LAN機能がWiFi名を読み取れない可能性があります。このまま続けますか？</string>
     <string name="no_email_detected">メールアプリは検出されません</string>
     <string name="email_description">メールを送る</string>
     <string name="no_browser_detected">ブラウザは検出されません</string>
@@ -50,7 +49,6 @@
     <string name="tunnel_on_ethernet">Ethernetでのトンネルの有効化</string>
     <string name="open_issue">問題を報告する</string>
     <string name="incorrect_pin">PINが無効です</string>
-    <string name="read_logs">ログを確認する</string>
     <string name="pin_created">PINの登録が完了しました</string>
     <string name="settings">設定</string>
     <string name="tunnel_mobile_data">モバイルデータでのトンネルの有効化</string>
@@ -60,8 +58,6 @@
     <string name="auto_tunnel_title">自動トンネルサービス</string>
     <string name="edit_tunnel">トンネルの編集</string>
     <string name="create_pin">新規PINを作成</string>
-    <string name="use_tunnel_on_wifi_name">指定WiFiでトンネルを適用</string>
-    <string name="mobile_data_tunnel">モバイルデータトンネルに設定</string>
     <string name="enable_app_lock">アプリロックを有効にする</string>
     <string name="always_on_message">VPN接続の許可が拒否されました。</string>
     <string name="always_on_message2">他のすべてのアプリで常時接続VPNがオフになっていることを確認して、再度お試しください</string>

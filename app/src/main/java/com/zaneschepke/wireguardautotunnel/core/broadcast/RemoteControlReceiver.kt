@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.util.Constants
@@ -20,9 +20,9 @@ class RemoteControlReceiver : BroadcastReceiver() {
 
     @Inject @ApplicationScope lateinit var applicationScope: CoroutineScope
 
-    @Inject lateinit var appStateRepository: AppStateRepository
     @Inject lateinit var settingsRepository: GeneralSettingRepository
     @Inject lateinit var tunnelsRepository: TunnelRepository
+    @Inject lateinit var autoTunnelSettingsRepository: AutoTunnelSettingsRepository
 
     @Inject lateinit var tunnelManager: TunnelManager
 
@@ -53,11 +53,9 @@ class RemoteControlReceiver : BroadcastReceiver() {
         val action = intent.action ?: return
         val appAction = Action.fromAction(action) ?: return Timber.w("Unknown action $action")
         applicationScope.launch {
-            if (!appStateRepository.isRemoteControlEnabled())
-                return@launch Timber.w("Remote control disabled")
-            val key =
-                appStateRepository.getRemoteKey()
-                    ?: return@launch Timber.w("Remote control key missing")
+            val settings = settingsRepository.getGeneralSettings()
+            if (!settings.isRemoteControlEnabled) return@launch Timber.w("Remote control disabled")
+            val key = settings.remoteKey ?: return@launch Timber.w("Remote control key missing")
             if (key != intent.getStringExtra(EXTRA_KEY)?.trim())
                 return@launch Timber.w("Invalid remote control key")
             when (appAction) {
@@ -78,8 +76,10 @@ class RemoteControlReceiver : BroadcastReceiver() {
                             ?: return@launch tunnelManager.stopActiveTunnels()
                     tunnelManager.stopTunnel(tunnel.id)
                 }
-                Action.START_AUTO_TUNNEL -> settingsRepository.updateAutoTunnelEnabled(true)
-                Action.STOP_AUTO_TUNNEL -> settingsRepository.updateAutoTunnelEnabled(false)
+                Action.START_AUTO_TUNNEL ->
+                    autoTunnelSettingsRepository.updateAutoTunnelEnabled(true)
+                Action.STOP_AUTO_TUNNEL ->
+                    autoTunnelSettingsRepository.updateAutoTunnelEnabled(false)
             }
         }
     }

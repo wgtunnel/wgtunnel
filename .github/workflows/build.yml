@@ -114,15 +114,11 @@ jobs:
       - name: Get release apk path
         id: apk-path
         run: echo "path=$(find . -regex '^.*/build/outputs/apk/${{ inputs.flavor }}/${{ inputs.build_type }}/.*\.apk$' -type f | head -1 | tail -c+2)" >> $GITHUB_OUTPUT
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - name: Upload All APK Artifacts
+        uses: actions/upload-artifact@v5
         with:
           name: android_artifacts_${{ inputs.flavor }}
           path: >-
-            app/build/outputs/apk/${{ inputs.flavor }}/${{ inputs.build_type }}/${{
-              inputs.flavor == 'fdroid' && inputs.build_type == 'release'
-                && 'wgtunnel-fdroid-release-*.apk'
-                || format('wgtunnel-{0}-v*.apk', inputs.flavor)
-            }}
+            app/build/outputs/apk/${{ inputs.flavor }}/${{ inputs.build_type }}/*.apk
           retention-days: 1
           if-no-files-found: warn

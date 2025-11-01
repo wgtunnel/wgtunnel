@@ -1,44 +1,39 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import android.net.Uri
-import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
-import com.wireguard.android.util.RootShell
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
-import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
-import com.zaneschepke.wireguardautotunnel.di.AppShell
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.domain.repository.*
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.SharedAppUiState
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
+import com.zaneschepke.wireguardautotunnel.util.RootShellUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
+import com.zaneschepke.wireguardautotunnel.util.extensions.QuickConfig
+import com.zaneschepke.wireguardautotunnel.util.extensions.TunnelName
+import com.zaneschepke.wireguardautotunnel.util.extensions.asStringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.saveTunnelsUniquely
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
+import java.io.IOException
+import java.net.URL
 import java.time.Instant
 import javax.inject.Inject
-import javax.inject.Provider
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
+import org.amnezia.awg.config.BadConfigException
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
-import rikka.shizuku.Shizuku
 import xyz.teamgravity.pin_lock_compose.PinManager
 
 @HiltViewModel
@@ -51,9 +46,9 @@ constructor(
     private val globalEffectRepository: GlobalEffectRepository,
     private val tunnelRepository: TunnelRepository,
     private val settingsRepository: GeneralSettingRepository,
+    private val monitoringSettingsRepository: MonitoringSettingsRepository,
+    private val rootShellUtils: RootShellUtils,
     private val fileUtils: FileUtils,
-    @AppShell private val rootShell: Provider<RootShell>,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : ContainerHost<SharedAppUiState, LocalSideEffect>, ViewModel() {
 
     val globalSideEffect = globalEffectRepository.flow
@@ -65,19 +60,25 @@ constructor(
         ) {
             intent {
                 combine(
-                        appStateRepository.flow,
+                        tunnelRepository.userTunnelsFlow,
                         serviceManager.autoTunnelService.map { it != null },
                         settingsRepository.flow,
-                        tunnelRepository.flow,
-                    ) { appState, autoTunnelActive, settings, tunnels ->
+                        tunnelManager.activeTunnels,
+                        monitoringSettingsRepository.flow,
+                    ) { tunnels, autoTunnelActive, settings, activeTunnels, monitoring ->
                         state.copy(
-                            theme = appState.theme,
-                            locale = appState.locale ?: LocaleUtil.OPTION_PHONE_LANGUAGE,
-                            pinLockEnabled = appState.isPinLockEnabled,
+                            theme = settings.theme,
+                            locale = settings.locale ?: LocaleUtil.OPTION_PHONE_LANGUAGE,
+                            pinLockEnabled = settings.isPinLockEnabled,
                             isAutoTunnelActive = autoTunnelActive,
-                            tunnels = tunnels,
                             settings = settings,
-                            isLocationDisclosureShown = appState.isLocationDisclosureShown,
+                            tunnels = tunnels,
+                            activeTunnels = activeTunnels,
+                            isPingEnabled = monitoring.isPingEnabled,
+                            showPingStats = monitoring.showDetailedPingStats,
+                            proxyEnabled =
+                                settings.appMode == AppMode.PROXY ||
+                                    settings.appMode == AppMode.LOCK_DOWN,
                             isAppLoaded = true,
                         )
                     }
@@ -91,39 +92,58 @@ constructor(
             }
 
             intent {
+                appStateRepository.flow.collect {
+                    reduce {
+                        state.copy(
+                            isLocationDisclosureShown = it.isLocationDisclosureShown,
+                            isBatteryOptimizationShown = it.isBatteryOptimizationDisableShown,
+                        )
+                    }
+                }
+            }
+
+            intent {
                 tunnelManager.messageEvents.collect { (_, message) ->
                     postSideEffect(GlobalSideEffect.Snackbar(message.toStringValue()))
                 }
             }
         }
 
-    fun startTunnel(tunnelConf: TunnelConf) = intent {
+    fun startTunnel(tunnelConfig: TunnelConfig) = intent {
         if (state.settings.appMode == AppMode.VPN) {
             if (!serviceManager.hasVpnPermission())
                 return@intent postSideEffect(
-                    GlobalSideEffect.RequestVpnPermission(AppMode.VPN, tunnelConf)
+                    GlobalSideEffect.RequestVpnPermission(AppMode.VPN, tunnelConfig)
                 )
         }
-        tunnelManager.startTunnel(tunnelConf)
+        tunnelManager.startTunnel(tunnelConfig)
     }
 
     fun postSideEffect(localSideEffect: LocalSideEffect) = intent {
         postSideEffect(localSideEffect)
     }
 
-    fun setTheme(theme: Theme) = intent { appStateRepository.setTheme(theme) }
+    fun setLocationDisclosureShown() = intent {
+        appStateRepository.setLocationDisclosureShown(true)
+    }
+
+    fun setTheme(theme: Theme) = intent {
+        settingsRepository.upsert(state.settings.copy(theme = theme))
+    }
 
     fun setLocale(locale: String) = intent {
-        appStateRepository.setLocale(locale)
+        settingsRepository.upsert(state.settings.copy(locale = locale))
         postSideEffect(GlobalSideEffect.ConfigChanged)
     }
 
     fun setPinLockEnabled(enabled: Boolean) = intent {
         if (!enabled) PinManager.clearPin()
-        appStateRepository.setPinLockEnabled(enabled)
+        settingsRepository.upsert(state.settings.copy(isPinLockEnabled = enabled))
     }
 
-    fun stopTunnel(tunnelConf: TunnelConf) = intent { tunnelManager.stopTunnel(tunnelConf.id) }
+    fun stopTunnel(tunnelConfig: TunnelConfig) = intent {
+        tunnelManager.stopTunnel(tunnelConfig.id)
+    }
 
     fun setAppMode(appMode: AppMode) = intent {
         when (appMode) {
@@ -136,16 +156,23 @@ constructor(
                     )
                 }
             }
-            AppMode.KERNEL -> if (!requestRoot()) return@intent
+            AppMode.KERNEL -> {
+                val accepted = rootShellUtils.requestRoot()
+                val message =
+                    if (!accepted) StringValue.StringResource(R.string.error_root_denied)
+                    else StringValue.StringResource(R.string.root_accepted)
+                postSideEffect(GlobalSideEffect.Snackbar(message))
+                if (!accepted) return@intent
+            }
         }
-        settingsRepository.save(state.settings.copy(appMode = appMode))
+        settingsRepository.upsert(state.settings.copy(appMode = appMode))
     }
 
     suspend fun postSideEffect(globalSideEffect: GlobalSideEffect) {
         globalEffectRepository.post(globalSideEffect)
     }
 
-    fun authenticated() = intent { reduce { state.copy(isAuthorized = true) } }
+    fun authenticated() = intent { reduce { state.copy(isPinVerified = true) } }
 
     suspend fun postGlobalSideEffect(sideEffect: GlobalSideEffect) {
         globalEffectRepository.post(sideEffect)
@@ -161,71 +188,77 @@ constructor(
         appStateRepository.setBatteryOptimizationDisableShown(true)
     }
 
-    fun setWifiDetectionMethod(method: WifiDetectionMethod) = intent {
-        when (method) {
-            WifiDetectionMethod.ROOT -> if (!requestRoot()) return@intent
-            WifiDetectionMethod.SHIZUKU -> {
-                requestShizuku()
-                return@intent
-            }
-            else -> Unit
-        }
-        settingsRepository.save(state.settings.copy(wifiDetectionMethod = method))
-    }
-
-    private fun requestShizuku() = intent {
-        Shizuku.addRequestPermissionResultListener(
-            Shizuku.OnRequestPermissionResultListener { requestCode: Int, grantResult: Int ->
-                if (grantResult != PERMISSION_GRANTED) return@OnRequestPermissionResultListener
-                intent {
-                    settingsRepository.save(
-                        state.settings.copy(wifiDetectionMethod = WifiDetectionMethod.SHIZUKU)
-                    )
-                }
-            }
+    fun saveSortChanges(tunnels: List<TunnelConfig>) = intent {
+        tunnelRepository.saveAll(tunnels.mapIndexed { index, conf -> conf.copy(position = index) })
+        postSideEffect(
+            GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.config_changes_saved))
         )
+        postSideEffect(GlobalSideEffect.PopBackStack)
+    }
+
+    fun importTunnelConfigs(configs: Map<QuickConfig, TunnelName>) = intent {
         try {
-            if (Shizuku.checkSelfPermission() != PERMISSION_GRANTED) Shizuku.requestPermission(123)
-            settingsRepository.save(
-                state.settings.copy(wifiDetectionMethod = WifiDetectionMethod.SHIZUKU)
-            )
-        } catch (_: Exception) {
+            val tunnelConfigs =
+                configs.map { (config, name) -> TunnelConfig.tunnelConfFromQuick(config, name) }
+            tunnelRepository.saveTunnelsUniquely(tunnelConfigs, state.tunnels)
+        } catch (_: IOException) {
             postSideEffect(
-                GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.shizuku_not_detected))
+                GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.read_failed))
             )
+        } catch (e: BadConfigException) {
+            postSideEffect(GlobalSideEffect.Snackbar(e.asStringValue()))
         }
     }
 
-    private suspend fun requestRoot(): Boolean =
-        withContext(ioDispatcher) {
-            val accepted =
-                try {
-                    rootShell.get().start()
-                    true
-                } catch (_: Exception) {
-                    false
-                }
-            val message =
-                if (!accepted) StringValue.StringResource(R.string.error_root_denied)
-                else StringValue.StringResource(R.string.root_accepted)
-            intent { postSideEffect(GlobalSideEffect.Snackbar(message)) }
-            accepted
-        }
+    fun importFromClipboard(conf: String) {
+        importTunnelConfigs(mapOf(conf to null))
+    }
+
+    fun importFromQr(conf: String) = intent { importFromClipboard(conf) }
+
+    fun importFromUrl(url: String) = intent {
+        runCatching {
+                val url = URL(url)
+                val uri = url.toURI().toString().toUri()
+                importFromUri(uri)
+            }
+            .onFailure {
+                postSideEffect(
+                    GlobalSideEffect.Toast(
+                        StringValue.StringResource(R.string.error_download_failed)
+                    )
+                )
+            }
+    }
+
+    fun importFromUri(uri: Uri) = intent {
+        fileUtils
+            .readConfigsFromUri(uri)
+            .onSuccess { configs -> importTunnelConfigs(configs) }
+            .onFailure {
+                val message =
+                    when (it) {
+                        is IOException -> StringValue.StringResource(R.string.error_download_failed)
+                        else -> StringValue.StringResource(R.string.error_file_extension)
+                    }
+                postSideEffect(GlobalSideEffect.Toast(message))
+            }
+    }
 
     fun toggleSelectAllTunnels() = intent {
         if (state.selectedTunnels.size != state.tunnels.size) {
-            return@intent reduce { state.copy(selectedTunnels = state.tunnels.toSet()) }
+            return@intent reduce { state.copy(selectedTunnels = state.tunnels) }
         }
-        reduce { state.copy(selectedTunnels = emptySet()) }
+        reduce { state.copy(selectedTunnels = emptyList()) }
     }
 
-    fun clearSelectedTunnels() = intent { reduce { state.copy(selectedTunnels = emptySet()) } }
+    fun clearSelectedTunnels() = intent { reduce { state.copy(selectedTunnels = emptyList()) } }
 
     fun toggleSelectedTunnel(tunnelId: Int) = intent {
         reduce {
             state.copy(
                 selectedTunnels =
-                    state.selectedTunnels.toMutableSet().apply {
+                    state.selectedTunnels.toMutableList().apply {
                         val removed = removeIf { it.id == tunnelId }
                         if (!removed) addAll(state.tunnels.filter { it.id == tunnelId })
                     }
@@ -241,13 +274,13 @@ constructor(
                     StringValue.StringResource(R.string.delete_active_message)
                 )
             )
-        tunnelRepository.delete(state.selectedTunnels.toList())
+        tunnelRepository.delete(state.selectedTunnels)
         clearSelectedTunnels()
     }
 
     fun copySelectedTunnel() = intent {
         val selected = state.selectedTunnels.firstOrNull() ?: return@intent
-        val copy = TunnelConf.tunnelConfFromQuick(selected.amQuick, selected.tunName)
+        val copy = TunnelConfig.tunnelConfFromQuick(selected.amQuick, selected.name)
         tunnelRepository.saveTunnelsUniquely(listOf(copy), state.tunnels)
         clearSelectedTunnels()
     }
@@ -292,23 +325,17 @@ constructor(
             .onFailure(onFailure)
     }
 
-    suspend fun createWgFiles(tunnels: Collection<TunnelConf>): List<File> =
-        withContext(ioDispatcher) {
-            tunnels.mapNotNull { config ->
-                if (config.wgQuick.isNotBlank()) {
-                    fileUtils.createFile(config.tunName, config.wgQuick)
-                } else null
-            }
+    suspend fun createWgFiles(tunnels: Collection<TunnelConfig>): List<File> =
+        tunnels.mapNotNull { config ->
+            if (config.wgQuick.isNotBlank()) {
+                fileUtils.createFile(config.name, config.wgQuick)
+            } else null
         }
 
-    suspend fun createAmFiles(tunnels: Collection<TunnelConf>): List<File> =
-        withContext(ioDispatcher) {
-            tunnels.mapNotNull { config ->
-                if (
-                    config.amQuick != TunnelConfig.AM_QUICK_DEFAULT && config.amQuick.isNotBlank()
-                ) {
-                    fileUtils.createFile(config.tunName, config.amQuick)
-                } else null
-            }
+    suspend fun createAmFiles(tunnels: Collection<TunnelConfig>): List<File> =
+        tunnels.mapNotNull { config ->
+            if (config.amQuick.isNotBlank()) {
+                fileUtils.createFile(config.name, config.amQuick)
+            } else null
         }
 }

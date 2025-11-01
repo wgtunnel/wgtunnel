@@ -54,14 +54,12 @@
     <string name="email_description">Sende mir eine E-Mail</string>
     <string name="error_root_denied">Root Shell verweigert</string>
     <string name="error_no_file_explorer">Kein Datei-Explorer installiert</string>
-    <string name="location_services_missing_message">Die App erkennt keine auf deinem Gerät aktivierten Standortdienste. Je nach Gerät kann dies dazu führen, dass die Funktion nicht vertrauenswürdiges WLAN den WLAN-Namen nicht lesen kann. Möchtest du trotzdem fortfahren?</string>
     <string name="auto_tunnel_title">Auto-Tunnel Dienst</string>
     <string name="delete_tunnel_message">Bist du sicher, dass du die ausgewählten Tunnel löschen möchtest?</string>
     <string name="yes">Ja</string>
     <string name="all">alle</string>
     <string name="no_browser_detected">Keinen Browser erkannt</string>
     <string name="open_issue">Issue öffnen</string>
-    <string name="read_logs">Logeinträge lesen</string>
     <string name="auto">(automatisch)</string>
     <string name="incorrect_pin">PIN nicht korrekt</string>
     <string name="pin_created">PIN erfolgreich erstellt</string>
@@ -72,9 +70,6 @@
     <string name="email_chooser">Eine E-Mail senden…</string>
     <string name="no_email_detected">Keine E-Mail-App erkannt</string>
     <string name="create_pin">PIN erstellen</string>
-    <string name="use_tunnel_on_wifi_name">Tunnel für WLAN-Namen verwenden</string>
-    <string name="mobile_data_tunnel">Als Tunnel für Mobile Daten setzen</string>
-    <string name="restart_on_ping">Neustart bei PING Fehler (Beta)</string>
     <string name="edit_tunnel">Tunnel bearbeiten</string>
     <string name="set_primary_tunnel">Als Primären Tunnel setzen</string>
     <string name="vpn_channel_name">VPN Benachrichtigungskanal</string>
@@ -117,7 +112,6 @@
     <string name="tunnel_running">Laufender Tunnel</string>
     <string name="donate">Fürs Projekt spenden</string>
     <string name="local_logging">Lokales Logging</string>
-    <string name="enable_local_logging">Lokales Logging aktivieren</string>
     <string name="add_from_clipboard">Aus Zwischenablage einfügen</string>
     <string name="automatic">Automatisch</string>
     <string name="language">Sprache</string>
@@ -130,7 +124,6 @@
     <string name="monitoring_state_changes">Überwache Statusänderungen</string>
     <string name="stop_on_no_internet">Stoppen wenn keine Internetverbindung besteht</string>
     <string name="ethernet_tunnel">Ethernet Tunnel</string>
-    <string name="set_ethernet_tunnel">Als Ethernet Tunnel setzen</string>
     <string name="native_kill_switch">Nativer Notschalter</string>
     <string name="allow_lan_traffic">LAN Verkehr erlauben</string>
     <string name="vpn_channel_description">Ein Kanal für VPN-Statusbenachrichtigungen</string>
@@ -138,7 +131,6 @@
     <string name="auto_tunnel_channel_description">Ein Kanal für Auto-Tunnel Statusbenachrichtigungen</string>
     <string name="stop">Stop</string>
     <string name="splt_tunneling">Tunneling aufteilen</string>
-    <string name="tunnel_specific_settings">Tunnelspezifische Einstellungen</string>
     <string name="show_scripts">Skripte anzeigen</string>
     <string name="pre_up">Vor Aktivierung</string>
     <string name="post_up">Nach Aktivierung</string>
@@ -189,7 +181,6 @@
     <string name="dns_resolve_error">DNS-Auflösung fehlgeschlagen</string>
     <string name="export_tunnels_wireguard">Tunnel als WireGuard exportieren</string>
     <string name="camera_permission_required">Kameraberechtigung erforderlich</string>
-    <string name="wifi_name_template">Aktiv: %1$s</string>
     <string name="delete">Löschen</string>
     <string name="nothing_here_yet">Noch nix hier!</string>
     <string name="select_all">Alles auswählen</string>
@@ -207,7 +198,6 @@
     <string name="allow">Erlauben</string>
     <string name="install_updated_permission">Diese App benötigt die Berechtigung, um Updates zu installieren.</string>
     <string name="latest_installed">Du verwendesz bereits die neueste Version.</string>
-    <string name="security_template">Sicherheit: %1$s</string>
     <string name="amoled">AMOLED</string>
     <string name="flavor_template">Variante: %1$s</string>
     <string name="darker">Dunkler</string>
@@ -255,9 +245,6 @@
     <string name="ping_timeout">Tunnel-Ping-Timeout</string>
     <string name="timeout_all_attempts">Gesamtzeitüberschreitung für alle Versuche</string>
     <string name="display_detailed_ping_stats">Detaillierte Ping-Statistiken anzeigen</string>
-    <string name="monitoring_ping">Ping-Tunnel-Überwachung aktivieren</string>
-    <string name="rx_template">RX: %1$s MB</string>
-    <string name="tx_template">TX: %1$s MB</string>
     <string name="reachable_template">Erreichbar: %1$s</string>
     <string name="ping_success_template">Letzter erfolgreicher Ping: %1$s</string>
     <string name="sec_ago_template">vor %1$s Sek</string>
@@ -303,7 +290,6 @@
     <string name="comma_separated">Komma getrennt</string>
     <string name="server_port">Server:Port</string>
     <string name="new_tunnel">Neuer Tunnel</string>
-    <string name="system_features">Systemfunktionen</string>
     <string name="read_failed">Daten konnten nicht gelesen werden.</string>
     <string name="invalid_key">Ungültiger Schlüssel</string>
     <string name="invalid_number">Ungültige Nummer</string>

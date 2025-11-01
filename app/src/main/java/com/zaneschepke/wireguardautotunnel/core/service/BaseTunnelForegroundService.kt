@@ -13,7 +13,8 @@ import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.util.extensions.distinctByKeys
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +35,8 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
     @Inject lateinit var tunnelMonitor: TunnelMonitor
 
     @Inject @IoDispatcher lateinit var ioDispatcher: CoroutineDispatcher
+
+    @Inject lateinit var settingsRepository: GeneralSettingRepository
 
     @Inject lateinit var tunnelsRepository: TunnelRepository
 
@@ -62,7 +65,24 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
             onCreateNotification(),
             fgsType,
         )
-        start()
+        if (
+            intent == null ||
+                intent.component == null ||
+                (intent.component?.packageName != this.packageName)
+        ) {
+            Timber.d("Service started by Always-on VPN feature")
+            lifecycleScope.launch {
+                val settings = settingsRepository.getGeneralSettings()
+                if (settings.isAlwaysOnVpnEnabled) {
+                    val tunnel = tunnelsRepository.getDefaultTunnel()
+                    tunnel?.let { tunnelManager.startTunnel(it) }
+                } else {
+                    Timber.w("Always-on VPN is not enabled in app settings")
+                }
+            }
+        } else {
+            start()
+        }
         return START_STICKY
     }
 
@@ -78,7 +98,7 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
     }
 
     // TODO Would be cool to have this include kill switch
-    private fun updateServiceNotification(activeConfigs: List<TunnelConf>) {
+    private fun updateServiceNotification(activeConfigs: List<TunnelConfig>) {
         val notification =
             when (activeConfigs.size) {
                 0 -> onCreateNotification()
@@ -106,18 +126,20 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
         super.onDestroy()
     }
 
-    private fun createTunnelNotification(tunnelConf: TunnelConf): Notification {
+    private fun createTunnelNotification(tunnelConfig: TunnelConfig): Notification {
         return notificationManager.createNotification(
             WireGuardNotification.NotificationChannels.VPN,
-            title = "${getString(R.string.tunnel_running)} - ${tunnelConf.tunName}",
+            title = "${getString(R.string.tunnel_running)} - ${tunnelConfig.name}",
             actions =
                 listOf(
                     notificationManager.createNotificationAction(
                         NotificationAction.TUNNEL_OFF,
-                        tunnelConf.id,
+                        tunnelConfig.id,
                     )
                 ),
             onGoing = true,
+            groupKey = NotificationManager.VPN_GROUP_KEY,
+            isGroupSummary = true,
         )
     }
 
@@ -129,6 +151,8 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
                 listOf(
                     notificationManager.createNotificationAction(NotificationAction.TUNNEL_OFF, 0)
                 ),
+            groupKey = NotificationManager.VPN_GROUP_KEY,
+            isGroupSummary = true,
         )
     }
 
@@ -136,6 +160,8 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
         return notificationManager.createNotification(
             WireGuardNotification.NotificationChannels.VPN,
             title = getString(R.string.tunnel_starting),
+            groupKey = NotificationManager.VPN_GROUP_KEY,
+            isGroupSummary = true,
         )
     }
 }

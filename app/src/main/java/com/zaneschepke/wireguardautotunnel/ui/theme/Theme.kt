@@ -9,10 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 
 private val DarkColorScheme =
@@ -93,33 +93,35 @@ fun WireguardAutoTunnelTheme(theme: Theme = Theme.AUTOMATIC, content: @Composabl
 
     val view = LocalView.current
     if (!view.isInEditMode) {
-        @Suppress("DEPRECATION")
         SideEffect {
             val window = (view.context as Activity).window
             WindowCompat.setDecorFitsSystemWindows(window, false)
-            window.navigationBarColor = Color.Transparent.toArgb()
-            window.statusBarColor = Color.Transparent.toArgb()
-            WindowCompat.getInsetsController(window, window.decorView).apply {
-                isAppearanceLightStatusBars = !isDark
-                isAppearanceLightNavigationBars = !isDark
-            }
+            // For API 33+, use WindowInsetsControllerCompat for appearance control
+            val insetsController = WindowInsetsControllerCompat(window, window.decorView)
+            insetsController.isAppearanceLightStatusBars = !isDark
+            insetsController.isAppearanceLightNavigationBars = !isDark
         }
     }
 
-    // Make hover/ripple more obvious on TV
     val rippleConfig =
-        if (isTv) {
-            RippleConfiguration(
-                color = colorScheme.outline.copy(alpha = 0.12f),
-                rippleAlpha =
+        RippleConfiguration(
+            color = colorScheme.primary,
+            rippleAlpha =
+                if (isTv)
                     RippleAlpha(
-                        pressedAlpha = 0.7f,
-                        focusedAlpha = 0.6f,
-                        draggedAlpha = 0.9f,
-                        hoveredAlpha = 0.3f,
+                        pressedAlpha = 0.5f,
+                        focusedAlpha = 0.4f,
+                        draggedAlpha = 0.2f,
+                        hoveredAlpha = 0.4f,
+                    )
+                else
+                    RippleAlpha(
+                        pressedAlpha = 0.2f,
+                        focusedAlpha = 0.1f,
+                        draggedAlpha = 0.2f,
+                        hoveredAlpha = 0.1f,
                     ),
-            )
-        } else null
+        )
 
     CompositionLocalProvider(LocalRippleConfiguration provides rippleConfig) {
         MaterialTheme(colorScheme = colorScheme, typography = Typography, content = content)

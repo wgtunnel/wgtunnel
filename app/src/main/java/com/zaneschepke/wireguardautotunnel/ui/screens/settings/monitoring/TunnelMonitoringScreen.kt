@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Replay
-import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.material.icons.outlined.TimerOff
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,47 +17,38 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
+import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.components.detailedPingStatsItem
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.components.enablePingMonitoringItem
-import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
+import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
+import com.zaneschepke.wireguardautotunnel.viewmodel.MonitoringViewModel
 
 @Composable
-fun TunnelMonitoringScreen(viewModel: SettingsViewModel) {
-    val settingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+fun TunnelMonitoringScreen(viewModel: MonitoringViewModel = hiltViewModel()) {
+    val navController = LocalNavController.current
+    val monitoringUiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+
+    if (monitoringUiState.isLoading) return
 
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
-        modifier =
-            Modifier.fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = 24.dp)
-                .padding(horizontal = 12.dp),
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
     ) {
-        SurfaceSelectionGroupButton(
-            listOf(
-                enablePingMonitoringItem(settingsState.settings.isPingEnabled) {
-                    viewModel.setPingEnabled(it)
-                }
+        Column {
+            GroupLabel(
+                stringResource(R.string.ping),
+                modifier = Modifier.padding(horizontal = 16.dp),
             )
-        )
-        if (settingsState.settings.isPingEnabled) {
             LabelledDropdown(
-                title = {
-                    Text(
-                        text = stringResource(R.string.tunnel_ping_interval),
-                        style =
-                            MaterialTheme.typography.bodyMedium.copy(
-                                color = MaterialTheme.colorScheme.onSurface
-                            ),
-                    )
-                },
+                title = stringResource(R.string.tunnel_ping_interval),
                 leading = { Icon(Icons.Outlined.Timer, contentDescription = null) },
-                currentValue = settingsState.settings.tunnelPingIntervalSeconds,
+                currentValue = monitoringUiState.monitoringSettings.tunnelPingIntervalSeconds,
                 onSelected = { selected ->
                     selected?.let { viewModel.setTunnelPingIntervalSeconds(it) }
                 },
@@ -67,33 +56,17 @@ fun TunnelMonitoringScreen(viewModel: SettingsViewModel) {
                 optionToString = { it?.toString() ?: stringResource(R.string._default) },
             )
             LabelledDropdown(
-                title = {
-                    Text(
-                        text = stringResource(R.string.attempts_per_interval),
-                        style =
-                            MaterialTheme.typography.bodyMedium.copy(
-                                color = MaterialTheme.colorScheme.onSurface
-                            ),
-                    )
-                },
+                title = stringResource(R.string.attempts_per_interval),
                 leading = { Icon(Icons.Outlined.Replay, contentDescription = null) },
-                currentValue = settingsState.settings.tunnelPingAttempts,
+                currentValue = monitoringUiState.monitoringSettings.tunnelPingAttempts,
                 onSelected = { selected -> selected?.let { viewModel.setTunnelPingAttempts(it) } },
                 options = (1..5).toList(),
                 optionToString = { it?.toString() ?: stringResource(R.string._default) },
             )
             LabelledDropdown(
-                title = {
-                    Text(
-                        text = stringResource(R.string.ping_timeout),
-                        style =
-                            MaterialTheme.typography.bodyMedium.copy(
-                                color = MaterialTheme.colorScheme.onSurface
-                            ),
-                    )
-                },
+                title = stringResource(R.string.ping_timeout),
                 leading = { Icon(Icons.Outlined.TimerOff, contentDescription = null) },
-                currentValue = settingsState.settings.tunnelPingTimeoutSeconds,
+                currentValue = monitoringUiState.monitoringSettings.tunnelPingTimeoutSeconds,
                 description = {
                     Text(
                         text = stringResource(R.string.timeout_all_attempts),
@@ -109,12 +82,25 @@ fun TunnelMonitoringScreen(viewModel: SettingsViewModel) {
                 options = (10..20).toList() + null,
                 optionToString = { it?.toString() ?: stringResource(R.string._default) },
             )
-            SurfaceSelectionGroupButton(
-                listOf(
-                    detailedPingStatsItem(settingsState.showDetailedPingStats) {
-                        viewModel.setDetailedPingStats(it)
-                    }
-                )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.QueryStats, contentDescription = null) },
+                title = stringResource(R.string.display_detailed_ping_stats),
+                trailing = {
+                    ThemedSwitch(
+                        checked = monitoringUiState.monitoringSettings.showDetailedPingStats,
+                        onClick = { viewModel.setDetailedPingStats(it) },
+                    )
+                },
+                onClick = {
+                    viewModel.setDetailedPingStats(
+                        !monitoringUiState.monitoringSettings.showDetailedPingStats
+                    )
+                },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.Adjust, contentDescription = null) },
+                title = stringResource(R.string.set_custom_ping_target),
+                onClick = { navController.push(Route.PingTarget) },
             )
         }
     }

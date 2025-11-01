@@ -32,23 +32,22 @@ import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.ExpandingRowListItem
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.util.extensions.isSortedBy
-import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 import sh.calvin.reorderable.DragGestureDetector
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
-fun SortScreen(viewModel: TunnelsViewModel) {
-    val sharedViewModel = LocalSharedVm.current
-    val tunnelsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+fun SortScreen() {
+    val viewModel = LocalSharedVm.current
+    val sharedState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
     val hapticFeedback = LocalHapticFeedback.current
     val isTv = LocalIsAndroidTV.current
 
     var sortAscending by rememberSaveable { mutableStateOf<Boolean?>(null) }
-    var editableTunnels by rememberSaveable { mutableStateOf(tunnelsState.tunnels) }
+    var editableTunnels by rememberSaveable { mutableStateOf(sharedState.tunnels) }
 
-    sharedViewModel.collectSideEffect { sideEffect ->
+    viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             LocalSideEffect.SaveChanges -> {
                 viewModel.saveSortChanges(editableTunnels)
@@ -56,15 +55,15 @@ fun SortScreen(viewModel: TunnelsViewModel) {
             LocalSideEffect.Sort -> {
                 sortAscending =
                     when (sortAscending) {
-                        null -> !editableTunnels.isSortedBy { it.tunName }
+                        null -> !editableTunnels.isSortedBy { it.name }
                         true -> false
                         false -> null
                     }
                 editableTunnels =
                     when (sortAscending) {
-                        true -> editableTunnels.sortedBy { it.tunName }
-                        false -> editableTunnels.sortedByDescending { it.tunName }
-                        null -> tunnelsState.tunnels
+                        true -> editableTunnels.sortedBy { it.name }
+                        false -> editableTunnels.sortedByDescending { it.name }
+                        null -> sharedState.tunnels
                     }
             }
             else -> Unit
@@ -87,9 +86,8 @@ fun SortScreen(viewModel: TunnelsViewModel) {
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
         modifier =
-            Modifier.pointerInput(Unit) { if (tunnelsState.tunnels.isEmpty()) return@pointerInput }
-                .overscroll(rememberOverscrollEffect())
-                .padding(horizontal = 16.dp, vertical = 24.dp),
+            Modifier.pointerInput(Unit) { if (sharedState.tunnels.isEmpty()) return@pointerInput }
+                .overscroll(rememberOverscrollEffect()),
         state = lazyListState,
         userScrollEnabled = true,
         reverseLayout = false,
@@ -99,7 +97,7 @@ fun SortScreen(viewModel: TunnelsViewModel) {
             ReorderableItem(reorderableLazyListState, tunnel.id) { isDragging ->
                 ExpandingRowListItem(
                     leading = {},
-                    text = tunnel.tunName,
+                    text = tunnel.name,
                     trailing = {
                         if (!isTv)
                             Icon(Icons.Default.DragHandle, stringResource(R.string.drag_handle))

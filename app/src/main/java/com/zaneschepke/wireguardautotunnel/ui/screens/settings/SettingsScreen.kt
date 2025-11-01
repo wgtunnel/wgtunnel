@@ -1,169 +1,288 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.settings
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.CallSplit
+import androidx.compose.material.icons.automirrored.outlined.ViewQuilt
+import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
-import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
-import com.zaneschepke.wireguardautotunnel.ui.common.SectionDivider
-import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SheetButtonWithDivider
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
+import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
+import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.*
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.BackupBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.compoents.AppModeBottomSheet
-import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
+import com.zaneschepke.wireguardautotunnel.ui.theme.Disabled
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.asString
+import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
+import com.zaneschepke.wireguardautotunnel.util.extensions.capitalize
+import com.zaneschepke.wireguardautotunnel.util.extensions.showToast
 import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
-import org.orbitmvi.orbit.compose.collectSideEffect
+import java.util.*
 
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
-    val isTv = LocalIsAndroidTV.current
     val context = LocalContext.current
     val navController = LocalNavController.current
-    val focusManager = LocalFocusManager.current
     val sharedViewModel = LocalSharedVm.current
-    val interactionSource = remember { MutableInteractionSource() }
 
-    val settingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val locale = remember { Locale.getDefault() }
+
+    val sharedUiState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+
+    if (uiState.isLoading) return
 
     var showBackupSheet by rememberSaveable { mutableStateOf(false) }
     var showAppModeSheet by rememberSaveable { mutableStateOf(false) }
 
-    val appMode by
-        rememberSaveable(settingsState.settings.appMode) {
-            mutableStateOf(settingsState.settings.appMode)
+    val appMode = uiState.settings.appMode
+    val dnsEnabled by rememberSaveable(appMode) { mutableStateOf(appMode != AppMode.KERNEL) }
+
+    val showModeDivider by
+        remember(appMode) {
+            derivedStateOf { appMode == AppMode.PROXY || appMode == AppMode.LOCK_DOWN }
         }
 
-    if (!settingsState.stateInitialized) return
-
-    sharedViewModel.collectSideEffect { sideEffect ->
-        when (sideEffect) {
-            LocalSideEffect.Sheet.BackupApp -> showBackupSheet = true
-            else -> Unit
-        }
+    fun performBackupRestore(action: () -> Unit) {
+        if (sharedUiState.activeTunnels.isNotEmpty() || sharedUiState.isAutoTunnelActive)
+            return context.showToast(R.string.all_services_disabled)
+        showBackupSheet = false
+        action()
     }
 
-    val showProxySettings by
-        remember(settingsState.settings.appMode) {
-            derivedStateOf {
-                when (settingsState.settings.appMode) {
-                    AppMode.PROXY -> true
-                    else -> false
-                }
-            }
+    if (showBackupSheet)
+        BackupBottomSheet(
+            { performBackupRestore { (context as? MainActivity)?.performBackup() } },
+            { performBackupRestore { (context as? MainActivity)?.performRestore() } },
+        ) {
+            showBackupSheet = false
         }
-
-    if (showBackupSheet) BackupBottomSheet { showBackupSheet = false }
     if (showAppModeSheet)
-        AppModeBottomSheet(sharedViewModel::setAppMode, settingsState.settings.appMode) {
+        AppModeBottomSheet(sharedViewModel::setAppMode, uiState.settings.appMode) {
             showAppModeSheet = false
         }
 
     Column(
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
-        modifier =
-            Modifier.verticalScroll(rememberScrollState())
-                .fillMaxSize()
-                .padding(vertical = 24.dp)
-                .padding(horizontal = 12.dp)
-                .then(
-                    if (!isTv) {
-                        Modifier.clickable(
-                            indication = null,
-                            interactionSource = interactionSource,
-                            onClick = { focusManager.clearFocus() },
-                        )
-                    } else {
-                        Modifier
-                    }
-                ),
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
+        modifier = Modifier.verticalScroll(rememberScrollState()).fillMaxSize(),
     ) {
-        SurfaceSelectionGroupButton(
-            listOf(appModeItem(settingsState.settings.appMode) { showAppModeSheet = true })
-        )
-        SectionDivider()
-        SurfaceSelectionGroupButton(
-            items =
-                buildList {
-                    if (appMode == AppMode.LOCK_DOWN) {
-                        add(
-                            lanTrafficItem(settingsState.settings.isLanOnKillSwitchEnabled) {
-                                viewModel.setLanKillSwitchEnabled(it)
-                            }
-                        )
+        Column {
+            GroupLabel(
+                stringResource(R.string.tunnel).capitalize(locale),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            SurfaceRow(
+                leading = {
+                    Icon(ImageVector.vectorResource(R.drawable.sdk), contentDescription = null)
+                },
+                trailing = { modifier ->
+                    SheetButtonWithDivider(showModeDivider, modifier) { showAppModeSheet = true }
+                },
+                title = stringResource(R.string.backend_mode),
+                description = {
+                    DescriptionText(
+                        stringResource(R.string.current_template, appMode.asTitleString(context))
+                    )
+                },
+                onClick = {
+                    when (appMode) {
+                        AppMode.PROXY -> navController.push(Route.ProxySettings)
+                        AppMode.LOCK_DOWN -> navController.push(Route.LockdownSettings)
+                        AppMode.KERNEL,
+                        AppMode.VPN -> showAppModeSheet = true
                     }
-                    add(
-                        tunnelMonitoringItem(
-                            appMode,
-                            onClick = { navController.navigate(Route.TunnelMonitoring) },
-                        ) {
-                            sharedViewModel.showSnackMessage(
-                                StringValue.StringResource(
-                                    R.string.mode_disabled_template,
-                                    appMode.asString(context),
-                                )
+                },
+            )
+            SurfaceRow(
+                leading = {
+                    Icon(
+                        Icons.Outlined.Dns,
+                        null,
+                        tint =
+                            if (dnsEnabled) MaterialTheme.colorScheme.onSurface
+                            else MaterialTheme.colorScheme.outline,
+                    )
+                },
+                title = stringResource(R.string.dns_settings),
+                enabled = dnsEnabled,
+                onClick = {
+                    if (dnsEnabled) navController.push(Route.Dns)
+                    else
+                        sharedViewModel.showSnackMessage(
+                            StringValue.StringResource(
+                                R.string.mode_disabled_template,
+                                appMode.asString(context),
+                            )
+                        )
+                },
+            )
+            SurfaceRow(
+                leading = {
+                    Icon(
+                        Icons.AutoMirrored.Outlined.CallSplit,
+                        contentDescription = null,
+                        tint =
+                            if (sharedUiState.proxyEnabled) Disabled
+                            else MaterialTheme.colorScheme.onSurface,
+                    )
+                },
+                enabled = !sharedUiState.proxyEnabled,
+                title = stringResource(R.string.global_split_tunneling),
+                trailing = { modifier ->
+                    SwitchWithDivider(
+                        checked = uiState.settings.isGlobalSplitTunnelEnabled,
+                        onClick = { viewModel.setGlobalSplitTunneling(it) },
+                        modifier = modifier,
+                        enabled = !sharedUiState.proxyEnabled,
+                    )
+                },
+                description =
+                    if (sharedUiState.proxyEnabled) {
+                        {
+                            DescriptionText(
+                                stringResource(R.string.unavailable_in_mode),
+                                disabled = true,
                             )
                         }
+                    } else null,
+                onClick = {
+                    uiState.globalTunnelConfig?.let {
+                        navController.push(Route.SplitTunnelGlobal(id = it.id))
+                    }
+                },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.Android, null) },
+                title = stringResource(R.string.android_integrations),
+                onClick = { navController.push(Route.AndroidIntegrations) },
+            )
+        }
+        Column {
+            GroupLabel(
+                stringResource(R.string.monitoring),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            SurfaceRow(
+                leading = {
+                    Icon(
+                        Icons.Outlined.NetworkPing,
+                        contentDescription = null,
+                        tint =
+                            if (!sharedUiState.proxyEnabled) MaterialTheme.colorScheme.onSurface
+                            else Disabled,
                     )
-                    add(
-                        dnsSettingsItem(appMode, onClick = { navController.navigate(Route.Dns) }) {
-                            sharedViewModel.showSnackMessage(
-                                StringValue.StringResource(
-                                    R.string.mode_disabled_template,
-                                    appMode.asString(context),
-                                )
+                },
+                title = stringResource(R.string.ping_monitor),
+                enabled = !sharedUiState.proxyEnabled,
+                description =
+                    if (sharedUiState.proxyEnabled) {
+                        {
+                            DescriptionText(
+                                stringResource(R.string.unavailable_in_mode),
+                                disabled = true,
                             )
                         }
+                    } else null,
+                trailing = { modifier ->
+                    SwitchWithDivider(
+                        checked = uiState.monitoring.isPingEnabled,
+                        onClick = { viewModel.setPingEnabled(it) },
+                        enabled = !sharedUiState.proxyEnabled,
+                        modifier = modifier,
                     )
-                    if (showProxySettings)
-                        add(proxYSettingsItem { navController.navigate(Route.ProxySettings) })
-                }
-        )
-        SectionDivider()
-        SurfaceSelectionGroupButton(
-            listOf(systemFeaturesItem { navController.navigate(Route.SystemFeatures) })
-        )
-        SectionDivider()
-        SurfaceSelectionGroupButton(
-            items =
-                buildList {
-                    add(appearanceItem { navController.navigate(Route.Appearance) })
-                    add(
-                        localLoggingItem(settingsState.isLocalLoggingEnabled) {
-                            viewModel.setLocalLogging(it)
-                        }
+                },
+                onClick = { navController.push(Route.TunnelMonitoring) },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.ViewHeadline, contentDescription = null) },
+                title = stringResource(R.string.local_logging),
+                trailing = { modifier ->
+                    SwitchWithDivider(
+                        checked = uiState.monitoring.isLocalLogsEnabled,
+                        onClick = { viewModel.setLocalLogging(it) },
+                        modifier = modifier,
                     )
-                    if (settingsState.isLocalLoggingEnabled)
-                        add(readLogsItem { navController.navigate(Route.Logs) })
-                    add(
-                        pinLockItem(settingsState.isPinLockEnabled) { enabled ->
-                            if (enabled) {
-                                navController.navigate(Route.Lock)
+                },
+                onClick = { navController.push(Route.Logs) },
+            )
+        }
+        Column(modifier = Modifier.padding(bottom = 16.dp)) {
+            GroupLabel(
+                stringResource(R.string.general),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            SurfaceRow(
+                leading = {
+                    Icon(Icons.AutoMirrored.Outlined.ViewQuilt, contentDescription = null)
+                },
+                title = stringResource(R.string.appearance),
+                onClick = { navController.push(Route.Appearance) },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.Pin, contentDescription = null) },
+                title = stringResource(R.string.enable_app_lock),
+                trailing = {
+                    ThemedSwitch(
+                        checked = uiState.isPinLockEnabled,
+                        onClick = {
+                            if (it) {
+                                navController.push(Route.Lock)
                             } else {
                                 sharedViewModel.setPinLockEnabled(false)
                             }
-                        }
+                        },
                     )
-                }
-        )
+                },
+                onClick = {
+                    if (!uiState.isPinLockEnabled) {
+                        navController.push(Route.Lock)
+                    } else {
+                        sharedViewModel.setPinLockEnabled(false)
+                    }
+                },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.SettingsBackupRestore, contentDescription = null) },
+                title = stringResource(R.string.backup_and_restore),
+                onClick = { showBackupSheet = true },
+                trailing = { modifier ->
+                    IconButton(modifier = modifier, onClick = { showBackupSheet = true }) {
+                        Icon(
+                            Icons.Outlined.ExpandMore,
+                            contentDescription = stringResource(R.string.select),
+                        )
+                    }
+                },
+            )
+        }
     }
 }

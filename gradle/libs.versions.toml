@@ -1,63 +1,122 @@
 [versions]
 accompanist = "0.37.3"
 activityCompose = "1.11.0"
-amneziawgAndroid = "2.1.9"
+amneziawgAndroid = "2.2.0"
 androidx-junit = "1.3.0"
 icmp4a = "1.0.0"
+ipaddress = "5.5.1"
 orbitCompose = "10.0.0"
 roomdatabasebackup = "1.1.0"
 shizuku = "13.1.5"
 appcompat = "1.7.1"
 coreKtx = "1.17.0"
-datastorePreferences = "1.2.0-alpha02"
+datastorePreferences = "1.2.0-beta01"
 desugar_jdk_libs = "2.1.5"
 espressoCore = "3.7.0"
 hiltAndroid = "2.57.2"
 hiltCompiler = "1.3.0"
+hiltNavigationCompose = "1.3.0"
+navigation3 = "1.0.0-beta01"
 junit = "4.13.2"
 kotlinx-serialization-json = "1.9.0"
-ktorClientCore = "3.3.0"
+ktorClientCore = "3.3.1"
 lifecycle-runtime-compose = "2.9.4"
-material3 = "1.4.0"
-navigationCompose = "2.9.5"
+material3 = "1.5.0-alpha07"
 pinLockCompose = "1.0.5"
 qrose = "1.0.1"
-roomVersion = "2.8.1"
+roomVersion = "2.8.3"
 semver4j = "3.1.0"
 slf4jAndroid = "1.7.36"
 timber = "5.0.1"
 tunnel = "1.4.0"
-androidGradlePlugin = "8.11.1"
-kotlin = "2.2.20"
-ksp = "2.2.20-2.0.3"
-composeBom = "2025.09.01"
-compose = "1.9.2"
+androidGradlePlugin = "8.12.3"
+kotlin = "2.2.21"
+ksp = "2.3.0"
+composeBom = "2025.10.01"
+compose = "1.9.4"
 icons = "1.7.8"
-workRuntimeKtxVersion = "2.10.5"
+workRuntimeKtxVersion = "2.11.0"
 zxingAndroidEmbedded = "4.3.0"
 coreSplashscreen = "1.0.1"
 gradlePlugins-grgit = "5.3.3"
 reorderable = "3.0.0"
-
-#plugins
 material = "1.13.0"
 storage = "1.6.0"
-ktfmt = "0.24.0"
-licensee = "1.13.0"
+ktfmt = "0.25.0"
+licensee = "1.14.1"
+lifecycleViewmodelNavigation3 = "2.10.0-beta01"
 
+[bundles]
+# Core AndroidX foundations
+androidx-core-full = ["androidx-core", "androidx-core-ktx"]
+
+# Lifecycle components (merged non-compose ones for common usage)
+androidx-lifecycle-core = ["androidx-lifecycle-runtime-ktx", "androidx-lifecycle-service", "androidx-lifecycle-process"]
+
+# Compose UI essentials
+androidx-compose-ui = ["androidx-compose-ui", "androidx-compose-ui-graphics", "androidx-compose-ui-tooling-preview"]
+androidx-compose-material = ["androidx-material3", "androidx-compose-animation-graphics"]
+
+# Material and icons
+google-material = ["material"]
+material-icons = ["material-icons-core", "material-icons-extended"]
+
+# Navigation and related
+androidx-navigation3 = ["androidx-navigation3-runtime", "androidx-navigation3-ui"]
+navigation-lifecycle = ["androidx-lifecycle-viewmodel-navigation3"]
+
+# Accompanist utilities
+accompanist = ["accompanist-permissions", "accompanist-drawablepainter"]
+
+# Room and database
+androidx-room = ["androidx-room-runtime", "androidx-room-ktx"]
+androidx-datastore = ["androidx-datastore-preferences"]
+
+# Hilt DI and work
+hilt-android = ["hilt-android"]
+androidx-hilt = ["androidx-hilt-work", "androidx-hilt-hilt-navigation-compose"]
+androidx-work = ["androidx-work-runtime"]
+
+# Ktor networking
+ktor-client = ["ktor-client-core", "ktor-client-okhttp", "ktor-client-cio", "ktor-client-content-negotiation", "ktor-serialization-kotlinx-json"]
+
+# Serialization
+kotlinx-serialization = ["kotlinx-serialization-json"]
+
+# State management
+orbit-mvi = ["orbit-compose", "orbit-viewmodel", "orbit-core"]
+
+# Tunnel/WireGuard
+wireguard-tunnel = ["tunnel", "amneziawg-android"]
+
+# Shizuku
+shizuku = ["shizuku-api", "shizuku-provider"]
+
+# UI utilities
+ui-utilities = ["pin-lock-compose", "qrose", "reorderable", "zxing-android-embedded", "androidx-core-splashscreen"]
+
+# Misc utilities
+misc-utilities = ["semver4j", "icmp4a", "slf4j-android", "timber"]
+
+# Appcompat and storage
+androidx-appcompat = ["androidx-appcompat"]
+androidx-storage = ["androidx-storage"]
 
 [libraries]
-
 # accompanist
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 
-# db
+# core
 androidx-core = { module = "androidx.core:core", version.ref = "coreKtx" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+
+# db
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
+androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "roomVersion" }
 androidx-storage = { group = "androidx.test.services", name = "storage", version.ref = "storage" }
 
 # ui
@@ -68,39 +127,46 @@ androidx-compose-manifest = { module = "androidx.compose.ui:ui-test-manifest", v
 androidx-compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics", version.ref = "compose" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+androidx-compose-animation-graphics = { module = "androidx.compose.animation:animation-graphics", version.ref = "compose" }
 icmp4a = { module = "com.marsounjan:icmp4a", version.ref = "icmp4a" }
+ipaddress = { module = "com.github.seancfoley:ipaddress", version.ref = "ipaddress" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
-androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
-androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltCompiler" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
 
-# lifecyle
+# lifecycle
 androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle-runtime-compose" }
 androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "lifecycle-runtime-compose" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-compose" }
+lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle-runtime-compose" }
+androidx-lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNavigation3" }
 
 # di
-androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "roomVersion" }
 androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtxVersion" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltCompiler" }
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltCompiler" }
+androidx-hilt-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
+# testing
 junit = { module = "junit:junit", version.ref = "junit" }
+
+# serialization
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientCore" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientCore" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientCore" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktorClientCore" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorClientCore" }
-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle-runtime-compose" }
+
+# icons
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "icons" }
 material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "icons" }
 
@@ -109,10 +175,9 @@ orbit-compose = { module = "org.orbit-mvi:orbit-compose", version.ref = "orbitCo
 orbit-core = { module = "org.orbit-mvi:orbit-core", version.ref = "orbitCompose" }
 orbit-viewmodel = { module = "org.orbit-mvi:orbit-viewmodel", version.ref = "orbitCompose" }
 
+# misc
 pin-lock-compose = { module = "com.zaneschepke:pin_lock_compose", version.ref = "pinLockCompose" }
 roomdatabasebackup = { module = "de.raphaelebner:roomdatabasebackup", version.ref = "roomdatabasebackup" }
-shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizuku" }
-shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizuku" }
 qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
 semver4j = { module = "com.vdurmont:semver4j", version.ref = "semver4j" }
 slf4j-android = { module = "org.slf4j:slf4j-android", version.ref = "slf4jAndroid" }
@@ -125,6 +190,10 @@ reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reo
 tunnel = { module = "com.zaneschepke:wireguard-android", version.ref = "tunnel" }
 amneziawg-android = { module = "com.zaneschepke:amneziawg-android", version.ref = "amneziawgAndroid" }
 
+# shizuku
+shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizuku" }
+shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizuku" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
@@ -136,4 +205,3 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 grgit = { id = "org.ajoberstar.grgit.service", version.ref = "gradlePlugins-grgit" }
 ktfmt = { id = "com.ncorti.ktfmt.gradle", version.ref = "ktfmt" }
 licensee = { id = "app.cash.licensee", version.ref = "licensee" }
-

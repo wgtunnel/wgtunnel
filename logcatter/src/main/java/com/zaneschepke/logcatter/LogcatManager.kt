@@ -1,6 +1,5 @@
 package com.zaneschepke.logcatter
 
-import android.R.attr.path
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.zaneschepke.logcatter.model.LogMessage

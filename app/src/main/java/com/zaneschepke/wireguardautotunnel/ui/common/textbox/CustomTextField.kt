@@ -9,8 +9,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
@@ -33,7 +37,7 @@ fun CustomTextField(
     keyboardActions: KeyboardActions = KeyboardActions(),
     supportingText: @Composable (() -> Unit)? = null,
     leading: @Composable (() -> Unit)? = null,
-    trailing: @Composable (() -> Unit)? = null,
+    trailing: @Composable ((Modifier) -> Unit)? = null,
     isError: Boolean = false,
     readOnly: Boolean = false,
     enabled: Boolean = true,
@@ -41,15 +45,40 @@ fun CustomTextField(
     interactionSource: MutableInteractionSource = MutableInteractionSource(),
 ) {
     val space = " "
+    var isFocused by remember { mutableStateOf(false) }
+    val cursorBrush =
+        if (isFocused) SolidColor(MaterialTheme.colorScheme.primary)
+        else SolidColor(Color.Transparent)
+    val editable = enabled && !readOnly
+    val mainFocusRequester = remember { FocusRequester() }
+    val trailingFocusRequester = remember { FocusRequester() }
+    val disabledAlpha = 0.38f
+    val disabledBorderAlpha = 0.12f
+    val effectiveTextStyle =
+        if (enabled) {
+            textStyle
+        } else {
+            textStyle.copy(color = textStyle.color.copy(alpha = disabledAlpha))
+        }
+
     BasicTextField(
         value = value,
-        textStyle = textStyle,
+        textStyle = effectiveTextStyle,
         onValueChange = { onValueChange(it) },
         keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions,
         readOnly = readOnly,
-        cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
-        modifier = modifier,
+        cursorBrush = cursorBrush,
+        modifier =
+            modifier
+                .focusRequester(mainFocusRequester)
+                .focusProperties {
+                    canFocus = editable
+                    if (canFocus && trailing != null) {
+                        right = trailingFocusRequester
+                    }
+                }
+                .onFocusChanged { focusState -> isFocused = focusState.isFocused },
         interactionSource = interactionSource,
         enabled = enabled,
         singleLine = singleLine,
@@ -67,19 +96,41 @@ fun CustomTextField(
             },
             contentPadding = OutlinedTextFieldDefaults.contentPadding(top = 0.dp, bottom = 0.dp),
             leadingIcon = leading,
-            trailingIcon = trailing,
+            trailingIcon = {
+                // TODO Android TV bug where this isn't clickable, need to revisit
+                if (trailing != null) {
+                    trailing(
+                        Modifier.focusRequester(trailingFocusRequester).focusProperties {
+                            if (editable) {
+                                left = mainFocusRequester
+                            }
+                        }
+                    )
+                }
+            },
             singleLine = singleLine,
             supportingText = supportingText,
             colors =
                 TextFieldDefaults.colors()
                     .copy(
-                        disabledLabelColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor =
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = disabledAlpha),
+                        disabledLabelColor =
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = disabledAlpha),
+                        disabledPlaceholderColor =
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = disabledAlpha),
+                        disabledLeadingIconColor =
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = disabledAlpha),
+                        disabledTrailingIconColor =
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = disabledAlpha),
+                        disabledSupportingTextColor =
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = disabledAlpha),
                         disabledContainerColor = containerColor,
                         focusedLabelColor = MaterialTheme.colorScheme.onSurface,
                         focusedContainerColor = containerColor,
                         unfocusedContainerColor = containerColor,
                         focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        cursorColor = MaterialTheme.colorScheme.onSurface,
+                        cursorColor = MaterialTheme.colorScheme.primary,
                     ),
             enabled = enabled,
             label = label,
@@ -95,14 +146,20 @@ fun CustomTextField(
                         TextFieldDefaults.colors()
                             .copy(
                                 errorContainerColor = containerColor,
-                                disabledLabelColor = MaterialTheme.colorScheme.onSurface,
+                                disabledLabelColor =
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = disabledAlpha),
                                 disabledContainerColor = containerColor,
-                                focusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
+                                disabledIndicatorColor =
+                                    MaterialTheme.colorScheme.onSurface.copy(
+                                        alpha = disabledBorderAlpha
+                                    ),
+                                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                                unfocusedIndicatorColor = MaterialTheme.colorScheme.outline,
                                 focusedLabelColor = MaterialTheme.colorScheme.onSurface,
                                 focusedContainerColor = containerColor,
                                 unfocusedContainerColor = containerColor,
                                 focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                                cursorColor = MaterialTheme.colorScheme.onSurface,
+                                cursorColor = MaterialTheme.colorScheme.primary,
                             ),
                     shape = RoundedCornerShape(8.dp),
                     focusedBorderThickness = 0.5.dp,

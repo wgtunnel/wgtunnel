@@ -2,7 +2,8 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.domain.model.AppProxySettings
+import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
+import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
@@ -11,6 +12,7 @@ import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.isValidAndroidProxyBindAddress
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.combine
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 
@@ -20,6 +22,7 @@ class ProxySettingsViewModel
 constructor(
     private val proxySettingsRepository: ProxySettingsRepository,
     private val globalEffectRepository: GlobalEffectRepository,
+    private val tunnelManager: TunnelManager,
 ) : ContainerHost<ProxySettingsUiState, Nothing>, ViewModel() {
 
     override val container =
@@ -27,12 +30,16 @@ constructor(
             ProxySettingsUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
-            proxySettingsRepository.flow.collect {
-                reduce { state.copy(proxySettings = it, stateInitialized = true) }
-            }
+            combine(tunnelManager.activeTunnels, proxySettingsRepository.flow) {
+                    activeTuns,
+                    settings ->
+                    state.copy(proxySettings = settings, isLoading = false, activeTuns = activeTuns)
+                }
+                .collect { reduce { it } }
         }
 
-    fun save(proxySettings: AppProxySettings) = intent {
+    fun save(proxySettings: ProxySettings) = intent {
+        reduce { state.copy(showSaveModal = false) }
         val updated =
             state.proxySettings.copy(
                 socks5ProxyEnabled = proxySettings.socks5ProxyEnabled,
@@ -94,19 +101,22 @@ constructor(
                 )
             }
         }
-        // Validate password for whitespace
+
         if (updated.proxyPassword?.any { it.isWhitespace() } == true) {
             postSideEffect(
                 GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.password_no_spaces))
             )
             return@intent reduce { state.copy(isPasswordError = true) }
         }
-        // Save if all validations pass
-        proxySettingsRepository.save(updated)
+
+        proxySettingsRepository.upsert(updated)
+
         postSideEffect(
             GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.config_changes_saved))
         )
         postSideEffect(GlobalSideEffect.PopBackStack)
+
+        if (state.activeTuns.isNotEmpty()) tunnelManager.restartActiveTunnels()
     }
 
     fun clearHttpBindError() = intent { reduce { state.copy(isHttpBindAddressError = false) } }
@@ -116,6 +126,10 @@ constructor(
     fun clearUsernameError() = intent { reduce { state.copy(isPasswordError = false) } }
 
     fun clearPasswordError() = intent { reduce { state.copy(isPasswordError = false) } }
+
+    fun setShowSaveModal(showSaveModal: Boolean) = intent {
+        reduce { state.copy(showSaveModal = showSaveModal) }
+    }
 
     suspend fun postSideEffect(globalSideEffect: GlobalSideEffect) {
         globalEffectRepository.post(globalSideEffect)

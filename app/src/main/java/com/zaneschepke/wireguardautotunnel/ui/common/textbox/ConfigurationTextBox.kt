@@ -2,7 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.common.textbox
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
@@ -26,7 +26,7 @@ fun ConfigurationTextBox(
     keyboardOptions: KeyboardOptions =
         KeyboardOptions(capitalization = KeyboardCapitalization.None, imeAction = ImeAction.Done),
     leading: (@Composable () -> Unit)? = null,
-    trailing: (@Composable () -> Unit)? = null,
+    trailing: (@Composable (Modifier) -> Unit)? = null,
     supportingText: (@Composable () -> Unit)? = null,
     interactionSource: MutableInteractionSource = MutableInteractionSource(),
     visualTransformation: VisualTransformation = VisualTransformation.None,
@@ -34,11 +34,12 @@ fun ConfigurationTextBox(
     readOnly: Boolean = false,
     singleLine: Boolean = true,
 ) {
+
     CustomTextField(
         isError = isError,
         textStyle =
             MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurface),
-        modifier = modifier.fillMaxWidth().height(48.dp),
+        modifier = modifier.fillMaxWidth().heightIn(48.dp),
         value = value,
         visualTransformation = visualTransformation,
         singleLine = singleLine,

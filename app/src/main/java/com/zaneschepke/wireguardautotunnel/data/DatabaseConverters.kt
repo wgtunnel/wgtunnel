@@ -25,6 +25,24 @@ class DatabaseConverters {
     }
 
     @TypeConverter
+    fun mapToString(map: Map<String, String>): String {
+        return Json.encodeToString(map)
+    }
+
+    @TypeConverter
+    fun stringToMap(json: String): Map<String, String> {
+        return if (json.isEmpty() || json == "{}") {
+            emptyMap()
+        } else {
+            try {
+                Json.decodeFromString<Map<String, String>>(json)
+            } catch (_: Exception) {
+                emptyMap()
+            }
+        }
+    }
+
+    @TypeConverter
     fun setToString(value: Set<String>): String {
         return listToString(value.toList())
     }

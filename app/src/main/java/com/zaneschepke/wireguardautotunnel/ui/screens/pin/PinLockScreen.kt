@@ -26,8 +26,7 @@ fun PinLockScreen() {
 
     fun onPinCorrect() {
         sharedViewModel.authenticated()
-        navController.popBackStack()
-        navController.navigate(Route.TunnelsGraph)
+        navController.popUpTo(Route.Tunnels)
     }
 
     PinLock(
@@ -57,6 +56,6 @@ fun PinLockScreen() {
     )
     BackHandler(enabled = (!pinAlreadyExists && !pinCreated)) {
         PinManager.clearPin()
-        navController.navigate(Route.SettingsGraph)
+        navController.push(Route.Settings)
     }
 }

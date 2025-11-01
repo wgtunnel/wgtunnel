@@ -27,8 +27,8 @@ fun SplitOptionSelector(selectedOption: SplitOption, onOptionChange: (SplitOptio
         modifier =
             Modifier.background(color = MaterialTheme.colorScheme.surface)
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
                 .height(inputHeight)
+                .padding(horizontal = 16.dp)
     ) {
         SplitOption.entries.forEachIndexed { index, entry ->
             val active = selectedOption == entry

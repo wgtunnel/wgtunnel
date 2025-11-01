@@ -3,12 +3,12 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.components.SplitTunnelContent
@@ -17,23 +17,21 @@ import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.viewmodel.SplitTunnelViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun SplitTunnelScreen(tunnelId: Int, viewModel: SplitTunnelViewModel = hiltViewModel()) {
+fun SplitTunnelScreen(viewModel: SplitTunnelViewModel) {
     val sharedViewModel = LocalSharedVm.current
     val splitTunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
-    if (!splitTunnelState.stateInitialized) {
+    if (splitTunnelState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(modifier = Modifier.size(30.dp), strokeWidth = 5.dp)
+            CircularWavyProgressIndicator(waveSpeed = 60.dp, modifier = Modifier.size(48.dp))
         }
         return
     }
-    val tunnelConf by
-        remember(splitTunnelState.tunnels) {
-            derivedStateOf { splitTunnelState.tunnels.find { it.id == tunnelId }!! }
-        }
+    val tunnel = splitTunnelState.tunnel ?: return
 
-    val conf by remember { derivedStateOf { tunnelConf.toAmConfig() } }
+    val conf by remember { derivedStateOf { tunnel.toAmConfig() } }
 
     var splitConfig by remember {
         mutableStateOf(
@@ -49,7 +47,7 @@ fun SplitTunnelScreen(tunnelId: Int, viewModel: SplitTunnelViewModel = hiltViewM
 
     sharedViewModel.collectSideEffect { sideEffect ->
         if (sideEffect is LocalSideEffect.SaveChanges)
-            viewModel.saveSplitTunnelSelection(tunnelId, splitConfig)
+            viewModel.saveSplitTunnelSelection(splitConfig)
     }
 
     SplitTunnelContent(

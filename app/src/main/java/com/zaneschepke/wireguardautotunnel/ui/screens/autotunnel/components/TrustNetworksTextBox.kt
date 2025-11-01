@@ -1,7 +1,10 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -12,6 +15,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,7 +24,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ClickableIconButton
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.CustomTextField
 
@@ -33,21 +36,23 @@ fun TrustedNetworkTextBox(
     onSave: (ssid: String) -> Unit,
     onValueChange: (network: String) -> Unit,
     supporting: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val isTv = LocalIsAndroidTV.current
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+
+    LaunchedEffect(trustedNetworks.size) { bringIntoViewRequester.bringIntoView() }
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = modifier.animateContentSize(),
+    ) {
         FlowRow(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().animateContentSize(),
             horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
         ) {
             trustedNetworks.forEach { ssid ->
                 ClickableIconButton(
-                    onClick = {
-                        if (isTv) {
-                            onDelete(ssid)
-                        }
-                    },
-                    onIconClick = { onDelete(ssid) },
+                    onClick = { onDelete(ssid) },
                     text = ssid,
                     icon = Icons.Filled.Close,
                 )
@@ -70,8 +75,7 @@ fun TrustedNetworkTextBox(
             },
             containerColor = MaterialTheme.colorScheme.surface,
             supportingText = supporting,
-            modifier =
-                Modifier.padding(top = 5.dp, bottom = 10.dp).fillMaxWidth().padding(end = 16.dp),
+            modifier = Modifier.fillMaxWidth().bringIntoViewRequester(bringIntoViewRequester),
             singleLine = true,
             keyboardOptions =
                 KeyboardOptions(

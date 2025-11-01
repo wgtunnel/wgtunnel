@@ -1,32 +1,26 @@
 package com.zaneschepke.wireguardautotunnel.data.mapper
 
-import com.zaneschepke.wireguardautotunnel.data.entity.ProxySettings
-import com.zaneschepke.wireguardautotunnel.domain.model.AppProxySettings
+import com.zaneschepke.wireguardautotunnel.data.entity.ProxySettings as Entity
+import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings as Domain
 
-object ProxySettingsMapper {
-    fun to(proxySettings: ProxySettings): AppProxySettings =
-        with(proxySettings) {
-            AppProxySettings(
-                id,
-                socks5ProxyEnabled,
-                socks5ProxyBindAddress,
-                httpProxyEnabled,
-                httpProxyBindAddress,
-                proxyUsername,
-                proxyPassword,
-            )
-        }
+fun Entity.toDomain(): Domain =
+    Domain(
+        id = id,
+        socks5ProxyEnabled = socks5ProxyEnabled,
+        socks5ProxyBindAddress = socks5ProxyBindAddress,
+        httpProxyEnabled = httpProxyEnabled,
+        httpProxyBindAddress = httpProxyBindAddress,
+        proxyUsername = proxyUsername,
+        proxyPassword = proxyPassword,
+    )
 
-    fun to(proxySettings: AppProxySettings): ProxySettings =
-        with(proxySettings) {
-            ProxySettings(
-                id,
-                socks5ProxyEnabled,
-                socks5ProxyBindAddress,
-                httpProxyEnabled,
-                httpProxyBindAddress,
-                proxyUsername,
-                proxyPassword,
-            )
-        }
-}
+fun Domain.toEntity(): Entity =
+    Entity(
+        id = id,
+        socks5ProxyEnabled = socks5ProxyEnabled,
+        socks5ProxyBindAddress = socks5ProxyBindAddress,
+        httpProxyEnabled = httpProxyEnabled,
+        httpProxyBindAddress = httpProxyBindAddress,
+        proxyUsername = proxyUsername,
+        proxyPassword = proxyPassword,
+    )

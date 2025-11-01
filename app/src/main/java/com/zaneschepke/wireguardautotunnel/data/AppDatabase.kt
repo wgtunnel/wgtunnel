@@ -3,16 +3,21 @@ package com.zaneschepke.wireguardautotunnel.data
 import androidx.room.*
 import androidx.room.migration.AutoMigrationSpec
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.zaneschepke.wireguardautotunnel.data.dao.ProxySettingsDao
-import com.zaneschepke.wireguardautotunnel.data.dao.SettingsDao
-import com.zaneschepke.wireguardautotunnel.data.dao.TunnelConfigDao
-import com.zaneschepke.wireguardautotunnel.data.entity.ProxySettings
-import com.zaneschepke.wireguardautotunnel.data.entity.Settings
-import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.data.dao.*
+import com.zaneschepke.wireguardautotunnel.data.entity.*
 
 @Database(
-    entities = [Settings::class, TunnelConfig::class, ProxySettings::class],
-    version = 22,
+    entities =
+        [
+            TunnelConfig::class,
+            ProxySettings::class,
+            GeneralSettings::class,
+            AutoTunnelSettings::class,
+            MonitoringSettings::class,
+            DnsSettings::class,
+            LockdownSettings::class,
+        ],
+    version = 27,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -36,16 +41,27 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
             AutoMigration(from = 19, to = 20, spec = ProxyMigration::class),
             AutoMigration(from = 20, to = 21, spec = FixProxySettingsMigration::class),
             AutoMigration(from = 21, to = 22),
+            AutoMigration(from = 22, to = 23),
+            AutoMigration(from = 24, to = 25),
+            AutoMigration(from = 26, to = 27, spec = GlobalsMigration::class),
         ],
     exportSchema = true,
 )
 @TypeConverters(DatabaseConverters::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun settingDao(): SettingsDao
-
     abstract fun tunnelConfigDoa(): TunnelConfigDao
 
     abstract fun proxySettingsDoa(): ProxySettingsDao
+
+    abstract fun generalSettingsDao(): GeneralSettingsDao
+
+    abstract fun autoTunnelSettingsDao(): AutoTunnelSettingsDao
+
+    abstract fun monitoringSettingsDao(): MonitoringSettingsDao
+
+    abstract fun lockdownSettingsDao(): LockdownSettingsDao
+
+    abstract fun dnsSettingsDao(): DnsSettingsDao
 }
 
 @DeleteColumn(tableName = "Settings", columnName = "default_tunnel")
@@ -100,3 +116,12 @@ class FixProxySettingsMigration : AutoMigrationSpec {
         }
     }
 }
+
+@RenameColumn.Entries(
+    RenameColumn(
+        tableName = "general_settings",
+        fromColumnName = "is_tunnel_globals_enabled",
+        toColumnName = "global_split_tunnel_enabled",
+    )
+)
+class GlobalsMigration : AutoMigrationSpec

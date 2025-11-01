@@ -1,0 +1,148 @@
+name: notifications
+permissions:
+  contents: write
+  packages: write
+
+on:
+  issues:
+    types: [opened, closed]
+  release:
+    types: [published, prereleased]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send to Telegram - New Issue
+        if: github.event_name == 'issues' && github.event.action == 'opened'
+        env:
+          TITLE: ${{ github.event.issue.title }}
+          NUMBER: ${{ github.event.issue.number }}
+          USER: ${{ github.event.issue.user.login }}
+          BODY: ${{ github.event.issue.body || 'No body provided' }}
+          URL: ${{ github.event.issue.html_url }}
+        run: |
+          BODY_TRUNC="${BODY:0:200}"  # Truncate to avoid spam
+          TEXT=$(echo -e "🆕 New Issue #$NUMBER: *$TITLE* by $USER\n\n$BODY_TRUNC\n\n[View Issue]($URL)")
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d chat_id="${{ vars.TELEGRAM_CHAT_ID }}" \
+            ${{ vars.TELEGRAM_THREAD_ID && format('-d message_thread_id="{0}"', vars.TELEGRAM_THREAD_ID) || '' }} \
+            -d parse_mode="Markdown" \
+            --data-urlencode "text=$TEXT"
+
+      - name: Send to Telegram - Closed Issue
+        if: github.event_name == 'issues' && github.event.action == 'closed'
+        env:
+          TITLE: ${{ github.event.issue.title }}
+          NUMBER: ${{ github.event.issue.number }}
+          USER: ${{ github.event.issue.user.login }}
+          URL: ${{ github.event.issue.html_url }}
+        run: |
+          TEXT=$(echo -e "✅ Issue Closed #$NUMBER: *$TITLE* by $USER\n\n[View Issue]($URL)")
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d chat_id="${{ vars.TELEGRAM_CHAT_ID }}" \
+            ${{ vars.TELEGRAM_THREAD_ID && format('-d message_thread_id="{0}"', vars.TELEGRAM_THREAD_ID) || '' }} \
+            -d parse_mode="Markdown" \
+            --data-urlencode "text=$TEXT"
+
+      - name: Send to Telegram - New Release
+        if: github.event_name == 'release' && ((github.event.action == 'published' && !github.event.release.prerelease) || (github.event.action == 'prereleased' && github.event.release.prerelease && github.event.release.name == 'nightly'))
+        env:
+          NAME: ${{ github.event.release.name }}
+          TAG: ${{ github.event.release.tag_name }}
+          BODY: ${{ github.event.release.body || 'No notes provided' }}
+          URL: ${{ github.event.release.html_url }}
+          ACTION: ${{ github.event.action }}
+        run: |
+          BODY_TRUNC="${BODY:0:200}"  # Truncate to avoid spam
+          if [ "$ACTION" == "prereleased" ]; then
+            ICON="🌙"
+            PREFIX="New Nightly Release"
+          else
+            ICON="🚀"
+            PREFIX="New Release"
+          fi
+          TEXT=$(echo -e "$ICON $PREFIX *$NAME* ($TAG)\n\n$BODY_TRUNC\n\n[View Release]($URL)")
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d chat_id="${{ vars.TELEGRAM_CHAT_ID }}" \
+            ${{ vars.TELEGRAM_THREAD_ID && format('-d message_thread_id="{0}"', vars.TELEGRAM_THREAD_ID) || '' }} \
+            -d parse_mode="Markdown" \
+            --data-urlencode "text=$TEXT"
+
+      - name: Send to Matrix - New Issue
+        if: github.event_name == 'issues' && github.event.action == 'opened'
+        env:
+          NUMBER: ${{ github.event.issue.number }}
+          TITLE: ${{ github.event.issue.title }}
+          USER: ${{ github.event.issue.user.login }}
+          BODY: ${{ github.event.issue.body || 'No body provided' }}
+          URL: ${{ github.event.issue.html_url }}
+        run: |
+          PLAIN_MESSAGE=$(echo -e "🆕 New Issue #$NUMBER: $TITLE by $USER\n\n$BODY\n\nView Issue: $URL")
+          HTML_MESSAGE=$(echo -e "<p>🆕 New Issue #$NUMBER: <strong>$TITLE</strong> by $USER</p><p>$BODY</p><p><a href=\"$URL\">View Issue</a></p>")
+          PLAIN_MESSAGE="${PLAIN_MESSAGE:0:220}"
+          PAYLOAD=$(jq -n --arg body "$PLAIN_MESSAGE" --arg formatted "$HTML_MESSAGE" '{
+            "msgtype": "m.text",
+            "body": $body,
+            "format": "org.matrix.custom.html",
+            "formatted_body": $formatted
+          }')
+          TXN_ID="${{ github.run_id }}-${{ github.run_attempt }}"
+          curl -s -X PUT "https://${{ vars.MATRIX_HOMESERVER }}/_matrix/client/v3/rooms/${{ vars.MATRIX_ROOM_ID }}/send/m.room.message/$TXN_ID" \
+            -H "Authorization: Bearer ${{ secrets.MATRIX_ACCESS_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD"
+
+      - name: Send to Matrix - Closed Issue
+        if: github.event_name == 'issues' && github.event.action == 'closed'
+        env:
+          NUMBER: ${{ github.event.issue.number }}
+          TITLE: ${{ github.event.issue.title }}
+          USER: ${{ github.event.issue.user.login }}
+          URL: ${{ github.event.issue.html_url }}
+        run: |
+          PLAIN_MESSAGE=$(echo -e "✅ Issue Closed #$NUMBER: $TITLE by $USER\n\nView Issue: $URL")
+          HTML_MESSAGE=$(echo -e "<p>✅ Issue Closed #$NUMBER: <strong>$TITLE</strong> by $USER</p><p><a href=\"$URL\">View Issue</a></p>")
+          PLAIN_MESSAGE="${PLAIN_MESSAGE:0:220}"
+          PAYLOAD=$(jq -n --arg body "$PLAIN_MESSAGE" --arg formatted "$HTML_MESSAGE" '{
+            "msgtype": "m.text",
+            "body": $body,
+            "format": "org.matrix.custom.html",
+            "formatted_body": $formatted
+          }')
+          TXN_ID="${{ github.run_id }}-${{ github.run_attempt }}"
+          curl -s -X PUT "https://${{ vars.MATRIX_HOMESERVER }}/_matrix/client/v3/rooms/${{ vars.MATRIX_ROOM_ID }}/send/m.room.message/$TXN_ID" \
+            -H "Authorization: Bearer ${{ secrets.MATRIX_ACCESS_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD"
+
+      - name: Send to Matrix - New Release
+        if: github.event_name == 'release' && ((github.event.action == 'published' && !github.event.release.prerelease) || (github.event.action == 'prereleased' && github.event.release.prerelease && github.event.release.name == 'nightly'))
+        env:
+          NAME: ${{ github.event.release.name }}
+          TAG: ${{ github.event.release.tag_name }}
+          BODY: ${{ github.event.release.body || 'No notes provided' }}
+          URL: ${{ github.event.release.html_url }}
+          ACTION: ${{ github.event.action }}
+        run: |
+          if [ "$ACTION" == "prereleased" ]; then
+            ICON="🌙"
+            PREFIX="New Nightly Release"
+          else
+            ICON="🚀"
+            PREFIX="New Release"
+          fi
+          PLAIN_MESSAGE=$(echo -e "$ICON $PREFIX $NAME ($TAG)\n\n$BODY\n\nView Release: $URL")
+          HTML_MESSAGE=$(echo -e "<p>$ICON $PREFIX <strong>$NAME</strong> ($TAG)</p><p>$BODY</p><p><a href=\"$URL\">View Release</a></p>")
+          PLAIN_MESSAGE="${PLAIN_MESSAGE:0:220}"
+          PAYLOAD=$(jq -n --arg body "$PLAIN_MESSAGE" --arg formatted "$HTML_MESSAGE" '{
+            "msgtype": "m.text",
+            "body": $body,
+            "format": "org.matrix.custom.html",
+            "formatted_body": $formatted
+          }')
+          TXN_ID="${{ github.run_id }}-${{ github.run_attempt }}"
+          curl -s -X PUT "https://${{ vars.MATRIX_HOMESERVER }}/_matrix/client/v3/rooms/${{ vars.MATRIX_ROOM_ID }}/send/m.room.message/$TXN_ID" \
+            -H "Authorization: Bearer ${{ secrets.MATRIX_ACCESS_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD"

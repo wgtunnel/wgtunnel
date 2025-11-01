@@ -47,8 +47,6 @@
     <string name="error_ssid_exists">L\'SSID esiste già</string>
     <string name="error_root_denied">Shell di root negata</string>
     <string name="prominent_background_location_title">Permesso localizzazione in background</string>
-    <string name="location_services_missing_message">Questa app non rileva alcun servizio di localizzazione attivo sul tuo dispositivo. Indipendentemente dal dispositivo, questo potrebbe causare il fallimento nel recuperare il nome wifi da parte della funzione wifi non fidate. Vuoi continuare comunque?</string>
-    <string name="read_logs">Leggi i log</string>
     <string name="auto">(Auto)</string>
     <string name="underload_packet_magic_header">Magic header pacchetto sottocarico</string>
     <string name="unsure_how">se non sei sicuro su come procedere</string>
@@ -71,10 +69,7 @@
     <string name="incorrect_pin">Il PIN non è corretto</string>
     <string name="pin_created">PIN correttamente creato</string>
     <string name="enable_app_lock">Abilita blocco app</string>
-    <string name="restart_on_ping">Riavvia su fallimento ping (beta)</string>
-    <string name="mobile_data_tunnel">Imposta come tunnel dati mobili</string>
     <string name="set_primary_tunnel">Imposta come tunnel principale</string>
-    <string name="use_tunnel_on_wifi_name">Utilizza tunnel sulle reti WiFi</string>
     <string name="edit_tunnel">Modifica tunnel</string>
     <string name="settings">Impostazioni</string>
     <string name="support">Supporto</string>
@@ -111,11 +106,9 @@
     <string name="launch_app_settings">Opzioni di avvio della app</string>
     <string name="learn_more">Approfondisci</string>
     <string name="wildcards_active">Caratteri jolly attivi</string>
-    <string name="donate">Sostieni con una donazione</string>
-    <string name="enable_local_logging">Abilita logging locale</string>
+    <string name="donate">Dona al progetto</string>
     <string name="monitoring_state_changes">Monitora i cambi di stato</string>
-    <string name="stop">Arresta</string>
-    <string name="tunnel_specific_settings">Configurazioni specifiche del tunnel</string>
+    <string name="stop">Ferma</string>
     <string name="show_scripts">Mostra gli script</string>
     <string name="pre_up">Prima di avviarsi</string>
     <string name="splt_tunneling">Split tunneling</string>
@@ -157,7 +150,6 @@
     <string name="start_auto">Avvia tunnel automatico</string>
     <string name="stop_auto">Ferma tunnel automatico</string>
     <string name="native_kill_switch">Kill switch nativo</string>
-    <string name="set_ethernet_tunnel">Configura come tunnel ethernet</string>
     <string name="bypass_lan_for_kill_switch">Bypass LAN per kill switch</string>
     <string name="vpn_channel_description">Un canale per le notifiche di stato della VPN</string>
     <string name="auto_tunnel_channel_name">Canale di notifica del tunnel automatico</string>
@@ -181,7 +173,6 @@
     <string name="camera_permission_required">Permessi telecamera richiesti</string>
     <string name="export_failed">Esportazione fallita</string>
     <string name="tunnel_error_template">Tunnel interrotto: %1$s</string>
-    <string name="wifi_name_template">Attivo: %1$s</string>
     <string name="auth_error">Non autorizzato</string>
     <string name="service_running_error">Il servizio non è in esecuzione</string>
     <string name="inactive">Inattivo</string>
@@ -203,7 +194,6 @@
     <string name="licenses">Licenze</string>
     <string name="update_check_unsupported">Il controllo degli aggiornamenti non è supportato per questo tipo di build.</string>
     <string name="darker">Più scuro</string>
-    <string name="security_template">Sicurezza: %1$s</string>
     <string name="export_success">Esportazione riuscita</string>
     <string name="download">Download</string>
     <string name="check_for_update">Controlla gli aggiornamenti</string>
@@ -225,7 +215,6 @@
     <string name="invalid_number">Nunero non valido</string>
     <string name="invalid_key">Chiave non valida</string>
     <string name="read_failed">Impossibile leggere i dati.</string>
-    <string name="system_features">Funzioni di sistema</string>
     <string name="new_tunnel">Nuovo tunnel</string>
     <string name="server_port">Server:Porta</string>
     <string name="comma_separated">Separati da virgola</string>
@@ -266,8 +255,6 @@
     <string name="sec_ago_template">%1$s sec fa</string>
     <string name="ping_success_template">Ultimo ping riuscito: %1$s</string>
     <string name="reachable_template">Raggiungibile: %1$s</string>
-    <string name="tx_template">TX: %1$s MB</string>
-    <string name="rx_template">RX: %1$s MB</string>
     <string name="current_template">Corrente: %1$s</string>
     <string name="expiremental_template">%1$s (sperimentale)</string>
     <string name="root_required_template">%1$s (root richiesto)</string>

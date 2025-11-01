@@ -54,7 +54,6 @@
     <string name="email_description">Pošlite mi e-mail</string>
     <string name="error_ssid_exists">SSID už existuje</string>
     <string name="error_no_file_explorer">Nie je nainštalovaný žiadny prehliadač súborov</string>
-    <string name="location_services_missing_message">Aplikácia nezistila žiadne lokalizačné služby povolené vo vašom zariadení. V závislosti od zariadenia to môže spôsobiť, že funkcia nedôveryhodnej wifi nebude môcť prečítať názov wifi. Chcete aj tak pokračovať?</string>
     <string name="auto_tunnel_title">Služba automatického tunela</string>
     <string name="delete_tunnel">Vymazanie tunela</string>
     <string name="delete_tunnel_message">Naozaj chcete tento tunel odstrániť?</string>

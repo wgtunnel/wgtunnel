@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.di
 
 import android.content.Context
+import android.os.PowerManager
 import com.wireguard.android.backend.WgQuickBackend
 import com.wireguard.android.util.RootShell
 import com.wireguard.android.util.ToolsInstaller
@@ -9,9 +10,7 @@ import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.*
-import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.*
 import com.zaneschepke.wireguardautotunnel.util.extensions.to
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import dagger.Module
@@ -85,9 +84,11 @@ class TunnelModule {
     @Kernel
     fun provideKernelProvider(
         @ApplicationScope applicationScope: CoroutineScope,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
         backend: com.wireguard.android.backend.Backend,
+        runConfigHelper: RunConfigHelper,
     ): TunnelProvider {
-        return KernelTunnel(applicationScope, backend)
+        return KernelTunnel(applicationScope, ioDispatcher, runConfigHelper, backend)
     }
 
     @Provides
@@ -95,16 +96,11 @@ class TunnelModule {
     @Userspace
     fun provideUserspaceProvider(
         @ApplicationScope applicationScope: CoroutineScope,
-        proxySettingsRepository: ProxySettingsRepository,
-        settingsRepository: GeneralSettingRepository,
+        runConfigHelper: RunConfigHelper,
         @Userspace backend: Backend,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
     ): TunnelProvider {
-        return UserspaceTunnel(
-            applicationScope,
-            proxySettingsRepository,
-            settingsRepository,
-            backend,
-        )
+        return UserspaceTunnel(applicationScope, ioDispatcher, backend, runConfigHelper)
     }
 
     @Provides
@@ -112,16 +108,11 @@ class TunnelModule {
     @ProxyUserspace
     fun provideProxyUserspaceProvider(
         @ApplicationScope applicationScope: CoroutineScope,
-        settingsRepository: GeneralSettingRepository,
-        proxySettingsRepository: ProxySettingsRepository,
+        runConfigHelper: RunConfigHelper,
         @ProxyUserspace backend: Backend,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
     ): TunnelProvider {
-        return UserspaceTunnel(
-            applicationScope,
-            proxySettingsRepository,
-            settingsRepository,
-            backend,
-        )
+        return UserspaceTunnel(applicationScope, ioDispatcher, backend, runConfigHelper)
     }
 
     @Provides
@@ -132,7 +123,9 @@ class TunnelModule {
         @ProxyUserspace proxyTunnel: TunnelProvider,
         serviceManager: ServiceManager,
         tunnelRepository: TunnelRepository,
+        lockdownSettingsRepository: LockdownSettingsRepository,
         settingsRepository: GeneralSettingRepository,
+        autoTunnelSettingsRepository: AutoTunnelSettingsRepository,
         tunnelMonitor: TunnelMonitor,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
         @ApplicationScope applicationScope: CoroutineScope,
@@ -143,6 +136,8 @@ class TunnelModule {
             proxyTunnel,
             serviceManager,
             settingsRepository,
+            autoTunnelSettingsRepository,
+            lockdownSettingsRepository,
             tunnelRepository,
             tunnelMonitor,
             applicationScope,
@@ -152,25 +147,17 @@ class TunnelModule {
 
     @Provides
     @Singleton
-    fun provideNetworkMonitor(
-        @ApplicationContext context: Context,
+    fun provideTunnelConfigHelper(
         settingsRepository: GeneralSettingRepository,
-        @ApplicationScope applicationScope: CoroutineScope,
-        @AppShell appShell: RootShell,
-    ): NetworkMonitor {
-        return AndroidNetworkMonitor(
-            context,
-            object : AndroidNetworkMonitor.ConfigurationListener {
-                override val detectionMethod: Flow<AndroidNetworkMonitor.WifiDetectionMethod>
-                    get() =
-                        settingsRepository.flow
-                            .distinctUntilChangedBy { it.wifiDetectionMethod }
-                            .map { it.wifiDetectionMethod.to() }
-
-                override val rootShell: RootShell
-                    get() = appShell
-            },
-            applicationScope,
+        proxySettingsRepository: ProxySettingsRepository,
+        dnsSettingsRepository: DnsSettingsRepository,
+        tunnelRepository: TunnelRepository,
+    ): RunConfigHelper {
+        return RunConfigHelper(
+            settingsRepository,
+            proxySettingsRepository,
+            dnsSettingsRepository,
+            tunnelRepository,
         )
     }
 
@@ -181,32 +168,60 @@ class TunnelModule {
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
         @MainDispatcher mainCoroutineDispatcher: CoroutineDispatcher,
         @ApplicationScope applicationScope: CoroutineScope,
-        settingsRepository: GeneralSettingRepository,
+        autoTunnelSettingsRepository: AutoTunnelSettingsRepository,
     ): ServiceManager {
         return ServiceManager(
             context,
             ioDispatcher,
             applicationScope,
             mainCoroutineDispatcher,
-            settingsRepository,
+            autoTunnelSettingsRepository,
         )
     }
 
     @Singleton
     @Provides
     fun provideTunnelMonitor(
+        powerManager: PowerManager,
         networkMonitor: NetworkMonitor,
         networkUtils: NetworkUtils,
         logReader: LogReader,
         tunnelsRepository: TunnelRepository,
         settingsRepository: GeneralSettingRepository,
+        monitoringSettingsRepository: MonitoringSettingsRepository,
     ): TunnelMonitor {
         return TunnelMonitor(
             settingsRepository,
             tunnelsRepository,
+            monitoringSettingsRepository,
             networkMonitor,
             networkUtils,
             logReader,
+            powerManager,
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideNetworkMonitor(
+        @ApplicationContext context: Context,
+        autoTunnelSettingsRepository: AutoTunnelSettingsRepository,
+        @ApplicationScope applicationScope: CoroutineScope,
+        @AppShell appShell: RootShell,
+    ): NetworkMonitor {
+        return AndroidNetworkMonitor(
+            context,
+            object : AndroidNetworkMonitor.ConfigurationListener {
+                override val detectionMethod: Flow<AndroidNetworkMonitor.WifiDetectionMethod>
+                    get() =
+                        autoTunnelSettingsRepository.flow
+                            .distinctUntilChangedBy { it.wifiDetectionMethod }
+                            .map { it.wifiDetectionMethod.to() }
+
+                override val rootShell: RootShell
+                    get() = appShell
+            },
+            applicationScope,
         )
     }
 }

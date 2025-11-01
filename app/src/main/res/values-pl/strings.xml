@@ -34,13 +34,10 @@
     <string name="prominent_background_location_message">Ta funkcja wymaga pozwolenia na dostęp do lokalizacji w tle, aby włączyć monitorowanie SSID sieci Wi-Fi nawet wtedy, gdy aplikacja jest zamknięta. Więcej szczegółów znajdziesz w polityce prywatności znajdującej się na ekranie Obsługa.</string>
     <string name="optional">(opcjonalnie)</string>
     <string name="preshared_key">Klucz wstępnie udostępniony</string>
-    <string name="location_services_missing_message">Aplikacja nie wykrywa żadnych usług lokalizacyjnych włączonych na tym urządzeniu. W zależności od urządzenia może to spowodować, że funkcja niezaufanej sieci Wi-Fi nie będzie w stanie odczytać nazwy sieci Wi-Fi. Czy chcesz kontynuować mimo to?</string>
-    <string name="read_logs">Przeczytaj dzienniki</string>
     <string name="support">Obsługa</string>
     <string name="init_packet_magic_header">Nagłówek magicznego pakietu początkowego</string>
     <string name="cancel">Anuluj</string>
     <string name="always_on_message2">w celu upewnienia się, że funkcja stałego VPN jest wyłączona dla wszystkich innych aplikacji, następnie spróbuj ponownie</string>
-    <string name="use_tunnel_on_wifi_name">Użyj tunelu na nazwę sieci Wi-Fi</string>
     <string name="root_accepted">Zezwolono na powłokę użytkownika root</string>
     <string name="vpn_channel_name">Kanał powiadomień VPN</string>
     <string name="create_import">Utwórz od nowa</string>
@@ -57,7 +54,6 @@
     <string name="dns_servers">Serwery DNS</string>
     <string name="error_file_extension">Plik nie jest w formacie .conf lub .zip</string>
     <string name="copy_public_key">Skopiuj klucz publiczny</string>
-    <string name="restart_on_ping">Uruchom ponownie w przypadku niepowodzenia pingowania (beta)</string>
     <string name="junk_packet_minimum_size">Minimalny rozmiar pakietu śmieciowego</string>
     <string name="open_issue">Otwórz zagadnienie</string>
     <string name="thank_you">Dziękujemy za korzystanie z aplikacji WG Tunnel!</string>
@@ -119,7 +115,6 @@
     <string name="use_root_shell_for_wifi">Użyj powłoki użytkownika root, aby uzyskać informacje o sieci Wi-Fi, dzięki czemu nie będzie potrzeby uzyskiwania uprawnień do lokalizacji</string>
     <string name="stop_auto">Zatrzymaj autotunel</string>
     <string name="tunnel_running">Tunel jest uruchomiony</string>
-    <string name="enable_local_logging">Włącz lokalne rejestrowanie</string>
     <string name="email_chooser">Wyślij wiadomość e-mail…</string>
     <string name="okay">OK</string>
     <string name="no_tunnels">Nie dodano jeszcze żadnych tuneli!</string>
@@ -127,12 +122,10 @@
     <string name="docs_description">Przeczytaj dokumentację</string>
     <string name="email_description">Wyślij mi wiadomość e-mail</string>
     <string name="set_primary_tunnel">Ustaw jako tunel podstawowy</string>
-    <string name="mobile_data_tunnel">Ustaw jako tunel mobilnej transmisji danych</string>
     <string name="vpn_channel_id">Kanał VPN</string>
     <string name="stop_on_no_internet">Zatrzymaj, gdy nie ma Internetu</string>
     <string name="stop_on_internet_loss">Zatrzymaj tunel przy utracie Internetu</string>
     <string name="ethernet_tunnel">Tunel ethernetowy</string>
-    <string name="set_ethernet_tunnel">Ustaw jako tunel ethernetowy</string>
     <string name="allow_lan_traffic">Zezwól na ruch LAN</string>
     <string name="bypass_lan_for_kill_switch">Omiń LAN dla wyłącznika awaryjnego</string>
     <string name="vpn_channel_description">Kanał powiadomień o stanie VPN</string>
@@ -140,7 +133,6 @@
     <string name="auto_tunnel_channel_description">Kanał powiadomień o stanie autotunelowania</string>
     <string name="stop">Zatrzymaj</string>
     <string name="splt_tunneling">Tunelowanie rozdzielone</string>
-    <string name="tunnel_specific_settings">Ustawienia specyficzne dla tunelu</string>
     <string name="pre_up">Przed aktywacją</string>
     <string name="post_up">Po aktywacji</string>
     <string name="pre_down">Przed dezaktywacją</string>
@@ -165,7 +157,6 @@
     <string name="add_from_url">Dodaj z adresu URL</string>
     <string name="export_failed">Eksport nie powiódł się</string>
     <string name="inactive">Nieaktywny</string>
-    <string name="wifi_name_template">Aktywny: %1$s</string>
     <string name="delete_logs">Usuń i wyczyść dzienniki</string>
     <string name="join_telegram">Dołącz do społeczności Telegramu</string>
     <string name="error_download_failed">Nie udało się pobrać konfiguracji</string>
@@ -212,7 +203,6 @@
     <string name="flavor_template">Wariant: %1$s</string>
     <string name="darker">Ciemniejszy</string>
     <string name="amoled">AMOLED</string>
-    <string name="security_template">Zabezpieczenia: %1$s</string>
     <string name="show_qr">Pokaż kod QR</string>
     <string name="amnezia">Amnezia</string>
     <string name="wireguard">WireGuard</string>
@@ -256,9 +246,6 @@
     <string name="ping_timeout">Limit czasu pingowania tunelu</string>
     <string name="timeout_all_attempts">Całkowity limit czasu dla wszystkich prób</string>
     <string name="display_detailed_ping_stats">Wyświetl szczegółowe statystyki pingowania</string>
-    <string name="monitoring_ping">Włącz monitorowanie pingowania tunelu</string>
-    <string name="rx_template">RX: %1$s MB</string>
-    <string name="tx_template">TX: %1$s MB</string>
     <string name="reachable_template">Osiągalny: %1$s</string>
     <string name="ping_success_template">Ostatni udany ping: %1$s</string>
     <string name="sec_ago_template">%1$s sek. temu</string>
@@ -304,7 +291,6 @@
     <string name="comma_separated">Oddzielone przecinkiem</string>
     <string name="server_port">Serwer:Port</string>
     <string name="new_tunnel">Nowy tunel</string>
-    <string name="system_features">Funkcje systemu</string>
     <string name="read_failed">Nie udało się odczytać danych.</string>
     <string name="invalid_key">Nieprawidłowy klucz</string>
     <string name="invalid_number">Nieprawidłowa liczba</string>

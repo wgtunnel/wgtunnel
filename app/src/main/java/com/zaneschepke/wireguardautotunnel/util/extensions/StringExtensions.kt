@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.util.extensions
 
+import java.util.*
 import timber.log.Timber
 
 val hasNumberInParentheses = """^(.+?)\((\d+)\)$""".toRegex()
@@ -24,6 +25,19 @@ fun String.isValidIpv4orIpv6Address(): Boolean {
                 "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
         )
     return ipv4Pattern.matches(sanitized) || ipv6Pattern.matches(sanitized)
+}
+
+fun String.abbreviateKey(prefixLength: Int = 6): String {
+    val full = this
+    return if (full.length > prefixLength * 2 + 3) {
+        "${full.take(prefixLength)}...${full.takeLast(prefixLength)}"
+    } else {
+        full
+    }
+}
+
+fun String.capitalize(locale: Locale): String {
+    return replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
 }
 
 // only allow valid Android ports
@@ -95,4 +109,8 @@ inline fun String?.ifNotBlank(block: (String) -> Unit): String? {
         block(this)
     }
     return this
+}
+
+fun String.isTextTooLargeForQr(maxBytes: Int = 1200): Boolean {
+    return toByteArray(Charsets.UTF_8).size > maxBytes
 }

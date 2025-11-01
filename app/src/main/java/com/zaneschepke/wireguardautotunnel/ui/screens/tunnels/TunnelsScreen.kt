@@ -3,7 +3,6 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -12,8 +11,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import com.zaneschepke.wireguardautotunnel.R
@@ -30,38 +29,36 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components.UrlImpo
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
-import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelsViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
-fun TunnelsScreen(viewModel: TunnelsViewModel) {
-    val sharedViewModel = LocalSharedVm.current
+fun TunnelsScreen() {
+    val viewModel = LocalSharedVm.current
     val navController = LocalNavController.current
     val clipboard = rememberClipboardHelper()
 
-    val sharedState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
-    val tunnelsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val sharedState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     var showExportSheet by rememberSaveable { mutableStateOf(false) }
     var showImportSheet by rememberSaveable { mutableStateOf(false) }
     var showDeleteModal by rememberSaveable { mutableStateOf(false) }
     var showUrlDialog by rememberSaveable { mutableStateOf(false) }
 
-    sharedViewModel.collectSideEffect { sideEffect ->
+    viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             LocalSideEffect.Sheet.ImportTunnels -> showImportSheet = true
             LocalSideEffect.Modal.DeleteTunnels -> showDeleteModal = true
             LocalSideEffect.Sheet.ExportTunnels -> showExportSheet = true
+            LocalSideEffect.SelectedTunnels.Copy -> viewModel.copySelectedTunnel()
+            LocalSideEffect.SelectedTunnels.SelectAll -> viewModel.toggleSelectAllTunnels()
             else -> Unit
         }
     }
 
-    if (!tunnelsState.stateInitialized) return
-
     val tunnelFileImportResultLauncher =
         rememberFileImportLauncherForResult(
             onNoFileExplorer = {
-                sharedViewModel.showSnackMessage(
+                viewModel.showSnackMessage(
                     StringValue.StringResource(R.string.error_no_file_explorer)
                 )
             },
@@ -81,7 +78,7 @@ fun TunnelsScreen(viewModel: TunnelsViewModel) {
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted
             ->
             if (!isGranted) {
-                sharedViewModel.showSnackMessage(
+                viewModel.showSnackMessage(
                     StringValue.StringResource(R.string.camera_permission_required)
                 )
                 return@rememberLauncherForActivityResult
@@ -95,22 +92,22 @@ fun TunnelsScreen(viewModel: TunnelsViewModel) {
         InfoDialog(
             onDismiss = { showDeleteModal = false },
             onAttest = {
-                sharedViewModel.deleteSelectedTunnels()
+                viewModel.deleteSelectedTunnels()
                 showDeleteModal = false
             },
-            title = { Text(text = stringResource(R.string.delete_tunnel)) },
+            title = stringResource(R.string.delete_tunnel),
             body = { Text(text = stringResource(R.string.delete_tunnel_message)) },
-            confirmText = { Text(text = stringResource(R.string.yes)) },
+            confirmText = stringResource(R.string.yes),
         )
     }
 
     if (showExportSheet) {
         ExportTunnelsBottomSheet({ type, uri ->
-            sharedViewModel.exportSelectedTunnels(type, uri)
+            viewModel.exportSelectedTunnels(type, uri)
             showExportSheet = false
         }) {
             showExportSheet = false
-            sharedViewModel.clearSelectedTunnels()
+            viewModel.clearSelectedTunnels()
         }
     }
 
@@ -126,7 +123,7 @@ fun TunnelsScreen(viewModel: TunnelsViewModel) {
                     if (result != null) viewModel.importFromClipboard(result)
                 }
             },
-            onManualImportClick = { navController.navigate(Route.Config(null)) },
+            onManualImportClick = { navController.push(Route.Config(null)) },
             onUrlClick = { showUrlDialog = true },
         )
     }
@@ -141,11 +138,5 @@ fun TunnelsScreen(viewModel: TunnelsViewModel) {
         )
     }
 
-    TunnelList(
-        tunnelsState,
-        sharedState,
-        modifier = Modifier.fillMaxSize().padding(vertical = 24.dp).padding(horizontal = 12.dp),
-        sharedViewModel,
-        navController,
-    )
+    TunnelList(sharedState, Modifier.fillMaxSize(), viewModel)
 }

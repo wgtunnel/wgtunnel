@@ -4,8 +4,8 @@ import org.amnezia.awg.backend.Statistics
 import org.amnezia.awg.crypto.Key
 
 class AmneziaStatistics(private val statistics: Statistics) : TunnelStatistics() {
-    override fun peerStats(peer: Key): PeerStats? {
-        val key = Key.fromBase64(peer.toBase64())
+    override fun peerStats(peerBase64: String): PeerStats? {
+        val key = Key.fromBase64(peerBase64)
         val stats = statistics.peer(key)
         return stats?.let {
             PeerStats(
@@ -21,8 +21,8 @@ class AmneziaStatistics(private val statistics: Statistics) : TunnelStatistics()
         return statistics.isStale
     }
 
-    override fun getPeers(): Array<Key> {
-        return statistics.peers()
+    override fun getPeers(): Array<String> {
+        return statistics.peers().map { it.toBase64() }.toTypedArray()
     }
 
     override fun rx(): Long {

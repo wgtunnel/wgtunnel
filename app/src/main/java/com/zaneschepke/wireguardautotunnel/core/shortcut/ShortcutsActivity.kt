@@ -6,6 +6,7 @@ import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelSer
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
+import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,6 +19,7 @@ import timber.log.Timber
 class ShortcutsActivity : ComponentActivity() {
 
     @Inject lateinit var settingsRepository: GeneralSettingRepository
+    @Inject lateinit var autoTunnelSettingsRepository: AutoTunnelSettingsRepository
     @Inject lateinit var tunnelsRepository: TunnelRepository
 
     @Inject lateinit var tunnelManager: TunnelManager
@@ -27,7 +29,7 @@ class ShortcutsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         applicationScope.launch {
-            val settings = settingsRepository.get()
+            val settings = settingsRepository.getGeneralSettings()
             if (settings.isShortcutsEnabled) {
                 when (intent.getStringExtra(CLASS_NAME_EXTRA_KEY)) {
                     LEGACY_TUNNEL_SERVICE_NAME,
@@ -37,7 +39,7 @@ class ShortcutsActivity : ComponentActivity() {
                         val tunnelConfig =
                             tunnelName?.let { tunnelsRepository.findByTunnelName(it) }
                                 ?: tunnelsRepository.getDefaultTunnel()
-                        Timber.d("Shortcut action on name: ${tunnelConfig?.tunName}")
+                        Timber.d("Shortcut action on name: ${tunnelConfig?.name}")
                         tunnelConfig?.let {
                             when (intent.action) {
                                 Action.START.name -> tunnelManager.startTunnel(it)
@@ -49,8 +51,10 @@ class ShortcutsActivity : ComponentActivity() {
                     AutoTunnelService::class.java.simpleName,
                     LEGACY_AUTO_TUNNEL_SERVICE_NAME -> {
                         when (intent.action) {
-                            Action.START.name -> settingsRepository.updateAutoTunnelEnabled(true)
-                            Action.STOP.name -> settingsRepository.updateAutoTunnelEnabled(false)
+                            Action.START.name ->
+                                autoTunnelSettingsRepository.updateAutoTunnelEnabled(true)
+                            Action.STOP.name ->
+                                autoTunnelSettingsRepository.updateAutoTunnelEnabled(false)
                         }
                     }
                 }

@@ -10,7 +10,7 @@ import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelSer
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
-import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.util.extensions.requestAutoTunnelTileServiceUpdate
 import com.zaneschepke.wireguardautotunnel.util.extensions.requestTunnelTileServiceStateUpdate
 import jakarta.inject.Inject
@@ -30,7 +30,7 @@ constructor(
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     @ApplicationScope applicationScope: CoroutineScope,
     private val mainDispatcher: CoroutineDispatcher,
-    private val settingsRepository: GeneralSettingRepository,
+    private val autoTunnelSettingsRepository: AutoTunnelSettingsRepository,
 ) {
 
     private val autoTunnelMutex = Mutex()
@@ -49,7 +49,9 @@ constructor(
         }
         applicationScope.launch(ioDispatcher) {
             combine(
-                    settingsRepository.flow.map { it.isAutoTunnelEnabled }.distinctUntilChanged(),
+                    autoTunnelSettingsRepository.flow
+                        .map { it.isAutoTunnelEnabled }
+                        .distinctUntilChanged(),
                     _autoTunnelService,
                 ) { enabled, service ->
                     enabled to (service != null)
@@ -71,7 +73,7 @@ constructor(
         object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName, service: IBinder) {
                 val binder = service as? LocalBinder
-                _tunnelService.value = binder?.service
+                _tunnelService.update { binder?.service }
                 val serviceClass =
                     when {
                         name.className.contains("VpnForegroundService") -> "VpnForegroundService"
@@ -83,7 +85,7 @@ constructor(
             }
 
             override fun onServiceDisconnected(name: ComponentName) {
-                _tunnelService.value = null
+                _tunnelService.update { null }
                 val serviceClass =
                     when {
                         name.className.contains("VpnForegroundService") -> "VpnForegroundService"
@@ -99,12 +101,12 @@ constructor(
         object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName, service: IBinder) {
                 val binder = service as? AutoTunnelService.LocalBinder
-                _autoTunnelService.value = binder?.service
+                _autoTunnelService.update { binder?.service }
                 Timber.d("AutoTunnelService connected")
             }
 
             override fun onServiceDisconnected(name: ComponentName) {
-                _autoTunnelService.value = null
+                _autoTunnelService.update { null }
                 Timber.d("AutoTunnelService disconnected")
             }
         }
@@ -114,10 +116,14 @@ constructor(
     }
 
     private fun startServiceInternal() {
-        val intent = Intent(context, AutoTunnelService::class.java)
-        context.startForegroundService(intent)
-        context.bindService(intent, autoTunnelServiceConnection, Context.BIND_AUTO_CREATE)
+        if (autoTunnelService.value == null) {
+            val intent = Intent(context, AutoTunnelService::class.java)
+            context.startForegroundService(intent)
+            context.bindService(intent, autoTunnelServiceConnection, Context.BIND_AUTO_CREATE)
+        }
     }
+
+    suspend fun startAutoTunnelService() = autoTunnelMutex.withLock { startServiceInternal() }
 
     private fun stopServiceInternal() {
         _autoTunnelService.value?.stop()

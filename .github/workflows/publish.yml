@@ -74,7 +74,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ github.event_name == 'push' && github.ref || 'main' }}
+          ref: ${{ github.event_name == 'push' && github.ref || 'master' }}
       - name: Install system dependencies
         run: |
           sudo apt update && sudo apt install -y gh apksigner
@@ -86,20 +86,21 @@ jobs:
           tag: "latest"
           message: "Automated tag for HEAD commit"
           force_push_tag: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ github.token }}
           tag_exists_error: false
+
       - name: Get latest release
         id: latest_release
         uses: kaliber5/action-get-release@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
           latest: true
 
       - name: Generate Changelog
         id: changelog
         uses: requarks/changelog-action@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
           toTag: ${{ steps.latest_release.outputs.tag_name }}
           fromTag: "latest"
           writeToFile: false
@@ -108,7 +109,7 @@ jobs:
         run: mkdir ${{ github.workspace }}/temp
 
       - name: Download artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           pattern: android_artifacts_*
           path: ${{ github.workspace }}/temp
@@ -161,7 +162,7 @@ jobs:
           files: |
             ${{ github.workspace }}/temp/**/*.apk
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
 
   publish-fdroid-public:
     runs-on: ubuntu-latest
@@ -170,9 +171,9 @@ jobs:
     if: ${{ github.event_name == 'push' || inputs.release_type == 'release' }}
     steps:
       - name: Dispatch update for fdroid repo
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT }}
           repository: wgtunnel/fdroid
           event-type: fdroid-update
 

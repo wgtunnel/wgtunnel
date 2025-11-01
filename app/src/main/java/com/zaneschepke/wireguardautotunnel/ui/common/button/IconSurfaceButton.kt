@@ -12,14 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItemLabel
-import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionLabelType
 
 @Composable
 fun IconSurfaceButton(
     title: String,
     onClick: () -> Unit,
     selected: Boolean,
+    modifier: Modifier = Modifier,
     leading: (@Composable () -> Unit)? = null,
     description: String? = null,
 ) {
@@ -38,7 +37,8 @@ fun IconSurfaceButton(
         Box(modifier = Modifier.clickable { onClick() }.fillMaxWidth()) {
             Column(
                 modifier =
-                    Modifier.padding(horizontal = 8.dp, vertical = 10.dp)
+                    modifier
+                        .padding(horizontal = 8.dp, vertical = 10.dp)
                         .padding(end = 16.dp)
                         .padding(start = 8.dp)
                         .fillMaxSize(),
@@ -57,7 +57,11 @@ fun IconSurfaceButton(
                     ) {
                         leading?.invoke()
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            SelectionItemLabel(title, SelectionLabelType.TITLE)
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
                             description?.let {
                                 Text(
                                     description,

@@ -18,7 +18,7 @@ fun AddPeerButton(onClick: () -> Unit) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
+        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
     ) {
         TextButton(onClick = onClick) { Text(stringResource(R.string.add_peer)) }
     }

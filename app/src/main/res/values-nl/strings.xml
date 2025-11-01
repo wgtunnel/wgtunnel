@@ -48,16 +48,13 @@
     <string name="open_issue">Open een melding</string>
     <string name="create_pin">Stel PIN in</string>
     <string name="enable_app_lock">Schakel app-lock in</string>
-    <string name="restart_on_ping">Herstart bij mislukte ping (beta)</string>
     <string name="init_packet_junk_size">Initiële junk packet grootte</string>
     <string name="junk_packet_maximum_size">Junk packet maximum grootte</string>
     <string name="response_packet_junk_size">Response junk packet grootte</string>
     <string name="delete_tunnel_message">Weet je zeker dat je deze tunnel wil verwijderen?</string>
     <string name="yes">Ja</string>
     <string name="no_email_detected">Geen email app gevonden</string>
-    <string name="read_logs">Lees logboeken</string>
     <string name="auto">(auto)</string>
-    <string name="mobile_data_tunnel">Stel in als mobiele datatunnel</string>
     <string name="set_primary_tunnel">Stel in als primaire tunnel</string>
     <string name="edit_tunnel">Tunnel bewerken</string>
     <string name="settings">Instellingen</string>
@@ -71,7 +68,6 @@
     <string name="incorrect_pin">Foutieve PIN</string>
     <string name="enter_pin">Vul PIN in</string>
     <string name="pin_created">PIN aangemaakt</string>
-    <string name="use_tunnel_on_wifi_name">Gebruik tunnel bij WiFi naam</string>
     <string name="add_peer">Peer toevoegen</string>
     <string name="init_packet_magic_header">Initiële packet magic header</string>
     <string name="prominent_background_location_title">Achtergrondlocatievrijgave</string>
@@ -100,7 +96,6 @@
     <string name="vpn_settings">VPN systeeminstellingen</string>
     <string name="root_accepted">Root toegang verleend</string>
     <string name="prominent_background_location_message">Deze functie vereist locatierechten om het WiFi SSID te kunnen bepalen. Ook als de applicatie is gesloten. Lees het privacybeleid op het scherm Ondersteuning voor meer informatie.</string>
-    <string name="location_services_missing_message">De app kan geen ingeschakelde locatieservices op je apparaat vinden. Afhankelijk van het type apparaat kan dit leiden tot een niet functionerende herkenning van het verbonden WiFi netwerk. De niet-vertrouwde WiFi functionaliteit werkt daardoor mogelijk niet. Toch doorgaan?</string>
     <string name="transport_packet_magic_header">Transport packet magic header</string>
     <string name="appearance">Uiterlijk</string>
     <string name="light">Licht</string>
@@ -111,12 +106,10 @@
     <string name="notifications">Meldingen</string>
     <string name="quick_actions">Snelle acties</string>
     <string name="ethernet_tunnel">Ethernet tunnel</string>
-    <string name="set_ethernet_tunnel">Instellen als ethernet tunnel</string>
     <string name="allow_lan_traffic">LAN trafiek toestaan</string>
     <string name="vpn_channel_description">Een kanaal voor VPN status notificaties</string>
     <string name="stop">Stop</string>
     <string name="splt_tunneling">Gesplitste tunneling</string>
-    <string name="tunnel_specific_settings">Tunnel specifieke instellingen</string>
     <string name="advanced_settings">Geavanceerde instellingen</string>
     <string name="hide_amnezia_properties">Amnezia eigenschappen verbergen</string>
     <string name="hide_scripts">Scripts verbergen</string>
@@ -124,7 +117,6 @@
     <string name="add_from_clipboard">Toevoegen van klembord</string>
     <string name="show_scripts">Toon scripts</string>
     <string name="auto_tunnel_channel_name">Auto-tunnel Notificatie Kanaal</string>
-    <string name="enable_local_logging">lokale logging inschakelen</string>
     <string name="auto_tunnel_channel_description">Een kanaal voor auto-tunnel status notificaties</string>
     <string name="enable_amnezia_compatibility">Amnezia compatibiliteit inschakelen</string>
     <string name="add_from_url">Toevoegen met link</string>
@@ -221,10 +213,8 @@
     <string name="camera_permission_required">Kamera toestemming vereist</string>
     <string name="export_failed">Export mislukt</string>
     <string name="tunnel_error_template">Tunnel is mislukt: %1$s</string>
-    <string name="wifi_name_template">Actief: %1$s</string>
     <string name="remote_key_template">Sleutel: %1$s</string>
     <string name="version_template">Versie: %1$s</string>
-    <string name="security_template">Veiligheid: %1$s</string>
     <string name="current_template">Huidige: %1$s</string>
     <string name="flavor_template">Smaak: %1$s</string>
     <string name="config_error">Configuratie ongeldig</string>

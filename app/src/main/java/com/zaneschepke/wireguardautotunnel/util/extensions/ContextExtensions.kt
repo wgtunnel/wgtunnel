@@ -242,6 +242,48 @@ fun Context.installApk(apkFile: File) {
     startActivity(intent)
 }
 
+fun Context.launchPlayStoreListing() {
+    val intent =
+        Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            setPackage("com.android.vending")
+        }
+
+    if (intent.resolveActivity(packageManager) != null) {
+        startActivity(intent)
+    } else {
+        openWebUrl("https://play.google.com/store/apps/details?id=$packageName")
+    }
+}
+
+fun Context.launchPlayStoreReview() {
+    val uri = Uri.parse("market://details?id=$packageName&showAllReviews=true")
+    val intent =
+        Intent(Intent.ACTION_VIEW, uri).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            setPackage("com.android.vending")
+        }
+    if (intent.resolveActivity(packageManager) != null) {
+        startActivity(intent)
+    } else {
+        openWebUrl("https://play.google.com/store/apps/details?id=$packageName&showAllReviews=true")
+    }
+}
+
+fun Context.launchFDroidListing() {
+    val intent =
+        Intent(Intent.ACTION_VIEW, Uri.parse("fdroid.app://details?id=$packageName")).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            setPackage("org.fdroid.fdroid")
+        }
+
+    if (intent.resolveActivity(packageManager) != null) {
+        startActivity(intent)
+    } else {
+        openWebUrl("https://f-droid.org/packages/$packageName/")
+    }
+}
+
 fun Activity.setScreenBrightness(brightness: Float) {
     window.attributes = window.attributes.apply { screenBrightness = brightness }
 }

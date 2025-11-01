@@ -7,7 +7,7 @@ import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
-import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -21,7 +21,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
     @Inject lateinit var tunnelRepository: TunnelRepository
 
-    @Inject lateinit var settingsRepository: GeneralSettingRepository
+    @Inject lateinit var autoTunnelRepository: AutoTunnelSettingsRepository
 
     @Inject @ApplicationScope lateinit var applicationScope: CoroutineScope
 
@@ -29,7 +29,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
         applicationScope.launch {
             when (intent.action) {
                 NotificationAction.AUTO_TUNNEL_OFF.name ->
-                    settingsRepository.updateAutoTunnelEnabled(false)
+                    autoTunnelRepository.updateAutoTunnelEnabled(false)
                 NotificationAction.TUNNEL_OFF.name -> {
                     val tunnelId = intent.getIntExtra(NotificationManager.EXTRA_ID, 0)
                     if (tunnelId == STOP_ALL_TUNNELS_ID)

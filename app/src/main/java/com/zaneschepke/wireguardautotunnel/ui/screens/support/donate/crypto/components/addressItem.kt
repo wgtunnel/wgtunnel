@@ -4,7 +4,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CopyAll
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -19,31 +19,29 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItem
-import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionItemLabel
-import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SelectionLabelType
+import androidx.compose.ui.unit.dp
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.crypto.Address
-import com.zaneschepke.wireguardautotunnel.ui.theme.iconSize
 
 @Composable
-fun addressItem(address: Address, onClick: (address: String) -> Unit): SelectionItem {
+fun AddressItem(address: Address, onClick: (address: String) -> Unit) {
     val context = LocalContext.current
     val walletAddress = context.getString(address.address)
     var expand by rememberSaveable { mutableStateOf(false) }
-    return SelectionItem(
+    SurfaceRow(
         leading = {
             Image(
                 painter = painterResource(id = address.icon),
                 contentDescription = null,
-                modifier = Modifier.size(iconSize),
+                modifier = Modifier.size(24.dp),
             )
         },
         trailing = {
             IconButton(onClick = { onClick(walletAddress) }) {
-                Icon(Icons.Outlined.CopyAll, contentDescription = null)
+                Icon(Icons.Outlined.ContentCopy, contentDescription = null)
             }
         },
-        title = { SelectionItemLabel(stringResource(address.name), SelectionLabelType.TITLE) },
+        title = stringResource(address.name),
         description = {
             Text(
                 text = walletAddress,

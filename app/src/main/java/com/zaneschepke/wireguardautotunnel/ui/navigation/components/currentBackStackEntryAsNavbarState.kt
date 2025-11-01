@@ -3,278 +3,435 @@ package com.zaneschepke.wireguardautotunnel.ui.navigation.components
 import android.os.Build
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Sort
+import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.toRoute
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ActionIconButton
+import com.zaneschepke.wireguardautotunnel.ui.navigation.NavController
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.*
+import com.zaneschepke.wireguardautotunnel.ui.navigation.TunnelNetwork
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
+import com.zaneschepke.wireguardautotunnel.ui.state.SharedAppUiState
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 
 @Composable
-fun NavHostController.currentBackStackEntryAsNavbarState(
+fun currentRouteAsNavbarState(
+    sharedState: SharedAppUiState,
     sharedViewModel: SharedAppViewModel,
-    navController: NavHostController,
+    route: Route?,
+    navController: NavController,
 ): State<NavbarState> {
-    val sharedState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
-    val backStackEntry by currentBackStackEntryAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
-    val route =
-        remember(backStackEntry) {
-            backStackEntry?.destination?.route?.let {
-                when (it.substringBefore("?").substringBefore("/").substringAfterLast(".")) {
-                    Route.Support::class.simpleName -> backStackEntry?.toRoute<Route.Support>()
-                    Route.Lock::class.simpleName -> backStackEntry?.toRoute<Route.Lock>()
-                    Route.License::class.simpleName -> backStackEntry?.toRoute<Route.License>()
-                    Route.Logs::class.simpleName -> backStackEntry?.toRoute<Route.Logs>()
-                    Route.Appearance::class.simpleName ->
-                        backStackEntry?.toRoute<Route.Appearance>()
-                    Route.Language::class.simpleName -> backStackEntry?.toRoute<Route.Language>()
-                    Route.Display::class.simpleName -> backStackEntry?.toRoute<Route.Display>()
-                    Route.Tunnels::class.simpleName -> backStackEntry?.toRoute<Route.Tunnels>()
-                    Route.TunnelOptions::class.simpleName ->
-                        backStackEntry?.toRoute<Route.TunnelOptions>()
-                    Route.Config::class.simpleName -> backStackEntry?.toRoute<Route.Config>()
-                    Route.SplitTunnel::class.simpleName ->
-                        backStackEntry?.toRoute<Route.SplitTunnel>()
-                    Route.TunnelAutoTunnel::class.simpleName ->
-                        backStackEntry?.toRoute<Route.TunnelAutoTunnel>()
-                    Route.Sort::class.simpleName -> backStackEntry?.toRoute<Route.Sort>()
-                    Route.Settings::class.simpleName -> backStackEntry?.toRoute<Route.Settings>()
-                    Route.TunnelMonitoring::class.simpleName ->
-                        backStackEntry?.toRoute<Route.TunnelMonitoring>()
-                    Route.SystemFeatures::class.simpleName ->
-                        backStackEntry?.toRoute<Route.SystemFeatures>()
-                    Route.Dns::class.simpleName -> backStackEntry?.toRoute<Route.Dns>()
-                    Route.ProxySettings::class.simpleName ->
-                        backStackEntry?.toRoute<Route.ProxySettings>()
-                    Route.AutoTunnel::class.simpleName ->
-                        backStackEntry?.toRoute<Route.AutoTunnel>()
-                    Route.AdvancedAutoTunnel::class.simpleName ->
-                        backStackEntry?.toRoute<Route.AdvancedAutoTunnel>()
-                    Route.WifiDetectionMethod::class.simpleName ->
-                        backStackEntry?.toRoute<Route.WifiDetectionMethod>()
-                    Route.LocationDisclosure::class.simpleName ->
-                        backStackEntry?.toRoute<Route.LocationDisclosure>()
-                    Route.Donate::class.simpleName -> backStackEntry?.toRoute<Route.Donate>()
-                    Route.Addresses::class.simpleName -> backStackEntry?.toRoute<Route.Addresses>()
-                    else -> null
-                }
-            }
-        }
+    val context = LocalContext.current
 
-    val selectedCount by
-        rememberSaveable(sharedState.selectedTunnels) {
-            mutableIntStateOf(sharedState.selectedTunnels.size)
-        }
-
-    return produceState(initialValue = NavbarState(), route, selectedCount) {
-        value =
+    return remember(route, sharedState) {
+        derivedStateOf {
             when (route) {
-                Route.AdvancedAutoTunnel ->
+                AdvancedAutoTunnel ->
                     NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.advanced_settings)) },
+                        topTitle = context.getString(R.string.advanced_settings),
                     )
-                Route.Appearance ->
+                Appearance ->
                     NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.appearance)) },
+                        topTitle = context.getString(R.string.appearance),
                     )
-                Route.AutoTunnel ->
+                AutoTunnel ->
                     NavbarState(
                         showBottomItems = true,
                         topTitle =
                             if (!sharedState.isLocationDisclosureShown) null
                             else {
-                                { Text(stringResource(R.string.auto_tunnel)) }
+                                context.getString(R.string.auto_tunnel)
                             },
                     )
-                is Route.Config -> {
-                    val tunnel = sharedState.tunnels.find { it.id == route.id }
+                Display ->
                     NavbarState(
-                        showBottomItems = true,
-                        topTitle = {
-                            val title = tunnel?.tunName ?: stringResource(R.string.new_tunnel)
-                            Text(title)
-                        },
-                        topTrailing = {
-                            ActionIconButton(Icons.Rounded.Save, R.string.save) {
-                                keyboardController?.hide()
-                                sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
                             }
                         },
-                    )
-                }
-                Route.Display ->
-                    NavbarState(
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.display_theme)) },
+                        topTitle = context.getString(R.string.display_theme),
                     )
-                Route.Dns ->
+                Dns ->
                     NavbarState(
-                        showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.dns_settings)) },
-                    )
-                Route.Language ->
-                    NavbarState(
-                        showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.language)) },
-                    )
-                Route.License ->
-                    NavbarState(
-                        showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.licenses)) },
-                    )
-                Route.LocationDisclosure -> NavbarState(showBottomItems = true)
-                Route.Lock -> NavbarState(showBottomItems = false)
-                Route.Logs ->
-                    NavbarState(
-                        showBottomItems = false,
-                        removeBottom = true,
-                        topTitle = { Text(stringResource(R.string.logs)) },
-                        topTrailing = {
-                            ActionIconButton(Icons.Rounded.Menu, R.string.quick_actions) {
-                                sharedViewModel.postSideEffect(LocalSideEffect.Sheet.LoggerActions)
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
                             }
                         },
-                    )
-                Route.ProxySettings ->
-                    NavbarState(
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.proxy_settings)) },
-                        topTrailing = {
-                            ActionIconButton(Icons.Rounded.Save, R.string.save) {
-                                keyboardController?.hide()
-                                sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
+                        topTitle = context.getString(R.string.dns_settings),
+                    )
+                Language ->
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
                             }
                         },
-                    )
-                Route.Settings ->
-                    NavbarState(
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.settings)) },
-                        topTrailing = {
-                            ActionIconButton(
-                                Icons.Rounded.SettingsBackupRestore,
-                                R.string.quick_actions,
-                            ) {
-                                sharedViewModel.postSideEffect(LocalSideEffect.Sheet.BackupApp)
+                        topTitle = context.getString(R.string.language),
+                    )
+                LockdownSettings ->
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
                             }
                         },
-                    )
-                Route.Sort ->
-                    NavbarState(
                         showBottomItems = true,
-                        topTitle = { Text(stringResource(R.string.sort)) },
+                        topTitle = context.getString(R.string.lockdown_settings),
                         topTrailing = {
-                            Row {
-                                ActionIconButton(Icons.Rounded.SortByAlpha, R.string.sort) {
-                                    sharedViewModel.postSideEffect(LocalSideEffect.Sort)
-                                }
-                                ActionIconButton(Icons.Rounded.Save, R.string.save) {
+                            IconButton(
+                                onClick = {
+                                    keyboardController?.hide()
                                     sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
                                 }
+                            ) {
+                                Icon(Icons.Rounded.Save, stringResource(R.string.save))
                             }
                         },
                     )
-                is Route.SplitTunnel -> {
-                    val tunnel = sharedState.tunnels.find { it.id == route.id }
+                License ->
                     NavbarState(
-                        topTitle = { Text(tunnel?.tunName ?: "") },
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        showBottomItems = true,
+                        topTitle = context.getString(R.string.licenses),
+                    )
+                LocationDisclosure -> NavbarState(showBottomItems = true)
+                Lock -> NavbarState(showBottomItems = false)
+                Logs ->
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        showBottomItems = false,
+                        topTitle = context.getString(R.string.logs),
                         topTrailing = {
-                            ActionIconButton(Icons.Rounded.Save, R.string.save) {
-                                sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
+                            IconButton(
+                                onClick = {
+                                    sharedViewModel.postSideEffect(
+                                        LocalSideEffect.Sheet.LoggerActions
+                                    )
+                                }
+                            ) {
+                                Icon(Icons.Rounded.Menu, stringResource(R.string.quick_actions))
+                            }
+                        },
+                    )
+                ProxySettings ->
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
                             }
                         },
                         showBottomItems = true,
+                        topTitle = context.getString(R.string.proxy_settings),
+                        topTrailing = {
+                            IconButton(
+                                onClick = {
+                                    keyboardController?.hide()
+                                    sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
+                                }
+                            ) {
+                                Icon(Icons.Rounded.Save, stringResource(R.string.save))
+                            }
+                        },
                     )
-                }
-                Route.Support ->
-                    NavbarState(
-                        topTitle = { Text(stringResource(R.string.support)) },
-                        showBottomItems = true,
-                    )
-                Route.SystemFeatures ->
-                    NavbarState(
-                        topTitle = { Text(stringResource(R.string.android_integrations)) },
-                        showBottomItems = true,
-                    )
-                is Route.TunnelAutoTunnel -> {
-                    val tunnel = sharedState.tunnels.find { it.id == route.id }
-                    NavbarState(showBottomItems = true, topTitle = { Text(tunnel?.tunName ?: "") })
-                }
-                Route.TunnelMonitoring ->
-                    NavbarState(
-                        topTitle = { Text(stringResource(R.string.tunnel_monitoring)) },
-                        showBottomItems = true,
-                    )
-                is Route.TunnelOptions -> {
-                    val tunnel = sharedState.tunnels.find { it.id == route.id }
+                Settings ->
                     NavbarState(
                         showBottomItems = true,
-                        topTitle = { Text(tunnel?.tunName ?: "") },
+                        topTitle = context.getString(R.string.settings),
+                    )
+                Sort ->
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        showBottomItems = true,
+                        topTitle = context.getString(R.string.sort),
                         topTrailing = {
                             Row {
-                                ActionIconButton(Icons.Rounded.QrCode2, R.string.show_qr) {
-                                    sharedViewModel.postSideEffect(LocalSideEffect.Modal.QR)
+                                IconButton(
+                                    onClick = {
+                                        sharedViewModel.postSideEffect(LocalSideEffect.Sort)
+                                    }
+                                ) {
+                                    Icon(Icons.Rounded.SortByAlpha, stringResource(R.string.sort))
                                 }
-                                ActionIconButton(Icons.Rounded.Edit, R.string.edit_tunnel) {
-                                    navigate(Route.Config(route.id))
+                                IconButton(
+                                    onClick = {
+                                        sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
+                                    }
+                                ) {
+                                    Icon(Icons.Rounded.Save, stringResource(R.string.save))
+                                }
+                            }
+                        },
+                    )
+                is Config,
+                is ConfigGlobal -> {
+                    val tunnelName =
+                        if (route is Config) sharedState.tunnels.find { it.id == route.id }?.name
+                        else context.getString(R.string.global_dns_servers)
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        showBottomItems = true,
+                        topTitle = tunnelName ?: context.getString(R.string.new_tunnel),
+                        topTrailing = {
+                            IconButton(
+                                onClick = {
+                                    keyboardController?.hide()
+                                    sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
+                                }
+                            ) {
+                                Icon(Icons.Rounded.Save, stringResource(R.string.save))
+                            }
+                        },
+                    )
+                }
+                is SplitTunnel,
+                is SplitTunnelGlobal -> {
+                    val tunnelName =
+                        if (route is SplitTunnel)
+                            sharedState.tunnels.find { it.id == route.id }?.name
+                        else context.getString(R.string.global_split_tunneling)
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        topTitle = tunnelName ?: "",
+                        topTrailing = {
+                            IconButton(
+                                onClick = {
+                                    sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
+                                }
+                            ) {
+                                Icon(Icons.Rounded.Save, stringResource(R.string.save))
+                            }
+                        },
+                        showBottomItems = true,
+                    )
+                }
+                Support ->
+                    NavbarState(
+                        topTitle = context.getString(R.string.support),
+                        showBottomItems = true,
+                    )
+                AndroidIntegrations ->
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        topTitle = context.getString(R.string.android_integrations),
+                        showBottomItems = true,
+                    )
+                TunnelMonitoring ->
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        topTitle = context.getString(R.string.ping_monitor),
+                        showBottomItems = true,
+                    )
+                is TunnelSettings -> {
+                    val tunnelName = sharedState.tunnels.find { it.id == route.id }?.name
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        showBottomItems = true,
+                        topTitle = tunnelName ?: "",
+                        topTrailing = {
+                            Row {
+                                IconButton(
+                                    onClick = {
+                                        sharedViewModel.postSideEffect(LocalSideEffect.Modal.QR)
+                                    }
+                                ) {
+                                    Icon(Icons.Rounded.QrCode2, stringResource(R.string.show_qr))
+                                }
+                                IconButton(onClick = { navController.push(Config(route.id)) }) {
+                                    Icon(Icons.Rounded.Edit, stringResource(R.string.edit_tunnel))
                                 }
                             }
                         },
                     )
                 }
-                Route.Tunnels -> {
+                Tunnels -> {
                     NavbarState(
-                        topTitle = { Text(stringResource(R.string.tunnels)) },
+                        topTitle = context.getString(R.string.tunnels),
                         topTrailing = {
-                            when (selectedCount) {
-                                0 -> DefaultTunnelsActions(navController, sharedViewModel)
+                            when (sharedState.selectedTunnels.size) {
+                                0 ->
+                                    Row {
+                                        IconButton(onClick = { navController.push(Sort) }) {
+                                            Icon(
+                                                Icons.AutoMirrored.Rounded.Sort,
+                                                stringResource(R.string.sort),
+                                            )
+                                        }
+                                        IconButton(
+                                            onClick = {
+                                                sharedViewModel.postSideEffect(
+                                                    LocalSideEffect.Sheet.ImportTunnels
+                                                )
+                                            }
+                                        ) {
+                                            Icon(
+                                                Icons.Rounded.Add,
+                                                stringResource(R.string.add_tunnel),
+                                            )
+                                        }
+                                    }
                                 else ->
                                     Row {
-                                        ActionIconButton(
-                                            Icons.Rounded.SelectAll,
-                                            R.string.select_all,
+                                        IconButton(
+                                            onClick = {
+                                                sharedViewModel.postSideEffect(
+                                                    LocalSideEffect.SelectedTunnels.SelectAll
+                                                )
+                                            }
                                         ) {
-                                            sharedViewModel.toggleSelectAllTunnels()
+                                            Icon(
+                                                Icons.Rounded.SelectAll,
+                                                stringResource(R.string.select_all),
+                                            )
                                         }
                                         // due to permissions, and SAF issues on TV, not support
                                         // less than Android
                                         // 10
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                            ActionIconButton(
-                                                Icons.Rounded.Download,
-                                                R.string.download,
+                                            IconButton(
+                                                onClick = {
+                                                    sharedViewModel.postSideEffect(
+                                                        LocalSideEffect.Sheet.ExportTunnels
+                                                    )
+                                                }
                                             ) {
-                                                sharedViewModel.postSideEffect(
-                                                    LocalSideEffect.Sheet.ExportTunnels
+                                                Icon(
+                                                    Icons.Rounded.Download,
+                                                    stringResource(R.string.download),
                                                 )
                                             }
                                         }
 
-                                        if (selectedCount == 1) {
-                                            ActionIconButton(Icons.Rounded.CopyAll, R.string.copy) {
-                                                sharedViewModel.copySelectedTunnel()
+                                        if (sharedState.selectedTunnels.size == 1) {
+                                            IconButton(
+                                                onClick = {
+                                                    sharedViewModel.postSideEffect(
+                                                        LocalSideEffect.SelectedTunnels.Copy
+                                                    )
+                                                }
+                                            ) {
+                                                Icon(
+                                                    Icons.Outlined.CopyAll,
+                                                    stringResource(R.string.copy),
+                                                )
                                             }
                                         }
-                                        ActionIconButton(
-                                            Icons.Rounded.Delete,
-                                            R.string.delete_tunnel,
+                                        IconButton(
+                                            onClick = {
+                                                sharedViewModel.postSideEffect(
+                                                    LocalSideEffect.Modal.DeleteTunnels
+                                                )
+                                            }
                                         ) {
-                                            sharedViewModel.postSideEffect(
-                                                LocalSideEffect.Modal.DeleteTunnels
+                                            Icon(
+                                                Icons.Rounded.Delete,
+                                                stringResource(R.string.delete_tunnel),
                                             )
                                         }
                                     }
@@ -283,43 +440,96 @@ fun NavHostController.currentBackStackEntryAsNavbarState(
                         showBottomItems = true,
                     )
                 }
-                Route.WifiDetectionMethod ->
+                WifiDetectionMethod ->
                     NavbarState(
-                        topTitle = { Text(stringResource(R.string.wifi_detection_method)) },
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        topTitle = context.getString(R.string.wifi_detection_method),
                         showBottomItems = true,
                     )
-                Route.Donate -> {
+                Donate -> {
                     NavbarState(
-                        topTitle = { Text(stringResource(R.string.donate_title)) },
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        topTitle = context.getString(R.string.donate_title),
                         showBottomItems = true,
                     )
                 }
-                Route.Addresses -> {
+                Addresses -> {
                     NavbarState(
-                        topTitle = { Text(stringResource(R.string.addresses)) },
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        topTitle = context.getString(R.string.addresses),
                         showBottomItems = true,
                     )
                 }
-                Route.TunnelsGraph,
-                Route.SettingsGraph,
-                Route.AutoTunnelGraph,
-                Route.SupportGraph,
+                is WifiPreferences -> {
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        topTitle = context.getString(R.string.wifi_settings),
+                        showBottomItems = true,
+                    )
+                }
+                is PreferredTunnel -> {
+                    val title =
+                        when (route.tunnelNetwork) {
+                            TunnelNetwork.MOBILE_DATA,
+                            TunnelNetwork.ETHERNET -> context.getString(R.string.preferred_tunnel)
+                            TunnelNetwork.WIFI -> context.getString(R.string.tunnel_mapping)
+                        }
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        topTitle = title,
+                        showBottomItems = true,
+                    )
+                }
+                PingTarget ->
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        topTitle = context.getString(R.string.ping_target),
+                        showBottomItems = true,
+                    )
                 null -> NavbarState()
             }
-    }
-}
-
-@Composable
-private fun DefaultTunnelsActions(
-    navController: NavHostController,
-    sharedViewModel: SharedAppViewModel,
-) {
-    Row {
-        ActionIconButton(Icons.AutoMirrored.Rounded.Sort, R.string.sort) {
-            navController.navigate(Route.Sort)
-        }
-        ActionIconButton(Icons.Rounded.Add, R.string.add_tunnel) {
-            sharedViewModel.postSideEffect(LocalSideEffect.Sheet.ImportTunnels)
         }
     }
 }

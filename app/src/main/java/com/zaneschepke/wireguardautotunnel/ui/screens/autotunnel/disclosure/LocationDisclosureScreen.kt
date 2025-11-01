@@ -9,31 +9,33 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.DirectionsWalk
+import androidx.compose.material.icons.automirrored.outlined.Launch
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.common.button.surface.SurfaceSelectionGroupButton
+import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.LocationDisclosureHeader
-import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.appSettingsItem
-import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.skipItem
-import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 
 @Composable
-fun LocationDisclosureScreen(viewModel: AutoTunnelViewModel) {
-    val navController = LocalNavController.current
+fun LocationDisclosureScreen() {
     val context = LocalContext.current
+    val navController = LocalNavController.current
+    val viewModel = LocalSharedVm.current
 
     fun goToAutoTunnel() {
-        navController.navigate(Route.AutoTunnel) {
-            popUpTo(Route.LocationDisclosure) { inclusive = true }
-        }
+        navController.popUpTo(Route.AutoTunnel)
     }
 
     val settingsLauncher =
@@ -46,21 +48,29 @@ fun LocationDisclosureScreen(viewModel: AutoTunnelViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(18.dp, Alignment.Top),
-        modifier = Modifier.fillMaxSize().padding(top = 18.dp).padding(horizontal = 24.dp),
+        modifier = Modifier.fillMaxSize().padding(top = 18.dp),
     ) {
-        LocationDisclosureHeader()
-        SurfaceSelectionGroupButton(
-            items =
-                listOf(
-                    appSettingsItem {
-                        val intent =
-                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                data = Uri.fromParts("package", context.packageName, null)
-                            }
-                        settingsLauncher.launch(intent)
-                    }
-                )
-        )
-        SurfaceSelectionGroupButton(items = listOf(skipItem { goToAutoTunnel() }))
+        LocationDisclosureHeader(Modifier.padding(horizontal = 16.dp))
+        Column {
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.Settings, contentDescription = null) },
+                title = stringResource(R.string.launch_app_settings),
+                trailing = { Icon(Icons.AutoMirrored.Outlined.Launch, null) },
+                onClick = {
+                    val intent =
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = Uri.fromParts("package", context.packageName, null)
+                        }
+                    settingsLauncher.launch(intent)
+                },
+            )
+            SurfaceRow(
+                leading = {
+                    Icon(Icons.AutoMirrored.Outlined.DirectionsWalk, contentDescription = null)
+                },
+                title = stringResource(R.string.skip),
+                onClick = { goToAutoTunnel() },
+            )
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.ui.common.dropdown
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
@@ -27,30 +28,35 @@ fun <T> DropdownSelector(
         it?.toString() ?: stringResource(R.string._default)
     },
 ) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(5.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (label != null) label()
-        Text(text = optionToString(currentValue), style = MaterialTheme.typography.bodyMedium)
-        Icon(Icons.Default.ArrowDropDown, contentDescription = stringResource(R.string.dropdown))
-    }
-
-    DropdownMenu(
-        modifier = modifier.heightIn(max = 250.dp),
-        scrollState = rememberScrollState(),
-        containerColor = MaterialTheme.colorScheme.surface,
-        expanded = isExpanded,
-        onDismissRequest = onDismiss,
-    ) {
-        options.forEach { option ->
-            DropdownMenuItem(
-                text = { Text(optionToString(option)) },
-                onClick = {
-                    onValueSelected(option)
-                    onDismiss()
-                },
+    Box(modifier = modifier) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (label != null) label()
+            Text(text = optionToString(currentValue), style = MaterialTheme.typography.bodyMedium)
+            Icon(
+                Icons.Default.ArrowDropDown,
+                contentDescription = stringResource(R.string.dropdown),
             )
+        }
+
+        DropdownMenu(
+            modifier = modifier.heightIn(max = 250.dp),
+            scrollState = rememberScrollState(),
+            containerColor = MaterialTheme.colorScheme.surface,
+            expanded = isExpanded,
+            onDismissRequest = onDismiss,
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(optionToString(option)) },
+                    onClick = {
+                        onValueSelected(option)
+                        onDismiss()
+                    },
+                )
+            }
         }
     }
 }

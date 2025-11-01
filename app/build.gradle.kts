@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -26,6 +27,15 @@ android {
 
     // fix okhttp proguard issue
     packaging { resources { pickFirsts.add("okhttp3/internal/publicsuffix/publicsuffixes.gz") } }
+
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a")
+            isUniversalApk = true
+        }
+    }
 
     defaultConfig {
         applicationId = Constants.APP_ID
@@ -69,7 +79,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            signingConfig = signingConfigs.getByName(Constants.RELEASE)
+            signingConfig = signingConfigs.getByName("debug")
             resValue("string", "provider", "\"${Constants.APP_NAME}.provider\"")
         }
 
@@ -128,19 +138,33 @@ android {
         allowedLicenseUrls().forEach { allowUrl(it) }
     }
 
-    applicationVariants.all {
+    android.applicationVariants.all {
         val variant = this
-        variant.outputs
-            .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
-            .forEach { output ->
-                val outputFileName =
-                    if (variant.flavorName == "fdroid" && variant.buildType.name == "release") {
-                        "${Constants.APP_NAME}-fdroid-release-${variant.versionName}.apk"
-                    } else {
-                        "${Constants.APP_NAME}-${variant.flavorName}-v${variant.versionName}.apk"
-                    }
-                output.outputFileName = outputFileName
-            }
+
+        val abiNameMap =
+            mapOf(
+                "armeabi-v7a" to "armv7",
+                "arm64-v8a" to "arm64",
+                "x86" to "x86",
+                "x86_64" to "x64",
+            )
+
+        variant.outputs.all {
+            val output = this as BaseVariantOutputImpl
+            val abi = output.getFilter("ABI")
+
+            val baseFileName = "${Constants.APP_NAME}-${variant.flavorName}-v${variant.versionName}"
+
+            val outputFileName =
+                if (!abi.isNullOrEmpty()) {
+                    val shortAbiName = abiNameMap.getOrDefault(abi, abi)
+                    "${baseFileName}-${shortAbiName}.apk"
+                } else {
+                    "${baseFileName}.apk"
+                }
+
+            output.outputFileName = outputFileName
+        }
     }
 }
 
@@ -148,19 +172,66 @@ dependencies {
     implementation(project(":logcatter"))
     implementation(project(":networkmonitor"))
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.lifecycle.service)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.storage)
+    // Core foundations
+    implementation(libs.bundles.androidx.core.full)
+    implementation(libs.bundles.androidx.lifecycle.core)
+    implementation(libs.bundles.androidx.appcompat)
+    implementation(libs.bundles.androidx.storage)
 
+    // Compose setup
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.bundles.androidx.compose.ui)
+    implementation(libs.bundles.androidx.compose.material)
+    implementation(libs.androidx.activity.compose)
+
+    // Navigation
+    implementation(libs.bundles.androidx.navigation3)
+    implementation(libs.bundles.navigation.lifecycle)
+    implementation(libs.bundles.androidx.hilt)
+
+    // Material and icons
+    implementation(libs.bundles.google.material)
+    implementation(libs.bundles.material.icons)
+
+    // Database
+    implementation(libs.bundles.androidx.room)
+    implementation(libs.bundles.androidx.datastore)
+    ksp(libs.androidx.room.compiler)
+
+    // DI and work
+    implementation(libs.bundles.hilt.android)
+    implementation(libs.bundles.androidx.work)
+    ksp(libs.hilt.android.compiler)
+    ksp(libs.androidx.hilt.compiler)
+
+    // Networking and serialization
+    implementation(libs.bundles.ktor.client)
+    implementation(libs.bundles.kotlinx.serialization)
+    implementation(libs.ipaddress)
+
+    // State management
+    implementation(libs.bundles.orbit.mvi)
+
+    // Tunnel
+    implementation(libs.bundles.wireguard.tunnel)
+
+    // Shizuku
+    implementation(libs.bundles.shizuku)
+
+    // UI utilities
+    implementation(libs.bundles.ui.utilities)
+
+    // Misc utilities
+    implementation(libs.bundles.misc.utilities)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    // Accompanist
+    implementation(libs.bundles.accompanist)
+
+    // Lifecycle Compose
+    implementation(libs.lifecycle.runtime.compose)
+
+    // Testing
     testImplementation(libs.junit)
     testImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -171,71 +242,10 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.manifest)
 
-    implementation(libs.tunnel)
-    implementation(libs.amneziawg.android)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
-
-    implementation(libs.timber)
-
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.hilt.navigation.compose)
-
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.android.compiler)
-    ksp(libs.androidx.hilt.compiler)
-
-    implementation(libs.accompanist.permissions)
-    implementation(libs.accompanist.drawablepainter)
-
-    implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.datastore.preferences)
-
-    implementation(libs.lifecycle.runtime.compose)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.lifecycle.process)
-
-    implementation(libs.kotlinx.serialization.json)
-
-    implementation(libs.zxing.android.embedded)
-
-    implementation(libs.material.icons.core)
-    implementation(libs.material.icons.extended)
-
-    implementation(libs.pin.lock.compose)
-
-    implementation(libs.androidx.core)
-
-    implementation(libs.androidx.core.splashscreen)
-
-    implementation(libs.androidx.work.runtime)
-    implementation(libs.androidx.hilt.work)
-
-    implementation(libs.qrose)
-    implementation(libs.semver4j)
-
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.client.cio)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.slf4j.android)
-    implementation(libs.icmp4a)
-
-    // shizuku
-    implementation(libs.shizuku.api)
-    implementation(libs.shizuku.provider)
-
-    implementation(libs.reorderable)
+    // Room database backup
     implementation(libs.roomdatabasebackup) {
         exclude(group = "org.reactivestreams", module = "reactive-streams")
     }
-
-    // state management
-    implementation(libs.orbit.compose)
-    implementation(libs.orbit.viewmodel)
-    implementation(libs.orbit.core)
 }
 
 tasks.register<Copy>("copyLicenseeJsonToAssets") {

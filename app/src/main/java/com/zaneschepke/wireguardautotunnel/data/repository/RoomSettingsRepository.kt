@@ -1,11 +1,11 @@
 package com.zaneschepke.wireguardautotunnel.data.repository
 
-import com.zaneschepke.wireguardautotunnel.data.dao.SettingsDao
-import com.zaneschepke.wireguardautotunnel.data.entity.Settings
-import com.zaneschepke.wireguardautotunnel.data.mapper.toAppSettings
-import com.zaneschepke.wireguardautotunnel.data.mapper.toSettings
+import com.zaneschepke.wireguardautotunnel.data.dao.GeneralSettingsDao
+import com.zaneschepke.wireguardautotunnel.data.entity.GeneralSettings as Entity
+import com.zaneschepke.wireguardautotunnel.data.mapper.toDomain
+import com.zaneschepke.wireguardautotunnel.data.mapper.toEntity
 import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
-import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
+import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings as Domain
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.flowOn
@@ -13,24 +13,23 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class RoomSettingsRepository(
-    private val settingsDoa: SettingsDao,
+    private val settingsDoa: GeneralSettingsDao,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : GeneralSettingRepository {
 
-    override suspend fun save(generalSettings: GeneralSettings) {
-        withContext(ioDispatcher) { settingsDoa.save(generalSettings.toSettings()) }
+    override suspend fun upsert(generalSettings: Domain) {
+        withContext(ioDispatcher) { settingsDoa.upsert(generalSettings.toEntity()) }
     }
 
     override val flow =
-        settingsDoa.getSettingsFlow().flowOn(ioDispatcher).map { it.toAppSettings() }
+        settingsDoa
+            .getGeneralSettingsFlow()
+            .map { (it ?: Entity()).toDomain() }
+            .flowOn(ioDispatcher)
 
-    override suspend fun get(): GeneralSettings {
+    override suspend fun getGeneralSettings(): Domain {
         return withContext(ioDispatcher) {
-            (settingsDoa.getAll().firstOrNull() ?: Settings()).toAppSettings()
+            (settingsDoa.getGeneralSettings() ?: Entity()).toDomain()
         }
-    }
-
-    override suspend fun updateAutoTunnelEnabled(enabled: Boolean) {
-        withContext(ioDispatcher) { settingsDoa.updateAutoTunnelEnabled(enabled) }
     }
 }

@@ -7,9 +7,13 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
+import com.zaneschepke.wireguardautotunnel.domain.events.NotAuthorized
+import com.zaneschepke.wireguardautotunnel.domain.model.AutoTunnelSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConf
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.LockdownSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
@@ -24,7 +28,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.amnezia.awg.crypto.Key
 import timber.log.Timber
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalAtomicApi::class)
@@ -36,18 +39,29 @@ constructor(
     @ProxyUserspace private val proxyUserspaceTunnel: TunnelProvider,
     private val serviceManager: ServiceManager,
     private val settingsRepository: GeneralSettingRepository,
+    private val autoTunnelSettingsRepository: AutoTunnelSettingsRepository,
+    private val lockdownSettingsRepository: LockdownSettingsRepository,
     private val tunnelsRepository: TunnelRepository,
     private val tunnelMonitor: TunnelMonitor,
     @ApplicationScope private val applicationScope: CoroutineScope,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : TunnelProvider {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val localErrorEvents = MutableSharedFlow<Pair<String?, BackendCoreException>>()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val localMessageEvents = MutableSharedFlow<Pair<String?, BackendMessage>>()
+
     private val monitoringMutex = Mutex()
     private val monitoringJobs = ConcurrentHashMap<Int, Job>()
 
+    private val ddnsMutex = Mutex()
+    private val ddnsJobs = ConcurrentHashMap<Int, Job>()
+
     private data class SideEffectState(
         val activeTuns: Map<Int, TunnelState>,
-        val tuns: List<TunnelConf>,
+        val tuns: List<TunnelConfig>,
         val settings: GeneralSettings,
         val previouslyActive: Map<Int, TunnelState>,
     )
@@ -66,10 +80,7 @@ constructor(
             .filterNotNull()
             // ignore default state
             .filterNot { it == GeneralSettings() }
-            .distinctUntilChanged { old, new ->
-                old.appMode == new.appMode &&
-                    old.isLanOnKillSwitchEnabled == new.isLanOnKillSwitchEnabled
-            }
+            .distinctUntilChangedBy { it.appMode }
             .map { settings ->
                 Timber.d("App mode changes with ${settings.appMode}")
                 val backend =
@@ -90,7 +101,7 @@ constructor(
                     handleModeChangeCleanup(previousBackend, previousSettings.appMode)
                 }
                 if (settings.appMode == AppMode.LOCK_DOWN) {
-                    handleLockDownModeInit(settings.isLanOnKillSwitchEnabled)
+                    handleLockDownModeInit()
                 }
             }
             .map { (_, backend) -> backend }
@@ -115,7 +126,7 @@ constructor(
                     Triple(activeTuns, tuns, settings)
                 }
             }
-            .onStart { handleStateRestore() }
+            .onStart { handleRestore() }
             .onEach { (activeTuns, tuns, settings) ->
                 val previouslyActive = activeTunsReference.exchange(activeTuns)
                 val state = SideEffectState(activeTuns, tuns, settings, previouslyActive)
@@ -144,16 +155,12 @@ constructor(
                                         s.activeTuns.size != s.previouslyActive.size
                                     },
                                 ),
-                                // TODO Not for kernel mode for now
                                 SideEffectWithCondition(
                                     effect = { s ->
-                                        handleTunnelMonitoringChanges(s.activeTuns, s.tuns)
+                                        handleDynamicDnsMonitoring(s.activeTuns, s.tuns, s.settings)
                                     },
                                     condition = { s ->
-                                        s.tuns.any {
-                                            it.restartOnPingFailure &&
-                                                s.activeTuns.keys.contains(it.id)
-                                        } && s.settings.appMode != AppMode.KERNEL
+                                        s.activeTuns.keys != s.previouslyActive.keys
                                     },
                                 ),
                                 SideEffectWithCondition(
@@ -189,19 +196,17 @@ constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val errorEvents: SharedFlow<Pair<String, BackendCoreException>> =
-        tunnelProviderFlow
-            .flatMapLatest { it.errorEvents }
+    override val errorEvents: SharedFlow<Pair<String?, BackendCoreException>> =
+        merge(localErrorEvents, tunnelProviderFlow.flatMapLatest { it.errorEvents })
             .shareIn(
-                scope = applicationScope.plus(ioDispatcher),
+                scope = applicationScope + ioDispatcher,
                 started = SharingStarted.Eagerly,
                 replay = 0,
             )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val messageEvents: SharedFlow<Pair<String, BackendMessage>> =
-        tunnelProviderFlow
-            .flatMapLatest { it.messageEvents }
+    override val messageEvents: SharedFlow<Pair<String?, BackendMessage>> =
+        merge(localMessageEvents, tunnelProviderFlow.flatMapLatest { it.messageEvents })
             .shareIn(
                 scope = applicationScope.plus(ioDispatcher),
                 started = SharingStarted.Eagerly,
@@ -212,15 +217,26 @@ constructor(
         return tunnelProviderFlow.value.getStatistics(tunnelId)
     }
 
-    override suspend fun startTunnel(tunnelConf: TunnelConf) {
-        // for VPN Mode, we need to stop active tunnels as we can only have one active at a time
-        if (activeTunnels.value.isNotEmpty() && tunnelProviderFlow.value == userspaceTunnel)
+    override suspend fun startTunnel(tunnelConfig: TunnelConfig) {
+        if (activeTunnels.value.containsKey(tunnelConfig.id)) return
+        val provider = tunnelProviderFlow.value
+        val isKernel = provider is KernelTunnel
+
+        if (!isKernel && activeTunnels.value.isNotEmpty()) {
             stopActiveTunnels()
-        tunnelProviderFlow.value.startTunnel(tunnelConf)
+            withTimeoutOrNull(BaseTunnel.STARTUP_TIMEOUT_MS) {
+                activeTunnels.first { it.isEmpty() }
+            } ?: run { activeTunnels.value.keys.forEach { id -> provider.forceStopTunnel(id) } }
+        }
+        tunnelProviderFlow.value.startTunnel(tunnelConfig)
     }
 
     override suspend fun stopTunnel(tunnelId: Int) {
         tunnelProviderFlow.value.stopTunnel(tunnelId)
+    }
+
+    override suspend fun forceStopTunnel(tunnelId: Int) {
+        tunnelProviderFlow.value.forceStopTunnel(tunnelId)
     }
 
     override suspend fun stopActiveTunnels() {
@@ -239,15 +255,15 @@ constructor(
         return tunnelProviderFlow.value.runningTunnelNames()
     }
 
-    override fun handleDnsReresolve(tunnelConf: TunnelConf): Boolean {
-        return tunnelProviderFlow.value.handleDnsReresolve(tunnelConf)
+    override fun handleDnsReresolve(tunnelConfig: TunnelConfig): Boolean {
+        return tunnelProviderFlow.value.handleDnsReresolve(tunnelConfig)
     }
 
     override suspend fun updateTunnelStatus(
         tunnelId: Int,
         status: TunnelStatus?,
         stats: TunnelStatistics?,
-        pingStates: Map<Key, PingState>?,
+        pingStates: Map<String, PingState>?,
         logHealthState: LogHealthState?,
     ) {
         tunnelProviderFlow.value.updateTunnelStatus(
@@ -269,16 +285,26 @@ constructor(
         serviceManager.updateTunnelTile()
     }
 
-    private fun handleLockDownModeInit(withLanBypass: Boolean) {
-        val allowedIps = if (withLanBypass) TunnelConf.IPV4_PUBLIC_NETWORKS else emptySet()
+    // TODO this can crash if we haven't started foreground service yet, especially for
+    // workerManager
+    private suspend fun handleLockDownModeInit() {
+        val lockdownSettings = lockdownSettingsRepository.getLockdownSettings()
+        val allowedIps =
+            if (lockdownSettings.bypassLan) TunnelConfig.IPV4_PUBLIC_NETWORKS else emptySet()
         try {
-            // TODO handle situation where they don't have vpn permission, request it
             if (serviceManager.hasVpnPermission()) {
-                proxyUserspaceTunnel.setBackendMode(BackendMode.KillSwitch(allowedIps))
+                proxyUserspaceTunnel.setBackendMode(
+                    BackendMode.KillSwitch(
+                        allowedIps,
+                        lockdownSettings.metered,
+                        lockdownSettings.dualStack,
+                    )
+                )
+            } else {
+                throw NotAuthorized()
             }
         } catch (e: BackendCoreException) {
-            // TODO expose this error to user
-            Timber.e(e)
+            localErrorEvents.tryEmit(null to e)
         }
     }
 
@@ -292,64 +318,59 @@ constructor(
             proxyUserspaceTunnel.setBackendMode(BackendMode.Inactive)
     }
 
-    private suspend fun handleStateRestore() {
-        val settings = settingsRepository.flow.first()
-        if (settings.isRestoreOnBootEnabled) {
-            if (settings.isAutoTunnelEnabled) {
-                tunnelsRepository.resetActiveTunnels()
-                return settingsRepository.updateAutoTunnelEnabled(true)
-            }
-            val tunnels = tunnelsRepository.flow.first()
-            when (settings.appMode) {
-                // TODO eventually, lockdown/proxy can support multi
-                AppMode.VPN,
-                AppMode.LOCK_DOWN,
-                AppMode.PROXY ->
-                    tunnels
-                        .firstOrNull { it.isActive }
-                        ?.let {
-                            // clear any duplicates
-                            tunnelsRepository.resetActiveTunnels()
-                            startTunnel(it)
-                        }
-                // kernel supports multi
-                AppMode.KERNEL ->
-                    tunnels.filter { it.isActive }.forEach { conf -> startTunnel(conf) }
-            }
-        }
-    }
-
-    private suspend fun handleTunnelMonitoringChanges(
-        activeTuns: Map<Int, TunnelState>,
-        configs: List<TunnelConf>,
-    ) {
-        configs
-            .filter { it.restartOnPingFailure && activeTuns.keys.contains(it.id) }
-            .forEach { conf ->
-                val tunState = activeTuns[conf.id] ?: return@forEach
-                if (tunState.health() == TunnelState.Health.UNHEALTHY) {
-                    runCatching {
-                            val updated = handleDnsReresolve(conf)
-                            // TODO user messages
-                            if (updated) {
-                                Timber.i("Successfully update the peer endpoint to new address.")
-                            } else {
-                                Timber.i("Current endpoint address is already up to date.")
-                            }
-                        }
-                        .onFailure {
-                            Timber.e(it, "Failed to handle dns re-resolution for ${conf.tunName}")
-                        }
-                    // TODO backoff
-                    delay(30_000L)
+    suspend fun handleRestore() =
+        withContext(ioDispatcher) {
+            val settings = settingsRepository.getGeneralSettings()
+            val autoTunnelSettings = autoTunnelSettingsRepository.getAutoTunnelSettings()
+            val tunnels = tunnelsRepository.getAll()
+            if (autoTunnelSettings.isAutoTunnelEnabled)
+                return@withContext restoreAutoTunnel(autoTunnelSettings)
+            if (settings.appMode == AppMode.LOCK_DOWN) handleLockDownModeInit()
+            if (tunnels.any { it.isActive }) {
+                if (settings.appMode == AppMode.VPN && !serviceManager.hasVpnPermission())
+                    return@withContext localErrorEvents.emit(null to NotAuthorized())
+                when (settings.appMode) {
+                    AppMode.VPN,
+                    AppMode.PROXY,
+                    AppMode.LOCK_DOWN -> {
+                        tunnels.firstOrNull { it.isActive }?.let { startTunnel(it) }
+                    }
+                    AppMode.KERNEL ->
+                        tunnels.filter { it.isActive }.forEach { conf -> startTunnel(conf) }
                 }
             }
+        }
+
+    private suspend fun restoreAutoTunnel(autoTunnelSettings: AutoTunnelSettings) {
+        autoTunnelSettingsRepository.upsert(autoTunnelSettings.copy(isAutoTunnelEnabled = true))
+        serviceManager.startAutoTunnelService()
     }
+
+    suspend fun handleReboot() =
+        withContext(ioDispatcher) {
+            val settings = settingsRepository.getGeneralSettings()
+            val autoTunnelSettings = autoTunnelSettingsRepository.getAutoTunnelSettings()
+            val defaultTunnel = tunnelsRepository.getStartTunnel()
+            if (autoTunnelSettings.startOnBoot)
+                return@withContext restoreAutoTunnel(autoTunnelSettings)
+            if (settings.isRestoreOnBootEnabled) {
+                tunnelsRepository.resetActiveTunnels()
+                when (settings.appMode) {
+                    AppMode.LOCK_DOWN -> handleLockDownModeInit()
+                    AppMode.VPN ->
+                        if (!serviceManager.hasVpnPermission())
+                            return@withContext localErrorEvents.emit(null to NotAuthorized())
+                    AppMode.KERNEL,
+                    AppMode.PROXY -> Unit
+                }
+                defaultTunnel?.let { startTunnel(it) }
+            }
+        }
 
     private suspend fun handleTunnelsActiveChange(
         previousActiveTuns: Map<Int, TunnelState>,
         activeTuns: Map<Int, TunnelState>,
-        tuns: List<TunnelConf>,
+        tuns: List<TunnelConfig>,
     ) {
         val relevantTunnels = previousActiveTuns.keys + activeTuns.keys
 
@@ -376,9 +397,122 @@ constructor(
         }
     }
 
+    suspend fun restartActiveTunnel(id: Int) =
+        withContext(ioDispatcher) {
+            val activeIds = activeTunnels.value.keys.toList()
+            if (activeIds.isEmpty()) return@withContext
+            if (!activeIds.contains(id)) return@withContext
+            val tunnel = tunnelsRepository.getById(id) ?: return@withContext
+            restartTunnel(tunnel)
+        }
+
+    suspend fun restartActiveTunnels() =
+        withContext(ioDispatcher) {
+            val activeIds = activeTunnels.value.keys.toList()
+            if (activeIds.isEmpty()) return@withContext
+
+            val tunnels = tunnelsRepository.getAll()
+            if (tunnels.isEmpty()) return@withContext
+
+            supervisorScope {
+                activeIds.forEach { id ->
+                    val tunnel =
+                        tunnels.find { it.id == id }
+                            ?: run {
+                                Timber.w("Tunnel config $id not found; skipping restart")
+                                return@forEach
+                            }
+                    restartTunnel(tunnel)
+                }
+            }
+        }
+
+    private suspend fun restartTunnel(tunnel: TunnelConfig) {
+        runCatching { stopTunnel(tunnel.id) }
+            .onFailure { e -> Timber.e(e, "Failed to stop tunnel ${tunnel.id} during restart") }
+
+        delay(RESTART_TUNNEL_DELAY)
+
+        runCatching { startTunnel(tunnel) }
+            .onFailure { e -> Timber.e(e, "Failed to restart tunnel ${tunnel.id}") }
+    }
+
+    private suspend fun handleDynamicDnsMonitoring(
+        activeTuns: Map<Int, TunnelState>,
+        configs: List<TunnelConfig>,
+        settings: GeneralSettings,
+    ) =
+        ddnsMutex.withLock {
+            val activeIds =
+                activeTuns.keys
+                    .filter { id ->
+                        configs.find { it.id == id }?.restartOnPingFailure == true &&
+                            settings.appMode != AppMode.KERNEL
+                    }
+                    .toSet()
+
+            val currentJobs = ddnsJobs.keys.toSet()
+            val obsoleteIds = currentJobs - activeIds
+
+            Timber.d(
+                "DDNS Monitoring: Active IDs: $activeIds, Obsolete IDs: $obsoleteIds, Total jobs before: ${ddnsJobs.size}"
+            )
+
+            obsoleteIds.forEach { id ->
+                ddnsJobs[id]?.cancel()
+                ddnsJobs.remove(id)
+            }
+
+            activeIds.forEach { id ->
+                if (ddnsJobs.containsKey(id)) return@forEach // Skip if already monitored
+                val conf = configs.find { it.id == id } ?: return@forEach
+                val tunStateFlow =
+                    activeTunnels.map { it[id] }.stateIn(applicationScope + ioDispatcher)
+
+                val newJob =
+                    applicationScope.launch(ioDispatcher) {
+                        var backoff = 30_000L
+                        while (isActive) {
+                            val state = tunStateFlow.value ?: break
+                            if (state.health() != TunnelState.Health.UNHEALTHY) {
+                                backoff = BASE_BACKOFF
+                                tunStateFlow.first {
+                                    it?.health() == TunnelState.Health.UNHEALTHY || it == null
+                                }
+                                continue
+                            }
+
+                            runCatching {
+                                    val updated = handleDnsReresolve(conf)
+                                    if (updated) {
+                                        localMessageEvents.emit(
+                                            conf.name to BackendMessage.DynamicDnsSuccess
+                                        )
+                                        backoff = BASE_BACKOFF
+                                    } else {
+                                        Timber.i(
+                                            "Dynamic DNS check completed, current endpoint address is already up to date."
+                                        )
+                                    }
+                                }
+                                .onFailure {
+                                    Timber.e(
+                                        it,
+                                        "Failed to handle dns re-resolution for ${conf.name}",
+                                    )
+                                }
+
+                            delay(backoff)
+                            backoff = (backoff * 1.5).toLong().coerceAtMost(MAX_BACKOFF_TIME)
+                        }
+                    }
+                ddnsJobs[id] = newJob
+            }
+        }
+
     private suspend fun handleFullTunnelMonitoring(
         activeTuns: Map<Int, TunnelState>,
-        configs: List<TunnelConf>,
+        configs: List<TunnelConfig>,
         settings: GeneralSettings,
     ) =
         monitoringMutex.withLock {
@@ -397,7 +531,7 @@ constructor(
 
             activeIds.forEach { id ->
                 if (monitoringJobs.containsKey(id)) return@forEach // Skip if already monitored
-                val config = configs.find { it.id == id } ?: return@forEach
+                configs.find { it.id == id } ?: return@forEach
                 val tunStateFlow =
                     activeTunnels.map { it[id] }.stateIn(applicationScope + ioDispatcher)
                 val newJob =
@@ -407,7 +541,7 @@ constructor(
                             withLogs = settings.appMode != AppMode.KERNEL,
                             tunStateFlow = tunStateFlow,
                             getStatistics = { tunnelId -> getStatistics(tunnelId) },
-                            updateTunnelStatus = { tid, status, stats, pings, logHealth ->
+                            updateTunnelStatus = { tid, _, stats, pings, logHealth ->
                                 updateTunnelStatus(tid, null, stats, pings, logHealth)
                             },
                         )
@@ -415,4 +549,10 @@ constructor(
                 monitoringJobs[id] = newJob
             }
         }
+
+    companion object {
+        const val BASE_BACKOFF = 30_000L
+        const val MAX_BACKOFF_TIME = 300_000L
+        const val RESTART_TUNNEL_DELAY = 300L
+    }
 }

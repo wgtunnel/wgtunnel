@@ -42,14 +42,11 @@
     <string name="error_ssid_exists">SSID sudah ada</string>
     <string name="error_root_denied">Root shell ditolak</string>
     <string name="error_no_file_explorer">Tidak ada file explorer yang diinstal</string>
-    <string name="location_services_missing_message">Aplikasi tidak mendeteksi layanan lokasi apa pun yang diaktifkan di perangkat Anda. Tergantung pada perangkatnya, hal ini dapat menyebabkan fitur wifi yang tidak tepercaya gagal membaca nama wifi. Apakah Anda ingin melanjutkan?</string>
     <string name="auto_tunnel_title">Layanan Auto-tunnel</string>
     <string name="yes">Ya</string>
     <string name="incorrect_pin">Pin salah</string>
     <string name="pin_created">Pin berhasil dibuat</string>
     <string name="enter_pin">Masukkan pin Anda</string>
-    <string name="restart_on_ping">Mulai ulang saat ping gagal (beta)</string>
-    <string name="use_tunnel_on_wifi_name">Gunakan tunnel pada nama wifi</string>
     <string name="edit_tunnel">Edit tunnel</string>
     <string name="junk_packet_count">Jumlah paket sampah</string>
     <string name="junk_packet_minimum_size">Ukuran minimum paket sampah</string>
@@ -82,9 +79,7 @@
     <string name="no_browser_detected">Tidak ada browser yang terdeteksi</string>
     <string name="all">semua</string>
     <string name="open_issue">Membuka masalah</string>
-    <string name="read_logs">Baca log</string>
     <string name="auto">(auto)</string>
     <string name="create_pin">Buat pin</string>
-    <string name="mobile_data_tunnel">Ditetapkan sebagai tunnel data seluler</string>
     <string name="set_primary_tunnel">Ditetapkan sebagai tunnel utama</string>
 </resources>

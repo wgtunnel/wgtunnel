@@ -4,48 +4,39 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 
 sealed class BackendCoreException : Exception() {
-    data object DNS : BackendCoreException()
-
-    data object Unauthorized : BackendCoreException()
-
-    data object Config : BackendCoreException()
-
-    data object KernelModuleName : BackendCoreException()
-
-    data object NotAuthorized : BackendCoreException()
-
-    data object ServiceNotRunning : BackendCoreException()
-
-    data object Unknown : BackendCoreException()
-
-    data object TunnelNameTooLong : BackendCoreException()
-
-    data object UapiUpdateFailed : BackendCoreException()
-
-    data class BounceFailed(val error: BackendCoreException) : BackendCoreException()
-
-    fun toStringRes() =
-        when (this) {
-            Config -> R.string.config_error
-            DNS -> R.string.dns_resolve_error
-            KernelModuleName -> R.string.kernel_name_error
-            NotAuthorized,
-            Unauthorized -> R.string.auth_error
-            ServiceNotRunning -> R.string.service_running_error
-            Unknown -> R.string.unknown_error
-            TunnelNameTooLong -> R.string.error_tunnel_name
-            is BounceFailed -> R.string.bounce_failed_template
-            UapiUpdateFailed -> R.string.active_tunnel_update_failed
-        }
+    abstract val stringRes: Int
 
     fun toStringValue(): StringValue {
-        return when (val backendError = this) {
-            is BounceFailed ->
-                StringValue.StringResource(
-                    backendError.toStringRes(),
-                    backendError.error.toStringRes(),
-                )
-            else -> StringValue.StringResource(backendError.toStringRes())
-        }
+        return StringValue.StringResource(stringRes)
     }
+}
+
+class DnsFailure : BackendCoreException() {
+    override val stringRes = R.string.dns_resolve_error
+}
+
+class VpnUnauthorized : BackendCoreException() {
+    override val stringRes = R.string.auth_error
+}
+
+class InvalidConfig : BackendCoreException() {
+    override val stringRes = R.string.config_error
+}
+
+class KernelTunnelName(override val stringRes: Int) : BackendCoreException() {}
+
+class NotAuthorized : BackendCoreException() {
+    override val stringRes = R.string.auth_error
+}
+
+class ServiceNotRunning : BackendCoreException() {
+    override val stringRes = R.string.service_running_error
+}
+
+class UnknownError : BackendCoreException() {
+    override val stringRes = R.string.unknown_error
+}
+
+class UapiUpdateFailed : BackendCoreException() {
+    override val stringRes = R.string.active_tunnel_update_failed
 }

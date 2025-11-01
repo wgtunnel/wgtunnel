@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.LoggerUiState
 import com.zaneschepke.wireguardautotunnel.util.Constants
@@ -26,7 +26,7 @@ class LoggerViewModel
 @Inject
 constructor(
     private val logReader: LogReader,
-    private val appStateRepository: AppStateRepository,
+    private val monitoringRepository: MonitoringSettingsRepository,
     private val fileUtils: FileUtils,
     private val globalEffectRepository: GlobalEffectRepository,
 ) : ContainerHost<LoggerUiState, Nothing>, ViewModel() {
@@ -38,11 +38,11 @@ constructor(
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
             intent {
-                appStateRepository.flow
-                    .map { it.isLocalLogsEnabled }
-                    .distinctUntilChanged()
-                    .onEach { enabled ->
-                        if (enabled) {
+                monitoringRepository.flow
+                    .onEach { reduce { state.copy(monitoringSettings = it) } }
+                    .distinctUntilChangedBy { it.isLocalLogsEnabled }
+                    .onEach { settings ->
+                        if (settings.isLocalLogsEnabled) {
                             logReader.start()
                         } else {
                             logReader.stop()
@@ -50,8 +50,8 @@ constructor(
                             reduce { state.copy(messages = emptyList()) }
                         }
                     }
-                    .flatMapLatest { enabled ->
-                        if (enabled) logReader.bufferedLogs else emptyFlow()
+                    .flatMapLatest { settings ->
+                        if (settings.isLocalLogsEnabled) logReader.bufferedLogs else emptyFlow()
                     }
                     .catch { e -> Timber.e(e) }
                     .collect { logMessage ->
@@ -99,9 +99,9 @@ constructor(
     }
 
     fun deleteLogs() = intent {
-        appStateRepository.setLocalLogsEnabled(false)
+        monitoringRepository.upsert(state.monitoringSettings.copy(isLocalLogsEnabled = false))
         delay(1_000L)
-        appStateRepository.setLocalLogsEnabled(true)
+        monitoringRepository.upsert(state.monitoringSettings.copy(isLocalLogsEnabled = true))
     }
 
     companion object {

@@ -1,6 +1,5 @@
 package com.zaneschepke.wireguardautotunnel.ui.common.button
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
@@ -11,7 +10,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 @Composable
 fun ClickableIconButton(
     onClick: () -> Unit,
-    onIconClick: () -> Unit,
     text: String,
     icon: ImageVector,
     enabled: Boolean = true,
@@ -27,12 +25,7 @@ fun ClickableIconButton(
         Icon(
             imageVector = icon,
             contentDescription = icon.name,
-            modifier =
-                Modifier.size(ButtonDefaults.IconSize).weight(1f, false).clickable {
-                    if (enabled) {
-                        onIconClick()
-                    }
-                },
+            modifier = Modifier.size(ButtonDefaults.IconSize).weight(1f, false),
         )
     }
 }

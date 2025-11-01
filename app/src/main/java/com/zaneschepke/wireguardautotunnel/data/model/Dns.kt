@@ -20,10 +20,7 @@ enum class DnsProtocol(val value: Int) {
     }
 }
 
-data class DnsSettings(
-    val protocol: DnsProtocol = DnsProtocol.SYSTEM,
-    val endpoint: String? = null,
-)
+data class DnsSettings(val protocol: DnsProtocol = DnsProtocol.SYSTEM, val endpoint: String? = null)
 
 enum class DnsProvider(private val systemAddress: String, private val dohAddress: String) {
     CLOUDFLARE("1.1.1.1", "https://1.1.1.1/dns-query"),
