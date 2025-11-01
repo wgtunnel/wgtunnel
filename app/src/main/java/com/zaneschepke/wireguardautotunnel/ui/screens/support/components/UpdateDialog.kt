@@ -46,7 +46,7 @@ fun UpdateDialog(viewModel: SupportViewModel, context: Context, onPermissionNeed
                 onPermissionNeeded()
             }
         },
-        title = { Text(stringResource(R.string.update_available)) },
+        title = stringResource(R.string.update_available),
         body = {
             Column(
                 horizontalAlignment = Alignment.Start,
@@ -89,12 +89,8 @@ fun UpdateDialog(viewModel: SupportViewModel, context: Context, onPermissionNeed
                 }
             }
         },
-        confirmText = {
-            Text(
-                if (BuildConfig.FLAVOR != Constants.STANDALONE_FLAVOR)
-                    stringResource(R.string.download)
-                else stringResource(R.string.download_and_install)
-            )
-        },
+        confirmText =
+            if (BuildConfig.FLAVOR != Constants.STANDALONE_FLAVOR) stringResource(R.string.download)
+            else stringResource(R.string.download_and_install),
     )
 }

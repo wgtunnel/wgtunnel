@@ -16,8 +16,8 @@ fun PermissionDialog(context: Context, onDismiss: () -> Unit) {
             context.requestInstallPackagesPermission()
             onDismiss()
         },
-        title = { Text(stringResource(R.string.permission_required)) },
+        title = stringResource(R.string.permission_required),
         body = { Text(stringResource(R.string.install_updated_permission)) },
-        confirmText = { Text(stringResource(R.string.allow)) },
+        confirmText = stringResource(R.string.allow),
     )
 }

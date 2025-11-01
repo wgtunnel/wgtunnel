@@ -125,6 +125,16 @@ fun currentRouteAsNavbarState(
                         },
                         showBottomItems = true,
                         topTitle = context.getString(R.string.lockdown_settings),
+                        topTrailing = {
+                            IconButton(
+                                onClick = {
+                                    keyboardController?.hide()
+                                    sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
+                                }
+                            ) {
+                                Icon(Icons.Rounded.Save, stringResource(R.string.save))
+                            }
+                        },
                     )
                 License ->
                     NavbarState(

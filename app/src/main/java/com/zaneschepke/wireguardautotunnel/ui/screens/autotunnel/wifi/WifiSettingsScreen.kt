@@ -88,9 +88,9 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 showLocationDialog = false
             },
             onDismiss = { showLocationDialog = false },
-            title = { Text(stringResource(R.string.location_permissions)) },
+            title = stringResource(R.string.location_permissions),
             body = { Text(stringResource(R.string.location_justification)) },
-            confirmText = { Text(stringResource(R.string.open_settings)) },
+            confirmText = stringResource(R.string.open_settings),
         )
     }
 

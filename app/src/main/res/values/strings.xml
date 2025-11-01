@@ -422,4 +422,10 @@
     <string name="unavailable_in_mode">Unavailable in current mode</string>
     <string name="global_split_tunneling">Global split tunneling</string>
     <string name="global_dns_servers">Global DNS servers</string>
+    <string name="dual_stack">Dual-stack</string>
+    <string name="dual_stack_description">Tunnels must support IPv4 and IPv6</string>
+    <string name="save_changes">Save changes</string>
+    <string name="restart_message_template">Saving changes will cause the %1$s to restart, do you wish to continue?</string>
+    <string name="_continue">Continue</string>
+    <string name="kill_switch">kill switch</string>
 </resources>

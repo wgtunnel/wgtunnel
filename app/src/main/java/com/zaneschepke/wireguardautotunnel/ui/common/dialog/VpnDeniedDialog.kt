@@ -34,7 +34,7 @@ fun VpnDeniedDialog(show: Boolean, onDismiss: () -> Unit) {
         InfoDialog(
             onDismiss = { onDismiss() },
             onAttest = { onDismiss() },
-            title = { Text(text = stringResource(R.string.vpn_denied_dialog_title)) },
+            title = stringResource(R.string.vpn_denied_dialog_title),
             body = {
                 Text(
                     text = alwaysOnDescription,
@@ -44,7 +44,7 @@ fun VpnDeniedDialog(show: Boolean, onDismiss: () -> Unit) {
                         ),
                 )
             },
-            confirmText = { Text(text = stringResource(R.string.okay)) },
+            confirmText = stringResource(R.string.okay),
         )
     }
 }

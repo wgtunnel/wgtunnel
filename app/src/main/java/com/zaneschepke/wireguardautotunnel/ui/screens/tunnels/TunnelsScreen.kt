@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import com.zaneschepke.wireguardautotunnel.R
@@ -94,9 +95,9 @@ fun TunnelsScreen() {
                 viewModel.deleteSelectedTunnels()
                 showDeleteModal = false
             },
-            title = { Text(text = stringResource(R.string.delete_tunnel)) },
+            title = stringResource(R.string.delete_tunnel),
             body = { Text(text = stringResource(R.string.delete_tunnel_message)) },
-            confirmText = { Text(text = stringResource(R.string.yes)) },
+            confirmText = stringResource(R.string.yes),
         )
     }
 
