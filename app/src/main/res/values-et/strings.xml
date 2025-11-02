@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="error_file_extension">See pole .conf või .zip fail</string>
@@ -261,8 +261,6 @@
     <string name="defaults_to_template">(vaikimisi %1$s)</string>
     <string name="dns_settings">Nimeserveri seadistused</string>
     <string name="pinger_bounce_successful">Tunneli taaskäivitamine pingija poolt õnnestus.</string>
-    <string name="rx_template">Vastuvõetud: %1$s MB</string>
-    <string name="tx_template">Saadetud: %1$s MB</string>
     <string name="reachable_template">Leitav: %1$s</string>
     <string name="ping_success_template">Viimane õnnestunud ping: %1$s</string>
     <string name="sec_ago_template">%1$s sekundi eest</string>
@@ -272,7 +270,6 @@
     <string name="doh">DNS üle HTTPS-i (DoH)</string>
     <string name="comma_separated">Eraldatud komadega</string>
     <string name="new_tunnel">Uus tunnel</string>
-    <string name="system_features">Süsteemi omadused</string>
     <string name="read_failed">Andmete lugemine ei õnnestunud.</string>
     <string name="invalid_key">Vigane võti</string>
     <string name="invalid_number">Vigane number</string>
@@ -310,12 +307,10 @@
     <string name="vpn_channel_description">Kanal VPN-i olekukohaste teavituste jaoks</string>
     <string name="native_kill_switch">Rakenduse avariinupp</string>
     <string name="ethernet_tunnel">Etherneti tunnel</string>
-    <string name="set_ethernet_tunnel">Määra etherneti tunneliks</string>
     <string name="pinger_bounce_recovery">Pingija uuesti käivitamine ei õnnestunud. Tunnel on taastatud vanade aadressidega.</string>
     <string name="bounce_failed_template">Pingija ei suutnud tunnelit taastada järgneva vea tõttu: %1$s</string>
     <string name="set_custom_ping_target">Eraldi valitud host pingimiseks (valikuline)</string>
     <string name="ping_target_description">Kasuta siis, kui sisemine IP-aadress pole saadaval (nt. täistunneli seadistustes). Kui jätad tühjaks, siis on kasutusel mõni Cloudfare\'i aadressidiest.</string>
-    <string name="monitoring_ping">Kasuta tunneli monitoorimisel pingimist</string>
     <string name="server_port">Server:Port</string>
     <string name="prefer_ipv6_resolution">Eelista otspunkti tuvastusel IPv6-protokolli</string>
     <string name="disabled">Pole kasutusel</string>

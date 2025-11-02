@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="error_file_extension">Il file non è di tipo \".conf\" o \".zip\"</string>
     <string name="allowed_ips">IP consentiti</string>
@@ -292,7 +292,6 @@
     <string name="mode_disabled_template">Opzione non disponibile nella modalità %1$s.</string>
     <string name="donate_title">Donazioni</string>
     <string name="tunnel_monitoring">Monitoraggio tunnel</string>
-    <string name="monitoring_ping">Monitora lo stato di salute del tunnel mediante ping test</string>
     <string name="tunnel_ping_interval">Ripeti ping test ogni</string>
     <string name="attempts_per_interval">Richieste ping inviate per singolo test</string>
     <string name="ping_timeout">Ping test timeout</string>

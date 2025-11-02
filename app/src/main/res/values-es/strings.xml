@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="allowed_ips">IPs permitidas</string>
     <string name="email_chooser">Enviar un email…</string>
@@ -245,7 +245,6 @@
     <string name="ping_timeout">Tiempo de espera máximo de ping para el túnel</string>
     <string name="timeout_all_attempts">Tiempo de espera máximo total para todos los intentos</string>
     <string name="display_detailed_ping_stats">Mostrar estadísticas detalladas del ping</string>
-    <string name="monitoring_ping">Habilitar monitoreo del túnel con «ping»</string>
     <string name="reachable_template">Alcanzable: %1$s</string>
     <string name="ping_success_template">Último ping recibido: %1$s</string>
     <string name="sec_ago_template">hace %1$s segundos</string>
@@ -287,7 +286,6 @@
     <string name="comma_separated">Separado por comas</string>
     <string name="server_port">Servidor:Puerto</string>
     <string name="new_tunnel">Nuevo túnel</string>
-    <string name="system_features">Características del sistema</string>
     <string name="read_failed">Error al leer los datos.</string>
     <string name="invalid_key">Clave inválida</string>
     <string name="invalid_number">Número inválido</string>
@@ -323,8 +321,6 @@
     <string name="hint_template">(%1$s)</string>
     <string name="drag_handle">Control de arrastre</string>
     <string name="tunnel_item_description">%1$s, %2$s, %3$s</string>
-    <string name="rx_template">RX: %1$s MB</string>
-    <string name="tx_template">TX: %1$s MB</string>
     <string name="github_sponsors">GitHub Sponsors</string>
     <string name="liberapay">Liberapay</string>
     <string name="kofi">Ko-fi</string>
