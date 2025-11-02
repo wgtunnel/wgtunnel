@@ -77,7 +77,7 @@ fun UpdateDialog(viewModel: SupportViewModel, context: Context, onPermissionNeed
 
                 Text(text = annotatedString)
                 if (supportState.isLoading) {
-                    val stroke = Stroke(cap = StrokeCap.Round)
+                    val stroke = Stroke(cap = StrokeCap.Round, width = 4.0f)
                     LinearWavyProgressIndicator(
                         progress = { supportState.downloadProgress },
                         modifier = Modifier.fillMaxWidth().padding(top = 16.dp),

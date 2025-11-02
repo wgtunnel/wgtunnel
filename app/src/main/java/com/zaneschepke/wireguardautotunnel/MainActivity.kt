@@ -256,11 +256,15 @@ class MainActivity : AppCompatActivity() {
                                                 textDecoration = TextDecoration.Underline,
                                                 color = MaterialTheme.colorScheme.primary,
                                             ),
-                                        focusedStyle = SpanStyle(
-                                            textDecoration = TextDecoration.Underline,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            background = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                                        )
+                                        focusedStyle =
+                                            SpanStyle(
+                                                textDecoration = TextDecoration.Underline,
+                                                color = MaterialTheme.colorScheme.primary,
+                                                background =
+                                                    MaterialTheme.colorScheme.primary.copy(
+                                                        alpha = 0.2f
+                                                    ),
+                                            ),
                                     ),
                             ) {
                                 snackbarState.dismissCurrent()

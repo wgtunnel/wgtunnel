@@ -38,27 +38,40 @@ class GitHubUpdateRepository(
                     gitHubApi.getLatestRelease(githubOwner, githubRepo).onFailure(Timber::e)
                 }
             release.map { release ->
-                val standaloneApkAsset =
+                val universalApkAsset =
                     release.assets.find { asset ->
-                        asset.name.startsWith("wgtunnel-${Constants.STANDALONE_FLAVOR}-v") &&
-                            asset.name.endsWith(".apk")
+                        val prefix = "wgtunnel-${Constants.STANDALONE_FLAVOR}-v"
+                        val apkSuffix = ".apk"
+                        asset.name.startsWith(prefix) &&
+                            asset.name.endsWith(apkSuffix) &&
+                            !asset.name.endsWith("-arm64$apkSuffix") &&
+                            !asset.name.endsWith("-armv7$apkSuffix")
                     }
                 val newVersion =
-                    standaloneApkAsset
+                    universalApkAsset
                         ?.name
                         ?.removePrefix("wgtunnel-${Constants.STANDALONE_FLAVOR}-v")
                         ?.removeSuffix(".apk") ?: return@map null
 
                 Timber.i("Latest version: $newVersion, current version: $currentVersion")
-                if (isNightly && newVersion != currentVersion)
-                    return@map GitHubReleaseMapper.toAppUpdate(release, newVersion)
-                if (NumberUtils.compareVersions(newVersion, currentVersion) > 0) {
-                    GitHubReleaseMapper.toAppUpdate(
-                        release.copy(assets = listOf(standaloneApkAsset)),
-                        newVersion,
-                    )
+                if (isNightly) {
+                    if (newVersion != currentVersion) {
+                        GitHubReleaseMapper.toAppUpdate(
+                            release.copy(assets = listOf(universalApkAsset)),
+                            newVersion,
+                        )
+                    } else {
+                        null
+                    }
                 } else {
-                    null
+                    if (NumberUtils.compareVersions(newVersion, currentVersion) > 0) {
+                        GitHubReleaseMapper.toAppUpdate(
+                            release.copy(assets = listOf(universalApkAsset)),
+                            newVersion,
+                        )
+                    } else {
+                        null
+                    }
                 }
             }
         }
