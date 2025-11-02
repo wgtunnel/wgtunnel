@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="vpn_channel_id" translatable="false">VPN Channel</string>
