@@ -74,14 +74,14 @@ constructor(
                 if (tunnelConfig != null) {
                     tunnelRepository.save(tunnelConfig)
 
+                    if (state.isRunning) tunnelManager.restartActiveTunnel(tunnelConfig.id)
+
                     postSideEffect(
                         GlobalSideEffect.Toast(
                             StringValue.StringResource(R.string.config_changes_saved)
                         )
                     )
                     postSideEffect(GlobalSideEffect.PopBackStack)
-
-                    if (state.isRunning) tunnelManager.restartActiveTunnel(tunnelConfig.id)
                 }
             }
             .onFailure {

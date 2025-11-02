@@ -111,12 +111,12 @@ constructor(
 
         proxySettingsRepository.upsert(updated)
 
+        if (state.activeTuns.isNotEmpty()) tunnelManager.restartActiveTunnels()
+
         postSideEffect(
             GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.config_changes_saved))
         )
         postSideEffect(GlobalSideEffect.PopBackStack)
-
-        if (state.activeTuns.isNotEmpty()) tunnelManager.restartActiveTunnels()
     }
 
     fun clearHttpBindError() = intent { reduce { state.copy(isHttpBindAddressError = false) } }

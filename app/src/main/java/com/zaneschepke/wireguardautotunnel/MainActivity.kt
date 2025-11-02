@@ -204,7 +204,7 @@ class MainActivity : AppCompatActivity() {
                                     SnackbarInfo(
                                         message =
                                             buildAnnotatedString {
-                                                sideEffect.message.asString(context)
+                                                append(sideEffect.message.asString(context))
                                             },
                                         type = sideEffect.type ?: SnackbarType.INFO,
                                         durationMs = sideEffect.durationMs ?: 4000L,
