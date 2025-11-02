@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="no_tunnels">Aucun tunnel n\'a été ajouté pour le moment !</string>
     <string name="tunnels">Tunnels</string>
