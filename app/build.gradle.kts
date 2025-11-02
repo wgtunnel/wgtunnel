@@ -79,7 +79,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName(Constants.RELEASE)
             resValue("string", "provider", "\"${Constants.APP_NAME}.provider\"")
         }
 

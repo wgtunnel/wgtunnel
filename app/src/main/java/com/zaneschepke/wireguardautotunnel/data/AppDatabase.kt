@@ -17,7 +17,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.*
             DnsSettings::class,
             LockdownSettings::class,
         ],
-    version = 27,
+    version = 28,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -44,6 +44,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.*
             AutoMigration(from = 22, to = 23),
             AutoMigration(from = 24, to = 25),
             AutoMigration(from = 26, to = 27, spec = GlobalsMigration::class),
+            AutoMigration(from = 27, to = 28, spec = DonationMigration::class),
         ],
     exportSchema = true,
 )
@@ -125,3 +126,6 @@ class FixProxySettingsMigration : AutoMigrationSpec {
     )
 )
 class GlobalsMigration : AutoMigrationSpec
+
+@DeleteColumn(tableName = "general_settings", columnName = "custom_split_packages")
+class DonationMigration : AutoMigrationSpec

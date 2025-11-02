@@ -26,6 +26,7 @@ class DataStoreManager(
     companion object {
         val locationDisclosureShown = booleanPreferencesKey("LOCATION_DISCLOSURE_SHOWN")
         val batteryDisableShown = booleanPreferencesKey("BATTERY_OPTIMIZE_DISABLE_SHOWN")
+        val shouldShowDonationSnackbar = booleanPreferencesKey("SHOW_DONATION_SNACK")
     }
 
     suspend fun init() {

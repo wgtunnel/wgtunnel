@@ -26,6 +26,5 @@ data class GeneralSettings(
     val isPinLockEnabled: Boolean = false,
     @ColumnInfo(name = "is_always_on_vpn_enabled", defaultValue = "0")
     val isAlwaysOnVpnEnabled: Boolean = false,
-    @ColumnInfo(name = "custom_split_packages", defaultValue = "{}")
-    val customSplitPackages: Map<String, String> = emptyMap(),
+    @ColumnInfo(name = "already_donated", defaultValue = "0") val alreadyDonated: Boolean = false,
 )

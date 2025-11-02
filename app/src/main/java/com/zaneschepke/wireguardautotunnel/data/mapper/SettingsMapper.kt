@@ -18,6 +18,7 @@ fun Entity.toDomain(): Domain =
         isRemoteControlEnabled = isRemoteControlEnabled,
         isPinLockEnabled = isPinLockEnabled,
         isAlwaysOnVpnEnabled = isAlwaysOnVpnEnabled,
+        alreadyDonated = alreadyDonated,
     )
 
 fun Domain.toEntity(): Entity =
@@ -34,4 +35,5 @@ fun Domain.toEntity(): Entity =
         isRemoteControlEnabled = isRemoteControlEnabled,
         isPinLockEnabled = isPinLockEnabled,
         isAlwaysOnVpnEnabled = isAlwaysOnVpnEnabled,
+        alreadyDonated = alreadyDonated,
     )

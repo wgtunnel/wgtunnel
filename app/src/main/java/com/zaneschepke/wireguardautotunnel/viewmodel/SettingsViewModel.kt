@@ -93,4 +93,8 @@ constructor(
             )
         )
     }
+
+    fun setAlreadyDonated(to: Boolean) = intent {
+        settingsRepository.upsert(state.settings.copy(alreadyDonated = to))
+    }
 }

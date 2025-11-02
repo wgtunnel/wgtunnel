@@ -37,6 +37,14 @@ class DataStoreAppStateRepository(
         dataStoreManager.saveToDataStore(DataStoreManager.batteryDisableShown, shown)
     }
 
+    override suspend fun setShouldShowDonationSnackbar(show: Boolean) {
+        dataStoreManager.saveToDataStore(DataStoreManager.shouldShowDonationSnackbar, show)
+    }
+
+    override suspend fun shouldShowDonationSnackbar(): Boolean {
+        return dataStoreManager.getFromStore(DataStoreManager.shouldShowDonationSnackbar) ?: false
+    }
+
     override val flow: Flow<Domain> =
         dataStoreManager.preferencesFlow
             .map { prefs ->

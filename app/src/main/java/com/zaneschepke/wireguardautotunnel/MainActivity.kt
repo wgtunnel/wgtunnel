@@ -18,9 +18,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -34,6 +41,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.zaneschepke.wireguardautotunnel.data.AppDatabase
+import com.zaneschepke.wireguardautotunnel.data.DataStoreManager.Companion.shouldShowDonationSnackbar
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
@@ -45,6 +53,9 @@ import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.AppAlertBanner
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.VpnDeniedDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.CustomSnackBar
+import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.SnackbarInfo
+import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.SnackbarType
+import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.rememberCustomSnackbarState
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Tab
 import com.zaneschepke.wireguardautotunnel.ui.navigation.components.BottomNavbar
@@ -125,16 +136,16 @@ class MainActivity : AppCompatActivity() {
         setContent {
             val context = LocalContext.current
             val isTv = isRunningOnTv()
-            val appState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+            val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
             val scope = rememberCoroutineScope()
 
-            LaunchedEffect(appState.isAppLoaded) {
-                if (appState.isAppLoaded) {
-                    appState.locale.let { LocaleUtil.changeLocale(it) }
+            LaunchedEffect(uiState.isAppLoaded) {
+                if (uiState.isAppLoaded) {
+                    uiState.locale.let { LocaleUtil.changeLocale(it) }
                 }
             }
 
-            val snackbar = remember { SnackbarHostState() }
+            val snackbarState = rememberCustomSnackbarState()
             var showVpnPermissionDialog by remember { mutableStateOf(false) }
             var vpnPermissionDenied by remember { mutableStateOf(false) }
             var requestingAppMode by remember {
@@ -144,14 +155,14 @@ class MainActivity : AppCompatActivity() {
             val startingStack = buildList {
                 add(Route.Tunnels)
                 if (intent?.action == Intent.ACTION_APPLICATION_PREFERENCES) add(Route.Settings)
-                if (appState.pinLockEnabled) add(Route.Lock)
+                if (uiState.pinLockEnabled) add(Route.Lock)
             }
 
             val backStack = rememberNavBackStack(*startingStack.toTypedArray())
             var previousRoute by remember { mutableStateOf<Route?>(null) }
 
             val navController =
-                rememberNavController<NavKey>(backStack, appState.isLocationDisclosureShown) {
+                rememberNavController<NavKey>(backStack, uiState.isLocationDisclosureShown) {
                     previousKey ->
                     previousRoute = previousKey as? Route
                 }
@@ -187,10 +198,20 @@ class MainActivity : AppCompatActivity() {
                             vpnActivity.launch(VpnService.prepare(this@MainActivity))
                         }
 
-                        is GlobalSideEffect.Snackbar ->
+                        is GlobalSideEffect.Snackbar -> {
                             scope.launch {
-                                snackbar.showSnackbar(sideEffect.message.asString(context))
+                                snackbarState.showSnackbar(
+                                    SnackbarInfo(
+                                        message =
+                                            buildAnnotatedString {
+                                                sideEffect.message.asString(context)
+                                            },
+                                        type = sideEffect.type ?: SnackbarType.INFO,
+                                        durationMs = sideEffect.durationMs ?: 4000L,
+                                    )
+                                )
                             }
+                        }
 
                         is GlobalSideEffect.Toast ->
                             scope.launch { context.showToast(sideEffect.message.asString(context)) }
@@ -201,19 +222,19 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            if (!appState.isAppLoaded) return@setContent
+            if (!uiState.isAppLoaded) return@setContent
 
             var showLock by remember {
-                mutableStateOf(appState.pinLockEnabled && !appState.isPinVerified)
+                mutableStateOf(uiState.pinLockEnabled && !uiState.isPinVerified)
             }
-            LaunchedEffect(appState.isPinVerified) { if (appState.isPinVerified) showLock = false }
+            LaunchedEffect(uiState.isPinVerified) { if (uiState.isPinVerified) showLock = false }
 
             CompositionLocalProvider(
                 LocalIsAndroidTV provides isTv,
                 LocalSharedVm provides viewModel,
                 LocalNavController provides navController,
             ) {
-                WireguardAutoTunnelTheme(theme = appState.theme) {
+                WireguardAutoTunnelTheme(theme = uiState.theme) {
                     VpnDeniedDialog(
                         showVpnPermissionDialog,
                         onDismiss = {
@@ -221,6 +242,51 @@ class MainActivity : AppCompatActivity() {
                             vpnPermissionDenied = false
                         },
                     )
+
+                    val annotatedMessage = buildAnnotatedString {
+                        append(context.getString(R.string.donation_prompt_prefix))
+                        append(" ")
+                        withLink(
+                            LinkAnnotation.Clickable(
+                                tag = context.getString(R.string.support),
+                                styles =
+                                    TextLinkStyles(
+                                        style =
+                                            SpanStyle(
+                                                textDecoration = TextDecoration.Underline,
+                                                color = MaterialTheme.colorScheme.primary,
+                                            ),
+                                        focusedStyle = SpanStyle(
+                                            textDecoration = TextDecoration.Underline,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            background = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                        )
+                                    ),
+                            ) {
+                                snackbarState.dismissCurrent()
+                                navController.push(Route.Donate)
+                            }
+                        ) {
+                            append(context.getString(R.string.donation_prompt_link))
+                        }
+                        append(" ")
+                        append(context.getString(R.string.donation_prompt_suffix))
+                    }
+
+                    LaunchedEffect(uiState.shouldShowDonationSnackbar) {
+                        if (
+                            uiState.shouldShowDonationSnackbar && !uiState.settings.alreadyDonated
+                        ) {
+                            viewModel.setShouldShowDonationSnackbar(false)
+                            snackbarState.showSnackbar(
+                                SnackbarInfo(
+                                    message = annotatedMessage,
+                                    type = SnackbarType.THANK_YOU,
+                                    durationMs = 30_000L,
+                                )
+                            )
+                        }
+                    }
 
                     if (showLock) {
                         PinManager.initialize(context = this@MainActivity)
@@ -234,14 +300,14 @@ class MainActivity : AppCompatActivity() {
                         }
                         val navState by
                             currentRouteAsNavbarState(
-                                appState,
+                                uiState,
                                 viewModel,
                                 currentRoute,
                                 navController,
                             )
 
                         Box(modifier = Modifier.fillMaxSize()) {
-                            if (appState.settings.appMode == AppMode.LOCK_DOWN) {
+                            if (uiState.settings.appMode == AppMode.LOCK_DOWN) {
                                 AppAlertBanner(
                                     stringResource(R.string.locked_down)
                                         .uppercase(Locale.getDefault()),
@@ -252,14 +318,25 @@ class MainActivity : AppCompatActivity() {
                             }
                             Scaffold(
                                 snackbarHost = {
-                                    SnackbarHost(snackbar) { snackbarData ->
+                                    snackbarState.SnackbarHost(
+                                        modifier =
+                                            Modifier.align(Alignment.BottomCenter)
+                                                .padding(
+                                                    bottom =
+                                                        if (LocalIsAndroidTV.current) 120.dp
+                                                        else 80.dp
+                                                )
+                                    ) { info ->
                                         CustomSnackBar(
-                                            snackbarData.visuals.message,
-                                            isRtl = false,
+                                            message = info.message,
+                                            type = info.type,
+                                            onDismiss = { snackbarState.dismissCurrent() },
                                             containerColor =
                                                 MaterialTheme.colorScheme.surfaceColorAtElevation(
                                                     2.dp
                                                 ),
+                                            modifier =
+                                                Modifier.wrapContentHeight(align = Alignment.Top),
                                         )
                                     }
                                 },
@@ -267,7 +344,7 @@ class MainActivity : AppCompatActivity() {
                                 bottomBar = {
                                     if (navState.showBottomItems) {
                                         BottomNavbar(
-                                            appState.isAutoTunnelActive,
+                                            uiState.isAutoTunnelActive,
                                             currentTab,
                                             onTabSelected = { tab ->
                                                 navController.popUpTo(tab.startRoute)

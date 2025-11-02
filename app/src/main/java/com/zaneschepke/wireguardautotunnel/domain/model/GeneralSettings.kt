@@ -17,4 +17,5 @@ data class GeneralSettings(
     val isPinLockEnabled: Boolean = false,
     val isAlwaysOnVpnEnabled: Boolean = false,
     val isKillSwitchMetered: Boolean = true,
+    val alreadyDonated: Boolean = false,
 )

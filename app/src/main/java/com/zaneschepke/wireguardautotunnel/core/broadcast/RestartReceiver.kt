@@ -6,6 +6,7 @@ import android.content.Intent
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
+import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -18,6 +19,8 @@ class RestartReceiver : BroadcastReceiver() {
     @Inject @ApplicationScope lateinit var applicationScope: CoroutineScope
 
     @Inject lateinit var tunnelManager: TunnelManager
+
+    @Inject lateinit var appStateRepository: AppStateRepository
 
     @Inject lateinit var logReader: LogReader
 
@@ -33,6 +36,7 @@ class RestartReceiver : BroadcastReceiver() {
                 Intent.ACTION_MY_PACKAGE_REPLACED -> {
                     tunnelManager.handleRestore()
                     logReader.deleteAndClearLogs()
+                    appStateRepository.setShouldShowDonationSnackbar(true)
                 }
             }
         }

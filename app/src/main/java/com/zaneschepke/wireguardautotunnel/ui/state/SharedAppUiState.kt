@@ -11,6 +11,7 @@ data class SharedAppUiState(
     val theme: Theme = Theme.AUTOMATIC,
     val locale: String = LocaleUtil.OPTION_PHONE_LANGUAGE,
     val pinLockEnabled: Boolean = false,
+    val shouldShowDonationSnackbar: Boolean = false,
     val tunnels: List<TunnelConfig> = emptyList(),
     val selectedTunnels: List<TunnelConfig> = emptyList(),
     val activeTunnels: Map<Int, TunnelState> = emptyMap(),

@@ -12,5 +12,9 @@ interface AppStateRepository {
 
     suspend fun setBatteryOptimizationDisableShown(shown: Boolean)
 
+    suspend fun setShouldShowDonationSnackbar(show: Boolean)
+
+    suspend fun shouldShowDonationSnackbar(): Boolean
+
     val flow: Flow<AppState>
 }

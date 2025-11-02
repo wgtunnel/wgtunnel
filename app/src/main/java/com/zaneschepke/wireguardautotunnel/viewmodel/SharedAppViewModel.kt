@@ -97,6 +97,7 @@ constructor(
                         state.copy(
                             isLocationDisclosureShown = it.isLocationDisclosureShown,
                             isBatteryOptimizationShown = it.isBatteryOptimizationDisableShown,
+                            shouldShowDonationSnackbar = it.shouldShowDonationSnackbar,
                         )
                     }
                 }
@@ -166,6 +167,10 @@ constructor(
             }
         }
         settingsRepository.upsert(state.settings.copy(appMode = appMode))
+    }
+
+    fun setShouldShowDonationSnackbar(to: Boolean) = intent {
+        appStateRepository.setShouldShowDonationSnackbar(to)
     }
 
     suspend fun postSideEffect(globalSideEffect: GlobalSideEffect) {
