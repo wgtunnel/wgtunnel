@@ -1,8 +1,8 @@
-What's new:
-- Metered tunnels settings
-- Lockdown dual-stack support
-- Lockdown multiple profile bugfix
-- Split tunneling improved installed packages querying
-- Restart active tunnels on configuration changes
-- Android TV UI bugfixes
-- Various other bugfixes and improvements
+Co nowego:
+- Ustawienia tuneli taryfowych.
+- Obsługa blokady sieci dual-stack.
+- Naprawiono błąd blokady wielu profili.
+- Poprawiono wyszukiwanie zainstalowanych pakietów tunelowania dzielonego.
+- Ponowne uruchamianie aktywnych tuneli po zmianie konfiguracji.
+- Naprawiono błędy interfejsu użytkownika Android TV.
+- Różne inne poprawki błędów i udoskonalenia.
