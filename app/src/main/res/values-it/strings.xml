@@ -291,7 +291,7 @@
     <string name="mode_disabled_template">Opzione non disponibile nella modalità %1$s.</string>
     <string name="donate_title">Donazioni</string>
     <string name="tunnel_monitoring">Monitoraggio tunnel</string>
-    <string name="tunnel_ping_interval">Ripeti ping test ogni</string>
+    <string name="tunnel_ping_interval">Esegui ping test ogni (secondi)</string>
     <string name="attempts_per_interval">Richieste ping inviate per singolo test</string>
     <string name="ping_timeout">Ping test timeout</string>
     <string name="timeout_all_attempts">Durata massima per singolo test (comprensiva di tutte le richieste ping inviate)</string>
