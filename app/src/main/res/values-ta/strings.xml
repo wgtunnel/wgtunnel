@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="private_key">தனிப்பட்ட விசை</string>
     <string name="delete_tunnel_message">இந்த சுரங்கப்பாதையை நீக்க விரும்புகிறீர்களா?</string>
