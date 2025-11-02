@@ -240,7 +240,7 @@
     <string name="tunnel_monitoring">Monitorowanie tunelu</string>
     <string name="set_custom_ping_target">Niestandardowy cel pingowania (opcjonalnie)</string>
     <string name="ip_or_hostname">Adres IP lub nazwa hosta</string>
-    <string name="ping_target_description">Używane, jeśli wewnętrzny adres IP nie jest dostępny (np. w konfiguracjach pełnego tunelu). Pozostawienie pustego pola domyślnie powoduje korzystanie z Cloudflare.</string>
+    <string name="ping_target_description">Używane, jeśli wewnętrzny adres IP nie jest dostępny (np. w konfiguracjach pełnego tunelu). Pozostawienie pustego pola domyślnie powoduje korzystanie z Cloudflare.</string>
     <string name="tunnel_ping_interval">Interwał pingowania tunelu</string>
     <string name="attempts_per_interval">Próby pingowania na interwał</string>
     <string name="ping_timeout">Limit czasu pingowania tunelu</string>
