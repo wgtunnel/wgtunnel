@@ -209,7 +209,7 @@
     <string name="done">Gotowe</string>
     <string name="current_template">Bieżące: %1$s</string>
     <string name="wifi_detection_method">Metoda wykrywania Wi-Fi</string>
-    <string name="_default">Domyślna</string>
+    <string name="_default">Domyślnie</string>
     <string name="legacy">Przestarzała</string>
     <string name="root">Root</string>
     <string name="shizuku">Shizuku</string>
@@ -327,7 +327,7 @@
     <string name="delete_active_message">Nie można usunąć aktywnego tunelu.</string>
     <string name="back">Wstecz</string>
     <string name="configuration">Konfiguracja</string>
-    <string name="about">Informacje</string>
+    <string name="about">O aplikacji</string>
     <string name="resources">Zasoby</string>
     <string name="website">Witryna internetowa aplikacji</string>
     <string name="contact">Kontakt</string>
