@@ -2,7 +2,7 @@
 <resources>
     <string name="no_tunnels">您还没有添加隧道！</string>
     <string name="tunnels">隧道列表</string>
-    <string name="privacy_policy">查看隐私政策</string>
+    <string name="privacy_policy">隐私政策</string>
     <string name="tunnel_mobile_data">允许隧道使用数据流量</string>
     <string name="okay">好</string>
     <string name="tunnel_on_ethernet">在局域网中使用隧道</string>
@@ -34,7 +34,7 @@
     <string name="copy_public_key">复制公钥</string>
     <string name="email_chooser">发送邮件…</string>
     <string name="persistent_keepalive">连接保活</string>
-    <string name="tunnel_on_wifi">在不受信任的 WiFi 上建立隧道</string>
+    <string name="tunnel_on_wifi">WiFi 上的隧道</string>
     <string name="exclude">排除</string>
     <string name="base64_key">Base64 编码</string>
     <string name="endpoint">端点</string>
@@ -76,7 +76,7 @@
     <string name="pin_created">创建密码成功</string>
     <string name="enter_pin">输入 PIN 码</string>
     <string name="create_pin">创建 PIN 码</string>
-    <string name="set_primary_tunnel">设置为主隧道</string>
+    <string name="set_primary_tunnel">没有配置首选隧道时使用的隧道</string>
     <string name="init_packet_junk_size">初始化无效包大小</string>
     <string name="junk_packet_maximum_size">无效包最大值</string>
     <string name="response_packet_magic_header">响应包的 magic header</string>
@@ -106,7 +106,7 @@
     <string name="add_from_clipboard">从剪贴板添加</string>
     <string name="transport_packet_magic_header">传输包的 magic header</string>
     <string name="underload_packet_magic_header">欠载数据包 magic header</string>
-    <string name="restart_at_boot">开机时重新启动</string>
+    <string name="restart_at_boot">开机时启动</string>
     <string name="learn_more">了解更多</string>
     <string name="unsure_how">如果您不确定如何进行</string>
     <string name="see_the">请查阅</string>
