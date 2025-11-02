@@ -2,28 +2,37 @@ default_platform(:android)
 
 platform :android do
 
+  private_lane :build_aab do
+    gradle(
+      task: "clean bundleGoogleRelease",
+      properties: {
+        "noSplits" => true
+      }
+    )
+  end
+
   desc 'Deploy a new internal version to the Google Play Store'
   lane :internal do
-    gradle(task: "clean bundleGoogleRelease")
+    build_aab
     upload_to_play_store(track: 'internal', skip_upload_apk: true)
   end
 
   desc "Deploy an alpha version to the Google Play"
-    lane :alpha do
-      gradle(task: "clean bundleGoogleRelease")
-      upload_to_play_store(track: 'alpha', skip_upload_apk: true)
+  lane :alpha do
+    build_aab
+    upload_to_play_store(track: 'alpha', skip_upload_apk: true)
   end
 
   desc "Deploy a beta version to the Google Play"
   lane :beta do
-    gradle(task: "clean bundleGoogleRelease")
+    build_aab
     upload_to_play_store(track: 'beta', skip_upload_apk: true)
   end
 
   desc "Deploy a new version to the Google Play"
-    lane :production do
-      gradle(task: "clean bundleGoogleRelease")
-      upload_to_play_store(skip_upload_apk: true)
-    end
+  lane :production do
+    build_aab
+    upload_to_play_store(skip_upload_apk: true)
+  end
 
 end

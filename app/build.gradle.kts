@@ -30,10 +30,10 @@ android {
 
     splits {
         abi {
-            isEnable = true
+            isEnable = !project.hasProperty("noSplits")
             reset()
             include("armeabi-v7a", "arm64-v8a")
-            isUniversalApk = true
+            isUniversalApk = !project.hasProperty("noSplits")
         }
     }
 
