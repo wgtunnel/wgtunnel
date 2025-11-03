@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.ConnectivityManager
+import android.net.ConnectivityManager.NetworkCallback.FLAG_INCLUDE_LOCATION_INFO
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
@@ -15,6 +16,7 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import androidx.core.content.ContextCompat
 import com.wireguard.android.util.RootShell
+import com.zaneschepke.networkmonitor.AndroidNetworkMonitor.WifiDetectionMethod.*
 import com.zaneschepke.networkmonitor.shizuku.ShizukuShell
 import com.zaneschepke.networkmonitor.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -93,7 +95,19 @@ class AndroidNetworkMonitor(
                 Pair(detectionMethod, changed)
             }
             .flatMapLatest { (detectionMethod, _) ->
-                createDefaultNetworkCallbackFlow(detectionMethod)
+                val flag =
+                    when (detectionMethod) {
+                        DEFAULT ->
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                FLAG_INCLUDE_LOCATION_INFO
+                            } else {
+                                0
+                            }
+                        LEGACY,
+                        ROOT,
+                        SHIZUKU -> 0
+                    }
+                createDefaultNetworkCallbackFlow(detectionMethod, flag)
             }
 
     private fun isAndroidTv(): Boolean =
@@ -123,10 +137,11 @@ class AndroidNetworkMonitor(
     }
 
     private fun createDefaultNetworkCallbackFlow(
-        detectionMethod: WifiDetectionMethod
+        detectionMethod: WifiDetectionMethod,
+        flag: Int,
     ): Flow<TransportEvent> = callbackFlow {
         val callback =
-            object : ConnectivityManager.NetworkCallback() {
+            object : ConnectivityManager.NetworkCallback(flag) {
 
                 override fun onAvailable(network: Network) {
                     Timber.d("Network onAvailable: network=$network")
@@ -302,20 +317,19 @@ class AndroidNetworkMonitor(
         detectionMethod: WifiDetectionMethod?,
         networkCapabilities: NetworkCapabilities?,
     ): String {
-        val method = detectionMethod ?: WifiDetectionMethod.DEFAULT
+        val method = detectionMethod ?: DEFAULT
         return try {
                 when (method) {
-                        WifiDetectionMethod.DEFAULT ->
+                        DEFAULT ->
                             networkCapabilities?.getWifiSsid()
                                 ?: wifiManager?.getWifiSsid()
                                 ?: ANDROID_UNKNOWN_SSID
-                        WifiDetectionMethod.LEGACY ->
-                            wifiManager?.getWifiSsid() ?: ANDROID_UNKNOWN_SSID
-                        WifiDetectionMethod.ROOT ->
+                        LEGACY -> wifiManager?.getWifiSsid() ?: ANDROID_UNKNOWN_SSID
+                        ROOT ->
                             withTimeoutOrNull(SHELL_COMMAND_TIMEOUT_MS) {
                                 configurationListener.rootShell.getCurrentWifiName()
                             } ?: ANDROID_UNKNOWN_SSID
-                        WifiDetectionMethod.SHIZUKU ->
+                        SHIZUKU ->
                             withTimeoutOrNull(SHELL_COMMAND_TIMEOUT_MS) {
                                 ShizukuShell(applicationScope)
                                     .singleResponseCommand(WIFI_SSID_SHELL_COMMAND)
