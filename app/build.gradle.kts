@@ -242,6 +242,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.manifest)
 
+    debugImplementation(libs.leakcanary.android)
+
     // Room database backup
     implementation(libs.roomdatabasebackup) {
         exclude(group = "org.reactivestreams", module = "reactive-streams")
