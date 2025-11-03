@@ -95,26 +95,7 @@ constructor(
 
         val connectivityStateFlow = networkMonitor.connectivityStateFlow.stateIn(this)
 
-        val isNetworkConnected = connectivityStateFlow.map { it.hasConnectivity() }.stateIn(this)
-
-        data class NetworkChangeKey(
-            val ethernetConnected: Boolean,
-            val wifiConnected: Boolean,
-            val cellularConnected: Boolean,
-            val wifiSsid: String?,
-        )
-
-        connectivityStateFlow
-            .map {
-                NetworkChangeKey(
-                    ethernetConnected = it.ethernetConnected,
-                    wifiConnected = it.wifiState.connected,
-                    cellularConnected = it.cellularConnected,
-                    wifiSsid = if (it.wifiState.connected) it.wifiState.ssid else null,
-                )
-            }
-            .distinctUntilChanged()
-            .stateIn(this)
+        val isNetworkConnected = connectivityStateFlow.map { it.hasInternet() }.stateIn(this)
 
         combine(
                 settingsRepository.flow.distinctUntilChangedBy { it.appMode },

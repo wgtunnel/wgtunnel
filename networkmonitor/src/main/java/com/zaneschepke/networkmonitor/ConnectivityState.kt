@@ -3,22 +3,38 @@ package com.zaneschepke.networkmonitor
 import com.zaneschepke.networkmonitor.util.WifiSecurityType
 
 data class ConnectivityState(
-    val wifiState: WifiState,
-    val ethernetConnected: Boolean = false,
-    val cellularConnected: Boolean = false,
-) {
-    fun hasConnectivity(): Boolean = wifiState.connected || ethernetConnected || cellularConnected
-}
-
-data class WifiState(
-    val connected: Boolean = false,
-    val ssid: String? = null,
-    val securityType: WifiSecurityType? = null,
+    val activeNetwork: ActiveNetwork,
     val locationPermissionsGranted: Boolean,
     val locationServicesEnabled: Boolean,
 ) {
-    override fun toString(): String =
-        "connected=$connected, ssid=${if(ssid == AndroidNetworkMonitor.ANDROID_UNKNOWN_SSID || ssid == null) ssid else ssid.first() + "..."} securityType=$securityType, locationPermissionsGranted=$locationPermissionsGranted"
+    fun hasInternet(): Boolean = activeNetwork !is ActiveNetwork.Disconnected
+
+    override fun toString(): String {
+        val networkInfo =
+            when (activeNetwork) {
+                is ActiveNetwork.Disconnected -> "Disconnected"
+                is ActiveNetwork.Ethernet -> "Ethernet"
+                is ActiveNetwork.Cellular -> "Cellular"
+                is ActiveNetwork.Wifi -> {
+                    val ssidDisplay =
+                        if (activeNetwork.ssid == AndroidNetworkMonitor.ANDROID_UNKNOWN_SSID)
+                            activeNetwork.ssid
+                        else activeNetwork.ssid.first() + "..."
+                    "Wifi(ssid=$ssidDisplay, securityType=${activeNetwork.securityType})"
+                }
+            }
+        return "activeNetwork=$networkInfo, locationPermissionsGranted=$locationPermissionsGranted, locationServicesEnabled=$locationServicesEnabled"
+    }
+}
+
+sealed class ActiveNetwork {
+    data object Disconnected : ActiveNetwork()
+
+    data object Ethernet : ActiveNetwork()
+
+    data object Cellular : ActiveNetwork()
+
+    data class Wifi(val ssid: String, val securityType: WifiSecurityType? = null) : ActiveNetwork()
 }
 
 data class Permissions(

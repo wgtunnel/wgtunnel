@@ -36,8 +36,8 @@ import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.zaneschepke.networkmonitor.ActiveNetwork
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.domain.enums.NetworkType
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
@@ -59,9 +59,9 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     val clipboard = rememberClipboardHelper()
 
     val sharedUiState by shareViewModel.container.stateFlow.collectAsStateWithLifecycle()
-    val autoTunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
-    if (autoTunnelState.isLoading) return
+    if (uiState.isLoading) return
 
     val batteryActivity =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -79,11 +79,11 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     }
 
     val (ethernetTunnel, mobileDataTunnel, mappedTunnels) =
-        remember(autoTunnelState.tunnels) {
+        remember(uiState.tunnels) {
             Triple(
-                autoTunnelState.tunnels.firstOrNull { it.isEthernetTunnel },
-                autoTunnelState.tunnels.firstOrNull { it.isMobileDataTunnel },
-                autoTunnelState.tunnels.any { it.tunnelNetworks.isNotEmpty() },
+                uiState.tunnels.firstOrNull { it.isEthernetTunnel },
+                uiState.tunnels.firstOrNull { it.isMobileDataTunnel },
+                uiState.tunnels.any { it.tunnelNetworks.isNotEmpty() },
             )
         }
 
@@ -94,8 +94,8 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
     ) {
         Column {
             val (title, buttonText, icon) =
-                remember(autoTunnelState.autoTunnelActive) {
-                    when (autoTunnelState.autoTunnelActive) {
+                remember(uiState.autoTunnelActive) {
+                    when (uiState.autoTunnelActive) {
                         true ->
                             Triple(
                                 context.getString(R.string.auto_tunnel_running),
@@ -140,32 +140,17 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 stringResource(R.string.networks),
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
-            val activeNetworkType by
-                remember(autoTunnelState.connectivityState) {
+
+            val localizedNetworkType by
+                remember(uiState.connectivityState) {
                     derivedStateOf {
-                        val connectivity = autoTunnelState.connectivityState
-                        when {
-                            connectivity?.ethernetConnected == true -> NetworkType.ETHERNET
-                            connectivity?.wifiState?.connected == true -> NetworkType.WIFI
-                            connectivity?.cellularConnected == true -> NetworkType.MOBILE_DATA
-                            else -> NetworkType.NONE
+                        when (uiState.connectivityState?.activeNetwork) {
+                            is ActiveNetwork.Wifi -> context.getString(R.string.wifi)
+                            is ActiveNetwork.Ethernet -> context.getString(R.string.ethernet)
+                            is ActiveNetwork.Cellular -> context.getString(R.string.mobile_data)
+                            is ActiveNetwork.Disconnected -> context.getString(R.string.no_network)
+                            null -> context.getString(R.string.no_network)
                         }
-                    }
-                }
-
-            val localizedNetworkType =
-                when (activeNetworkType) {
-                    NetworkType.WIFI -> stringResource(R.string.wifi)
-                    NetworkType.ETHERNET -> stringResource(R.string.ethernet)
-                    NetworkType.MOBILE_DATA -> stringResource(R.string.mobile_data)
-                    NetworkType.NONE -> stringResource(R.string.no_network)
-                }
-
-            val ssid by
-                remember(autoTunnelState.connectivityState) {
-                    derivedStateOf {
-                        autoTunnelState.connectivityState?.wifiState?.ssid
-                            ?: context.getString(R.string.unknown)
                     }
                 }
 
@@ -181,7 +166,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                         }
                     },
                 description =
-                    if (activeNetworkType == NetworkType.WIFI) {
+                    (uiState.connectivityState?.activeNetwork as? ActiveNetwork.Wifi)?.let {
                         {
                             Column {
                                 DescriptionText(
@@ -189,10 +174,8 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                                         append(stringResource(R.string.security_type))
                                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                                             append(
-                                                autoTunnelState.connectivityState
-                                                    ?.wifiState
-                                                    ?.securityType
-                                                    ?.name ?: stringResource(R.string.unknown)
+                                                it.securityType?.name
+                                                    ?: stringResource(R.string.unknown)
                                             )
                                         }
                                     }
@@ -201,21 +184,24 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                                     buildAnnotatedString {
                                         append(stringResource(R.string.network_name))
                                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                            append(ssid)
+                                            append(it.ssid)
                                         }
                                     }
                                 )
                             }
                         }
-                    } else null,
+                    },
                 trailing =
-                    if (activeNetworkType == NetworkType.WIFI) {
+                    if (uiState.connectivityState?.activeNetwork is ActiveNetwork.Wifi) {
                         { Icon(Icons.Outlined.ContentCopy, contentDescription = null) }
                     } else null,
-                onClick =
-                    if (activeNetworkType == NetworkType.WIFI) {
-                        { clipboard.copy(ssid, context.getString(R.string.wifi)) }
-                    } else null,
+                onClick = {
+                    when (val network = uiState.connectivityState?.activeNetwork) {
+                        is ActiveNetwork.Wifi ->
+                            clipboard.copy(network.ssid, context.getString(R.string.wifi))
+                        else -> Unit
+                    }
+                },
             )
 
             SurfaceRow(
@@ -223,7 +209,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 title = stringResource(R.string.tunnel_on_wifi),
                 trailing = { modifier ->
                     SwitchWithDivider(
-                        checked = autoTunnelState.autoTunnelSettings.isTunnelOnWifiEnabled,
+                        checked = uiState.autoTunnelSettings.isTunnelOnWifiEnabled,
                         onClick = { viewModel.setAutoTunnelOnWifiEnabled(it) },
                         modifier = modifier,
                     )
@@ -248,7 +234,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 title = stringResource(R.string.tunnel_mobile_data),
                 trailing = { modifier ->
                     SwitchWithDivider(
-                        checked = autoTunnelState.autoTunnelSettings.isTunnelOnMobileDataEnabled,
+                        checked = uiState.autoTunnelSettings.isTunnelOnMobileDataEnabled,
                         onClick = { viewModel.setTunnelOnCellular(it) },
                         modifier = modifier,
                     )
@@ -271,7 +257,7 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 title = stringResource(R.string.tunnel_on_ethernet),
                 trailing = { modifier ->
                     SwitchWithDivider(
-                        checked = autoTunnelState.autoTunnelSettings.isTunnelOnEthernetEnabled,
+                        checked = uiState.autoTunnelSettings.isTunnelOnEthernetEnabled,
                         onClick = { viewModel.setTunnelOnEthernet(it) },
                         modifier = modifier,
                     )
@@ -295,13 +281,13 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 description = { DescriptionText(stringResource(R.string.stop_on_internet_loss)) },
                 trailing = {
                     ThemedSwitch(
-                        checked = autoTunnelState.autoTunnelSettings.isStopOnNoInternetEnabled,
+                        checked = uiState.autoTunnelSettings.isStopOnNoInternetEnabled,
                         onClick = { viewModel.setStopOnNoInternetEnabled(it) },
                     )
                 },
                 onClick = {
                     viewModel.setStopOnNoInternetEnabled(
-                        !autoTunnelState.autoTunnelSettings.isStopOnNoInternetEnabled
+                        !uiState.autoTunnelSettings.isStopOnNoInternetEnabled
                     )
                 },
             )
@@ -316,13 +302,11 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 title = stringResource(R.string.restart_at_boot),
                 trailing = {
                     ThemedSwitch(
-                        checked = autoTunnelState.autoTunnelSettings.startOnBoot,
+                        checked = uiState.autoTunnelSettings.startOnBoot,
                         onClick = { viewModel.setStartAtBoot(it) },
                     )
                 },
-                onClick = {
-                    viewModel.setStartAtBoot(!autoTunnelState.autoTunnelSettings.startOnBoot)
-                },
+                onClick = { viewModel.setStartAtBoot(!uiState.autoTunnelSettings.startOnBoot) },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Settings, contentDescription = null) },

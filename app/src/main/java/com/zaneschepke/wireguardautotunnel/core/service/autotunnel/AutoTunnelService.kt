@@ -24,7 +24,7 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsR
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.AutoTunnelState
-import com.zaneschepke.wireguardautotunnel.domain.state.NetworkState
+import com.zaneschepke.wireguardautotunnel.domain.state.toDomain
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.extensions.to
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
@@ -129,7 +129,7 @@ class AutoTunnelService : LifecycleService() {
             val networkFlow =
                 debouncedConnectivityStateFlow
                     .flowOn(ioDispatcher)
-                    .map(NetworkState::from)
+                    .map { it.toDomain() }
                     .map(::NetworkChange)
                     .distinctUntilChanged()
 
@@ -266,8 +266,8 @@ class AutoTunnelService : LifecycleService() {
                 .map {
                     NetworkPermissionState(
                         it.settings.wifiDetectionMethod.to(),
-                        it.networkState.locationServicesEnabled == true,
-                        it.networkState.locationPermissionGranted == true,
+                        it.networkState.locationServicesEnabled,
+                        it.networkState.locationPermissionGranted,
                         (it.tunnels.any { tunnel -> tunnel.tunnelNetworks.isNotEmpty() } ||
                             it.settings.trustedNetworkSSIDs.isNotEmpty()),
                     )

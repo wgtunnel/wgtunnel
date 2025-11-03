@@ -25,29 +25,27 @@ data class AutoTunnelState(
             is NetworkChange,
             is SettingsChange -> {
                 // Compute desired tunnel based on network conditions
-                var desiredTunnel: TunnelConfig? = null
-                if (networkState.isEthernetConnected && settings.isTunnelOnEthernetEnabled) {
-                    desiredTunnel = preferredEthernetTunnel()
-                } else if (isMobileDataActive() && settings.isTunnelOnMobileDataEnabled) {
-                    desiredTunnel = preferredMobileDataTunnel()
-                } else if (
-                    isWifiActive() && settings.isTunnelOnWifiEnabled && !isCurrentSSIDTrusted()
-                ) {
-                    desiredTunnel = preferredWifiTunnel()
+                var preferredTunnel: TunnelConfig? = null
+                if (ethernetActive && settings.isTunnelOnEthernetEnabled) {
+                    preferredTunnel = preferredEthernetTunnel()
+                } else if (mobileDataActive && settings.isTunnelOnMobileDataEnabled) {
+                    preferredTunnel = preferredMobileDataTunnel()
+                } else if (wifiActive && settings.isTunnelOnWifiEnabled && !isWifiTrusted()) {
+                    preferredTunnel = preferredWifiTunnel()
                 }
 
                 // Override for no connectivity if enabled
-                if (isNoConnectivity() && settings.isStopOnNoInternetEnabled) {
-                    desiredTunnel = null
+                if (!networkState.hasInternet() && settings.isStopOnNoInternetEnabled) {
+                    preferredTunnel = null
                 }
 
                 // Determine current active tunnel (assuming only one can be active)
                 val currentTunnel = activeTunnels.entries.firstOrNull()?.key
 
                 // Handle tunnel start/stop/change
-                if (desiredTunnel != null) {
-                    if (currentTunnel != desiredTunnel.id) {
-                        return Start(desiredTunnel)
+                if (preferredTunnel != null) {
+                    if (currentTunnel != preferredTunnel.id) {
+                        return Start(preferredTunnel)
                     }
                 } else {
                     if (currentTunnel != null) {
@@ -61,12 +59,9 @@ data class AutoTunnelState(
         return DoNothing
     }
 
-    // also need to check for Wi-Fi state as there is some overlap when they are both connected
-    private fun isMobileDataActive(): Boolean {
-        return !networkState.isEthernetConnected &&
-            !networkState.isWifiConnected &&
-            networkState.isMobileDataConnected
-    }
+    private val ethernetActive: Boolean = networkState.activeNetwork is ActiveNetwork.Cellular
+    private val mobileDataActive: Boolean = networkState.activeNetwork is ActiveNetwork.Ethernet
+    private val wifiActive: Boolean = networkState.activeNetwork is ActiveNetwork.Wifi
 
     private fun preferredMobileDataTunnel(): TunnelConfig? {
         return tunnels.firstOrNull { it.isMobileDataTunnel }
@@ -81,27 +76,21 @@ data class AutoTunnelState(
     }
 
     private fun preferredWifiTunnel(): TunnelConfig? {
-        return getTunnelWithMatchingTunnelNetwork()
+        return getTunnelWithMappedNetwork()
             ?: tunnels.firstOrNull { it.isPrimaryTunnel }
             ?: tunnels.firstOrNull()
     }
 
-    // ignore cellular state as there is overlap where it may still be active, but not prioritized
-    private fun isWifiActive(): Boolean {
-        return !networkState.isEthernetConnected && networkState.isWifiConnected
+    private fun isWifiTrusted(): Boolean {
+        return with(networkState.activeNetwork) {
+            this is ActiveNetwork.Wifi && isTrustedNetwork(this.ssid)
+        }
     }
 
-    private fun isNoConnectivity(): Boolean {
-        return !networkState.isEthernetConnected &&
-            !networkState.isWifiConnected &&
-            !networkState.isMobileDataConnected
-    }
+    private fun isTrustedNetwork(ssid: String): Boolean =
+        hasMatch(ssid, settings.trustedNetworkSSIDs)
 
-    private fun isCurrentSSIDTrusted(): Boolean {
-        return networkState.wifiName?.let { hasTrustedWifiName(it) } == true
-    }
-
-    private fun hasTrustedWifiName(
+    private fun hasMatch(
         wifiName: String,
         wifiNames: Set<String> = settings.trustedNetworkSSIDs,
     ): Boolean {
@@ -112,9 +101,10 @@ data class AutoTunnelState(
         }
     }
 
-    private fun getTunnelWithMatchingTunnelNetwork(): TunnelConfig? {
-        return networkState.wifiName?.let { wifiName ->
-            tunnels.firstOrNull { hasTrustedWifiName(wifiName, it.tunnelNetworks) }
+    private fun getTunnelWithMappedNetwork(): TunnelConfig? =
+        when (val network = networkState.activeNetwork) {
+            is ActiveNetwork.Wifi ->
+                tunnels.firstOrNull { hasMatch(network.ssid, it.tunnelNetworks) }
+            else -> null
         }
-    }
 }

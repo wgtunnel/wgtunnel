@@ -1,38 +1,48 @@
 package com.zaneschepke.wireguardautotunnel.domain.state
 
+import com.zaneschepke.networkmonitor.ActiveNetwork as MonitorActiveNetwork
 import com.zaneschepke.networkmonitor.ConnectivityState
 import com.zaneschepke.networkmonitor.util.WifiSecurityType
 
-data class NetworkState(
-    val isWifiConnected: Boolean = false,
-    val isMobileDataConnected: Boolean = false,
-    val isEthernetConnected: Boolean = false,
-    val wifiName: String? = null,
-    val isWifiSecure: Boolean? = null,
-    val locationServicesEnabled: Boolean? = null,
-    val locationPermissionGranted: Boolean? = null,
-) {
-    fun hasNoCapabilities(): Boolean {
-        return !isWifiConnected && !isMobileDataConnected && !isEthernetConnected
-    }
+sealed class ActiveNetwork {
+    data object Disconnected : ActiveNetwork()
 
-    companion object {
-        fun from(connectivityState: ConnectivityState): NetworkState {
-            return NetworkState(
-                isWifiSecure =
-                    when (connectivityState.wifiState.securityType) {
+    data object Ethernet : ActiveNetwork()
+
+    data object Cellular : ActiveNetwork()
+
+    data class Wifi(val ssid: String, val isSecure: Boolean?) : ActiveNetwork()
+}
+
+data class NetworkState(
+    val activeNetwork: ActiveNetwork = ActiveNetwork.Disconnected,
+    val locationServicesEnabled: Boolean = false,
+    val locationPermissionGranted: Boolean = false,
+) {
+    fun hasInternet(): Boolean = activeNetwork !is ActiveNetwork.Disconnected
+}
+
+fun ConnectivityState.toDomain(): NetworkState {
+    val domainNetwork: ActiveNetwork =
+        when (val network = this.activeNetwork) {
+            is MonitorActiveNetwork.Wifi -> {
+                val isSecure =
+                    when (network.securityType) {
                         WifiSecurityType.OPEN,
                         WifiSecurityType.UNKNOWN -> false
                         null -> null
                         else -> true
-                    },
-                isWifiConnected = connectivityState.wifiState.connected,
-                isMobileDataConnected = connectivityState.cellularConnected,
-                isEthernetConnected = connectivityState.ethernetConnected,
-                wifiName = connectivityState.wifiState.ssid,
-                locationPermissionGranted = connectivityState.wifiState.locationPermissionsGranted,
-                locationServicesEnabled = connectivityState.wifiState.locationServicesEnabled,
-            )
+                    }
+                ActiveNetwork.Wifi(ssid = network.ssid, isSecure = isSecure)
+            }
+            is MonitorActiveNetwork.Cellular -> ActiveNetwork.Cellular
+            is MonitorActiveNetwork.Ethernet -> ActiveNetwork.Ethernet
+            is MonitorActiveNetwork.Disconnected -> ActiveNetwork.Disconnected
         }
-    }
+
+    return NetworkState(
+        activeNetwork = domainNetwork,
+        locationPermissionGranted = this.locationPermissionsGranted,
+        locationServicesEnabled = this.locationServicesEnabled,
+    )
 }
