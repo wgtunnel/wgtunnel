@@ -29,6 +29,7 @@ import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.extensions.to
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
 import dagger.hilt.android.AndroidEntryPoint
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 import javax.inject.Provider
 import kotlinx.coroutines.*
@@ -60,7 +61,12 @@ class AutoTunnelService : LifecycleService() {
 
     private val autoTunnelStateFlow = MutableStateFlow(defaultState)
 
-    class LocalBinder(val service: AutoTunnelService) : Binder()
+    class LocalBinder(service: AutoTunnelService) : Binder() {
+        private val serviceRef = WeakReference(service)
+
+        val service: AutoTunnelService?
+            get() = serviceRef.get()
+    }
 
     private val binder = LocalBinder(this)
 
