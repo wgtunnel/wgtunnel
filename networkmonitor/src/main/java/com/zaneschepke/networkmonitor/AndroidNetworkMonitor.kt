@@ -95,19 +95,7 @@ class AndroidNetworkMonitor(
                 Pair(detectionMethod, changed)
             }
             .flatMapLatest { (detectionMethod, _) ->
-                val flag =
-                    when (detectionMethod) {
-                        DEFAULT ->
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                FLAG_INCLUDE_LOCATION_INFO
-                            } else {
-                                0
-                            }
-                        LEGACY,
-                        ROOT,
-                        SHIZUKU -> 0
-                    }
-                createDefaultNetworkCallbackFlow(detectionMethod, flag)
+                createDefaultNetworkCallbackFlow(detectionMethod)
             }
 
     private fun isAndroidTv(): Boolean =
@@ -137,70 +125,83 @@ class AndroidNetworkMonitor(
     }
 
     private fun createDefaultNetworkCallbackFlow(
-        detectionMethod: WifiDetectionMethod,
-        flag: Int,
+        detectionMethod: WifiDetectionMethod
     ): Flow<TransportEvent> = callbackFlow {
-        val callback =
-            object : ConnectivityManager.NetworkCallback(flag) {
+        val onAvailable: (Network) -> Unit = { network ->
+            Timber.d("Network onAvailable: network=$network")
+        }
 
-                override fun onAvailable(network: Network) {
-                    Timber.d("Network onAvailable: network=$network")
-                    trySend(TransportEvent.Unknown)
-                }
+        val onLost: (Network) -> Unit = { network ->
+            Timber.d("Network onLost: network=$network")
+            trySend(TransportEvent.Lost(network))
+        }
 
-                override fun onLost(network: Network) {
-                    Timber.d("Network onLost: network=$network")
+        val onCapabilitiesChanged: (Network, NetworkCapabilities) -> Unit =
+            { network, networkCapabilities ->
+                val isValidated =
+                    networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+                val hasInternet =
+                    networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+
+                Timber.d("onCapabilitiesChanged: network=$network, validated: $isValidated")
+
+                if (isValidated && hasInternet) {
+                    val event =
+                        when {
+                            networkCapabilities.hasTransport(
+                                NetworkCapabilities.TRANSPORT_WIFI
+                            ) -> {
+                                activeWifiNetworks[network.toString()] =
+                                    Pair(network, networkCapabilities)
+                                TransportEvent.CapabilitiesChanged(
+                                    network,
+                                    networkCapabilities,
+                                    detectionMethod,
+                                )
+                            }
+                            networkCapabilities.hasTransport(
+                                NetworkCapabilities.TRANSPORT_CELLULAR
+                            ) -> {
+                                activeWifiNetworks.clear()
+                                TransportEvent.CapabilitiesChanged(network, networkCapabilities)
+                            }
+                            networkCapabilities.hasTransport(
+                                NetworkCapabilities.TRANSPORT_ETHERNET
+                            ) -> {
+                                activeWifiNetworks.clear()
+                                TransportEvent.CapabilitiesChanged(network, networkCapabilities)
+                            }
+                            else -> TransportEvent.Unknown
+                        }
+                    trySend(event)
+                } else {
+                    activeWifiNetworks.remove(network.toString())
                     trySend(TransportEvent.Lost(network))
                 }
+            }
 
-                override fun onCapabilitiesChanged(
-                    network: Network,
-                    networkCapabilities: NetworkCapabilities,
-                ) {
-                    val isValidated =
-                        networkCapabilities.hasCapability(
-                            NetworkCapabilities.NET_CAPABILITY_VALIDATED
-                        )
-                    val hasInternet =
-                        networkCapabilities.hasCapability(
-                            NetworkCapabilities.NET_CAPABILITY_INTERNET
-                        )
+        val callback: ConnectivityManager.NetworkCallback =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && detectionMethod == DEFAULT) {
+                object : ConnectivityManager.NetworkCallback(FLAG_INCLUDE_LOCATION_INFO) {
+                    override fun onAvailable(network: Network) = onAvailable(network)
 
-                    Timber.d("onCapabilitiesChanged: network=$network, validated: $isValidated")
+                    override fun onLost(network: Network) = onLost(network)
 
-                    if (isValidated && hasInternet) {
-                        val event =
-                            when {
-                                networkCapabilities.hasTransport(
-                                    NetworkCapabilities.TRANSPORT_WIFI
-                                ) -> {
-                                    activeWifiNetworks[network.toString()] =
-                                        Pair(network, networkCapabilities)
-                                    TransportEvent.CapabilitiesChanged(
-                                        network,
-                                        networkCapabilities,
-                                        detectionMethod,
-                                    )
-                                }
-                                networkCapabilities.hasTransport(
-                                    NetworkCapabilities.TRANSPORT_CELLULAR
-                                ) -> {
-                                    activeWifiNetworks.clear()
-                                    TransportEvent.CapabilitiesChanged(network, networkCapabilities)
-                                }
-                                networkCapabilities.hasTransport(
-                                    NetworkCapabilities.TRANSPORT_ETHERNET
-                                ) -> {
-                                    activeWifiNetworks.clear()
-                                    TransportEvent.CapabilitiesChanged(network, networkCapabilities)
-                                }
-                                else -> TransportEvent.Unknown
-                            }
-                        trySend(event)
-                    } else {
-                        activeWifiNetworks.remove(network.toString())
-                        trySend(TransportEvent.Lost(network))
-                    }
+                    override fun onCapabilitiesChanged(
+                        network: Network,
+                        networkCapabilities: NetworkCapabilities,
+                    ) = onCapabilitiesChanged(network, networkCapabilities)
+                }
+            } else {
+                object : ConnectivityManager.NetworkCallback() {
+                    override fun onAvailable(network: Network) = onAvailable(network)
+
+                    override fun onLost(network: Network) = onLost(network)
+
+                    override fun onCapabilitiesChanged(
+                        network: Network,
+                        networkCapabilities: NetworkCapabilities,
+                    ) = onCapabilitiesChanged(network, networkCapabilities)
                 }
             }
         defaultNetworkCallback = callback
