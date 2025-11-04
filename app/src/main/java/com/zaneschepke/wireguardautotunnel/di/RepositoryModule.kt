@@ -9,6 +9,7 @@ import com.zaneschepke.wireguardautotunnel.data.DatabaseCallback
 import com.zaneschepke.wireguardautotunnel.data.dao.*
 import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_23_24
 import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_25_26
+import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_28_29
 import com.zaneschepke.wireguardautotunnel.data.network.GitHubApi
 import com.zaneschepke.wireguardautotunnel.data.network.KtorClient
 import com.zaneschepke.wireguardautotunnel.data.network.KtorGitHubApi
@@ -56,8 +57,11 @@ class RepositoryModule {
                 AppDatabase::class.java,
                 context.getString(R.string.db_name),
             )
-            .addMigrations(MIGRATION_23_24(dataStoreManager.dataStore))
-            .addMigrations(MIGRATION_25_26)
+            .addMigrations(
+                MIGRATION_23_24(dataStoreManager.dataStore),
+                MIGRATION_25_26,
+                MIGRATION_28_29,
+            )
             .fallbackToDestructiveMigration(true)
             .addCallback(callback)
             .build()

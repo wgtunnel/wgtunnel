@@ -411,3 +411,56 @@ val MIGRATION_25_26 =
             db.execSQL("ALTER TABLE `general_settings_new` RENAME TO `general_settings`")
         }
     }
+
+val MIGRATION_28_29 =
+    object : Migration(28, 29) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // Migrate tunnel_config table
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `tunnel_config_new` (
+                    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    `name` TEXT NOT NULL,
+                    `wg_quick` TEXT NOT NULL,
+                    `tunnel_networks` TEXT NOT NULL DEFAULT '',
+                    `is_mobile_data_tunnel` INTEGER NOT NULL DEFAULT false,
+                    `is_primary_tunnel` INTEGER NOT NULL DEFAULT false,
+                    `am_quick` TEXT NOT NULL DEFAULT '',
+                    `is_Active` INTEGER NOT NULL DEFAULT false,
+                    `restart_on_ping_failure` INTEGER NOT NULL DEFAULT false,
+                    `ping_target` TEXT DEFAULT null,
+                    `is_ethernet_tunnel` INTEGER NOT NULL DEFAULT false,
+                    `is_ipv4_preferred` INTEGER NOT NULL DEFAULT true,
+                    `position` INTEGER NOT NULL DEFAULT 0,
+                    `auto_tunnel_apps` TEXT NOT NULL DEFAULT '[]',
+                    `is_metered` INTEGER NOT NULL DEFAULT false 
+                )
+                """
+                    .trimIndent()
+            )
+
+            database.execSQL(
+                """
+                INSERT INTO `tunnel_config_new` (
+                    `id`, `name`, `wg_quick`, `tunnel_networks`, `is_mobile_data_tunnel`,
+                    `is_primary_tunnel`, `am_quick`, `is_Active`, `restart_on_ping_failure`,
+                    `ping_target`, `is_ethernet_tunnel`, `is_ipv4_preferred`, `position`,
+                    `auto_tunnel_apps`, `is_metered`
+                )
+                SELECT
+                    `id`, `name`, `wg_quick`, `tunnel_networks`, `is_mobile_data_tunnel`,
+                    `is_primary_tunnel`, `am_quick`, `is_Active`, `restart_on_ping_failure`,
+                    `ping_target`, `is_ethernet_tunnel`, `is_ipv4_preferred`, `position`,
+                    `auto_tunnel_apps`, 0 AS `is_metered`
+                FROM `tunnel_config`
+                """
+                    .trimIndent()
+            )
+
+            database.execSQL("DROP TABLE `tunnel_config`")
+            database.execSQL("ALTER TABLE `tunnel_config_new` RENAME TO `tunnel_config`")
+            database.execSQL(
+                "CREATE UNIQUE INDEX IF NOT EXISTS `index_tunnel_config_name` ON `tunnel_config` (`name`)"
+            )
+        }
+    }
