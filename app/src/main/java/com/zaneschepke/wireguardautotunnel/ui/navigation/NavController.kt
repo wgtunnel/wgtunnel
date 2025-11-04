@@ -22,24 +22,14 @@ class NavController(
         return false
     }
 
-    fun popUpTo(route: NavKey, inclusive: Boolean = false) {
+    fun popUpTo(route: NavKey) {
         onChange(currentRoute)
 
         val targetRoute =
             if (route is Route.AutoTunnel && !isDisclosureShown) Route.LocationDisclosure else route
-
-        val index = backStack.indexOfLast { it == targetRoute }
-        if (index != -1) {
-            val popUpToIndex = if (inclusive) index else index + 1
-            while (backStack.size > popUpToIndex) {
-                backStack.removeLastOrNull()
-            }
-        } else {
-            // Only add if it's not already the top
-            if (backStack.lastOrNull() != targetRoute) {
-                backStack.add(targetRoute)
-            }
-        }
+        backStack.clear()
+        if (route is Route.Tunnels) backStack.add(targetRoute)
+        else backStack.addAll(setOf(Route.Tunnels, targetRoute))
     }
 
     val currentRoute: NavKey?
