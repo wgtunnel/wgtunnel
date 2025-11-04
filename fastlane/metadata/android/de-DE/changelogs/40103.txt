@@ -1,5 +1,5 @@
-What's new:
-- Resource usage bugfix
-- Improve network monitoring
-- Tab navigation bugfix
-- Tunnel metered default bugfix
+Was ist neu:
+- Fehlerbehebung bei der Ressourcennutzung
+- Verbesserung der Netzwerküberwachung
+- Fehlerbehebung bei der Tab-Navigation
+- Fehlerbehebung bei der Standard-Tunnel-Messung
