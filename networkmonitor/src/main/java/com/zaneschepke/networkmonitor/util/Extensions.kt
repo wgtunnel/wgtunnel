@@ -1,10 +1,15 @@
 package com.zaneschepke.networkmonitor.util
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.provider.Settings
+import androidx.core.content.ContextCompat
 import com.wireguard.android.util.RootShell
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor.Companion.ANDROID_UNKNOWN_SSID
 import kotlinx.coroutines.Dispatchers
@@ -61,4 +66,30 @@ fun LocationManager.isLocationServicesEnabled(): Boolean {
         Timber.e(e, "Error checking location services")
         false
     }
+}
+
+fun Context.hasRequiredLocationPermissions(): Boolean {
+    val fineLocationGranted =
+        ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED
+    val backgroundLocationGranted =
+        if (
+            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) &&
+                // exclude Android TV on Q as background location is not required on this
+                // version
+                !(Build.VERSION.SDK_INT == Build.VERSION_CODES.Q &&
+                    packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK))
+        ) {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true // No need for ACCESS_BACKGROUND_LOCATION on Android P or Android TV on Q
+        }
+    return fineLocationGranted && backgroundLocationGranted
+}
+
+fun Context.isAirplaneModeOn(): Boolean {
+    return Settings.Global.getInt(contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
 }

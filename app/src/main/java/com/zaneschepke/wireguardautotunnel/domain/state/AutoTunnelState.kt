@@ -59,8 +59,8 @@ data class AutoTunnelState(
         return DoNothing
     }
 
-    private val ethernetActive: Boolean = networkState.activeNetwork is ActiveNetwork.Cellular
-    private val mobileDataActive: Boolean = networkState.activeNetwork is ActiveNetwork.Ethernet
+    private val ethernetActive: Boolean = networkState.activeNetwork is ActiveNetwork.Ethernet
+    private val mobileDataActive: Boolean = networkState.activeNetwork is ActiveNetwork.Cellular
     private val wifiActive: Boolean = networkState.activeNetwork is ActiveNetwork.Wifi
 
     private fun preferredMobileDataTunnel(): TunnelConfig? {

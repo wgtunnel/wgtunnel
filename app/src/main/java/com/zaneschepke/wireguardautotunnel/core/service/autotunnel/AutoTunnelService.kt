@@ -61,6 +61,9 @@ class AutoTunnelService : LifecycleService() {
 
     private val autoTunnelStateFlow = MutableStateFlow(defaultState)
 
+    private var autoTunnelJob: Job? = null
+    private var permissionsJob: Job? = null
+
     class LocalBinder(service: AutoTunnelService) : Binder() {
         private val serviceRef = WeakReference(service)
 
@@ -89,8 +92,10 @@ class AutoTunnelService : LifecycleService() {
 
     fun start() {
         launchWatcherNotification()
-        startAutoTunnelStateJob()
-        startLocationPermissionsNotificationJob()
+        autoTunnelJob?.cancel()
+        autoTunnelJob = startAutoTunnelStateJob()
+        permissionsJob?.cancel()
+        permissionsJob = startLocationPermissionsNotificationJob()
     }
 
     fun stop() {
@@ -130,7 +135,7 @@ class AutoTunnelService : LifecycleService() {
         )
     }
 
-    private fun startAutoTunnelStateJob() =
+    private fun startAutoTunnelStateJob(): Job =
         lifecycleScope.launch(ioDispatcher) {
             val networkFlow =
                 debouncedConnectivityStateFlow

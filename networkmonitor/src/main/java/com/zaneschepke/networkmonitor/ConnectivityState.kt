@@ -27,17 +27,14 @@ data class ConnectivityState(
     }
 }
 
+data class Permissions(val locationServicesEnabled: Boolean, val locationPermissionGranted: Boolean)
+
 sealed class ActiveNetwork {
     data object Disconnected : ActiveNetwork()
 
-    data object Ethernet : ActiveNetwork()
+    data class Wifi(val ssid: String, val securityType: WifiSecurityType?) : ActiveNetwork()
 
     data object Cellular : ActiveNetwork()
 
-    data class Wifi(val ssid: String, val securityType: WifiSecurityType? = null) : ActiveNetwork()
+    data object Ethernet : ActiveNetwork()
 }
-
-data class Permissions(
-    val locationServicesEnabled: Boolean = false,
-    val locationPermissionGranted: Boolean = false,
-)
