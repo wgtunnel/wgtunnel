@@ -1,5 +1,5 @@
-What's new:
-- App lock crash bugfix
-- Fdroid publishing bugfix
-- Exporting logs bugfix
-- Auto-tunnel ethernet toggle bugfix
+Novità:
+- Correzione dell'arresto anomalo blocco app
+- Correzione pubblicazione su Fdroid
+- Correzione esportazione log
+- Correzione del commutatore auto-tunnel ethernet

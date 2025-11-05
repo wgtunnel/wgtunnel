@@ -1,4 +1,4 @@
-What's new:
-- Monitoring failing to shut down race bugfix
-- Notifications stop action bugfix
-- Notification relaunch activity when already active bugfix
+Novità:
+- Correzione problema per cui il monitoraggio falliva a fermarsi
+- Correzione azione stop notifiche
+- Correzione notifica riavvio attività quando già attiva
