@@ -1,14 +1,15 @@
-Caratteristiche
-
-- Aggiunge tunnel tramite file .conf, zip, inserimento manuale o QR code
-- Connessione automatica alla VPN basata su SSID Wi-Fi, ethernet o dati mobili
-- Tunneling separato per applicazione con ricerca
-- Supporto WireGuard per modalità userspace e kernel
-- Supporto Amnezia in modalità userspace per protezione da DPI/censura
-- Supporto VPN sempre attiva
-- Esporta Amnezia e tunnel WireGuard in zip
-- Supporto tile rapide per commutazione VPN
-- Supporto scorciatoia statica del tunnel primario per integrazione dell'automazione
-- Supporto automazione tramite intent per tutti i tunnel
-- Riavvio automatico servizio dopo il riavvio
-- Misure di preservazione batteria
+- Metodi importazione tunnel: aggiungi tunnel facilmente usando file .conf, archivi ZIP, inserimento manuale o scansione QR code.
+- Tunneling automatico: attiva automaticamente i tunnel basandosi sull'SSID Wi-Fi, connessioni ethernet o connessione dati mobile.
+- Divisione tunnel: supporto flessibile per instradare app specifiche con implementazione kernel e userspace.
+- Modalità WireGuard: piena compatibilità con WireGuard sia nell'implementazione kernel che userspace.
+- Integrazione AmneziaWG: modalità userspace per AmneziaWG, fornendo una robusta evasione dalla censura.
+- VPN Sempre Attiva: assicura una protezione continua con la caratteristica VPN sempre attiva di Android.
+- Controlli rapidi: tile impostazioni rapide e scorciatoie per l'home screen per la semplice commutazione VPN.
+- Supporto automazione: automazioni basate su intenti per controllare i tunnel.
+- Auto-Restore: ripristina in modo trasparente auto tunnel e tunnel attivi dopo il riavvio del dispositivo o riavvio/aggiornamento dell'app.
+- Opzioni proxy: supporto interno proxy HTTP e SOCKS5 nei tunnel.
+- Lockdown mode: interruttore di spegnimento personalizzato per massima prevenzione fughe di dati e sicurezza.
+- Gestione DNS dinamico: rileva e aggiorna i cambi DNS senza riavviare i tunnel.
+- Strumenti di monitoraggio: caratteristiche di monitoraggio avanzato tunnel per monitorare le prestazioni dei tunnel.
+- Supporto Android TV: supporto Android TV per streaming e navigazione sicuri.
+- DNS avanzato: supporto DNS su HTTPS per risoluzione endpoint dei tunnel.
