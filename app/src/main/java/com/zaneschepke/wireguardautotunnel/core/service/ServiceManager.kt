@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
 class ServiceManager
@@ -137,17 +138,25 @@ constructor(
 
     suspend fun startTunnelService(appMode: AppMode) =
         tunnelMutex.withLock {
-            if (_tunnelService.value != null) return@withLock
-            val serviceClass =
-                when (appMode) {
-                    AppMode.VPN,
-                    AppMode.LOCK_DOWN -> VpnForegroundService::class.java
-                    AppMode.KERNEL,
-                    AppMode.PROXY -> TunnelForegroundService::class.java
-                }
-            val intent = Intent(context, serviceClass)
-            context.startForegroundService(intent)
-            context.bindService(intent, tunnelServiceConnection, Context.BIND_AUTO_CREATE)
+            if (_tunnelService.value != null) {
+                Timber.d("Service already exists, waiting for disconnect")
+                withTimeoutOrNull(2000L) { _tunnelService.first { it == null } }
+                    ?: Timber.w("Timeout waiting for existing service to disconnect")
+            }
+            if (_tunnelService.value == null) {
+                val serviceClass =
+                    when (appMode) {
+                        AppMode.VPN,
+                        AppMode.LOCK_DOWN -> VpnForegroundService::class.java
+                        AppMode.KERNEL,
+                        AppMode.PROXY -> TunnelForegroundService::class.java
+                    }
+                val intent = Intent(context, serviceClass)
+                context.startForegroundService(intent)
+                context.bindService(intent, tunnelServiceConnection, Context.BIND_AUTO_CREATE)
+            } else {
+                Timber.e("Service still not null after timeout")
+            }
         }
 
     suspend fun stopTunnelService() =
@@ -157,7 +166,7 @@ constructor(
                 try {
                     context.unbindService(tunnelServiceConnection)
                 } catch (e: Exception) {
-                    Timber.e(e, "Failed to stop Tunnel Service")
+                    Timber.e(e, "Failed to unbind Tunnel Service")
                 }
             }
         }
