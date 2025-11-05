@@ -1,0 +1,130 @@
+name: build-aab
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        type: choice
+        description: "Build type"
+        required: true
+        default: release
+        options:
+          - release
+      flavor:
+        type: choice
+        description: "Product flavor"
+        required: true
+        default: google
+        options:
+          - google
+    secrets:
+      SIGNING_KEY_ALIAS:
+        required: false
+      SIGNING_KEY_PASSWORD:
+        required: false
+      SIGNING_STORE_PASSWORD:
+        required: false
+      SERVICE_ACCOUNT_JSON:
+        required: false
+      KEYSTORE:
+        required: false
+  workflow_call:
+    inputs:
+      build_type:
+        type: string
+        description: "Build type"
+        required: true
+        default: release
+      flavor:
+        type: string
+        description: "Product flavor"
+        required: false
+        default: google
+    secrets:
+      SIGNING_KEY_ALIAS:
+        required: false
+      SIGNING_KEY_PASSWORD:
+        required: false
+      SIGNING_STORE_PASSWORD:
+        required: false
+      SERVICE_ACCOUNT_JSON:
+        required: false
+      KEYSTORE:
+        required: false
+
+env:
+  UPLOAD_DIR_ANDROID: android_artifacts
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+      SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+      SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+      KEY_STORE_FILE: 'android_keystore.jks'
+      KEY_STORE_LOCATION: ${{ github.workspace }}/app/keystore/
+    outputs:
+      UPLOAD_DIR_ANDROID: ${{ env.UPLOAD_DIR_ANDROID }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Decode Keystore
+        id: decode_keystore
+        uses: timheuer/base64-to-file@v1.2
+        with:
+          fileName: ${{ env.KEY_STORE_FILE }}
+          fileDir: ${{ env.KEY_STORE_LOCATION }}
+          encodedString: ${{ secrets.KEYSTORE }}
+
+      - name: Create keystore path env var
+        if: ${{ inputs.build_type != 'debug' }}
+        run: |
+          store_path=${{ env.KEY_STORE_LOCATION }}${{ env.KEY_STORE_FILE }}
+          echo "KEY_STORE_PATH=$store_path" >> $GITHUB_ENV
+
+      - name: Build AAB (noSplits=true)
+        run: |
+          flavor=${{ inputs.flavor }}
+          build_type=${{ inputs.build_type }}
+          case $build_type in
+            "release")
+              ./gradlew :app:bundle${flavor^}Release \
+                -PnoSplits=true \
+                --info
+              ;;
+          esac
+
+      - name: Get release AAB path
+        id: aab-path
+        run: |
+          AAB_PATH=$(find app/build/outputs/bundle -iname "*google*release*.aab" -type f | head -1)
+          if [ -z "$AAB_PATH" ]; then
+            echo "Error: AAB not found!" >&2
+            exit 1
+          fi
+          echo "Found AAB: $AAB_PATH"
+          echo "path=$AAB_PATH" >> $GITHUB_OUTPUT
+
+      - name: Upload AAB Artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: google-play-aab
+          path: ${{ steps.aab-path.outputs.path }}
+          retention-days: 7
+          if-no-files-found: error
