@@ -1,5 +1,5 @@
-What's new:
-- Resource usage bugfix
-- Improve network monitoring
-- Tab navigation bugfix
-- Tunnel metered default bugfix
+Mida on meil uut:
+- Ressursikasutuse veaparandus
+- Parem võrgumonitooring
+- Vahekartidel liikumise veaparandus
+- Mahupõhise tunneli veaparandus
