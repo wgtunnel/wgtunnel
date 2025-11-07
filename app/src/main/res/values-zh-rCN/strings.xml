@@ -362,7 +362,7 @@
     <string name="tunnel_boot_description">开机时启动默认隧道</string>
     <string name="remote_key">远程 key</string>
     <string name="tunnel_mapping_description">按照 Wi-Fi 名称将隧道映射为首选</string>
-    <string name="monitoring">监控中</string>
+    <string name="monitoring">监控</string>
     <string name="kernel_name_dots">内核模式下隧道名称不能是 \'.\' 或 \'..\'</string>
     <string name="kernel_name_special_characters">内核模式下的隧道名称不能有空格或某些特殊字符（允许：字母数字混合、_、=、+、.、-）</string>
     <string name="tunnel_running_name_message">隧道活跃时无法更改名称。</string>
