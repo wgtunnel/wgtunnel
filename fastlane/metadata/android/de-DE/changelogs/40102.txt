@@ -1,8 +1,8 @@
-Was ist neu:
+Was neu ist:
 - Einstellungen für gemessene Tunnel
 - Unterstützung für Dual-Stack-Sperrung
 - Fehlerbehebung für mehrere Profile bei Sperrung
-- Verbesserte Abfrage installierter Pakete bei Split-Tunneling
+- Split-Tunneling: Verbesserte Abfrage installierter Pakete
 - Neustart aktiver Tunnel bei Konfigurationsänderungen
 - Fehlerbehebungen für Android TV-Benutzeroberfläche
 - Verschiedene weitere Fehlerbehebungen und Verbesserungen
