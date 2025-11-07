@@ -239,7 +239,7 @@
     <string name="move_down">向下移動</string>
     <string name="trusted_ssid_value_description">提交 SSID</string>
     <string name="timeout_all_attempts">所有嘗試的總逾時值</string>
-    <string name="ping_target_description"></string>
+    <string name="ping_target_description">Defaults to an internal tunnel IP for split configurations or Cloudflare for full tunnel configurations.</string>
     <string name="drag_handle">拖曳操作</string>
     <string name="tunnel_mobile_data">行動數據上的隧道</string>
     <string name="tunnel_on_ethernet">乙太網路上的隧道</string>
