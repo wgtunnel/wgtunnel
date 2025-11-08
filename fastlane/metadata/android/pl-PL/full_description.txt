@@ -1,15 +1,13 @@
-- Metody importu tuneli: łatwe dodawanie tuneli za pomocą plików .conf, archiwów ZIP, ręcznego wprowadzania danych lub skanowania kodów QR.
-- Autotunelowanie: automatyczne aktywowanie tuneli na podstawie identyfikatora SSID Wi-Fi, połączeń Ethernet lub sieci danych komórkowych.
-- Tunelowanie dzielone: elastyczne wsparcie dla trasowania określonych aplikacji lub ruchu przez VPN.
-- Tryby WireGuard: pełna zgodność z WireGuard zarówno w implementacjach jądra, jak i przestrzeni użytkownika.
-- Integracja AmneziaWG: tryb przestrzeni użytkownika dla AmneziaWG, zapewniający skuteczne unikanie cenzury.
-- Zawsze włączony VPN: zapewnia ciągłą ochronę dzięki funkcji „Zawsze włączony VPN” w systemie Android.
-- Szybkie sterowanie: kafelek szybkich ustawień i skróty na ekranie głównym ułatwiające przełączanie VPN.
-- Obsługa automatyzacji: automatyzacja oparta na intencjach do kontrolowania tuneli.
-- Automatyczne przywracanie: bezproblemowe przywracanie autotunelowania i aktywnych tuneli po ponownym uruchomieniu urządzenia lub aktualizacji aplikacji.
-- Opcje proxy: wbudowana obsługa proxy HTTP i SOCKS5 w tunelach.
-- Tryb blokady: niestandardowy wyłącznik awaryjny zapewniający maksymalną ochronę przed wyciekami oraz bezpieczeństwo.
-- Dynamiczne zarządzanie DNS: wykrywa i aktualizuje zmiany DNS bez ponownego uruchamiania tunelu.
-- Narzędzia monitorujące: zaawansowane funkcje monitorowania tunelu do monitorowania wydajności tunelu.
-- Obsługa Android TV: obsługa Android TV do bezpiecznego przesyłania strumieniowego i przeglądania stron internetowych.
-- Zaawansowany DNS: obsługa DNS poprzez HTTPS do rozpoznawania punktów końcowych tunelu.
+WG Tunnel to klient VPN WireGuard, który łączy w sobie prostotę i solidność, dzięki czemu jest idealnym klientem zarówno dla okazjonalnych, jak i zaawansowanych użytkowników.
+Niezależnie od tego, czy chcesz po prostu zautomatyzować działanie po połączeniu z VPN, czy jesteś zaawansowanym użytkownikiem z rozbudowanymi przypadkami wykorzystania prywatności, WG Tunnel może Ci pomóc.
+
+- **Autotunelowanie:** automatyczna aktywacja tuneli na podstawie identyfikatora SSID Wi-Fi, połączeń Ethernet lub sieci komórkowych.
+- **Tunelowanie dzielone:** elastyczna obsługa routingu określonych aplikacji lub ruchu przez VPN.
+- **Tryby aplikacji:** obsługa wielu trybów tunelowania, w tym standardowego VPN, jądra, blokady (niestandardowego wyłącznika awaryjnego) i trybu proxy.
+- **Integracja z AmneziaWG:** pełna obsługa AmneziaWG, zapewniająca skuteczne omijanie cenzury.
+- **Opcje proxy:** wbudowana obsługa proxy HTTP i SOCKS5, umożliwiająca aplikacjom innych dostawców tunelowanie ich ruchu.
+- **Szybkie sterowanie:** kafelek szybkich ustawień i skróty na ekranie głównym ułatwiające przełączanie akcji.
+- **Obsługa automatyzacji:** automatyzacja oparta na intencjach do kontrolowania tuneli i autotunelowania.
+- **Dynamiczne zarządzanie DNS:** wykrywa i aktualizuje zmiany DNS bez ponownego uruchamiania tunelu.
+- **Narzędzia monitorujące:** zaawansowane funkcje monitorowania tunelu do monitorowania wydajności tunelu.
+- **Obsługa Android TV:** obsługa Android TV dla niemal wszystkich funkcji aplikacji.
