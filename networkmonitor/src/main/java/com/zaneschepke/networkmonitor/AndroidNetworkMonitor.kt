@@ -98,6 +98,10 @@ class AndroidNetworkMonitor(
                                     network: Network,
                                     caps: NetworkCapabilities,
                                 ) {
+                                    if (caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                                        Timber.d("Ignoring VPN default network change: $network")
+                                        return
+                                    }
                                     trySend(TransportEvent.CapabilitiesChanged(network, caps))
                                 }
                             }
