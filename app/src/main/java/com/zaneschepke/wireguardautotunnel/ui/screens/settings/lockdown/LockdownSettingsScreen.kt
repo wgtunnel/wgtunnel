@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.settings.lockdown
 
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -103,12 +104,14 @@ fun LockdownSettingsScreen(viewModel: LockdownViewModel = hiltViewModel()) {
                 trailing = { ThemedSwitch(checked = bypassLan, onClick = { bypassLan = it }) },
                 onClick = { bypassLan = !bypassLan },
             )
-            SurfaceRow(
-                leading = { Icon(Icons.Outlined.DataUsage, contentDescription = null) },
-                title = stringResource(R.string.metered_tunnel),
-                trailing = { ThemedSwitch(checked = metered, onClick = { metered = it }) },
-                onClick = { metered = !metered },
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                SurfaceRow(
+                    leading = { Icon(Icons.Outlined.DataUsage, contentDescription = null) },
+                    title = stringResource(R.string.metered_tunnel),
+                    trailing = { ThemedSwitch(checked = metered, onClick = { metered = it }) },
+                    onClick = { metered = !metered },
+                )
+            }
             SurfaceRow(
                 leading = {
                     Icon(ImageVector.vectorResource(R.drawable.host), contentDescription = null)

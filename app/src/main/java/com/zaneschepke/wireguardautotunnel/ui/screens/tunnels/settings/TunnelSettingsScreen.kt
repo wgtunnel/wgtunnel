@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings
 
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -148,36 +149,38 @@ fun TunnelSettingsScreen(viewModel: TunnelViewModel) {
                 },
                 onClick = { viewModel.setIpv4Preferred(!tunnel.isIpv4Preferred) },
             )
-            SurfaceRow(
-                leading = {
-                    Icon(
-                        Icons.Outlined.DataUsage,
-                        contentDescription = null,
-                        tint =
-                            if (sharedUiState.proxyEnabled) Disabled
-                            else MaterialTheme.colorScheme.onSurface,
-                    )
-                },
-                title = stringResource(R.string.metered_tunnel),
-                enabled = !sharedUiState.proxyEnabled,
-                description =
-                    if (sharedUiState.proxyEnabled) {
-                        {
-                            DescriptionText(
-                                stringResource(R.string.unavailable_in_mode),
-                                disabled = true,
-                            )
-                        }
-                    } else null,
-                trailing = {
-                    ThemedSwitch(
-                        checked = tunnel.isMetered,
-                        onClick = { viewModel.setMetered(it) },
-                        enabled = !sharedUiState.proxyEnabled,
-                    )
-                },
-                onClick = { viewModel.setMetered(!tunnel.isMetered) },
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                SurfaceRow(
+                    leading = {
+                        Icon(
+                            Icons.Outlined.DataUsage,
+                            contentDescription = null,
+                            tint =
+                                if (sharedUiState.proxyEnabled) Disabled
+                                else MaterialTheme.colorScheme.onSurface,
+                        )
+                    },
+                    title = stringResource(R.string.metered_tunnel),
+                    enabled = !sharedUiState.proxyEnabled,
+                    description =
+                        if (sharedUiState.proxyEnabled) {
+                            {
+                                DescriptionText(
+                                    stringResource(R.string.unavailable_in_mode),
+                                    disabled = true,
+                                )
+                            }
+                        } else null,
+                    trailing = {
+                        ThemedSwitch(
+                            checked = tunnel.isMetered,
+                            onClick = { viewModel.setMetered(it) },
+                            enabled = !sharedUiState.proxyEnabled,
+                        )
+                    },
+                    onClick = { viewModel.setMetered(!tunnel.isMetered) },
+                )
+            }
         }
     }
 }
