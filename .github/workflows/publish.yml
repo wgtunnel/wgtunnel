@@ -32,14 +32,6 @@ on:
         description: "Tag name for release"
         required: false
         default: 1.1.1
-      flavor:
-        type: choice
-        description: "Product flavor"
-        required: true
-        default: standalone
-        options:
-          - fdroid
-          - standalone
   workflow_call:
     inputs:
       flavor:
@@ -51,7 +43,11 @@ on:
 jobs:
 
   build-fdroid:
-    if: ${{ github.event_name == 'push' || inputs.release_type == 'release' || inputs.flavor == 'fdroid' }}
+    if: >-
+      ${{ 
+        github.event_name == 'push' || 
+        inputs.release_type != 'none' 
+      }}
     uses: ./.github/workflows/build.yml
     secrets: inherit
     with:
@@ -59,16 +55,26 @@ jobs:
       flavor: fdroid
 
   build-standalone:
-    if: ${{ github.event_name == 'push' || inputs.release_type == 'release' || inputs.release_type == 'debug' || inputs.flavor == 'standalone' }}
+    if: >-
+      ${{ 
+        github.event_name == 'push' || 
+        inputs.release_type != 'none' 
+      }}
     uses: ./.github/workflows/build.yml
     secrets: inherit
     with:
       build_type: ${{ github.event_name == 'push' && 'release' || inputs.release_type }}
       flavor: standalone
 
-  publish:
+  publish-github:
+    if: >-
+      ${{ 
+        github.event_name == 'push' || 
+        inputs.release_type != 'none' 
+      }}
     needs:
-      - build-standalone
+    - build-fdroid
+    - build-standalone
     name: publish-github
     runs-on: ubuntu-latest
     steps:
@@ -166,9 +172,13 @@ jobs:
 
   publish-fdroid-public:
     runs-on: ubuntu-latest
+    if: >-
+      ${{ 
+        github.event_name == 'push' || 
+        inputs.release_type != 'none' 
+      }}
     needs:
-      - build-fdroid
-    if: ${{ github.event_name == 'push' || inputs.release_type == 'release' }}
+      - publish-github
     steps:
       - name: Dispatch update for fdroid repo
         uses: peter-evans/repository-dispatch@v4
