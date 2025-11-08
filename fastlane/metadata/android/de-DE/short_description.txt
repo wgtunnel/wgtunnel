@@ -1,1 +1,1 @@
-Ein WireGuard- und AmneziaWG-VPN-Client mit automatischem Tunneling, Sperrung und Proxying.
+Ein WireGuard & AmneziaWG VPN-Client mit Auto-Tunnel, Sperre & Proxy.
