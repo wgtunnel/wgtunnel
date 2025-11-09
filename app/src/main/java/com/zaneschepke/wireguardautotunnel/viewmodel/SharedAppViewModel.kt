@@ -158,14 +158,6 @@ constructor(
                     )
                 }
             }
-//            AppMode.KERNEL -> {
-//                val accepted = rootShellUtils.requestRoot()
-//                val message =
-//                    if (!accepted) StringValue.StringResource(R.string.error_root_denied)
-//                    else StringValue.StringResource(R.string.root_accepted)
-//                postSideEffect(GlobalSideEffect.Snackbar(message))
-//                if (!accepted) return@intent
-//            }
             AppMode.KERNEL -> {
                 val accepted = rootShellUtils.requestRoot()
                 val message =
