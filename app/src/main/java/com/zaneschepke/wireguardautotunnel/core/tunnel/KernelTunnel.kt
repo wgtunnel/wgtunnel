@@ -10,7 +10,7 @@ import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.di.Kernel
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
-import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
+import com.zaneschepke.wireguardautotunnel.domain.events.KernelWireguardNotSupported
 import com.zaneschepke.wireguardautotunnel.domain.events.DnsFailure
 import com.zaneschepke.wireguardautotunnel.domain.events.InvalidConfig
 import com.zaneschepke.wireguardautotunnel.domain.events.KernelTunnelName
@@ -57,7 +57,7 @@ constructor(
     }
 
     override fun tunnelStateFlow(tunnelConfig: TunnelConfig): Flow<TunnelStatus> = callbackFlow {
-        if (!WgQuickBackend.hasKernelSupport()) close(BackendCoreException.KernelNotSupported)
+        if (!WgQuickBackend.hasKernelSupport()) close(KernelWireguardNotSupported())
         validateWireGuardInterfaceName(tunnelConfig.name).onFailure { close(it) }
 
         val stateChannel = Channel<WgTunnel.State>()

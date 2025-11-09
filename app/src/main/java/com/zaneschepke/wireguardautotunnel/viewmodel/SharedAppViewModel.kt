@@ -4,8 +4,6 @@ import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import com.wireguard.android.backend.WgQuickBackend
-import com.wireguard.android.util.RootShell
-import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
@@ -36,6 +34,7 @@ import kotlinx.coroutines.flow.map
 import org.amnezia.awg.config.BadConfigException
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
+import timber.log.Timber
 import xyz.teamgravity.pin_lock_compose.PinManager
 
 @HiltViewModel
@@ -168,9 +167,14 @@ constructor(
 //                if (!accepted) return@intent
 //            }
             AppMode.KERNEL -> {
+                val accepted = rootShellUtils.requestRoot()
+                val message =
+                    if (!accepted) StringValue.StringResource(R.string.error_root_denied)
+                    else StringValue.StringResource(R.string.root_accepted)
+                postSideEffect(GlobalSideEffect.Snackbar(message))
+                if (!accepted) return@intent
                 if (WgQuickBackend.hasKernelSupport())
                     Timber.i("Device supports kernel backend. WireGuard module is built in, switching to kernel backend.")
-                if (!requestRoot()) return@intent
                 else {
                     Timber.e("Device does not support kernel backend!")
                     intent {
