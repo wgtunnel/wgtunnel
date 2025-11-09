@@ -124,7 +124,7 @@ jobs:
       - name: Set version release notes
         if: ${{ github.event_name == 'push' || inputs.release_type == 'release' }}
         run: |
-          VERSION_CODE=$(grep "const val VERSION_CODE" buildSrc/src/main/kotlin/Constants.kt | awk '{print $5}')
+          VERSION_CODE=$(sed -nE 's/.*const val VERSION_CODE[[:space:]]*=[[:space:]]*([0-9]+).*/\1/p' buildSrc/src/main/kotlin/Constants.kt)
           RELEASE_NOTES="$(cat ${{ github.workspace }}/fastlane/metadata/android/en-US/changelogs/${VERSION_CODE}.txt || echo "No changelog found for ${VERSION_CODE}")"
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "$RELEASE_NOTES" >> $GITHUB_ENV

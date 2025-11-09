@@ -405,6 +405,7 @@ class AndroidNetworkMonitor(
                         )
 
                 val vpnActive = defaultCaps.hasTransport(NetworkCapabilities.TRANSPORT_VPN)
+
                 // determine underlying network capabilities in order of Android's priority
                 // (Ethernet > Wi-Fi > Cellular)
                 val underlyingCaps = ethernetCaps ?: wifiCaps ?: cellularCaps
@@ -414,6 +415,8 @@ class AndroidNetworkMonitor(
                     if (vpnActive) underlyingCaps ?: defaultCaps else defaultCaps
 
                 // ensure validated internet connectivity
+                // there is a known issue where Android will still report cellular connectivity if the
+                // interface is not disabled and there is no connectivity (denoted by the '!')
                 val isValidated =
                     capsForValidation.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
                 val hasInternet =
