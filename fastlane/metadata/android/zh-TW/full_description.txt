@@ -1,13 +1,13 @@
-WG Tunnel is a WireGuard VPN client that strikes the balance between simplicity and robustness, making it the ideal client for casual and power users alike.
-Whether you simply want to automate when you're connected to your VPN or you're a power user with advanced privacy use cases, WG Tunnel has you covered.
+WG Tunnel 是一個兼顧簡單和可靠的 WireGuard VPN 用戶端，使其成為休閒和高級使用者的理想選擇。
+無論您只是想自動化連上 VPN 的過程，還是有進階隱私需求的高級使用者，WG Tunnel 都能滿足您的需求。
 
-- **Auto-Tunneling:** Automatically activate tunnels based on Wi-Fi SSID, Ethernet connections, or mobile data networks.
-- **Split Tunneling:** Flexible support for routing specific apps or traffic through the VPN.
-- **App Modes:** Support for multiple tunnel modes, including standard VPN, kernel, lockdown (custom kill switch), and proxy modes.
-- **AmneziaWG Integration:** Full support for AmneziaWG, providing robust censorship evasion.
-- **Proxying Options:** Built-in HTTP and SOCKS5 proxy support allowing third-party apps to tunnel their traffic.
-- **Quick Controls:** Quick Settings tile and home screen shortcuts for easy toggling actions.
-- **Automation Support:** Intent-based automation for controlling tunnels and auto-tunneling.
-- **Dynamic DNS Handling:** Detects and updates DNS changes without tunnel restarts.
-- **Monitoring Tools:** Advanced tunnel monitoring features for tunnel performance monitoring.
-- **Android TV Support:** Android TV support for nearly all app features.
+- **自動隧道管理:** 根據 Wi-Fi SSID、乙太或行動數據網路自動啟動隧道。.
+- **隧道拆分:** 彈性支援將特定應用程式或流量透過 VPN 路由。
+- **多種運作模式:** 支援多種隧道模式, 包含標準 VPN、核心、鎖定 (自訂 kill switch) 和代理模式。
+- **AmneziaWG 整合:** 完全支援 AmneziaWG，提供強大的審查迴避能力。
+- **代理選項:** 內建 HTTP 和 SOCKS5 代理支援，允許第三方應用程式將其流量透過隧道路由。
+- **快速控制:** 快速設定圖塊和主畫面捷徑，方便切換操作
+- **自動化支援:** 基於意圖的自動化，用於控制隧道和自動隧道管理。
+- **動態 DNS 處理:** 偵測 DNS 變更並更新組態，無需重啟隧道。
+- **監測工具:** 用於監測性能的進階隧道監測功能。
+- **Android TV 支援:** Android TV 支援幾乎所有應用程式功能。
