@@ -330,7 +330,7 @@
     <string name="remote_key">Kaugseadme võti</string>
     <string name="mobile_data">Mobiilne andmeside</string>
     <string name="tunnel_boot_description">Seadme käivitamisel käivita ka vaikimisi tunnel</string>
-    <string name="tunnel_mapping_description">Map tunnels as preferred by Wi-Fi name</string>
+    <string name="tunnel_mapping_description">Vastenda tunneleid eelistatuks WiFi nime alusel</string>
     <string name="donation_prompt_prefix">Suur tänu, et toetad rakendust WG Tunnel! Kui sul on võimalik, siis</string>
     <string name="website">Rakenduse veebisait</string>
     <string name="wifi_settings">WiFi seadistused</string>
@@ -375,8 +375,8 @@
     <string name="preferred_tunnel">Eelistatud tunnel</string>
     <string name="tunnel_running_name_message">Kui tunnel on aktiivne, siis nime ei saa muuta.</string>
     <string name="network_name">Võrk:</string>
-    <string name="mapped">Mapped</string>
-    <string name="tunnel_mapping">Tunnel mapping</string>
+    <string name="mapped">Vastendatud</string>
+    <string name="tunnel_mapping">Tunnelite vastendus</string>
     <string name="preferred_tunnel_label">Eelistatud tunnel:</string>
     <string name="ping_monitor">Pingimisega monitooring</string>
     <string name="restart_message_template">Muudatuste salvestamine käivitab „%1$s“ tunneli uuesti. Kas sa soovid jätkata?</string>
