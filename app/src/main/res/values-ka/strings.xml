@@ -109,4 +109,23 @@
     <string name="matrix_url" translatable="false">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
     <string name="bitcoin_cash" translatable="false">Bitcoin Cash (BCH)</string>
     <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
+    <string name="vpn_settings">VPN სისტემის კონფიგურაცია</string>
+    <string name="never">არასდროს</string>
+    <string name="handshake">ხელის ჩამორთმევა</string>
+    <string name="logs">ლოგები</string>
+    <string name="appearance">გარეგნობა</string>
+    <string name="notifications">შეტყობინებები</string>
+    <string name="automatic">ავტომატური</string>
+    <string name="light">ნათელი</string>
+    <string name="dark">მუქი</string>
+    <string name="dynamic">დინამიური</string>
+    <string name="language">ენა</string>
+    <string name="trusted_wifi_names">სანდო Wi-Fi სახელები</string>
+    <string name="add_wifi_name">დაამატე Wi-Fi სახელი</string>
+    <string name="primary_tunnel">ნაგულისხმევი ტუნელი</string>
+    <string name="mobile_tunnel">მობილური ინტერნეტით ტუნელი</string>
+    <string name="skip">გამოტოვება</string>
+    <string name="launch_app_settings">გახსენი აპლიკაციის სეთინგები</string>
+    <string name="learn_more">წაიკითხე მეტი</string>
+    <string name="start_auto">ჩართე ავტო-ტუნელი</string>
 </resources>
