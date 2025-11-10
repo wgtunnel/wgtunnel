@@ -1,15 +1,13 @@
-- Tunneli importimise meetodid: Tunneli lisamine mugavalt .conf faili, .zip faili, käsitsi sisestuse või QR-koodi alusel.
-- Automaatne tunneldus: VPN-i automaatne ühendamine konkreetse WiFi SSID, traadiga võrgu või mobiilse andmeside alusel.
-- Jagatud tunneldus: Paindlik tugi võimalusele mõne konkreetse rakenduse või liikluse juhtimisele tunneli kaudu.
-- WireGuardi režiimid: Täistugi WireGuardi tööks nii kerneli-, kui kasutajarežiimis.
-- Amnezia lõiming: AmneziaWG tugi kasutajarežiimis nii pakettide süvakontrolli kui tsenseerimise vastu.
-- Pidevalt töötav VPN: Alati toimiva VPN-i tugi tagab pidevalt toimiva kaitse.
-- Kiirvalikud: Kiirvalikute vidin ja avalehe lingid VPN-i mugavaks sisse/välja lülitamiseks.
-- Automatiseerimise tugi: Kavatsuste-põhine automatiseerimine tunnelite juhtimisel.
-- Automaatne taastamine: Automaatse tunnelduse ja aktiivsete tunnelite sujuv taastamine nutiseadme käivitamisel või rakenduse uuendamisel.
-- Proksiteenuse võimalused: Rakendusesisese HTTP või SOCKS5-proksi tugi tunnelites.
-- Lukustusrežiim: Sinu seadistatavad sulgemisvõimalused maksimaalseks kaitseks andmete lekkimise vastu ja turvalisuse nimel.
-- Dünaamiline nimelahendus: Tuvastab nimelahenduse muudatused või uuendab neid ilma tunneli uuesti käivitamiseta.
-- Monitooringuvahendid: Mitmed detailsed võimalused tunneli jõudluse jälgmiseks.
-- Android TV tugi: Rakendus on kasutatav Android TV-s, võimaldades turvalist voogedastust ja veebisirvimist.
-- Moodne ja turvaline nimelahendus: tunneli otspunktide nimelahendus või kasutada DOH-protokolli (DNS üle HTTP).
+WG Tunnel on WireGuardi VPN-i klient, kus on sobivalt ühendatud lihtsus ja töökindlus, mistõttu sobib ta ühtemoodi tavaksautajatele ja oskuskasutajatele.
+Kas sa lihtsalt tahad hallata viisi, kuidas VPN-ühendused automaatselt luuakse või oled oskuskasutaja, kellel on väga detailsed soovid VPN-i privaatsuses osas - WG Tunnel saab mõlemaga ühtemoodi edukalt hakkama.
+
+- **Automaatne tunneldus:** VPN-i automaatne ühendamine konkreetse WiFi SSID, traadiga võrgu või mobiilse andmeside alusel.
+- **Jagatud tunneldus:** Paindlik tugi võimalusele mõne konkreetse rakenduse või liikluse juhtimisele tunneli kaudu.
+- **WireGuardi režiimid:** Täistugi WireGuardi tööks nii kerneli-, kui kasutajarežiimis, lisaks lukustus- ja proksivõimalused.
+- **Amnezia lõiming:** AmneziaWG tugi kasutajarežiimis nii pakettide süvakontrolli kui tsenseerimise vastu.
+- **Proksiteenuse võimalused:** Rakendusesisese HTTP või SOCKS5-proksi tugi tunnelites ja kolmandate osapoolte rakenduste võimalus seda kasutada.
+- **Kiirvalikud:** Kiirvalikute vidin ja avalehe lingid VPN-i mugavaks sisse/välja lülitamiseks.
+- **Automatiseerimise tugi:** Kavatsuste-põhine automatiseerimine tunnelite juhtimisel ja automaatsel tunneldamisel.
+- **Dünaamiline nimelahendus:** Tuvastab nimelahenduse muudatused või uuendab neid ilma tunneli uuesti käivitamiseta.
+- **Monitooringuvahendid:** Mitmed detailsed võimalused tunneli jõudluse jälgmiseks.
+- **Android TV tugi:** Rakendus on praktiliset täisfunktsionaalsuses kasutatav Android TV-s, võimaldades turvalist voogedastust ja veebisirvimist.
