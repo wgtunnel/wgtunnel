@@ -252,7 +252,6 @@
     <string name="packets_sent_template">Pacchetti inviati: %1$s</string>
     <string name="jitter_template">Jitter: %1$s</string>
     <string name="latency_template">Latenza: %1$s</string>
-    <string name="sec_ago_template">%1$s sec fa</string>
     <string name="ping_success_template">Ultimo ping riuscito: %1$s</string>
     <string name="reachable_template">Raggiungibile: %1$s</string>
     <string name="current_template">Corrente: %1$s</string>

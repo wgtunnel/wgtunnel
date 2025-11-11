@@ -302,7 +302,6 @@
     <string name="set_custom_ping_target">Vlastní cíl pingu (volitelné)</string>
     <string name="tunnel_ping_interval">Interval pingování tunelu</string>
     <string name="ping_timeout">Časový limit pingování tunelu</string>
-    <string name="sec_ago_template">Před %1$s s</string>
     <string name="latency_template">Latence: %1$s</string>
     <string name="ping_target_template">Cíl pingu: %1$s</string>
     <string name="backup_success">Úspěšně zazálohováno. %1$s</string>

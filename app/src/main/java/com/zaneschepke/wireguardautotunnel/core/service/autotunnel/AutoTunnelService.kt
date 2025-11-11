@@ -63,6 +63,7 @@ class AutoTunnelService : LifecycleService() {
 
     private var autoTunnelJob: Job? = null
     private var permissionsJob: Job? = null
+    private var autoTunnelFailoverJob: Job? = null
 
     class LocalBinder(service: AutoTunnelService) : Binder() {
         private val serviceRef = WeakReference(service)
@@ -212,6 +213,7 @@ class AutoTunnelService : LifecycleService() {
 
                 handleAutoTunnelEvent(autoTunnelStateFlow.value.determineAutoTunnelEvent(change))
 
+                // re-evaluate network state after a short duration to prevent missed state changes
                 reevaluationJob = launch {
                     val snapshotNetwork = autoTunnelStateFlow.value.networkState
                     delay(REEVALUATE_CHECK_DELAY)
@@ -358,6 +360,7 @@ class AutoTunnelService : LifecycleService() {
         }
     }
 
+    // restart network flow on debounce changes
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private val debouncedConnectivityStateFlow: Flow<ConnectivityState> by lazy {
         autoTunnelRepository

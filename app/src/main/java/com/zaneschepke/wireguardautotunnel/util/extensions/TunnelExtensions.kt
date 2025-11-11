@@ -77,7 +77,7 @@ fun BackendMode.asAmBackendMode(): Backend.BackendMode {
 fun Tunnel.State.asTunnelState(): TunnelStatus {
     return when (this) {
         Tunnel.State.DOWN -> TunnelStatus.Down
-        Tunnel.State.UP -> TunnelStatus.Up
+        Tunnel.State.UP -> TunnelStatus.Up(System.currentTimeMillis())
     }
 }
 
@@ -114,6 +114,6 @@ fun org.amnezia.awg.backend.BackendException.toBackendCoreException(): BackendCo
 fun com.wireguard.android.backend.Tunnel.State.asTunnelState(): TunnelStatus {
     return when (this) {
         com.wireguard.android.backend.Tunnel.State.DOWN -> TunnelStatus.Down
-        com.wireguard.android.backend.Tunnel.State.UP -> TunnelStatus.Up
+        com.wireguard.android.backend.Tunnel.State.UP -> TunnelStatus.Up(System.currentTimeMillis())
     }
 }

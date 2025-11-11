@@ -247,7 +247,7 @@ constructor(
                 }
 
                 // Wait for the tunnel to be fully active
-                tunStateFlow.filter { state -> state?.status == TunnelStatus.Up }.first()
+                tunStateFlow.filter { state -> state?.status is TunnelStatus.Up }.first()
 
                 // small delay to make sure tunnel is fully up before we actively monitor
                 delay(3_000L)

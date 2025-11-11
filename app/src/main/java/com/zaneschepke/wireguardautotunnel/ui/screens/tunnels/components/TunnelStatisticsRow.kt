@@ -19,8 +19,10 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.ui.common.label.lowercaseLabel
-import com.zaneschepke.wireguardautotunnel.util.NumberUtils
 import com.zaneschepke.wireguardautotunnel.util.extensions.abbreviateKey
+import com.zaneschepke.wireguardautotunnel.util.extensions.localizedDuration
+import com.zaneschepke.wireguardautotunnel.util.extensions.millisAgo
+import java.util.Locale
 import kotlinx.coroutines.delay
 
 @Composable
@@ -33,6 +35,7 @@ fun TunnelStatisticsRow(
     val context = LocalContext.current
     val textStyle = MaterialTheme.typography.bodySmall
     val textColor = MaterialTheme.colorScheme.outline
+    val locale = remember { Locale.getDefault() }
 
     // needs to be set as peer stats for duplicates return as a single set of stats
     val peers by
@@ -65,6 +68,19 @@ fun TunnelStatisticsRow(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalAlignment = Alignment.Start,
         ) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    Text(
+                        "uptime: ${tunnelState.uptime().localizedDuration(locale)}",
+                        style = textStyle,
+                        color = textColor,
+                    )
+                }
+            }
+
             peers.forEach { peerBase64 ->
                 key(peerBase64) {
                     val peerStats = remember(stats, peerBase64) { stats.peerStats(peerBase64) }
@@ -88,11 +104,7 @@ fun TunnelStatisticsRow(
                                 derivedStateOf {
                                     stats.latestHandshakeEpochMillis.let { lastHandshake ->
                                         if (lastHandshake == 0L) null
-                                        else
-                                            NumberUtils.getSecondsBetween(
-                                                lastHandshake,
-                                                currentTimeMillis,
-                                            )
+                                        else lastHandshake.millisAgo().localizedDuration(locale)
                                     }
                                 }
                             }
@@ -105,9 +117,10 @@ fun TunnelStatisticsRow(
                         val lastPingedSeconds by
                             remember(pingState, currentTimeMillis) {
                                 derivedStateOf {
-                                    pingState?.lastSuccessfulPingMillis?.let { lastPing ->
-                                        NumberUtils.getSecondsBetween(lastPing, currentTimeMillis)
-                                    }
+                                    pingState
+                                        ?.lastSuccessfulPingMillis
+                                        ?.millisAgo()
+                                        ?.localizedDuration(locale)
                                 }
                             }
 
@@ -156,7 +169,7 @@ fun TunnelStatisticsRow(
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                             ) {
                                 Text(
-                                    "$handshakeText: ${handshake?.let { lowercaseLabel(stringResource(R.string.sec_ago_template, it.toString())) } ?: neverText}",
+                                    "$handshakeText: ${handshake?.let { lowercaseLabel(it) } ?: neverText}",
                                     style = textStyle,
                                     color = textColor,
                                 )
@@ -219,12 +232,7 @@ fun TunnelStatisticsRow(
                                             stringResource(
                                                 R.string.ping_success_template,
                                                 lastPingedSeconds?.let { sec ->
-                                                    lowercaseLabel(
-                                                        stringResource(
-                                                            R.string.sec_ago_template,
-                                                            sec.toString(),
-                                                        )
-                                                    )
+                                                    lowercaseLabel(sec)
                                                 } ?: neverText,
                                             )
                                         )

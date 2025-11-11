@@ -1,6 +1,9 @@
 package com.zaneschepke.wireguardautotunnel.util.extensions
 
 import android.content.Context
+import android.icu.text.MeasureFormat
+import android.icu.util.Measure
+import android.icu.util.MeasureUnit
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Terminal
@@ -18,6 +21,8 @@ import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
 import com.zaneschepke.wireguardautotunnel.ui.theme.CoolGray
 import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
 import com.zaneschepke.wireguardautotunnel.ui.theme.Straw
+import java.util.Locale
+import kotlin.time.Duration.Companion.milliseconds
 
 fun WifiDetectionMethod.asTitleString(context: Context): String {
     return when (this) {
@@ -81,4 +86,36 @@ fun TunnelState.Health.asColor(): Color {
         TunnelState.Health.HEALTHY -> SilverTree
         TunnelState.Health.STALE -> Straw
     }
+}
+
+fun Long.localizedDuration(locale: Locale = Locale.getDefault()): String {
+    require(this >= 0L) { "Duration cannot be negative" }
+
+    val duration = this.milliseconds
+
+    if (duration < 1000.milliseconds) {
+        return MeasureFormat.getInstance(locale, MeasureFormat.FormatWidth.SHORT)
+            .format(Measure(0, MeasureUnit.SECOND))
+    }
+
+    val totalSeconds = duration.inWholeSeconds
+
+    val days = totalSeconds / 86_400
+    val hours = (totalSeconds % 86_400) / 3_600
+    val minutes = (totalSeconds % 3_600) / 60
+    val seconds = totalSeconds % 60
+
+    val measures = buildList {
+        if (days > 0) add(Measure(days, MeasureUnit.DAY))
+        if (hours > 0) add(Measure(hours, MeasureUnit.HOUR))
+        if (minutes > 0) add(Measure(minutes, MeasureUnit.MINUTE))
+        if (seconds > 0) add(Measure(seconds, MeasureUnit.SECOND))
+    }
+
+    return MeasureFormat.getInstance(locale, MeasureFormat.FormatWidth.SHORT)
+        .formatMeasures(*measures.toTypedArray())
+}
+
+fun Long.millisAgo(): Long {
+    return System.currentTimeMillis() - this
 }

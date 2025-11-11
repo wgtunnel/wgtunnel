@@ -2,7 +2,7 @@ package com.zaneschepke.wireguardautotunnel.domain.enums
 
 sealed class TunnelStatus {
 
-    data object Up : TunnelStatus()
+    data class Up(val startTime: Long) : TunnelStatus()
 
     data object Down : TunnelStatus()
 
@@ -15,11 +15,11 @@ sealed class TunnelStatus {
     }
 
     fun isUp(): Boolean {
-        return this == Up
+        return this is Up
     }
 
     fun isUpOrStarting(): Boolean {
-        return this == Up || this == Starting
+        return this is Up || this == Starting
     }
 
     fun isDownOrStopping(): Boolean {

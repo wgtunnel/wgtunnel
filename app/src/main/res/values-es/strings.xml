@@ -247,7 +247,6 @@
     <string name="display_detailed_ping_stats">Mostrar estadísticas detalladas del ping</string>
     <string name="reachable_template">Alcanzable: %1$s</string>
     <string name="ping_success_template">Último ping recibido: %1$s</string>
-    <string name="sec_ago_template">hace %1$s segundos</string>
     <string name="latency_template">Latencia: %1$s</string>
     <string name="jitter_template">Jitter: %1$s</string>
     <string name="packets_sent_template">Paquetes enviados: %1$s</string>

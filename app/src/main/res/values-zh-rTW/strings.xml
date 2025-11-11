@@ -205,7 +205,6 @@
     <string name="jitter_template">抖動: %1$s</string>
     <string name="warning">警告</string>
     <string name="ip_or_hostname">IP 或主機名稱</string>
-    <string name="sec_ago_template">%1$s 秒前</string>
     <string name="restarting_app">正在重啟應用程式以應用變更…</string>
     <string name="packets_sent_template">已發送封包: %1$s</string>
     <string name="packet_loss_template">丟失封包: %.2f%%</string>

@@ -31,7 +31,7 @@ fun MutableStateFlow<Map<TunnelConfig, TunnelState>>.exists(id: Int): Boolean {
 }
 
 fun MutableStateFlow<Map<TunnelConfig, TunnelState>>.isUp(id: Int): Boolean {
-    return this.value.any { it.key.id == id && it.value.status == TunnelStatus.Up }
+    return this.value.any { it.key.id == id && it.value.status is TunnelStatus.Up }
 }
 
 fun MutableStateFlow<Map<TunnelConfig, TunnelState>>.isStarting(id: Int): Boolean {

@@ -12,6 +12,8 @@ data class TunnelState(
 ) {
 
     fun health(): Health {
+        if (status !is TunnelStatus.Up) return Health.UNKNOWN
+        val uptime = uptime()
         val now = System.currentTimeMillis()
 
         if (pingStates == null && logHealthState == null && statistics == null)
@@ -37,11 +39,19 @@ data class TunnelState(
         // Stats health if no logs or pings
         statistics?.let { stats ->
             if (stats.isTunnelStale()) return Health.STALE
-            if (stats.rx() == 0L) return Health.UNKNOWN
+            val rx = stats.rx()
+            if (uptime >= STATS_HEALTH_SUCCESS_TIMEOUT_MS && rx == 0L) return Health.UNHEALTHY
+            if (rx == 0L) return Health.UNKNOWN
             return Health.HEALTHY
         }
 
         return Health.UNKNOWN
+    }
+
+    fun uptime(): Long {
+        val up = status as? TunnelStatus.Up ?: return 0L
+        if (up.startTime == 0L) return 0L
+        return System.currentTimeMillis() - up.startTime
     }
 
     enum class Health {
@@ -53,5 +63,6 @@ data class TunnelState(
 
     companion object {
         const val LOG_HEALTH_SUCCESS_TIMEOUT_MS = 2 * 60 * 1000L // 2 minutes
+        const val STATS_HEALTH_SUCCESS_TIMEOUT_MS = 15 * 1000L // 15 sec
     }
 }

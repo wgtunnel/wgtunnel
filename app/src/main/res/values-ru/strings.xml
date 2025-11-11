@@ -240,7 +240,6 @@
     <string name="backup_application">Резервирование данных</string>
     <string name="restore_application">Восстановление данных</string>
     <string name="tunnel_monitoring">Отслеживание туннеля</string>
-    <string name="sec_ago_template">%1$s сек.</string>
     <string name="latency_template">Задержка: %1$s</string>
     <string name="packets_sent_template">Отправлено пакетов: %1$s</string>
     <string name="packet_loss_template">Потеряно пакетов: %.2f%%</string>

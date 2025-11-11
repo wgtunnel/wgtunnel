@@ -247,7 +247,6 @@
     <string name="display_detailed_ping_stats">展示详细的 ping 数据</string>
     <string name="reachable_template">可抵达：%1$s</string>
     <string name="ping_success_template">上次成功的 ping 操作：%1$s</string>
-    <string name="sec_ago_template">%1$s 秒前</string>
     <string name="latency_template">延迟：%1$s</string>
     <string name="jitter_template">抖动：%1$s</string>
     <string name="packets_sent_template">已发送数据包：%1$s</string>

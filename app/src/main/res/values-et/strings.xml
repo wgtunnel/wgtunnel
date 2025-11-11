@@ -263,7 +263,6 @@
     <string name="pinger_bounce_successful">Tunneli taaskäivitamine pingija poolt õnnestus.</string>
     <string name="reachable_template">Leitav: %1$s</string>
     <string name="ping_success_template">Viimane õnnestunud ping: %1$s</string>
-    <string name="sec_ago_template">%1$s sekundi eest</string>
     <string name="dns_provider">Nimelahenduse pakkuja</string>
     <string name="dns_protocol">Nimelahenduse protokoll</string>
     <string name="system">Süsteemne</string>

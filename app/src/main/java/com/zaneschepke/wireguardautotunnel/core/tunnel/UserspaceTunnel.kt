@@ -90,7 +90,7 @@ constructor(
         } catch (e: BackendException) {
             throw e.toBackendCoreException()
             // TODO this should be mapped to BackendException in the lib
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             throw VpnUnauthorized()
         }
     }

@@ -247,7 +247,6 @@
     <string name="display_detailed_ping_stats">پِنگ کے تفصیلی اعدادوشمار دکھائیں</string>
     <string name="reachable_template">قابل رسائی: %1$s</string>
     <string name="ping_success_template">آخری کامیاب پِنگ: %1$s</string>
-    <string name="sec_ago_template">%1$s سیکنڈ پہلے</string>
     <string name="latency_template">تاخیر: %1$s</string>
     <string name="jitter_template">ہلچل: %1$s</string>
     <string name="packets_sent_template">پیکٹ بھیجے گئے: %1$s</string>

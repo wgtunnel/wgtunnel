@@ -2,8 +2,6 @@ package com.zaneschepke.wireguardautotunnel.util
 
 import com.vdurmont.semver4j.Semver
 import java.math.BigDecimal
-import java.time.Duration
-import java.time.Instant
 import kotlin.math.pow
 import timber.log.Timber
 
@@ -26,16 +24,6 @@ object NumberUtils {
 
     private fun randomFive(): Int {
         return (Math.random() * 100000).toInt()
-    }
-
-    fun getSecondsBetween(start: Long, end: Long): Long? {
-        return if (start != 0L && end != 0L) {
-            val startInstant = Instant.ofEpochMilli(start)
-            val endInstant = Instant.ofEpochMilli(end)
-            return Duration.between(startInstant, endInstant).seconds
-        } else {
-            null
-        }
     }
 
     fun compareVersions(newVersion: String, currentVersion: String): Int {
