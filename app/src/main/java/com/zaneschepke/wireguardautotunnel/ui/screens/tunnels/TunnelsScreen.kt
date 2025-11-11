@@ -69,8 +69,10 @@ fun TunnelsScreen() {
         rememberLauncherForActivityResult(
             contract = ScanContract(),
             onResult = { result ->
-                if (result != null && result.contents.isNotEmpty())
-                    viewModel.importFromQr(result.contents)
+                result
+                    ?.contents
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { contents -> viewModel.importFromQr(contents) }
             },
         )
 
