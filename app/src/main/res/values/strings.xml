@@ -434,7 +434,7 @@
     <string name="info">Info</string>
     <string name="already_donated">Already donated</string>
     <string name="already_donated_description">Disables future donation prompts</string>
-    <string name="donation_prompt_prefix">Thanks for using WG Tunnel! If you can, please consider</string>
+    <string name="donation_prompt_prefix">Thanks for using WG Tunnel! If you are able, please consider</string>
     <string name="donation_prompt_link">supporting the project</string>
     <string name="donation_prompt_suffix">to keep it free and improving.</string>
 </resources>

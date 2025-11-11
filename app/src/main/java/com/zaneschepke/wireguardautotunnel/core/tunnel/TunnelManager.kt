@@ -322,11 +322,11 @@ constructor(
         withContext(ioDispatcher) {
             val settings = settingsRepository.getGeneralSettings()
             val autoTunnelSettings = autoTunnelSettingsRepository.getAutoTunnelSettings()
-            val tunnels = tunnelsRepository.getAll()
+            val tunnels = tunnelsRepository.userTunnelsFlow.firstOrNull()
             if (autoTunnelSettings.isAutoTunnelEnabled)
                 return@withContext restoreAutoTunnel(autoTunnelSettings)
             if (settings.appMode == AppMode.LOCK_DOWN) handleLockDownModeInit()
-            if (tunnels.any { it.isActive }) {
+            if (tunnels?.any { it.isActive } == true) {
                 if (settings.appMode == AppMode.VPN && !serviceManager.hasVpnPermission())
                     return@withContext localErrorEvents.emit(null to NotAuthorized())
                 when (settings.appMode) {
@@ -350,7 +350,7 @@ constructor(
         withContext(ioDispatcher) {
             val settings = settingsRepository.getGeneralSettings()
             val autoTunnelSettings = autoTunnelSettingsRepository.getAutoTunnelSettings()
-            val defaultTunnel = tunnelsRepository.getStartTunnel()
+            val defaultTunnel = tunnelsRepository.getDefaultTunnel()
             if (autoTunnelSettings.startOnBoot)
                 return@withContext restoreAutoTunnel(autoTunnelSettings)
             if (settings.isRestoreOnBootEnabled) {

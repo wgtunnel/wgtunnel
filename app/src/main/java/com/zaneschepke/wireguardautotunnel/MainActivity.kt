@@ -279,7 +279,7 @@ class MainActivity : AppCompatActivity() {
                         append(context.getString(R.string.donation_prompt_suffix))
                     }
 
-                    LaunchedEffect(uiState.shouldShowDonationSnackbar) {
+                    LaunchedEffect(Unit) {
                         if (
                             uiState.shouldShowDonationSnackbar && !uiState.settings.alreadyDonated
                         ) {

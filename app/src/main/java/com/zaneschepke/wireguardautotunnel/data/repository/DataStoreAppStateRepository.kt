@@ -55,6 +55,8 @@ class DataStoreAppStateRepository(
                                 pref[DataStoreManager.locationDisclosureShown] ?: false,
                             isBatteryOptimizationDisableShown =
                                 pref[DataStoreManager.batteryDisableShown] ?: false,
+                            shouldShowDonationSnackbar =
+                                pref[DataStoreManager.shouldShowDonationSnackbar] ?: false,
                         )
                     } catch (e: IllegalArgumentException) {
                         Timber.e(e)

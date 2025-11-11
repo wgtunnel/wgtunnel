@@ -17,11 +17,11 @@ import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 
 @Composable
-fun GettingStartedLabel(onClick: (url: String) -> Unit) {
+fun GettingStartedLabel(onClick: (url: String) -> Unit, modifier: Modifier = Modifier) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(top = 100.dp).fillMaxSize(),
+        modifier = modifier.padding(top = 100.dp).fillMaxSize(),
     ) {
         val url = stringResource(id = R.string.docs_url)
         val gettingStarted = buildAnnotatedString {

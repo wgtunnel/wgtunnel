@@ -34,6 +34,7 @@ class RestartReceiver : BroadcastReceiver() {
                     tunnelManager.handleReboot()
                 }
                 Intent.ACTION_MY_PACKAGE_REPLACED -> {
+                    Timber.i("Restoring state on package upgrade")
                     tunnelManager.handleRestore()
                     logReader.deleteAndClearLogs()
                     appStateRepository.setShouldShowDonationSnackbar(true)

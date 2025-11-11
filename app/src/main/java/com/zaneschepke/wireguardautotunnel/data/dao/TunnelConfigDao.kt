@@ -50,23 +50,27 @@ interface TunnelConfigDao {
 
     @Query(
         """
-    SELECT * FROM tunnel_config 
-    ORDER BY 
-        CASE WHEN is_primary_tunnel = 1 THEN 0 ELSE 1 END, 
-        position ASC 
-    LIMIT 1"""
+        SELECT * FROM tunnel_config
+        WHERE name != '${TunnelConfig.GLOBAL_CONFIG_NAME}'
+        ORDER BY
+        CASE WHEN is_primary_tunnel = 1 THEN 0 ELSE 1 END,
+        position ASC
+        LIMIT 1
+        """
     )
     suspend fun getDefaultTunnel(): TunnelConfig?
 
     @Query(
         """
-    SELECT * FROM tunnel_config
-    ORDER BY 
-        CASE WHEN is_Active = 1 THEN 0 
-             WHEN is_primary_tunnel = 1 THEN 1 
-             ELSE 2 END, 
-        position ASC 
-    LIMIT 1"""
+        SELECT * FROM tunnel_config
+        WHERE name != '${TunnelConfig.GLOBAL_CONFIG_NAME}'
+        ORDER BY
+        CASE WHEN is_Active = 1 THEN 0
+        WHEN is_primary_tunnel = 1 THEN 1
+        ELSE 2 END,
+        position ASC
+        LIMIT 1
+        """
     )
     suspend fun getStartTunnel(): TunnelConfig?
 

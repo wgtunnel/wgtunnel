@@ -59,7 +59,12 @@ fun TunnelList(
         flingBehavior = ScrollableDefaults.flingBehavior(),
     ) {
         if (sharedState.tunnels.isEmpty()) {
-            item { GettingStartedLabel(onClick = { context.openWebUrl(it) }) }
+            item {
+                GettingStartedLabel(
+                    onClick = { context.openWebUrl(it) },
+                    modifier = Modifier.animateItem(),
+                )
+            }
         }
         items(sharedState.tunnels, key = { it.id }) { tunnel ->
             val tunnelState =
@@ -81,6 +86,7 @@ fun TunnelList(
                 }
 
             SurfaceRow(
+                modifier = Modifier.animateItem(),
                 leading = {
                     Icon(
                         Icons.Rounded.Circle,

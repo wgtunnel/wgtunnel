@@ -415,7 +415,8 @@ class AndroidNetworkMonitor(
                     if (vpnActive) underlyingCaps ?: defaultCaps else defaultCaps
 
                 // ensure validated internet connectivity
-                // there is a known issue where Android will still report cellular connectivity if the
+                // there is a known issue where Android will still report cellular connectivity if
+                // the
                 // interface is not disabled and there is no connectivity (denoted by the '!')
                 val isValidated =
                     capsForValidation.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)

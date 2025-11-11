@@ -234,7 +234,7 @@ class AutoTunnelService : LifecycleService() {
         return combine(
                 settingsRepository.flow.map { it.appMode }.distinctUntilChanged(),
                 autoTunnelRepository.get().flow,
-                tunnelsRepository.flow.map { tunnels ->
+                tunnelsRepository.userTunnelsFlow.map { tunnels ->
                     // isActive is ignored for equality checks so user can manually toggle off
                     // tunnel with auto-tunnel
                     tunnels.map { it.copy(isActive = false) }
