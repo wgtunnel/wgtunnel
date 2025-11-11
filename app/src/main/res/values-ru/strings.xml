@@ -332,7 +332,7 @@
     <string name="mobile_data">Сотовая сеть</string>
     <string name="tunnel_boot_description">Запускать основной при загрузке</string>
     <string name="tunnel_mapping_description">Сопоставлять туннели по имени сети Wi-Fi</string>
-    <string name="donation_prompt_prefix">Благодарим вас за использование WG Tunnel! Если можете, пожалуйста, подумайте о</string>
+    <string name="donation_prompt_prefix">Благодарим вас за использование WG Tunnel! Если у вас есть возможность, пожалуйста, подумайте о</string>
     <string name="website">Сайт приложения</string>
     <string name="wifi_settings">Настройки Wi-Fi</string>
     <string name="info">Информация</string>
