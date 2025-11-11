@@ -186,13 +186,23 @@ fun Context.launchAppSettings() {
         }
 }
 
-fun Context.requestTunnelTileServiceStateUpdate() {
-    TileService.requestListeningState(this, ComponentName(this, TunnelControlTile::class.java))
-}
+fun Context.requestTunnelTileServiceStateUpdate() =
+    runCatching {
+            TileService.requestListeningState(
+                this,
+                ComponentName(this, TunnelControlTile::class.java),
+            )
+        }
+        .onFailure { Timber.w(it) }
 
-fun Context.requestAutoTunnelTileServiceUpdate() {
-    TileService.requestListeningState(this, ComponentName(this, AutoTunnelControlTile::class.java))
-}
+fun Context.requestAutoTunnelTileServiceUpdate() =
+    runCatching {
+            TileService.requestListeningState(
+                this,
+                ComponentName(this, AutoTunnelControlTile::class.java),
+            )
+        }
+        .onFailure { Timber.w(it) }
 
 fun Context.getAllInternetCapablePackages(): List<PackageInfo> {
     val permissions = arrayOf(Manifest.permission.INTERNET)
