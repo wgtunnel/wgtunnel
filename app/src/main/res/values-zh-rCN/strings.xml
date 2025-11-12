@@ -39,7 +39,7 @@
     <string name="base64_key">Base64 编码</string>
     <string name="endpoint">端点</string>
     <string name="thank_you">谢谢您使用 WG Tunnel!</string>
-    <string name="prominent_background_location_message">此功能是在应用关闭时，后台自动扫描 Wi-Fi SSID，需要开启后台位置信息访问权限。更多信息，请在支持页面查看隐私政策。</string>
+    <string name="prominent_background_location_message">此功能意味着允许软件在后台自动扫描 Wi-Fi SSID，这要求开启后台位置信息访问权限。更多信息，请在支持页面查看隐私政策。</string>
     <string name="vpn_on">VPN 已连接</string>
     <string name="vpn_off">VPN 已关闭</string>
     <string name="auto_tunneling">自动建立隧道</string>
@@ -50,7 +50,7 @@
     <string name="preshared_key">预共享密钥</string>
     <string name="unknown_error">发生了未知错误</string>
     <string name="error_ssid_exists">SSID 已经存在</string>
-    <string name="config_changes_saved">设置已保存。</string>
+    <string name="config_changes_saved">配置已保存。</string>
     <string name="interface_">接口</string>
     <string name="email_subject">WG Tunnel 支持</string>
     <string name="auto_tunnel_title">自动隧道服务</string>
@@ -89,7 +89,7 @@
     <string name="vpn_settings">系统 VPN 设置</string>
     <string name="always_on_message2">确保始终开启 VPN 功能已关闭，然后再尝试连接</string>
     <string name="never">从不</string>
-    <string name="handshake">握手</string>
+    <string name="handshake">已握手</string>
     <string name="light">亮色</string>
     <string name="dark">暗色</string>
     <string name="trusted_wifi_names">可信 WiFi 名称</string>
@@ -252,8 +252,8 @@
     <string name="packets_sent_template">已发送数据包：%1$s</string>
     <string name="packet_loss_template">丢失数据包：%.2f%%</string>
     <string name="ping_target_template">Ping 目标：%1$s</string>
-    <string name="_true">True</string>
-    <string name="_false">False</string>
+    <string name="_true">是</string>
+    <string name="_false">否</string>
     <string name="backup_success">成功备份：%1$s</string>
     <string name="restore_success">成功恢复：%1$s</string>
     <string name="restarting_app">正重启应用来应用更改…</string>
@@ -366,7 +366,7 @@
     <string name="kernel_name_dots">内核模式下隧道名称不能是 \'.\' 或 \'..\'</string>
     <string name="kernel_name_special_characters">内核模式下的隧道名称不能有空格或某些特殊字符（允许：字母数字混合、_、=、+、.、-）</string>
     <string name="tunnel_running_name_message">隧道活跃时无法更改名称。</string>
-    <string name="metered_tunnel">按流量计费的隧道</string>
+    <string name="metered_tunnel">流量计费的隧道</string>
     <string name="lockdown_settings">锁定设置</string>
     <string name="unavailable_in_mode">当前模式下不可用</string>
     <string name="global_split_tunneling">全局分流隧道</string>
