@@ -59,10 +59,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Start"
         tools:targetApi="tiramisu">
-		<activity
-			android:name="com.journeyapps.barcodescanner.CaptureActivity"
-			android:screenOrientation="portrait"
-			tools:replace="screenOrientation" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

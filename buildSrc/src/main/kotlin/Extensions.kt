@@ -20,7 +20,7 @@ fun allowedLicenses(): List<String> {
 }
 
 fun allowedLicenseUrls(): List<String> {
-    return listOf("https://github.com/journeyapps/zxing-android-embedded/blob/master/COPYING",
+    return listOf("https://jsoup.org/license", "http://opensource.org/licenses/bsd-license.php", "https://github.com/journeyapps/zxing-android-embedded/blob/master/COPYING",
         "https://github.com/RikkaApps/Shizuku-API/blob/master/LICENSE", "https://github.com/rafi0101/Android-Room-Database-Backup/blob/master/LICENSE",
         "https://opensource.org/license/mit")
 }

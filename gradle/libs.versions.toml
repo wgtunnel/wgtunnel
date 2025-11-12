@@ -6,7 +6,7 @@ androidx-junit = "1.3.0"
 icmp4a = "1.0.0"
 ipaddress = "5.5.1"
 leakcanaryAndroid = "3.0-alpha-8"
-orbitCompose = "10.0.0"
+orbitCompose = "11.0.0"
 roomdatabasebackup = "1.1.0"
 shizuku = "13.1.5"
 appcompat = "1.7.1"
@@ -37,7 +37,7 @@ composeBom = "2025.11.00"
 compose = "1.9.4"
 icons = "1.7.8"
 workRuntimeKtxVersion = "2.11.0"
-zxingAndroidEmbedded = "4.3.0"
+quickieFoss = "1.15.7"
 coreSplashscreen = "1.2.0"
 gradlePlugins-grgit = "5.3.3"
 reorderable = "3.0.0"
@@ -94,7 +94,7 @@ wireguard-tunnel = ["tunnel", "amneziawg-android"]
 shizuku = ["shizuku-api", "shizuku-provider"]
 
 # UI utilities
-ui-utilities = ["pin-lock-compose", "qrose", "reorderable", "zxing-android-embedded", "androidx-core-splashscreen"]
+ui-utilities = ["pin-lock-compose", "qrose", "reorderable", "quickie-foss", "androidx-core-splashscreen"]
 
 # Misc utilities
 misc-utilities = ["semver4j", "icmp4a", "slf4j-android", "timber"]
@@ -184,7 +184,7 @@ qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
 semver4j = { module = "com.vdurmont:semver4j", version.ref = "semver4j" }
 slf4j-android = { module = "org.slf4j:slf4j-android", version.ref = "slf4jAndroid" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
-zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
+quickie-foss = { module = "com.github.T8RIN.QuickieExtended:quickie-foss", version.ref = "quickieFoss" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 

@@ -12,9 +12,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.journeyapps.barcodescanner.ScanContract
-import com.journeyapps.barcodescanner.ScanOptions
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
@@ -29,7 +26,10 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components.UrlImpo
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
+import io.github.g00fy2.quickie.QRResult
+import io.github.g00fy2.quickie.ScanQRCode
 import org.orbitmvi.orbit.compose.collectSideEffect
+import timber.log.Timber
 
 @Composable
 fun TunnelsScreen() {
@@ -65,16 +65,26 @@ fun TunnelsScreen() {
             onData = { data -> viewModel.importFromUri(data) },
         )
 
-    val scanLauncher =
-        rememberLauncherForActivityResult(
-            contract = ScanContract(),
-            onResult = { result ->
-                result
-                    ?.contents
-                    ?.takeIf { it.isNotEmpty() }
-                    ?.let { contents -> viewModel.importFromQr(contents) }
-            },
-        )
+    val scanQrCodeLauncher =
+        rememberLauncherForActivityResult(ScanQRCode()) { result ->
+            when (result) {
+                is QRResult.QRError -> {
+                    Timber.e(result.exception, "QR Code")
+                }
+                QRResult.QRMissingPermission -> {
+                    viewModel.showSnackMessage(
+                        StringValue.StringResource(R.string.camera_permission_required)
+                    )
+                }
+                is QRResult.QRSuccess -> {
+                    result.content.rawValue?.let { viewModel.importFromQr(it) }
+                        ?: viewModel.showSnackMessage(
+                            StringValue.StringResource(R.string.config_error)
+                        )
+                }
+                QRResult.QRUserCanceled -> Unit
+            }
+        }
 
     val requestPermissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted
@@ -85,9 +95,7 @@ fun TunnelsScreen() {
                 )
                 return@rememberLauncherForActivityResult
             }
-            scanLauncher.launch(
-                ScanOptions().setDesiredBarcodeFormats(ScanOptions.QR_CODE).setBeepEnabled(false)
-            )
+            scanQrCodeLauncher.launch(null)
         }
 
     if (showDeleteModal) {

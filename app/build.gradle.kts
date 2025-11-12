@@ -136,6 +136,8 @@ android {
     licensee {
         allowedLicenses().forEach { allow(it) }
         allowedLicenseUrls().forEach { allowUrl(it) }
+        // foss, but missing license
+        ignoreDependencies("com.github.T8RIN.QuickieExtended")
     }
 
     android.applicationVariants.all {
