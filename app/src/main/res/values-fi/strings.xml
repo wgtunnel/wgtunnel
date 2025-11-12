@@ -176,7 +176,6 @@
     <string name="pinger_bounce_recovery">Pinger restart failed. Tunnel recovered with old addresses.</string>
     <string name="interface_">Interface</string>
     <string name="defaults_to_template">(defaults to %1$s)</string>
-    <string name="sec_ago_template">%1$s seconds ago</string>
     <string name="delete_logs">Delete and clear logs</string>
     <string name="ddns_auto_update_description">Auto-updates IP on DDNS changes</string>
     <string name="copy">Copy</string>
