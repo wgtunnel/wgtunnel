@@ -6,7 +6,7 @@ data class ConnectivityState(
     val activeNetwork: ActiveNetwork,
     val locationPermissionsGranted: Boolean,
     val locationServicesEnabled: Boolean,
-    val isVpnActive: Boolean,
+    val vpnState: VpnState,
 ) {
     fun hasInternet(): Boolean = activeNetwork !is ActiveNetwork.Disconnected
 
@@ -38,4 +38,10 @@ sealed class ActiveNetwork {
     data object Cellular : ActiveNetwork()
 
     data object Ethernet : ActiveNetwork()
+}
+
+sealed interface VpnState {
+    object Inactive : VpnState
+
+    data class Active(val hasInternet: Boolean) : VpnState
 }
