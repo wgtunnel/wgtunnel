@@ -151,7 +151,7 @@
     <string name="restart_at_boot">Käivita alglaadimisel</string>
     <string name="vpn_denied_dialog_title">Õigused on puudu</string>
     <string name="never">Mitte kunagi</string>
-    <string name="handshake">Kätlus</string>
+    <string name="handshake">Viimane kätlus</string>
     <string name="logs">Logid</string>
     <string name="trusted_wifi_names">Usaldusväärsete WiFi-võrkude nimed</string>
     <string name="add_wifi_name">Lisa WiFi võrgunimi</string>
