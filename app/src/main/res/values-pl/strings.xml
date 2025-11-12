@@ -28,7 +28,7 @@
     <string name="see_the">Zobacz</string>
     <string name="restart_at_boot">Uruchom przy rozruchu</string>
     <string name="never">Nigdy</string>
-    <string name="handshake">Uzgadnianie</string>
+    <string name="handshake">Ostatnie uzgadnianie</string>
     <string name="show_amnezia_properties">Pokaż właściwości protokołu Amnezia</string>
     <string name="seconds">sek.</string>
     <string name="prominent_background_location_message">Ta funkcja wymaga pozwolenia na dostęp do lokalizacji w tle, aby włączyć monitorowanie SSID sieci Wi-Fi nawet wtedy, gdy aplikacja jest zamknięta. Więcej szczegółów znajdziesz w polityce prywatności znajdującej się na ekranie Obsługa.</string>
