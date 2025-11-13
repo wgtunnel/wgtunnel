@@ -10,7 +10,7 @@
     <string name="tunnel_on_ethernet">Tunnel für Ethernet</string>
     <string name="auto_tunneling">Auto-Tunneln</string>
     <string name="prominent_background_location_message">Diese Funktion erfordert die Erlaubnis zur Standortbestimmung im Hintergrund, um die Überwachung der WLAN SSID zu ermöglichen, auch wenn die Anwendung geschlossen ist. Weitere Einzelheiten in den Datenschutzbestimmungen, die auf dem Support-Bildschirm verlinkt sind.</string>
-    <string name="prominent_background_location_title">Vereinbarung der Standortberechtigung im Hintergrund</string>
+    <string name="prominent_background_location_title">Einstellung der Standortberechtigung im Hintergrund</string>
     <string name="thank_you">Danke für die Nutzung von WG Tunnel!</string>
     <string name="trusted_ssid_value_description">SSID übermitteln</string>
     <string name="add_tunnels_text">Von Datei oder ZIP hinzufügen</string>
@@ -94,7 +94,7 @@
     <string name="root_accepted">Root-Shell akzeptiert</string>
     <string name="show_amnezia_properties">Amnezia-Eigenschaften anzeigen</string>
     <string name="never">nie</string>
-    <string name="handshake">Handshake</string>
+    <string name="handshake">Letzter Handshake</string>
     <string name="vpn_denied_dialog_title">Genehmigung verweigert</string>
     <string name="logs">Logeinträge</string>
     <string name="trusted_wifi_names">Vertrauenswürdige WLAN Namen</string>
@@ -226,7 +226,7 @@
     <string name="tunnel_item_description">%1$s, %2$s, %3$s</string>
     <string name="warning">Warnung</string>
     <string name="location_permissions">Standortberechtigungen</string>
-    <string name="location_justification">Um Wi-Fi-Namen im Hintergrund mit deiner aktuellen Erkennungsmethode lesen zu können, benötigt Android, dass Apps die Berechtigung \'Allow all the time\' und \'Precise\' (Background Location auf älteren Geräten) erhalten. Bitte aktiviere diese Berechtigungen in deinen Android-App-Einstellungen.</string>
+    <string name="location_justification">Um Wi-Fi-Namen im Hintergrund mit deiner aktuellen Erkennungsmethode lesen zu können, benötigt Android, dass Apps die Berechtigung \'Immer zulassen\' und \'Genauen Standort verwenden\' (Background Location auf älteren Geräten) erhalten. Bitte aktiviere diese Berechtigungen in deinen Android-App-Einstellungen.</string>
     <string name="open_settings">Einstellungen öffnen</string>
     <string name="location_permissions_missing">Standortberechtigungen fehlen</string>
     <string name="fix">Beheben</string>
