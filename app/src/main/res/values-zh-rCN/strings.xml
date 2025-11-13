@@ -50,7 +50,7 @@
     <string name="preshared_key">预共享密钥</string>
     <string name="unknown_error">发生了未知错误</string>
     <string name="error_ssid_exists">SSID 已经存在</string>
-    <string name="config_changes_saved">配置已保存。</string>
+    <string name="config_changes_saved">配置更改已保存。</string>
     <string name="interface_">接口</string>
     <string name="email_subject">WG Tunnel 支持</string>
     <string name="auto_tunnel_title">自动隧道服务</string>
@@ -89,7 +89,7 @@
     <string name="vpn_settings">系统 VPN 设置</string>
     <string name="always_on_message2">确保始终开启 VPN 功能已关闭，然后再尝试连接</string>
     <string name="never">从不</string>
-    <string name="handshake">已握手</string>
+    <string name="handshake">上次握手</string>
     <string name="light">亮色</string>
     <string name="dark">暗色</string>
     <string name="trusted_wifi_names">可信 WiFi 名称</string>
