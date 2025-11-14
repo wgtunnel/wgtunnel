@@ -15,14 +15,15 @@ import com.wireguard.android.util.RootShell
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor.WifiDetectionMethod.*
 import com.zaneschepke.networkmonitor.shizuku.ShizukuShell
 import com.zaneschepke.networkmonitor.util.*
-import kotlin.concurrent.atomics.AtomicReference
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 class AndroidNetworkMonitor(
     private val appContext: Context,
@@ -202,11 +203,7 @@ class AndroidNetworkMonitor(
 
         val request =
             NetworkRequest.Builder()
-                .apply {
-                    addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-                    // remove so we can detect underlying network info on VPN
-                    removeCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)
-                }
+                .apply { addTransportType(NetworkCapabilities.TRANSPORT_WIFI) }
                 .build()
 
         connectivityManager?.registerNetworkCallback(request, wifiCallback!!)
@@ -242,11 +239,7 @@ class AndroidNetworkMonitor(
 
         val request =
             NetworkRequest.Builder()
-                .apply {
-                    addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-                    // remove so we can detect underlying network info on VPN
-                    removeCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)
-                }
+                .apply { addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR) }
                 .build()
 
         connectivityManager?.registerNetworkCallback(request, cellularCallback!!)
@@ -284,11 +277,7 @@ class AndroidNetworkMonitor(
 
         val request =
             NetworkRequest.Builder()
-                .apply {
-                    addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
-                    // remove so we can detect underlying network info on VPN
-                    removeCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)
-                }
+                .apply { addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET) }
                 .build()
 
         connectivityManager?.registerNetworkCallback(request, ethernetCallback!!)
@@ -388,7 +377,7 @@ class AndroidNetworkMonitor(
     private val lastKnownActiveNetwork = MutableStateFlow<ActiveNetwork>(ActiveNetwork.Disconnected)
     @OptIn(ExperimentalAtomicApi::class) private val vpnActiveState = AtomicReference(false)
 
-    @OptIn(ExperimentalCoroutinesApi::class, ExperimentalAtomicApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class, ExperimentalAtomicApi::class, FlowPreview::class)
     override val connectivityStateFlow: SharedFlow<ConnectivityState> =
         combine(networkFlows, airplaneModeFlow, configurationListener.detectionMethod) {
                 networkData,
@@ -501,6 +490,7 @@ class AndroidNetworkMonitor(
                 )
             }
             .distinctUntilChanged()
+            .debounce { 300L }
             .shareIn(applicationScope, SharingStarted.Eagerly, replay = 1)
 
     // utility to send local broadcast to trigger a recheck of location permissions onResume,
@@ -509,7 +499,7 @@ class AndroidNetworkMonitor(
     // if permission was changed
     override fun checkPermissionsAndUpdateState() {
         val action = actionPermissionCheck
-        val intent = Intent(action)
+        val intent = Intent(action).apply { setPackage(appContext.packageName) }
         Timber.d("Sending broadcast: $action")
         appContext.sendBroadcast(intent)
     }
