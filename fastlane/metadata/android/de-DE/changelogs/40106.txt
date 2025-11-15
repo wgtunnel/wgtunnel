@@ -1,0 +1,3 @@
+Was ist neu:
+- Fehlerbehebung bei der Auto-Tunnel-Regression
+- Fehlerbehebung bei der Ressourcennutzung im Notschalter-Modus

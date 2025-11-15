@@ -1,0 +1,2 @@
+Co nowego:
+- Naprawiono błąd powodujący nieprawidłowe zmiany stanu sieci.
