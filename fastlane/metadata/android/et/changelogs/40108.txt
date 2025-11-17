@@ -1,2 +1,2 @@
-What's new:
-- Rapid network changes cause invalid network state bugfix
+Mida on meil uut:
+- Parandasime vea, kus kiired võrguvahetused tekitasid vale võrguoleku
