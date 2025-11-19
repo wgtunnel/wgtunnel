@@ -33,7 +33,8 @@ data class Permissions(val locationServicesEnabled: Boolean, val locationPermiss
 sealed class ActiveNetwork {
     data object Disconnected : ActiveNetwork()
 
-    data class Wifi(val ssid: String, val securityType: WifiSecurityType?) : ActiveNetwork()
+    data class Wifi(val ssid: String, val securityType: WifiSecurityType?, val networkId: String) :
+        ActiveNetwork()
 
     data object Cellular : ActiveNetwork()
 

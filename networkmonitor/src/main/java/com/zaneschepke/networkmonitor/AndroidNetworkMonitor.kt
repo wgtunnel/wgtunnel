@@ -15,6 +15,8 @@ import com.wireguard.android.util.RootShell
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor.WifiDetectionMethod.*
 import com.zaneschepke.networkmonitor.shizuku.ShizukuShell
 import com.zaneschepke.networkmonitor.util.*
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -22,8 +24,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
-import kotlin.concurrent.atomics.AtomicReference
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 class AndroidNetworkMonitor(
     private val appContext: Context,
@@ -78,6 +78,10 @@ class AndroidNetworkMonitor(
 
     private val airplaneModeState = MutableStateFlow(appContext.isAirplaneModeOn())
     private val airplaneModeFlow: Flow<Boolean> = airplaneModeState.asStateFlow()
+
+    // tracking to prevent races that occur when VPN is first activated and to prevent redundant
+    // location queries in Legacy mode
+    private val lastKnownActiveNetwork = MutableStateFlow<ActiveNetwork>(ActiveNetwork.Disconnected)
 
     // recreate defaultNetwork flow on permission/detection method changes to get newly available
     // network info
@@ -290,17 +294,6 @@ class AndroidNetworkMonitor(
         }
     }
 
-    private val wifiStateFlow: Flow<NetworkCapabilities?> =
-        wifiFlow
-            .map { event ->
-                when (event) {
-                    is TransportEvent.CapabilitiesChanged -> event.networkCapabilities
-                    is TransportEvent.Lost -> null
-                    else -> null
-                }
-            }
-            .stateIn(applicationScope, SharingStarted.Eagerly, null)
-
     private val cellularStateFlow: Flow<NetworkCapabilities?> =
         cellularFlow
             .map { event ->
@@ -326,6 +319,7 @@ class AndroidNetworkMonitor(
     private suspend fun getSsidByDetectionMethod(
         detectionMethod: WifiDetectionMethod?,
         networkCapabilities: NetworkCapabilities?,
+        network: Network?,
     ): String {
         val method = detectionMethod ?: DEFAULT
         return try {
@@ -334,7 +328,20 @@ class AndroidNetworkMonitor(
                             networkCapabilities?.getWifiSsid()
                                 ?: wifiManager?.getWifiSsid()
                                 ?: ANDROID_UNKNOWN_SSID
-                        LEGACY -> wifiManager?.getWifiSsid() ?: ANDROID_UNKNOWN_SSID
+                        LEGACY -> {
+                            // prevent redundant location queries in legacy mode
+                            val lastActive = lastKnownActiveNetwork.value
+                            if (
+                                lastActive is ActiveNetwork.Wifi &&
+                                    lastActive.networkId == network?.toString()
+                            ) {
+                                if (lastActive.ssid != ANDROID_UNKNOWN_SSID){
+                                    Timber.d("Using last active network SSID for same network to prevent redundant location query")
+                                    return lastActive.ssid
+                                }
+                            }
+                            wifiManager?.getWifiSsid() ?: ANDROID_UNKNOWN_SSID
+                        }
                         ROOT ->
                             withTimeoutOrNull(SHELL_COMMAND_TIMEOUT_MS) {
                                 configurationListener.rootShell.getCurrentWifiName()
@@ -358,14 +365,14 @@ class AndroidNetworkMonitor(
     // so we need to track separately
     private data class NetworkData(
         val defaultNetworkEvent: TransportEvent,
-        val wifiCapabilities: NetworkCapabilities?,
+        val wifiNetworkEvent: TransportEvent,
         val cellularCaps: NetworkCapabilities?,
         val ethernetCaps: NetworkCapabilities?,
     )
 
     // combine our network flows to keep sync
     private val networkFlows: Flow<NetworkData> =
-        combine(defaultNetworkFlow, wifiStateFlow, cellularStateFlow, ethernetStateFlow) {
+        combine(defaultNetworkFlow, wifiFlow, cellularStateFlow, ethernetStateFlow) {
             defaultEvent,
             wifiCaps,
             cellularCaps,
@@ -373,8 +380,6 @@ class AndroidNetworkMonitor(
             NetworkData(defaultEvent, wifiCaps, cellularCaps, ethernetCaps)
         }
 
-    // tracking to prevent races that occur when VPN is first activated
-    private val lastKnownActiveNetwork = MutableStateFlow<ActiveNetwork>(ActiveNetwork.Disconnected)
     @OptIn(ExperimentalAtomicApi::class) private val vpnActiveState = AtomicReference(false)
 
     @OptIn(ExperimentalCoroutinesApi::class, ExperimentalAtomicApi::class, FlowPreview::class)
@@ -384,7 +389,7 @@ class AndroidNetworkMonitor(
                 isAirplaneOn,
                 detectionMethod ->
                 val defaultEvent = networkData.defaultNetworkEvent
-                val wifiCaps = networkData.wifiCapabilities
+                val wifiEvent = networkData.wifiNetworkEvent
                 val cellularCaps = networkData.cellularCaps
                 val ethernetCaps = networkData.ethernetCaps
 
@@ -398,21 +403,25 @@ class AndroidNetworkMonitor(
                             )
                     }
 
-                // determine default network capabilities
-                val defaultCaps =
+                // determine default network capabilities and network
+                val (defaultCaps, defaultNetwork) =
                     when (defaultEvent) {
-                        is TransportEvent.CapabilitiesChanged -> defaultEvent.networkCapabilities
+                        is TransportEvent.CapabilitiesChanged ->
+                            defaultEvent.networkCapabilities to defaultEvent.network
                         else ->
-                            connectivityManager?.activeNetwork?.let {
-                                connectivityManager.getNetworkCapabilities(it)
-                            }
+                            connectivityManager?.activeNetwork?.let { network ->
+                                connectivityManager.getNetworkCapabilities(network) to network
+                            } ?: (null to null)
                     }
-                        ?: return@combine ConnectivityState(
-                            activeNetwork = ActiveNetwork.Disconnected,
-                            locationPermissionsGranted = permissions.locationPermissionGranted,
-                            locationServicesEnabled = permissions.locationServicesEnabled,
-                            vpnState = VpnState.Inactive,
-                        )
+
+                if (defaultCaps == null || defaultNetwork == null) {
+                    return@combine ConnectivityState(
+                        activeNetwork = ActiveNetwork.Disconnected,
+                        locationPermissionsGranted = permissions.locationPermissionGranted,
+                        locationServicesEnabled = permissions.locationServicesEnabled,
+                        vpnState = VpnState.Inactive,
+                    )
+                }
 
                 val vpnPreviouslyActive =
                     vpnActiveState.exchange(
@@ -444,10 +453,11 @@ class AndroidNetworkMonitor(
                                         NetworkCapabilities.TRANSPORT_WIFI
                                     ) -> {
                                         val ssid =
-                                            getSsidByDetectionMethod(detectionMethod, defaultCaps)
+                                            getSsidByDetectionMethod(detectionMethod, defaultCaps, defaultNetwork)
                                         ActiveNetwork.Wifi(
                                             ssid,
                                             wifiManager?.getCurrentSecurityType(),
+                                            defaultNetwork.toString(),
                                         )
                                     }
                                     defaultCaps.hasTransport(
@@ -459,12 +469,17 @@ class AndroidNetworkMonitor(
                                 val fromCaps =
                                     when {
                                         ethernetCaps != null -> ActiveNetwork.Ethernet
-                                        wifiCaps != null -> {
+                                        wifiEvent is TransportEvent.CapabilitiesChanged -> {
                                             val ssid =
-                                                getSsidByDetectionMethod(detectionMethod, wifiCaps)
+                                                getSsidByDetectionMethod(
+                                                    detectionMethod,
+                                                    wifiEvent.networkCapabilities,
+                                                    wifiEvent.network
+                                                )
                                             ActiveNetwork.Wifi(
                                                 ssid,
                                                 wifiManager?.getCurrentSecurityType(),
+                                                wifiEvent.network.toString(),
                                             )
                                         }
                                         cellularCaps != null && !isAirplaneOn ->
