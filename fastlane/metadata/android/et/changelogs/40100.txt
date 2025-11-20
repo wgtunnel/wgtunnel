@@ -1,8 +1,8 @@
-What's new:
-- UI rework
-- Dynamic DNS fixes
-- Battery usage bugfix
-- Auto-tunnel reliability improvements
-- Global split tunneling and config overrides
-- Restart on boot and AOVPN bugfixes
-- Various other improvements and optimizations
+Mida on meil uut:
+- Ümbertehtud kasutajaliides
+- Dünaamilise nimelahenduse parandused
+- Akukasutuse parandus
+- Automaatse tunnelduse parem töökindlus
+- Üldine jagatud tunneldus ja seadistuse sürjutamine
+- Parandused, mis seostuvad taaskäivitamisega koos seadmega ja AOVPN-iga
+- Erinevad muud parandused ja optimeerimised
