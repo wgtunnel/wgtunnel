@@ -1,10 +1,10 @@
-WG Tunnel on WireGuardi VPN-i klient, kus on sobivalt ühendatud lihtsus ja töökindlus, mistõttu sobib ta ühtemoodi tavaksautajatele ja oskuskasutajatele.
-Kas sa lihtsalt tahad hallata viisi, kuidas VPN-ühendused automaatselt luuakse või oled oskuskasutaja, kellel on väga detailsed soovid VPN-i privaatsuses osas - WG Tunnel saab mõlemaga ühtemoodi edukalt hakkama.
+WG Tunnel on WireGuardi VPN-i klient, kus on sobivalt ühendatud lihtsus ja töökindlus, mistõttu sobib ühtemoodi nii tavakasutajale kui ka edasijõudnule.
+Kas soovid lihtsalt hallata viisi, kuidas VPN-ühendused automaatselt luuakse või oled hoopis oskuskasutaja, kellel on väga erilised soovid VPN-i privaatsuses osas - WG Tunnel saab mõlemaga ühtmoodi edukalt hakkama.
 
-- **Automaatne tunneldus:** VPN-i automaatne ühendamine konkreetse WiFi SSID, traadiga võrgu või mobiilse andmeside alusel.
-- **Jagatud tunneldus:** Paindlik tugi võimalusele mõne konkreetse rakenduse või liikluse juhtimisele tunneli kaudu.
+- **Automaatne tunneldus:** VPN-i automaatne ühendamine konkreetse WiFi SSID, juhtmega võrgu või mobiilse andmeside kaudu.
+- **Jagatud tunneldus:** Paindlik tugi vaid mõne konkreetse rakenduse või liikluse juhtimisele tunneli kaudu.
 - **WireGuardi režiimid:** Täistugi WireGuardi tööks nii kerneli-, kui kasutajarežiimis, lisaks lukustus- ja proksivõimalused.
-- **Amnezia lõiming:** AmneziaWG tugi kasutajarežiimis nii pakettide süvakontrolli kui tsenseerimise vastu.
+- **Amnezia lõiming:** AmneziaWG tugi kasutajarežiimis nii pakettide süvakontrolli kui jälgimise vastu.
 - **Proksiteenuse võimalused:** Rakendusesisese HTTP või SOCKS5-proksi tugi tunnelites ja kolmandate osapoolte rakenduste võimalus seda kasutada.
 - **Kiirvalikud:** Kiirvalikute vidin ja avalehe lingid VPN-i mugavaks sisse/välja lülitamiseks.
 - **Automatiseerimise tugi:** Kavatsuste-põhine automatiseerimine tunnelite juhtimisel ja automaatsel tunneldamisel.
