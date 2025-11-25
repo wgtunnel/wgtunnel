@@ -377,6 +377,7 @@
     <string name="delete_active_message">Cannot delete active tunnel.</string>
     <string name="back">Back</string>
     <string name="configuration">Configuration</string>
+    <string name="kernel_wireguard_unsupported">Kernel does not include WireGuard support (module missing or not built-in into kernel)!</string>
     <string name="about">About</string>
     <string name="resources">Resources</string>
     <string name="website">App website</string>
