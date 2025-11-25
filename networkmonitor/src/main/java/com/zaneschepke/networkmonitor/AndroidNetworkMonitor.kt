@@ -335,8 +335,10 @@ class AndroidNetworkMonitor(
                                 lastActive is ActiveNetwork.Wifi &&
                                     lastActive.networkId == network?.toString()
                             ) {
-                                if (lastActive.ssid != ANDROID_UNKNOWN_SSID){
-                                    Timber.d("Using last active network SSID for same network to prevent redundant location query")
+                                if (lastActive.ssid != ANDROID_UNKNOWN_SSID) {
+                                    Timber.d(
+                                        "Using last active network SSID for same network to prevent redundant location query"
+                                    )
                                     return lastActive.ssid
                                 }
                             }
@@ -453,7 +455,11 @@ class AndroidNetworkMonitor(
                                         NetworkCapabilities.TRANSPORT_WIFI
                                     ) -> {
                                         val ssid =
-                                            getSsidByDetectionMethod(detectionMethod, defaultCaps, defaultNetwork)
+                                            getSsidByDetectionMethod(
+                                                detectionMethod,
+                                                defaultCaps,
+                                                defaultNetwork,
+                                            )
                                         ActiveNetwork.Wifi(
                                             ssid,
                                             wifiManager?.getCurrentSecurityType(),
@@ -474,7 +480,7 @@ class AndroidNetworkMonitor(
                                                 getSsidByDetectionMethod(
                                                     detectionMethod,
                                                     wifiEvent.networkCapabilities,
-                                                    wifiEvent.network
+                                                    wifiEvent.network,
                                                 )
                                             ActiveNetwork.Wifi(
                                                 ssid,

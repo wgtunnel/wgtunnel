@@ -4,15 +4,13 @@ import android.content.Intent
 import android.os.IBinder
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -20,9 +18,10 @@ import timber.log.Timber
 class AutoTunnelControlTile : TileService(), LifecycleOwner {
 
     @Inject lateinit var autoTunnelSettingsRepository: AutoTunnelSettingsRepository
-    @Inject lateinit var tunnelsRepository: TunnelRepository
 
     @Inject lateinit var serviceManager: ServiceManager
+
+    @OptIn(ExperimentalAtomicApi::class) val isCollecting = AtomicBoolean(false)
 
     private val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
 
@@ -36,23 +35,35 @@ class AutoTunnelControlTile : TileService(), LifecycleOwner {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     }
 
-    override fun onStartListening() {
-        super.onStartListening()
+    override fun onTileAdded() {
+        super.onTileAdded()
+        initTileState()
+    }
+
+    override fun onStopListening() {
+        super.onStopListening()
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
+    }
+
+    @OptIn(ExperimentalAtomicApi::class)
+    private fun initTileState() {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         Timber.d("Start listening called for auto tunnel tile")
-        lifecycleScope.launch {
-            serviceManager.autoTunnelService.collect {
-                if (it != null) return@collect setActive()
-                setInactive()
-            }
-        }
-        lifecycleScope.launch {
-            tunnelsRepository.flow.collect {
-                if (it.isEmpty()) {
-                    setUnavailable()
+        if (isCollecting.compareAndSet(expectedValue = false, newValue = true)) {
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    serviceManager.autoTunnelService.collect {
+                        if (it != null) return@collect setActive()
+                        setInactive()
+                    }
                 }
             }
         }
+    }
+
+    override fun onStartListening() {
+        super.onStartListening()
+        initTileState()
     }
 
     override fun onClick() {
@@ -71,23 +82,16 @@ class AutoTunnelControlTile : TileService(), LifecycleOwner {
     }
 
     private fun setActive() {
-        runCatching {
-            qsTile.state = Tile.STATE_ACTIVE
-            qsTile.updateTile()
+        qsTile?.let {
+            it.state = Tile.STATE_ACTIVE
+            it.updateTile()
         }
     }
 
     private fun setInactive() {
-        runCatching {
-            qsTile.state = Tile.STATE_INACTIVE
-            qsTile.updateTile()
-        }
-    }
-
-    private fun setUnavailable() {
-        runCatching {
-            qsTile.state = Tile.STATE_UNAVAILABLE
-            qsTile.updateTile()
+        qsTile?.let {
+            it.state = Tile.STATE_INACTIVE
+            it.updateTile()
         }
     }
 

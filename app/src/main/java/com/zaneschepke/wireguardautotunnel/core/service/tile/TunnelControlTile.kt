@@ -5,10 +5,7 @@ import android.os.Build
 import android.os.IBinder
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.WireGuardAutoTunnel
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
@@ -16,7 +13,12 @@ import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -28,9 +30,11 @@ class TunnelControlTile : TileService(), LifecycleOwner {
 
     @Inject lateinit var tunnelManager: TunnelManager
 
-    private val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
+    @OptIn(ExperimentalAtomicApi::class) val isCollecting = AtomicBoolean(false)
 
-    private var isCollecting = false
+    private val startLock = Mutex()
+
+    private val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
 
     override fun onCreate() {
         super.onCreate()
@@ -42,13 +46,34 @@ class TunnelControlTile : TileService(), LifecycleOwner {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     }
 
-    override fun onStartListening() {
-        super.onStartListening()
+    override fun onTileAdded() {
+        super.onTileAdded()
+        initTileState()
+    }
+
+    @OptIn(ExperimentalAtomicApi::class)
+    private fun initTileState() {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         Timber.d("Start listening called for tunnel tile")
-        if (isCollecting) return
-        isCollecting = true
-        lifecycleScope.launch { tunnelManager.activeTunnels.collect { updateTileState() } }
+        if (isCollecting.compareAndSet(expectedValue = false, newValue = true)) {
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    tunnelManager.activeTunnels
+                        .distinctUntilChangedBy { it.size }
+                        .collect { updateTileState() }
+                }
+            }
+        }
+    }
+
+    override fun onStartListening() {
+        super.onStartListening()
+        initTileState()
+    }
+
+    override fun onStopListening() {
+        super.onStopListening()
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
     }
 
     private suspend fun updateTileState() {
@@ -76,6 +101,7 @@ class TunnelControlTile : TileService(), LifecycleOwner {
                 else -> updateTileForLastActiveTunnels()
             }
         } catch (e: Exception) {
+            Timber.e(e, "Failed to update tunnel state")
             setUnavailable()
         }
     }
@@ -110,14 +136,16 @@ class TunnelControlTile : TileService(), LifecycleOwner {
         super.onClick()
         unlockAndRun {
             lifecycleScope.launch {
-                if (tunnelManager.activeTunnels.value.isNotEmpty())
-                    return@launch tunnelManager.stopActiveTunnels()
-                val lastActive = WireGuardAutoTunnel.getLastActiveTunnels()
-                if (lastActive.isEmpty()) {
-                    tunnelsRepository.getStartTunnel()?.let { tunnelManager.startTunnel(it) }
-                } else {
-                    lastActive.forEach { id ->
-                        tunnelsRepository.getById(id)?.let { tunnelManager.startTunnel(it) }
+                startLock.withLock {
+                    if (tunnelManager.activeTunnels.value.isNotEmpty())
+                        return@launch tunnelManager.stopActiveTunnels()
+                    val lastActive = WireGuardAutoTunnel.getLastActiveTunnels()
+                    if (lastActive.isEmpty()) {
+                        tunnelsRepository.getStartTunnel()?.let { tunnelManager.startTunnel(it) }
+                    } else {
+                        lastActive.forEach { id ->
+                            tunnelsRepository.getById(id)?.let { tunnelManager.startTunnel(it) }
+                        }
                     }
                 }
             }
@@ -125,37 +153,36 @@ class TunnelControlTile : TileService(), LifecycleOwner {
     }
 
     private fun setActive() {
-        runCatching {
-            qsTile.state = Tile.STATE_ACTIVE
-            qsTile.updateTile()
+        qsTile?.let {
+            it.state = Tile.STATE_ACTIVE
+            it.updateTile()
         }
     }
 
     private fun setInactive() {
-        runCatching {
-            qsTile.state = Tile.STATE_INACTIVE
-            qsTile.updateTile()
+        qsTile?.let {
+            it.state = Tile.STATE_INACTIVE
+            it.updateTile()
         }
     }
 
     private fun setUnavailable() {
-        runCatching {
-            qsTile.state = Tile.STATE_UNAVAILABLE
+        qsTile?.let {
+            it.state = Tile.STATE_UNAVAILABLE
             setTileDescription("")
-            qsTile.updateTile()
+            it.updateTile()
         }
     }
 
     private fun setTileDescription(description: String) {
-        runCatching {
-            if (qsTile == null) return@runCatching
+        qsTile?.let {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                qsTile.subtitle = description
-                qsTile.stateDescription = description
+                it.subtitle = description
+                it.stateDescription = description
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                qsTile.subtitle = description
+                it.subtitle = description
             }
-            qsTile.updateTile()
+            it.updateTile()
         }
     }
 

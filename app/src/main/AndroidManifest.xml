@@ -109,7 +109,40 @@
 			android:multiprocess="true"
 			tools:node="remove">
 		</provider>
+        <service
+            android:name=".core.service.tile.TunnelControlTile"
+            android:exported="true"
+            android:icon="@drawable/ic_notification"
+            android:label="@string/tunnel_control"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="true" />
+            <meta-data
+                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="true" />
 
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".core.service.tile.AutoTunnelControlTile"
+            android:exported="true"
+            android:icon="@drawable/ic_notification"
+            android:label="@string/auto_tunnel"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="true" />
+            <meta-data
+                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="true" />
+
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
         <service
             android:name=".core.service.tile.TunnelControlTile"
             android:exported="true"
