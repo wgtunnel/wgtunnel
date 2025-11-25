@@ -72,7 +72,7 @@ jobs:
     outputs:
       UPLOAD_DIR_ANDROID: ${{ env.UPLOAD_DIR_ANDROID }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Set up JDK 17
