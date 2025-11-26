@@ -1,2 +1,2 @@
-What's new:
-- Rapid network changes cause invalid network state bugfix
+تازه‌ها:
+رفع باگ ایجاد حالت نامعتبر شبکه به دلیل تغییرات سریع در آن

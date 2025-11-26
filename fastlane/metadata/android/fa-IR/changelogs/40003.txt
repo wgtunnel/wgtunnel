@@ -1,4 +1,4 @@
-What's new:
-- Monitoring failing to shut down race bugfix
-- Notifications stop action bugfix
-- Notification relaunch activity when already active bugfix
+تازه‌های نسخه:
+رفع باگ race condition هنگام بسته‌نشدن مانیتورینگ
+رفع باگ عملکرد توقف (Stop) در اعلان‌ها
+رفع باگ باز شدن دوبارهٔ Activity از اعلان وقتی از قبل فعال است

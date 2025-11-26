@@ -1,6 +1,6 @@
-What's new:
-- Improved QR scanning and device support
-- Display tunnel uptime
-- Fixes quick tile crash bug when running app in multiple profiles
-- Fixes global overrides regression causing unexpected tunnel start errors
-- Fixes network detection race while VPN is active
+تازه‌ها:
+بهبود اسکن کد QR و پشتیبانی از دستگاه‌ها
+نمایش زمان فعال بودن تونل
+رفع باگ کرش کردن کاشی سریع (Quick Tile) هنگام اجرای برنامه در چندین پروفایل
+رفع باگ بازگشتی (Regression) در لغو تنظیمات سراسری که باعث بروز خطاهای غیرمنتظره در هنگام شروع تونل می‌شد
+رفع مشکل رقابت در تشخیص شبکه در حالی که VPN فعال است

@@ -1,8 +1,8 @@
-What's new:
-- Metered tunnels settings
-- Lockdown dual-stack support
-- Lockdown multiple profile bugfix
-- Split tunneling improved installed packages querying
-- Restart active tunnels on configuration changes
-- Android TV UI bugfixes
-- Various other bugfixes and improvements
+چه چیز جدیدی اضافه شده:
+تنظیمات تونل‌های محدود به مصرف داده (Metered)
+پشتیبانی از حالت دوگانه (Dual-Stack) در Lockdown
+رفع باگ چند پروفایلی در Lockdown
+بهبود پرس‌وجوی بسته‌های نصب‌شده در تونل‌های تقسیم‌شده (Split Tunneling)
+راه‌اندازی مجدد تونل‌های فعال هنگام تغییر پیکربندی
+رفع باگ‌های رابط کاربری در Android TV
+سایر بهبودها و رفع باگ‌ها

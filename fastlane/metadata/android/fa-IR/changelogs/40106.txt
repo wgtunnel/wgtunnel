@@ -1,3 +1,3 @@
-What's new:
-- Auto-tunnel regression bugfix
-- Resource usage bugfix for kill switch mode
+تازه‌ها:
+رفع باگ بازگشتی (Regression) در تونل خودکار
+رفع باگ مصرف منابع در حالت کیل سوئیچ (Kill Switch)
