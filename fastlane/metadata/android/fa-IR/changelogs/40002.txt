@@ -1,5 +1,5 @@
-What's new:
-- App lock crash bugfix
-- Fdroid publishing bugfix
-- Exporting logs bugfix
-- Auto-tunnel ethernet toggle bugfix
+تازه‌های نسخه:
+رفع باگ کرش هنگام فعال بودن قفل برنامه (App Lock)
+رفع باگ انتشار در F-Droid
+رفع باگ صادرکردن لاگ‌ها
+رفع باگ کلید فعال/غیرفعال‌سازی اترنت در تونل‌سازی خودکار
