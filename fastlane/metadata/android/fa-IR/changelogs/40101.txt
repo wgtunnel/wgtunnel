@@ -1,3 +1,3 @@
-What's new:
-- Auto tunnel start ui bugfix
-- Peer stats ui bugfix
+چه چیز جدیدی اضافه شده:
+رفع باگ رابط کاربری در شروع خودکار تونل
+رفع باگ رابط کاربری نمایش آمار همتا (Peer)

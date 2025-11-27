@@ -1,8 +1,8 @@
-What's new:
-- UI rework
-- Dynamic DNS fixes
-- Battery usage bugfix
-- Auto-tunnel reliability improvements
-- Global split tunneling and config overrides
-- Restart on boot and AOVPN bugfixes
-- Various other improvements and optimizations
+تازه‌های نسخه:
+بازطراحی رابط کاربری (UI)
+اصلاحات مربوط به Dynamic DNS
+رفع باگ مصرف باتری
+بهبود پایداری تونل‌سازی خودکار
+اضافه‌شدن اسپلیت‌تونلینگ سراسری و امکان Override کردن تنظیمات کانفیگ
+رفع باگ‌های راه‌اندازی مجدد پس از بوت و AOVPN
+مجموعه‌ای از بهبودها و بهینه‌سازی‌های دیگر

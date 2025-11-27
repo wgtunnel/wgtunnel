@@ -1,8 +1,8 @@
-What's new:
-- Introduction of app modes
-- HTTP/SOCKS5 proxying of tunnels
-- Lockdown mode for leakproof kill switch
-- Dynamic DNS endpoint updates without tunnel restart
-- DoH for peer endpoint resolutions
-- AmneziaWG 1.5 with protocol mimic
-- Many bug fixes and performance improvements
+Novità:
+- Introduzione delle modalità dell'app
+- Proxy HTTP/SOCKS5 dei tunnel
+- Modalità blocco per pulsante interruzione a prova di fuga dati
+- Aggiornamento dinamico DNS endpoint senza riavvio del tunnel
+- DoH per risoluzione endpoint del peer
+- AmneziaWG 1.5 con mimica protocollo
+- Molte correzioni di bug e miglioramenti delle prestazioni
