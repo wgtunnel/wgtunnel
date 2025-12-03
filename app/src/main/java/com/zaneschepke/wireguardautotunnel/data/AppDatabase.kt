@@ -20,7 +20,7 @@ import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_28_29
             DnsSettings::class,
             LockdownSettings::class,
         ],
-    version = 30, // Bumped version to 30 for new features
+    version = 30,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -48,9 +48,6 @@ import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_28_29
             AutoMigration(from = 24, to = 25),
             AutoMigration(from = 26, to = 27, spec = GlobalsMigration::class),
             AutoMigration(from = 27, to = 28, spec = DonationMigration::class),
-            // Migration 28->29 is manual (SQL based), handled in RepositoryModule
-            
-            // New migration for Roaming features
             AutoMigration(from = 29, to = 30)
         ],
     exportSchema = true,
@@ -66,6 +63,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun dnsSettingsDao(): DnsSettingsDao
 }
 
+// ... Le reste du fichier (les Specs de migration) reste inchangé ...
 @DeleteColumn(tableName = "Settings", columnName = "default_tunnel")
 @DeleteColumn(tableName = "Settings", columnName = "is_battery_saver_enabled")
 class RemoveLegacySettingColumnsMigration : AutoMigrationSpec
