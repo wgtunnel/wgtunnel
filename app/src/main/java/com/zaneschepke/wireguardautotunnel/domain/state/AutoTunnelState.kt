@@ -8,9 +8,11 @@ import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent.DoNothing
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent.Start
+import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent.Restart
 import com.zaneschepke.wireguardautotunnel.domain.model.AutoTunnelSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.util.extensions.isMatchingToWildcardList
+import timber.log.Timber
 
 data class AutoTunnelState(
     val activeTunnels: Map<Int, TunnelState> = emptyMap(),
@@ -20,11 +22,41 @@ data class AutoTunnelState(
     val tunnels: List<TunnelConfig> = emptyList(),
 ) {
 
-    fun determineAutoTunnelEvent(stateChange: StateChange): AutoTunnelEvent {
+    fun determineAutoTunnelEvent(stateChange: StateChange, oldState: AutoTunnelState? = null): AutoTunnelEvent {
         when (stateChange) {
             is NetworkChange,
             is SettingsChange -> {
-                // Compute desired tunnel based on network conditions
+                val currentTunnelId = activeTunnels.entries.firstOrNull()?.key
+
+                // --- 1. SMART ROAMING DETECTION ---
+                // Check if enabled globally
+                if (settings.isBssidRoamingEnabled && stateChange is NetworkChange && currentTunnelId != null && oldState != null) {
+                    val oldNet = oldState.networkState.activeNetwork
+                    val newNet = this.networkState.activeNetwork
+
+                    if (oldNet is ActiveNetwork.Wifi && newNet is ActiveNetwork.Wifi) {
+                        
+                        // HYBRID LOGIC
+                        // Allowed if:
+                        // 1. Restriction list is DISABLED (Global Mode)
+                        // 2. OR List is ENABLED AND SSID is in the list
+                        val isSsidAllowed = !settings.isBssidListEnabled || settings.roamingSSIDs.contains(newNet.ssid)
+
+                        // VALIDATION
+                        val isOldValid = !oldNet.bssid.isNullOrBlank() && oldNet.bssid != "02:00:00:00:00:00" && oldNet.bssid != "00:00:00:00:00:00"
+                        val isNewValid = !newNet.bssid.isNullOrBlank() && newNet.bssid != "02:00:00:00:00:00" && newNet.bssid != "00:00:00:00:00:00"
+
+                        if (isSsidAllowed && oldNet.ssid == newNet.ssid && oldNet.bssid != newNet.bssid && isOldValid && isNewValid) {
+                            Timber.d("Roaming detected on ${newNet.ssid} (Restricted List: ${settings.isBssidListEnabled}): ${oldNet.bssid} -> ${newNet.bssid}")
+                            val activeConfig = tunnels.find { it.id == currentTunnelId }
+                            if (activeConfig != null) {
+                                return Restart(activeConfig)
+                            }
+                        }
+                    }
+                }
+
+                // --- 2. STANDARD LOGIC (ON/OFF) ---
                 var preferredTunnel: TunnelConfig? = null
                 if (ethernetActive && settings.isTunnelOnEthernetEnabled) {
                     preferredTunnel = preferredEthernetTunnel()
@@ -34,21 +66,18 @@ data class AutoTunnelState(
                     preferredTunnel = preferredWifiTunnel()
                 }
 
-                // Override for no connectivity if enabled
+                // Override "Stop on no internet"
                 if (!networkState.hasInternet() && settings.isStopOnNoInternetEnabled) {
                     preferredTunnel = null
                 }
 
-                // Determine current active tunnel (assuming only one can be active)
-                val currentTunnel = activeTunnels.entries.firstOrNull()?.key
-
-                // Handle tunnel start/stop/change
+                // Final Decision
                 if (preferredTunnel != null) {
-                    if (currentTunnel != preferredTunnel.id) {
+                    if (currentTunnelId != preferredTunnel.id) {
                         return Start(preferredTunnel)
                     }
                 } else {
-                    if (currentTunnel != null) {
+                    if (currentTunnelId != null) {
                         return AutoTunnelEvent.Stop
                     }
                 }
