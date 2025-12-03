@@ -8,5 +8,8 @@ sealed class AutoTunnelEvent {
 
     @Keep data object Stop : AutoTunnelEvent()
 
+    // UPDATE: New event to trigger seamless tunnel restart
+    @Keep data class Restart(val tunnelConfig: TunnelConfig) : AutoTunnelEvent()
+
     @Keep data object DoNothing : AutoTunnelEvent()
 }
