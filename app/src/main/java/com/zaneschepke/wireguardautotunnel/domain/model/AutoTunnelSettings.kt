@@ -15,4 +15,10 @@ data class AutoTunnelSettings(
     val isTunnelOnUnsecureEnabled: Boolean = false,
     val wifiDetectionMethod: WifiDetectionMethod = WifiDetectionMethod.fromValue(0),
     val startOnBoot: Boolean = false,
+    
+    // --- ROAMING FEATURES ---
+    val isBssidRoamingEnabled: Boolean = true,
+    val isBssidAutoSaveEnabled: Boolean = false,
+    val isBssidListEnabled: Boolean = true,
+    val roamingSSIDs: Set<String> = emptySet()
 )
