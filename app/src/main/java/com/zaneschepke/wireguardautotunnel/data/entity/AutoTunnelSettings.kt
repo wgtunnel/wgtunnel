@@ -29,4 +29,21 @@ data class AutoTunnelSettings(
     @ColumnInfo(name = "wifi_detection_method", defaultValue = "0")
     val wifiDetectionMethod: WifiDetectionMethod = WifiDetectionMethod.fromValue(0),
     @ColumnInfo(name = "start_on_boot", defaultValue = "0") val startOnBoot: Boolean = false,
+    
+    // --- ROAMING FEATURES ---
+    // Master toggle for BSSID roaming
+    @ColumnInfo(name = "is_bssid_roaming_enabled", defaultValue = "1") 
+    val isBssidRoamingEnabled: Boolean = true,
+
+    // Toggle to automatically add networks to the list when roaming is detected
+    @ColumnInfo(name = "is_bssid_auto_save_enabled", defaultValue = "0") 
+    val isBssidAutoSaveEnabled: Boolean = false,
+
+    // Toggle to restrict roaming ONLY to the SSIDs in the list below
+    @ColumnInfo(name = "is_bssid_list_enabled", defaultValue = "1")
+    val isBssidListEnabled: Boolean = true,
+    
+    // The list of SSIDs allowed to roam
+    @ColumnInfo(name = "roaming_ssids", defaultValue = "")
+    val roamingSSIDs: Set<String> = emptySet()
 )
