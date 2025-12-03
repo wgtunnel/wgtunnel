@@ -5,6 +5,9 @@ import androidx.room.migration.AutoMigrationSpec
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.zaneschepke.wireguardautotunnel.data.dao.*
 import com.zaneschepke.wireguardautotunnel.data.entity.*
+import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_23_24
+import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_25_26
+import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_28_29
 
 @Database(
     entities =
@@ -17,7 +20,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.*
             DnsSettings::class,
             LockdownSettings::class,
         ],
-    version = 29,
+    version = 30, // Bumped version to 30 for new features
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -45,23 +48,21 @@ import com.zaneschepke.wireguardautotunnel.data.entity.*
             AutoMigration(from = 24, to = 25),
             AutoMigration(from = 26, to = 27, spec = GlobalsMigration::class),
             AutoMigration(from = 27, to = 28, spec = DonationMigration::class),
+            // Migration 28->29 is manual (SQL based), handled in RepositoryModule
+            
+            // New migration for Roaming features
+            AutoMigration(from = 29, to = 30)
         ],
     exportSchema = true,
 )
 @TypeConverters(DatabaseConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun tunnelConfigDoa(): TunnelConfigDao
-
     abstract fun proxySettingsDoa(): ProxySettingsDao
-
     abstract fun generalSettingsDao(): GeneralSettingsDao
-
     abstract fun autoTunnelSettingsDao(): AutoTunnelSettingsDao
-
     abstract fun monitoringSettingsDao(): MonitoringSettingsDao
-
     abstract fun lockdownSettingsDao(): LockdownSettingsDao
-
     abstract fun dnsSettingsDao(): DnsSettingsDao
 }
 
@@ -111,7 +112,6 @@ class FixProxySettingsMigration : AutoMigrationSpec {
         val cursor = db.query("SELECT COUNT(*) FROM proxy_settings")
         val count = if (cursor.moveToFirst()) cursor.getInt(0) else 0
         cursor.close()
-
         if (count == 0) {
             db.execSQL("INSERT INTO proxy_settings DEFAULT VALUES")
         }
