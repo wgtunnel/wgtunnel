@@ -199,7 +199,7 @@ constructor(
     }
 
     // --- ROAMING FUNCTIONS ---
-    
+
     fun setBssidRoamingEnabled(to: Boolean) = intent {
         autoTunnelRepository.upsert(state.autoTunnelSettings.copy(isBssidRoamingEnabled = to))
     }
