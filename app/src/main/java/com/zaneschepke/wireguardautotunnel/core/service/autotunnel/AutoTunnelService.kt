@@ -132,22 +132,20 @@ class AutoTunnelService : LifecycleService() {
             val previousState = autoTunnelStateFlow.value
 
             // --- AUTO-SAVE LOGIC ---
-            // Checks if Master Roaming is ON + Auto-Save is ON + Network Change event
+            // Triggered only if Roaming is ON + Auto-Save is ON + Network Changed + Valid Wifi
             val settings = previousState.settings
             if (change is NetworkChange && settings.isBssidRoamingEnabled && settings.isBssidAutoSaveEnabled) {
                 val oldNet = previousState.networkState.activeNetwork
                 val newNet = change.networkState.activeNetwork
-                
                 if (oldNet is ActiveNetwork.Wifi && newNet is ActiveNetwork.Wifi) {
-                    // BSSID Validation
+                    // Validate BSSIDs to ensure it's a real access point switch
                     val isOldValid = !oldNet.bssid.isNullOrBlank() && oldNet.bssid != "02:00:00:00:00:00" && oldNet.bssid != "00:00:00:00:00:00"
                     val isNewValid = !newNet.bssid.isNullOrBlank() && newNet.bssid != "02:00:00:00:00:00" && newNet.bssid != "00:00:00:00:00:00"
 
-                    // If Roaming detected (Same SSID, diff BSSID)
                     if (oldNet.ssid == newNet.ssid && oldNet.bssid != newNet.bssid && isOldValid && isNewValid) {
-                        // If SSID not already in the list, save it
+                        // Save SSID if not present
                         if (!settings.roamingSSIDs.contains(newNet.ssid)) {
-                            Timber.i("Auto-save: Detected roaming on ${newNet.ssid}, adding to allowed list.")
+                            Timber.i("Auto-save: Detected roaming on ${newNet.ssid}, adding to whitelist.")
                             val newSet = settings.roamingSSIDs + newNet.ssid
                             launch(ioDispatcher) {
                                 autoTunnelRepository.get().upsert(settings.copy(roamingSSIDs = newSet))
@@ -176,7 +174,7 @@ class AutoTunnelService : LifecycleService() {
             }
 
             val currentState = autoTunnelStateFlow.value
-            // Pass previousState for BSSID comparison
+            // Pass previousState to determineAutoTunnelEvent for BSSID comparison
             handleAutoTunnelEvent(currentState.determineAutoTunnelEvent(change, previousState))
 
             reevaluationJob = launch {
@@ -276,11 +274,11 @@ class AutoTunnelService : LifecycleService() {
                 is AutoTunnelEvent.Start -> (event.tunnelConfig ?: tunnelsRepository.getDefaultTunnel())?.let { tunnelManager.startTunnel(it) }
                 is AutoTunnelEvent.Stop -> tunnelManager.stopActiveTunnels()
                 
-                // Restart Event (Roaming)
+                // RESTART Event (Roaming)
                 is AutoTunnelEvent.Restart -> {
                     Timber.i("Roaming detected (BSSID Change). Restarting tunnel.")
                     tunnelManager.stopTunnel(event.tunnelConfig.id)
-                    delay(1000L)
+                    delay(1000L) // Network stability delay
                     tunnelManager.startTunnel(event.tunnelConfig)
                 }
                 
