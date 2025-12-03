@@ -29,23 +29,22 @@ data class AutoTunnelState(
                 val currentTunnelId = activeTunnels.entries.firstOrNull()?.key
 
                 // --- 1. SMART ROAMING DETECTION ---
-                // Check if enabled globally
                 if (settings.isBssidRoamingEnabled && stateChange is NetworkChange && currentTunnelId != null && oldState != null) {
                     val oldNet = oldState.networkState.activeNetwork
                     val newNet = this.networkState.activeNetwork
 
                     if (oldNet is ActiveNetwork.Wifi && newNet is ActiveNetwork.Wifi) {
                         
-                        // HYBRID LOGIC
-                        // Allowed if:
-                        // 1. Restriction list is DISABLED (Global Mode)
-                        // 2. OR List is ENABLED AND SSID is in the list
+                        // CHECK LIST / TOGGLES
+                        // If list restriction is disabled -> Allowed everywhere
+                        // If list restriction is enabled -> Allowed only if SSID is in the list
                         val isSsidAllowed = !settings.isBssidListEnabled || settings.roamingSSIDs.contains(newNet.ssid)
 
-                        // VALIDATION
+                        // BSSID VALIDATION
                         val isOldValid = !oldNet.bssid.isNullOrBlank() && oldNet.bssid != "02:00:00:00:00:00" && oldNet.bssid != "00:00:00:00:00:00"
                         val isNewValid = !newNet.bssid.isNullOrBlank() && newNet.bssid != "02:00:00:00:00:00" && newNet.bssid != "00:00:00:00:00:00"
 
+                        // Final Condition
                         if (isSsidAllowed && oldNet.ssid == newNet.ssid && oldNet.bssid != newNet.bssid && isOldValid && isNewValid) {
                             Timber.d("Roaming detected on ${newNet.ssid} (Restricted List: ${settings.isBssidListEnabled}): ${oldNet.bssid} -> ${newNet.bssid}")
                             val activeConfig = tunnels.find { it.id == currentTunnelId }
@@ -55,8 +54,9 @@ data class AutoTunnelState(
                         }
                     }
                 }
+                // --------------------------
 
-                // --- 2. STANDARD LOGIC (ON/OFF) ---
+                // --- 2. STANDARD LOGIC ---
                 var preferredTunnel: TunnelConfig? = null
                 if (ethernetActive && settings.isTunnelOnEthernetEnabled) {
                     preferredTunnel = preferredEthernetTunnel()
