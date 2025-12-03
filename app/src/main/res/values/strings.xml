@@ -436,4 +436,6 @@
     <string name="donation_prompt_prefix">Thanks for using WG Tunnel! If you are able, please consider</string>
     <string name="donation_prompt_link">supporting the project</string>
     <string name="donation_prompt_suffix">to keep it free and improving.</string>
+    <string name="cookie_packet_junk_size">Cookie packet junk size</string>
+    <string name="transport_packet_junk_size">Transport packet junk size</string>
 </resources>

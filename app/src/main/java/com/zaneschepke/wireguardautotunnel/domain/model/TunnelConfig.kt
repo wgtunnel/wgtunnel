@@ -106,15 +106,17 @@ data class TunnelConfig(
                 existingConfig.`interface`.transportPacketMagicHeader.ifPresent {
                     setTransportPacketMagicHeader(it)
                 }
-                existingConfig.`interface`.i1.ifPresent { setI1(it) }
-                existingConfig.`interface`.i2.ifPresent { setI2(it) }
-                existingConfig.`interface`.i3.ifPresent { setI3(it) }
-                existingConfig.`interface`.i4.ifPresent { setI4(it) }
-                existingConfig.`interface`.i5.ifPresent { setI5(it) }
-                existingConfig.`interface`.j1.ifPresent { setJ1(it) }
-                existingConfig.`interface`.j2.ifPresent { setJ2(it) }
-                existingConfig.`interface`.j3.ifPresent { setJ3(it) }
-                existingConfig.`interface`.itime.ifPresent { setItime(it) }
+                existingConfig.`interface`.cookieReplyPacketJunkSize.ifPresent {
+                    setCookieReplyPacketJunkSize(it)
+                }
+                existingConfig.`interface`.transportPacketJunkSize.ifPresent {
+                    setTransportPacketJunkSize(it)
+                }
+                existingConfig.`interface`.specialJunkI1.ifPresent { setSpecialJunkI1(it) }
+                existingConfig.`interface`.specialJunkI2.ifPresent { setSpecialJunkI2(it) }
+                existingConfig.`interface`.specialJunkI3.ifPresent { setSpecialJunkI3(it) }
+                existingConfig.`interface`.specialJunkI4.ifPresent { setSpecialJunkI4(it) }
+                existingConfig.`interface`.specialJunkI5.ifPresent { setSpecialJunkI5(it) }
                 setPreUp(existingConfig.`interface`.preUp)
                 setPostUp(existingConfig.`interface`.postUp)
                 setPreDown(existingConfig.`interface`.preDown)

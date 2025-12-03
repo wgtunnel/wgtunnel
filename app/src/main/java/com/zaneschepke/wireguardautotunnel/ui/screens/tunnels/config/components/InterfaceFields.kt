@@ -265,6 +265,26 @@ fun InterfaceFields(
                 modifier = Modifier.fillMaxWidth(),
             )
             ConfigurationTextBox(
+                value = interfaceState.cookiePacketJunkSize,
+                onValueChange = {
+                    onInterfaceChange(interfaceState.copy(cookiePacketJunkSize = it))
+                },
+                label = stringResource(R.string.cookie_packet_junk_size),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                hint = stringResource(R.string.range_hint, 0, 928),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            ConfigurationTextBox(
+                value = interfaceState.transportPacketJunkSize,
+                onValueChange = {
+                    onInterfaceChange(interfaceState.copy(transportPacketJunkSize = it))
+                },
+                label = stringResource(R.string.transport_packet_junk_size),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                hint = stringResource(R.string.range_hint, 0, 928),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            ConfigurationTextBox(
                 value = interfaceState.initPacketMagicHeader,
                 onValueChange = {
                     onInterfaceChange(interfaceState.copy(initPacketMagicHeader = it))
@@ -337,39 +357,6 @@ fun InterfaceFields(
                 onValueChange = { onInterfaceChange(interfaceState.copy(i5 = it)) },
                 label = "I5",
                 hint = stringResource(R.string.hint_template, "<b 0x1A2B3C>"),
-                modifier = Modifier.fillMaxWidth(),
-            )
-            ConfigurationTextBox(
-                value = interfaceState.j1,
-                onValueChange = { onInterfaceChange(interfaceState.copy(j1 = it)) },
-                label = "J1",
-                hint = stringResource(R.string.hint_template, "<b 0x1A2B3C>"),
-                modifier = Modifier.fillMaxWidth(),
-            )
-            ConfigurationTextBox(
-                value = interfaceState.j2,
-                onValueChange = { onInterfaceChange(interfaceState.copy(j2 = it)) },
-                label = "J2",
-                hint = stringResource(R.string.hint_template, "<b 0x1A2B3C>"),
-                modifier = Modifier.fillMaxWidth(),
-            )
-            ConfigurationTextBox(
-                value = interfaceState.j3,
-                onValueChange = { onInterfaceChange(interfaceState.copy(j3 = it)) },
-                label = "J3",
-                hint = stringResource(R.string.hint_template, "<b 0x1A2B3C>"),
-                modifier = Modifier.fillMaxWidth(),
-            )
-            ConfigurationTextBox(
-                value = interfaceState.itime,
-                onValueChange = { onInterfaceChange(interfaceState.copy(itime = it)) },
-                label = "ITime",
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                hint =
-                    stringResource(
-                        R.string.hint_template,
-                        stringResource(R.string.seconds).lowercase(locale),
-                    ),
                 modifier = Modifier.fillMaxWidth(),
             )
         }
