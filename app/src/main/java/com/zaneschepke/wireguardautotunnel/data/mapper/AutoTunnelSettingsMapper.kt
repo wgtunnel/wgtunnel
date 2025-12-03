@@ -17,7 +17,7 @@ fun Entity.toDomain(): Domain =
         isTunnelOnUnsecureEnabled = isTunnelOnUnsecureEnabled,
         wifiDetectionMethod = wifiDetectionMethod,
         startOnBoot = startOnBoot,
-        // --- ROAMING MAPPING ---
+        // --- ROAMING ---
         isBssidRoamingEnabled = isBssidRoamingEnabled,
         isBssidAutoSaveEnabled = isBssidAutoSaveEnabled,
         isBssidListEnabled = isBssidListEnabled,
@@ -38,7 +38,7 @@ fun Domain.toEntity(): Entity =
         isTunnelOnUnsecureEnabled = isTunnelOnUnsecureEnabled,
         wifiDetectionMethod = wifiDetectionMethod,
         startOnBoot = startOnBoot,
-        // --- ROAMING MAPPING ---
+        // --- ROAMING ---
         isBssidRoamingEnabled = isBssidRoamingEnabled,
         isBssidAutoSaveEnabled = isBssidAutoSaveEnabled,
         isBssidListEnabled = isBssidListEnabled,
