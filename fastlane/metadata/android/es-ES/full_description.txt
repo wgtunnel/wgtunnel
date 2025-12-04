@@ -1,15 +1,13 @@
-- **Métodos de Importación de Túneles**: Añade fácilmente túneles usando archivos `.conf`, archivos `.zip`, entrada manual o escaneo de códigos QR.
-- **Auto-Tunneling**: Activa automáticamente túneles según el SSID de la red Wi-Fi, conexiones Ethernet o redes de datos móviles.
-- **División de Túneles (Split Tunneling)**: Soporte flexible para enrutar aplicaciones o tráfico específicos a través de la VPN.
-- **Modos WireGuard**: Compatibilidad total con WireGuard en implementaciones tanto de kernel como de espacio de usuario.
-- **Integración con AmneziaWG**: Modo en espacio de usuario para AmneziaWG, ofreciendo una sólida evasión de censura.
-- **VPN Siempre Activa**: Garantiza protección continua con la función *Always-On VPN* de Android.
-- **Controles Rápidos**: Acceso desde el panel de Configuración Rápida y accesos directos en la pantalla de inicio para activar o desactivar la VPN fácilmente.
-- **Soporte de Automatización**: Automatización basada en *intents* para controlar túneles.
-- **Restauración Automática**: Restaura sin problemas el auto-tunneling y los túneles activos después de reinicios del dispositivo o actualizaciones de la aplicación.
-- **Opciones de Proxy**: Soporte integrado para proxy HTTP y SOCKS5 dentro de los túneles.
-- **Modo de Bloqueo (Lockdown Mode)**: Interruptor de seguridad personalizado para máxima prevención de fugas y mayor seguridad.
-- **Gestión Dinámica de DNS**: Detecta y actualiza cambios de DNS sin necesidad de reiniciar el túnel.
-- **Herramientas de Monitoreo**: Funciones avanzadas para monitorear el rendimiento de los túneles.
-- **Compatibilidad con Android TV**: Soporte para Android TV para navegación y streaming seguros.
-- **DNS Avanzado**: Soporte para DNS sobre HTTPS en la resolución de los endpoints del túnel.
+WG Tunnel es un cliente VPN WireGuard que equilibra simplicidad y solidez, lo que lo convierte en el cliente ideal tanto para usuarios ocasionales como avanzados.
+Ya sea que quieras simplemente automatizar cuándo te conectas a la VPN o seas un usuario avanzado con casos de uso de privacidad complejos, WG Tunnel te cubre.
+
+- **Auto-túneles:** Activa túneles automáticamente en función del SSID de la Wi‑Fi, conexiones Ethernet o redes de datos móviles.
+- **Túnel dividido (Split Tunneling):** Soporte flexible para enrutar aplicaciones o tráfico específicos a través de la VPN.
+- **Modos de la app:** Soporta múltiples modos de túnel, incluidos VPN estándar, kernel, bloqueo (kill switch personalizado) y modos proxy.
+- **Integración con AmneziaWG:** Soporte completo para AmneziaWG, proporcionando robusta evasión de censura.
+- **Opciones de proxy:** Soporte integrado para proxy HTTP y SOCKS5 que permite a aplicaciones de terceros enrutar su tráfico.
+- **Controles rápidos:** Tile de Ajustes rápidos y accesos directos en la pantalla principal para conmutaciones rápidas.
+- **Soporte de automatización:** Automatización basada en intents para controlar túneles y auto-túneles.
+- **Gestión dinámica de DNS:** Detecta y actualiza cambios de DNS sin reiniciar túneles.
+- **Herramientas de monitorización:** Funciones avanzadas de supervisión para el rendimiento de los túneles.
+- **Compatibilidad con Android TV:** Soporte en Android TV para casi todas las funciones de la app.
