@@ -438,8 +438,6 @@
     <string name="donation_prompt_suffix">to keep it free and improving.</string>
     <string name="cookie_packet_junk_size">Cookie packet junk size</string>
     <string name="transport_packet_junk_size">Transport packet junk size</string>
-</resources>
-    
     <string name="roaming_bssid">Roaming (BSSID)</string>
     <string name="restart_on_bssid_change">Restart on BSSID change</string>
     <string name="restart_on_bssid_change_description">Restart tunnel when switching access points on the same SSID</string>
