@@ -449,5 +449,5 @@
     <string name="roaming_wildcards_description">Allow wildcard matching (* or ?) for the roaming list.</string>
     <string name="roaming_ssids">Roaming SSIDs</string>
     <string name="roaming_ssids_description">List of networks where roaming restart is allowed.</string>
-    <string name="add_roaming_ssid_hint">Add specific SSIDs (e.g. 'MyHomeWiFi')</string>
+    <string name="add_roaming_ssid_hint">Add specific SSIDs</string>
 </resources>
