@@ -8,9 +8,11 @@ import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent.DoNothing
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent.Start
+import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent.Restart
 import com.zaneschepke.wireguardautotunnel.domain.model.AutoTunnelSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.util.extensions.isMatchingToWildcardList
+import timber.log.Timber
 
 data class AutoTunnelState(
     val activeTunnels: Map<Int, TunnelState> = emptyMap(),
@@ -20,11 +22,38 @@ data class AutoTunnelState(
     val tunnels: List<TunnelConfig> = emptyList(),
 ) {
 
-    fun determineAutoTunnelEvent(stateChange: StateChange): AutoTunnelEvent {
+    fun determineAutoTunnelEvent(stateChange: StateChange, oldState: AutoTunnelState? = null): AutoTunnelEvent {
         when (stateChange) {
             is NetworkChange,
             is SettingsChange -> {
-                // Compute desired tunnel based on network conditions
+                val currentTunnelId = activeTunnels.entries.firstOrNull()?.key
+
+                // --- 1. SMART ROAMING DETECTION ---
+                if (settings.isBssidRoamingEnabled && stateChange is NetworkChange && currentTunnelId != null && oldState != null) {
+                    val oldNet = oldState.networkState.activeNetwork
+                    val newNet = this.networkState.activeNetwork
+
+                    if (oldNet is ActiveNetwork.Wifi && newNet is ActiveNetwork.Wifi) {
+                        
+                        // HYBRID LOGIC WITH INDEPENDENT WILDCARDS
+                        val isSsidAllowed = !settings.isBssidListEnabled || hasMatch(newNet.ssid, settings.roamingSSIDs, settings.isBssidWildcardsEnabled)
+
+                        // BSSID VALIDATION
+                        val isOldValid = oldNet.isValidBssid()
+                        val isNewValid = newNet.isValidBssid()
+
+                        if (isSsidAllowed && oldNet.ssid == newNet.ssid && oldNet.bssid != newNet.bssid && isOldValid && isNewValid) {
+                            Timber.d("Roaming detected on ${newNet.ssid} (Restricted: ${settings.isBssidListEnabled}, Wildcards: ${settings.isBssidWildcardsEnabled}): ${oldNet.bssid} -> ${newNet.bssid}")
+                            val activeConfig = tunnels.find { it.id == currentTunnelId }
+                            if (activeConfig != null) {
+                                return Restart(activeConfig)
+                            }
+                        }
+                    }
+                }
+                // --------------------------
+
+                // --- 2. STANDARD LOGIC ---
                 var preferredTunnel: TunnelConfig? = null
                 if (ethernetActive && settings.isTunnelOnEthernetEnabled) {
                     preferredTunnel = preferredEthernetTunnel()
@@ -34,21 +63,18 @@ data class AutoTunnelState(
                     preferredTunnel = preferredWifiTunnel()
                 }
 
-                // Override for no connectivity if enabled
+                // Override "Stop on no internet"
                 if (!networkState.hasInternet() && settings.isStopOnNoInternetEnabled) {
                     preferredTunnel = null
                 }
 
-                // Determine current active tunnel (assuming only one can be active)
-                val currentTunnel = activeTunnels.entries.firstOrNull()?.key
-
-                // Handle tunnel start/stop/change
+                // Final Decision
                 if (preferredTunnel != null) {
-                    if (currentTunnel != preferredTunnel.id) {
+                    if (currentTunnelId != preferredTunnel.id) {
                         return Start(preferredTunnel)
                     }
                 } else {
-                    if (currentTunnel != null) {
+                    if (currentTunnelId != null) {
                         return AutoTunnelEvent.Stop
                     }
                 }
@@ -57,6 +83,22 @@ data class AutoTunnelState(
             is ActiveTunnelsChange -> Unit
         }
         return DoNothing
+    }
+
+    private fun ActiveNetwork.Wifi.isValidBssid(): Boolean {
+        return !bssid.isNullOrBlank() && bssid != "02:00:00:00:00:00" && bssid != "00:00:00:00:00:00"
+    }
+
+    private fun hasMatch(
+        wifiName: String,
+        wifiNames: Set<String>,
+        useWildcards: Boolean,
+    ): Boolean {
+        return if (useWildcards) {
+            wifiNames.isMatchingToWildcardList(wifiName)
+        } else {
+            wifiNames.contains(wifiName)
+        }
     }
 
     private val ethernetActive: Boolean = networkState.activeNetwork is ActiveNetwork.Ethernet
@@ -88,23 +130,12 @@ data class AutoTunnelState(
     }
 
     private fun isTrustedNetwork(ssid: String): Boolean =
-        hasMatch(ssid, settings.trustedNetworkSSIDs)
-
-    private fun hasMatch(
-        wifiName: String,
-        wifiNames: Set<String> = settings.trustedNetworkSSIDs,
-    ): Boolean {
-        return if (settings.isWildcardsEnabled) {
-            wifiNames.isMatchingToWildcardList(wifiName)
-        } else {
-            wifiNames.contains(wifiName)
-        }
-    }
+        hasMatch(ssid, settings.trustedNetworkSSIDs, settings.isWildcardsEnabled) // Trusted uses main wildcard toggle
 
     private fun getTunnelWithMappedNetwork(): TunnelConfig? =
         when (val network = networkState.activeNetwork) {
             is ActiveNetwork.Wifi ->
-                tunnels.firstOrNull { hasMatch(network.ssid, it.tunnelNetworks) }
+                tunnels.firstOrNull { hasMatch(network.ssid, it.tunnelNetworks, settings.isWildcardsEnabled) }
             else -> null
         }
 }
