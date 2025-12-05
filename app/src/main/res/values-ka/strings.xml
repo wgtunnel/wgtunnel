@@ -424,4 +424,6 @@
     <string name="auto_tunnel_running">Auto-tunnel is running</string>
     <string name="done">Done</string>
     <string name="invalid_key">Invalid key</string>
+    <string name="transport_packet_junk_size">Transport packet junk size</string>
+    <string name="cookie_packet_junk_size">Cookie packet junk size</string>
 </resources>
