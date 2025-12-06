@@ -95,7 +95,7 @@
     <string name="vpn_denied_dialog_title">Отказано в доступе</string>
     <string name="show_amnezia_properties">Показать настройки Amnezia</string>
     <string name="never">никогда</string>
-    <string name="handshake">Соединение</string>
+    <string name="handshake">Последнее подключение</string>
     <string name="logs">Журналы</string>
     <string name="light">Светлая</string>
     <string name="automatic">Автовыбор</string>
@@ -424,6 +424,6 @@
     <string name="website_url" translatable="false">https://wgtunnel.com</string>
     <string name="bitcoin_cash" translatable="false">Bitcoin Cash (BCH)</string>
     <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
-    <string name="transport_packet_junk_size">Transport packet junk size</string>
-    <string name="cookie_packet_junk_size">Cookie packet junk size</string>
+    <string name="transport_packet_junk_size">S4</string>
+    <string name="cookie_packet_junk_size">S3</string>
 </resources>
