@@ -75,8 +75,8 @@
     <string name="app_name">WG Tunnel</string>
     <string name="vpn_channel_name">Canal de notificación VPN</string>
     <string name="prominent_background_location_message">La monitorización SSID Wi-Fi necesita de permiso de ubicación en segundo plano incluso si la app está cerrada. Mira el enlace a la Política de Privacidad en la pantalla de ayuda para más detalles.</string>
-    <string name="junk_packet_count">Recuento de paquetes «basura»</string>
-    <string name="junk_packet_minimum_size">Tamaño mínimo de paquetes «basura»</string>
+    <string name="junk_packet_count">Recuento de paquetes «ruido»</string>
+    <string name="junk_packet_minimum_size">Tamaño mínimo de paquetes «ruido»</string>
     <string name="add_from_clipboard">Agregar desde el portapapeles</string>
     <string name="show_amnezia_properties">Mostrar propiedades de Amnezia</string>
     <string name="never">Nunca</string>
@@ -85,13 +85,13 @@
     <string name="always_on_message">Se ha denegado el permiso de conexión VPN. Por favor, compruebe el</string>
     <string name="always_on_message2">para asegurarse de que la VPN siempre activa esté desactivada para todas las demás aplicaciones e inténtelo de nuevo</string>
     <string name="response_packet_magic_header">Encabezado del paquete de respuesta</string>
-    <string name="junk_packet_maximum_size">Tamaño máximo de paquetes «basura»</string>
-    <string name="init_packet_junk_size">Tamaño de «datos basura» añadidos al paquete de inicialización</string>
+    <string name="junk_packet_maximum_size">Tamaño máximo de paquetes «ruido»</string>
+    <string name="init_packet_junk_size">Tamaño de «datos de ruido» añadidos al paquete de inicialización</string>
     <string name="unsure_how">Si no estás seguro de cómo proceder</string>
     <string name="see_the">Ver la</string>
     <string name="vpn_denied_dialog_title">Permiso denegado</string>
     <string name="vpn_settings">Configuraciones VPN del sistema</string>
-    <string name="response_packet_junk_size">Tamaño de «datos basura» del paquete de respuesta</string>
+    <string name="response_packet_junk_size">Tamaño de «datos ruido» del paquete de respuesta</string>
     <string name="init_packet_magic_header">Encabezado del paquete de inicialización</string>
     <string name="root_accepted">Shell root permitida</string>
     <string name="restart_at_boot">Iniciar al arrancar</string>
@@ -381,7 +381,7 @@
     <string name="ping_monitor">Monitoreo de ping</string>
     <string name="restart_message_template">Guardar los cambios hara que el %1$s se reinicie, desea continuar?</string>
     <string name="already_donated_description">Desactiva recordatorios de donación</string>
-    <string name="metered_tunnel">Túnel en red de uso medido</string>
+    <string name="metered_tunnel">Túnel de uso medido</string>
     <string name="lockdown_settings">Configuración de aislamiento</string>
     <string name="networks">Redes</string>
     <string name="auto_tunnel_channel_id" translatable="false">Auto-tunnel Channel</string>
@@ -424,6 +424,6 @@
     <string name="matrix_url" translatable="false">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
     <string name="bitcoin_cash" translatable="false">Bitcoin Cash (BCH)</string>
     <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
-    <string name="transport_packet_junk_size">Transport packet junk size</string>
-    <string name="cookie_packet_junk_size">Cookie packet junk size</string>
+    <string name="transport_packet_junk_size">Tamaño de los datos «ruido» del paquete de transporte</string>
+    <string name="cookie_packet_junk_size">Tamaño de los datos «ruido» del paquete de cookies</string>
 </resources>
