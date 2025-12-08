@@ -275,25 +275,23 @@ class AutoTunnelService : LifecycleService() {
         }
 
     private suspend fun handleAutoTunnelEvent(autoTunnelEvent: AutoTunnelEvent) {
-    autoTunMutex.withLock {
-        when (val event = autoTunnelEvent.also { Timber.i("Auto tunnel event: ${it.javaClass.simpleName}") }) {
-            is AutoTunnelEvent.Start -> (event.tunnelConfig ?: tunnelsRepository.getDefaultTunnel())?.let { tunnelManager.startTunnel(it) }
-
-            // Data leakage modification
-            
-            is AutoTunnelEvent.Stop -> tunnelManager.stopActiveTunnels()
-            is AutoTunnelEvent.Restart -> {
-                Timber.i("Roaming detected (BSSID Change). Engaging Sinkhole Protection.")
-                tunnelManager.setBackendMode(
-                    com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode.KillSwitch(
-                        allowedIps = emptySet(),
-                        isMetered = true,
-                        dualStack = false
+        autoTunMutex.withLock {
+            when (val event = autoTunnelEvent.also { Timber.i("Auto tunnel event: ${it.javaClass.simpleName}") }) {
+                is AutoTunnelEvent.Start -> (event.tunnelConfig ?: tunnelsRepository.getDefaultTunnel())?.let { tunnelManager.startTunnel(it) }
+                is AutoTunnelEvent.Stop -> tunnelManager.stopActiveTunnels()
+                 // RESTART Event (Roaming)
+                is AutoTunnelEvent.Restart -> {
+                    Timber.i("Roaming detected (BSSID Change). Engaging Sinkhole Protection.")
+                    tunnelManager.setBackendMode(
+                        com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode.KillSwitch(
+                            allowedIps = emptySet(),
+                            isMetered = true,
+                            dualStack = false
+                        )
                     )
-                )
-                delay(250L)
-                tunnelManager.startTunnel(event.tunnelConfig)
-            }
+                    delay(250L)
+                    tunnelManager.startTunnel(event.tunnelConfig)
+                }
                 AutoTunnelEvent.DoNothing -> Timber.i("Auto-tunneling: nothing to do")
             }
         }
