@@ -320,8 +320,12 @@ constructor(
         fileUtils
             .createNewShareFile(shareFileName)
             .onSuccess {
-                fileUtils.zipAll(it, files).onFailure(onFailure)
-                fileUtils.exportFile(it, uri, FileUtils.ZIP_FILE_MIME_TYPE).onFailure(onFailure)
+                try {
+                    fileUtils.zipAll(it, files).onFailure(onFailure)
+                    fileUtils.exportFile(it, uri, FileUtils.ZIP_FILE_MIME_TYPE).onFailure(onFailure)
+                } finally {
+                    if (it.exists()) it.delete()
+                }
                 postSideEffect(
                     GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.export_success))
                 )

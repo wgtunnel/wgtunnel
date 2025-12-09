@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -59,8 +60,15 @@ class WireGuardAutoTunnel : Application(), Configuration.Provider {
 
         applicationScope.launch(ioDispatcher) {
             launch {
-                val monitoringSettings = monitoringRepository.getMonitoringSettings()
-                if (monitoringSettings.isLocalLogsEnabled) logReader.start()
+                monitoringRepository.flow
+                    .distinctUntilChangedBy { it.isLocalLogsEnabled }
+                    .collect { settings ->
+                        if (settings.isLocalLogsEnabled) {
+                            logReader.start()
+                        } else {
+                            logReader.stop()
+                        }
+                    }
             }
             launch { notificationMonitor.handleApplicationNotifications() }
         }
