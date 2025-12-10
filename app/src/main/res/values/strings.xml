@@ -440,7 +440,7 @@
     <string name="transport_packet_junk_size">Transport packet junk size</string>
     <string name="roaming_bssid">Roaming (BSSID)</string>
     <string name="restart_on_bssid_change">Restart on BSSID change</string>
-    <string name="restart_on_bssid_change_description">Restart tunnel when switching access points on the same SSID</string>
+    <string name="restart_on_bssid_change_description">Restart tunnel when switching access points on the same SSID. Uses direct socket checks to Cloudflare and/or AdGuard DNS.</string>
     <string name="auto_detect_networks">Auto-detect networks</string>
     <string name="auto_detect_networks_description">Automatically add the current network to the list below if roaming is detected.</string>
     <string name="restrict_to_saved_networks">Restrict to saved networks</string>
