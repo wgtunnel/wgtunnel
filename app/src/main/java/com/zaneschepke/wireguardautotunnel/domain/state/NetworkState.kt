@@ -11,7 +11,8 @@ sealed class ActiveNetwork {
 
     data object Cellular : ActiveNetwork()
 
-    data class Wifi(val ssid: String, val isSecure: Boolean?) : ActiveNetwork()
+    // UPDATE: Added BSSID to Domain state
+    data class Wifi(val ssid: String, val bssid: String?, val isSecure: Boolean?) : ActiveNetwork()
 }
 
 data class NetworkState(
@@ -33,7 +34,8 @@ fun ConnectivityState.toDomain(): NetworkState {
                         null -> null
                         else -> true
                     }
-                ActiveNetwork.Wifi(ssid = network.ssid, isSecure = isSecure)
+                // UPDATE: Map BSSID from Monitor to Domain
+                ActiveNetwork.Wifi(ssid = network.ssid, bssid = network.bssid, isSecure = isSecure)
             }
             is MonitorActiveNetwork.Cellular -> ActiveNetwork.Cellular
             is MonitorActiveNetwork.Ethernet -> ActiveNetwork.Ethernet

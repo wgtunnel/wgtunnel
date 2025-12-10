@@ -18,8 +18,11 @@ data class AutoTunnelSettings(
     val isTunnelOnEthernetEnabled: Boolean = false,
     @ColumnInfo(name = "is_tunnel_on_wifi_enabled", defaultValue = "0")
     val isTunnelOnWifiEnabled: Boolean = false,
+    
+    // Trusted Network Wildcards
     @ColumnInfo(name = "is_wildcards_enabled", defaultValue = "0")
     val isWildcardsEnabled: Boolean = false,
+
     @ColumnInfo(name = "is_stop_on_no_internet_enabled", defaultValue = "0")
     val isStopOnNoInternetEnabled: Boolean = false,
     @ColumnInfo(name = "debounce_delay_seconds", defaultValue = "3")
@@ -29,4 +32,21 @@ data class AutoTunnelSettings(
     @ColumnInfo(name = "wifi_detection_method", defaultValue = "0")
     val wifiDetectionMethod: WifiDetectionMethod = WifiDetectionMethod.fromValue(0),
     @ColumnInfo(name = "start_on_boot", defaultValue = "0") val startOnBoot: Boolean = false,
+    
+    // --- ROAMING FEATURES ---
+    @ColumnInfo(name = "is_bssid_roaming_enabled", defaultValue = "0") 
+    val isBssidRoamingEnabled: Boolean = false,
+
+    @ColumnInfo(name = "is_bssid_auto_save_enabled", defaultValue = "1") 
+    val isBssidAutoSaveEnabled: Boolean = true,
+
+    @ColumnInfo(name = "is_bssid_list_enabled", defaultValue = "1")
+    val isBssidListEnabled: Boolean = true,
+
+    // Roaming Wildcards
+    @ColumnInfo(name = "is_bssid_wildcards_enabled", defaultValue = "0")
+    val isBssidWildcardsEnabled: Boolean = false,
+    
+    @ColumnInfo(name = "roaming_ssids", defaultValue = "")
+    val roamingSSIDs: Set<String> = emptySet()
 )
