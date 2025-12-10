@@ -37,39 +37,33 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
+import com.zaneschepke.wireguardautotunnel.domain.state.ActiveNetwork
+import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.handler.AutoTunnelRoamingHandler
+import com.zaneschepke.wireguardautotunnel.util.extensions.isMatchingToWildcardList
 
 @AndroidEntryPoint
 class AutoTunnelService : LifecycleService() {
 
     @Inject lateinit var networkMonitor: NetworkMonitor
-
     @Inject lateinit var notificationManager: NotificationManager
-
     @Inject @IoDispatcher lateinit var ioDispatcher: CoroutineDispatcher
-
     @Inject lateinit var serviceManager: ServiceManager
-
     @Inject lateinit var tunnelManager: TunnelManager
-
     @Inject lateinit var autoTunnelRepository: Provider<AutoTunnelSettingsRepository>
     @Inject lateinit var settingsRepository: GeneralSettingRepository
     @Inject lateinit var tunnelsRepository: TunnelRepository
+    
+    @Inject lateinit var roamingHandler: AutoTunnelRoamingHandler
 
     private val defaultState = AutoTunnelState()
-
     private val autoTunMutex = Mutex()
-
     private val autoTunnelStateFlow = MutableStateFlow(defaultState)
-
     private var autoTunnelJob: Job? = null
     private var permissionsJob: Job? = null
-    private var autoTunnelFailoverJob: Job? = null
 
     class LocalBinder(service: AutoTunnelService) : Binder() {
         private val serviceRef = WeakReference(service)
-
-        val service: AutoTunnelService?
-            get() = serviceRef.get()
+        val service: AutoTunnelService? get() = serviceRef.get()
     }
 
     private val binder = LocalBinder(this)
@@ -86,7 +80,6 @@ class AutoTunnelService : LifecycleService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        Timber.d("onStartCommand executed with startId: $startId")
         start()
         return START_STICKY
     }
@@ -104,163 +97,138 @@ class AutoTunnelService : LifecycleService() {
     }
 
     override fun onDestroy() {
+        roamingHandler.cleanup()
         serviceManager.handleAutoTunnelServiceDestroy()
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         super.onDestroy()
     }
 
-    private fun launchWatcherNotification(
-        description: String = getString(R.string.monitoring_state_changes)
-    ) {
-        val notification =
-            notificationManager.createNotification(
-                WireGuardNotification.NotificationChannels.AUTO_TUNNEL,
-                title = getString(R.string.auto_tunnel_title),
-                description = description,
-                actions =
-                    listOf(
-                        notificationManager.createNotificationAction(
-                            NotificationAction.AUTO_TUNNEL_OFF
-                        )
-                    ),
-                onGoing = true,
-                groupKey = NotificationManager.AUTO_TUNNEL_GROUP_KEY,
-                isGroupSummary = true,
-            )
-        ServiceCompat.startForeground(
-            this,
-            NotificationManager.AUTO_TUNNEL_NOTIFICATION_ID,
-            notification,
-            Constants.SPECIAL_USE_SERVICE_TYPE_ID,
+    private fun launchWatcherNotification(description: String = getString(R.string.monitoring_state_changes)) {
+        val notification = notificationManager.createNotification(
+            WireGuardNotification.NotificationChannels.AUTO_TUNNEL,
+            title = getString(R.string.auto_tunnel_title),
+            description = description,
+            actions = listOf(notificationManager.createNotificationAction(NotificationAction.AUTO_TUNNEL_OFF)),
+            onGoing = true,
+            groupKey = NotificationManager.AUTO_TUNNEL_GROUP_KEY,
+            isGroupSummary = true,
         )
+        ServiceCompat.startForeground(this, NotificationManager.AUTO_TUNNEL_NOTIFICATION_ID, notification, Constants.SPECIAL_USE_SERVICE_TYPE_ID)
     }
 
-    private fun startAutoTunnelStateJob(): Job =
-        lifecycleScope.launch(ioDispatcher) {
-            val networkFlow =
-                debouncedConnectivityStateFlow
-                    .flowOn(ioDispatcher)
-                    .map { it.toDomain() }
-                    .map(::NetworkChange)
-                    .distinctUntilChanged()
+    private fun startAutoTunnelStateJob(): Job = lifecycleScope.launch(ioDispatcher) {
+        // We use the dynamic debounced flow here
+        val networkFlow = debouncedConnectivityStateFlow.flowOn(ioDispatcher).map { it.toDomain() }.map(::NetworkChange).distinctUntilChanged()
+        val settingsFlow = combineSettings().map { (appMode, settings, tunnels) -> SettingsChange(appMode, settings, tunnels) }
+        val tunnelsFlow = tunnelManager.activeTunnels.map(::ActiveTunnelsChange)
+        var reevaluationJob: Job? = null
 
-            val settingsFlow =
-                combineSettings().map { (appMode, settings, tunnels) ->
-                    SettingsChange(appMode, settings, tunnels)
-                }
+        combine(networkFlow, settingsFlow, tunnelsFlow) { network, settings, tunnels ->
+            autoTunnelStateFlow.update {
+                it.copy(activeTunnels = tunnels.activeTunnels, networkState = network.networkState, settings = settings.settings, tunnels = settings.tunnels)
+            }
+        }.first()
 
-            val tunnelsFlow = tunnelManager.activeTunnels.map(::ActiveTunnelsChange)
+        val initialState = autoTunnelStateFlow.value
+        if (initialState != defaultState) {
+            handleAutoTunnelEvent(initialState.determineAutoTunnelEvent(NetworkChange(initialState.networkState)))
+        }
 
-            var reevaluationJob: Job? = null
+        merge(networkFlow, settingsFlow, tunnelsFlow).collect { change ->
+            val previousState = autoTunnelStateFlow.value
 
-            // get everything in sync before we use merge
-            combine(networkFlow, settingsFlow, tunnelsFlow) { network, settings, tunnels ->
-                    autoTunnelStateFlow.update {
-                        it.copy(
-                            activeTunnels = tunnels.activeTunnels,
-                            networkState = network.networkState,
-                            settings = settings.settings,
-                            tunnels = settings.tunnels,
-                        )
+            // --- AUTO-SAVE LOGIC ---
+            val settings = previousState.settings
+            if (change is NetworkChange && settings.isBssidRoamingEnabled && settings.isBssidAutoSaveEnabled) {
+                val oldNet = previousState.networkState.activeNetwork
+                val newNet = change.networkState.activeNetwork
+                
+                if (oldNet is ActiveNetwork.Wifi && newNet is ActiveNetwork.Wifi) {
+                    val isOldValid = !oldNet.bssid.isNullOrBlank() && oldNet.bssid != "02:00:00:00:00:00" && oldNet.bssid != "00:00:00:00:00:00"
+                    val isNewValid = !newNet.bssid.isNullOrBlank() && newNet.bssid != "02:00:00:00:00:00" && newNet.bssid != "00:00:00:00:00:00"
+
+                    if (oldNet.ssid == newNet.ssid && oldNet.bssid != newNet.bssid && isOldValid && isNewValid) {
+                        
+                        val alreadyCovered = if (settings.isBssidWildcardsEnabled) {
+                            settings.roamingSSIDs.isMatchingToWildcardList(newNet.ssid)
+                        } else {
+                            settings.roamingSSIDs.contains(newNet.ssid)
+                        }
+
+                        if (!alreadyCovered) {
+                            Timber.i("Auto-save: Detected roaming on ${newNet.ssid}. Adding to list.")
+                            val newSet = settings.roamingSSIDs + newNet.ssid
+                            launch(ioDispatcher) {
+                                autoTunnelRepository.get().upsert(settings.copy(roamingSSIDs = newSet))
+                            }
+                        }
                     }
                 }
-                .first()
+            }
+            // -----------------------
 
-            val initialState = autoTunnelStateFlow.value
-            if (initialState != defaultState) {
-                handleAutoTunnelEvent(
-                    initialState.determineAutoTunnelEvent(NetworkChange(initialState.networkState))
-                )
+            when (change) {
+                is NetworkChange -> {
+                    reevaluationJob?.cancel()
+                    autoTunnelStateFlow.update { it.copy(networkState = change.networkState) }
+                    if (previousState.networkState == change.networkState) return@collect
+                }
+                is SettingsChange -> {
+                    reevaluationJob?.cancel()
+                    autoTunnelStateFlow.update { it.copy(settings = change.settings, tunnels = change.tunnels) }
+                    if (previousState.settings == change.settings && previousState.tunnels == change.tunnels) return@collect
+                }
+                is ActiveTunnelsChange -> {
+                    autoTunnelStateFlow.update { it.copy(activeTunnels = change.activeTunnels) }
+                    return@collect
+                }
             }
 
-            // use merge to limit the noise of a combine and also increase the scalability of auto
-            // tunnel handling new states
-            merge(networkFlow, settingsFlow, tunnelsFlow).collect { change ->
-                if (change !is ActiveTunnelsChange) {
-                    Timber.d("New state changed to ${change.javaClass.simpleName}")
-                }
+            val currentState = autoTunnelStateFlow.value
+            val event = currentState.determineAutoTunnelEvent(change, previousState)
+            
+            // Delegate Restart (Roaming) to Handler, Handle others normally
+            if (event is AutoTunnelEvent.Restart) {
+                Timber.i("Service: Roaming detected via Dynamic Debounce. Delegating to Handler.")
+                roamingHandler.onRoamingDetected(event.tunnelConfig)
+            } else {
+                handleAutoTunnelEvent(event)
+            }
 
-                val previousState = autoTunnelStateFlow.value
-
-                when (change) {
-                    is NetworkChange -> {
-                        Timber.d("Network change: ${change.networkState}")
-                        reevaluationJob?.cancel()
-                        autoTunnelStateFlow.update { it.copy(networkState = change.networkState) }
-                        if (previousState.networkState == change.networkState) {
-                            Timber.d("Duplicate network state change detected, ignoring")
-                            return@collect
-                        }
-                    }
-                    is SettingsChange -> {
-                        reevaluationJob?.cancel()
-                        autoTunnelStateFlow.update {
-                            it.copy(settings = change.settings, tunnels = change.tunnels)
-                        }
-                        if (
-                            previousState.settings == change.settings &&
-                                previousState.tunnels == change.tunnels
-                        ) {
-                            Timber.d("Duplicate settings change detected, ignoring")
-                            return@collect
-                        }
-                    }
-                    is ActiveTunnelsChange -> {
-                        autoTunnelStateFlow.update { it.copy(activeTunnels = change.activeTunnels) }
-                        return@collect
-                    }
-                }
-
-                handleAutoTunnelEvent(autoTunnelStateFlow.value.determineAutoTunnelEvent(change))
-
-                // re-evaluate network state after a short duration to prevent missed state changes
-                reevaluationJob = launch {
-                    val snapshotNetwork = autoTunnelStateFlow.value.networkState
-                    delay(REEVALUATE_CHECK_DELAY)
-                    val currentState = autoTunnelStateFlow.value
-                    if (
-                        currentState != defaultState && currentState.networkState != snapshotNetwork
-                    ) {
-                        Timber.d(
-                            "Re-evaluating auto-tunnel state.. (network changed since snapshot)"
-                        )
-                        handleAutoTunnelEvent(currentState.determineAutoTunnelEvent(change))
-                    } else {
-                        Timber.d("Skipping re-eval: network unchanged or default state")
-                    }
+            reevaluationJob = launch {
+                val snapshotNetwork = autoTunnelStateFlow.value.networkState
+                delay(REEVALUATE_CHECK_DELAY)
+                val delayedState = autoTunnelStateFlow.value
+                if (delayedState != defaultState && delayedState.networkState != snapshotNetwork) {
+                     val delayedEvent = delayedState.determineAutoTunnelEvent(change, previousState)
+                     if (delayedEvent is AutoTunnelEvent.Restart) {
+                        Timber.i("Service: Roaming detected (Delayed). Delegating to Handler.")
+                        roamingHandler.onRoamingDetected(delayedEvent.tunnelConfig)
+                     } else {
+                        handleAutoTunnelEvent(delayedEvent)
+                     }
                 }
             }
         }
+    }
 
     private fun combineSettings(): Flow<Triple<AppMode, AutoTunnelSettings, List<TunnelConfig>>> {
         return combine(
                 settingsRepository.flow.map { it.appMode }.distinctUntilChanged(),
                 autoTunnelRepository.get().flow,
-                tunnelsRepository.userTunnelsFlow.map { tunnels ->
-                    // isActive is ignored for equality checks so user can manually toggle off
-                    // tunnel with auto-tunnel
-                    tunnels.map { it.copy(isActive = false) }
-                },
-            ) { appMode, autoTunnel, tunnels ->
-                Triple(appMode, autoTunnel, tunnels)
-            }
+                tunnelsRepository.userTunnelsFlow.map { tunnels -> tunnels.map { it.copy(isActive = false) } },
+            ) { appMode, autoTunnel, tunnels -> Triple(appMode, autoTunnel, tunnels) }
             .distinctUntilChanged()
     }
 
-    private fun areAutoTunnelPermissionsRequiredTheSame(
-        old: AutoTunnelState,
-        new: AutoTunnelState,
-    ): Boolean {
+    private fun areAutoTunnelPermissionsRequiredTheSame(old: AutoTunnelState, new: AutoTunnelState): Boolean {
         return (old.settings.wifiDetectionMethod == new.settings.wifiDetectionMethod &&
-            old.networkState.locationPermissionGranted ==
-                new.networkState.locationPermissionGranted &&
+            old.networkState.locationPermissionGranted == new.networkState.locationPermissionGranted &&
             old.networkState.locationServicesEnabled == new.networkState.locationServicesEnabled &&
             old.tunnels == new.tunnels &&
             old.settings.trustedNetworkSSIDs == new.settings.trustedNetworkSSIDs)
     }
 
-    //     watch for changes to location permission and notify user it will impact auto-tunneling
-    //     TODO or a recheck button for location permission so we dont have to poll it
     private fun startLocationPermissionsNotificationJob(): Job =
         lifecycleScope.launch(ioDispatcher) {
             var locationServicesShown = false
@@ -288,52 +256,34 @@ class AutoTunnelService : LifecycleService() {
                     when (state.detectionMethod) {
                         AndroidNetworkMonitor.WifiDetectionMethod.DEFAULT,
                         AndroidNetworkMonitor.WifiDetectionMethod.LEGACY -> {
-                            if (
-                                !state.locationPermissionsEnabled &&
-                                    !locationPermissionsShown &&
-                                    state.ssidReadRequired
-                            ) {
+                            if (!state.locationPermissionsEnabled && !locationPermissionsShown && state.ssidReadRequired) {
                                 locationPermissionsShown = true
-                                val notification =
-                                    notificationManager.createNotification(
-                                        WireGuardNotification.NotificationChannels.AUTO_TUNNEL,
-                                        title = getString(R.string.warning),
-                                        description =
-                                            getString(R.string.location_permissions_missing),
-                                    )
                                 notificationManager.show(
                                     NotificationManager.AUTO_TUNNEL_LOCATION_PERMISSION_ID,
-                                    notification,
-                                )
-                            }
-                            if (
-                                !state.locationServicesEnabled &&
-                                    !locationServicesShown &&
-                                    state.ssidReadRequired
-                            ) {
-                                locationServicesShown = true
-                                val notification =
                                     notificationManager.createNotification(
                                         WireGuardNotification.NotificationChannels.AUTO_TUNNEL,
                                         title = getString(R.string.warning),
-                                        description =
-                                            getString(R.string.location_services_not_detected),
+                                        description = getString(R.string.location_permissions_missing),
                                     )
+                                )
+                            }
+                            if (!state.locationServicesEnabled && !locationServicesShown && state.ssidReadRequired) {
+                                locationServicesShown = true
                                 notificationManager.show(
                                     NotificationManager.AUTO_TUNNEL_LOCATION_SERVICES_ID,
-                                    notification,
+                                    notificationManager.createNotification(
+                                        WireGuardNotification.NotificationChannels.AUTO_TUNNEL,
+                                        title = getString(R.string.warning),
+                                        description = getString(R.string.location_services_not_detected),
+                                    )
                                 )
                             }
                             if (state.locationServicesEnabled || !state.ssidReadRequired) {
-                                notificationManager.remove(
-                                    NotificationManager.AUTO_TUNNEL_LOCATION_SERVICES_ID
-                                )
+                                notificationManager.remove(NotificationManager.AUTO_TUNNEL_LOCATION_SERVICES_ID)
                                 locationServicesShown = false
                             }
                             if (state.locationPermissionsEnabled || !state.ssidReadRequired) {
-                                notificationManager.remove(
-                                    NotificationManager.AUTO_TUNNEL_LOCATION_PERMISSION_ID
-                                )
+                                notificationManager.remove(NotificationManager.AUTO_TUNNEL_LOCATION_PERMISSION_ID)
                                 locationPermissionsShown = false
                             }
                         }
@@ -344,33 +294,64 @@ class AutoTunnelService : LifecycleService() {
 
     private suspend fun handleAutoTunnelEvent(autoTunnelEvent: AutoTunnelEvent) {
         autoTunMutex.withLock {
-            when (
-                val event =
-                    autoTunnelEvent.also {
-                        Timber.i("Auto tunnel event: ${it.javaClass.simpleName}")
+            when (val event = autoTunnelEvent.also { Timber.i("Auto tunnel event: ${it.javaClass.simpleName}") }) {
+                
+                is AutoTunnelEvent.Start -> {
+                    (event.tunnelConfig ?: tunnelsRepository.getDefaultTunnel())?.let { 
+                        tunnelManager.startTunnel(it) 
                     }
-            ) {
-                is AutoTunnelEvent.Start ->
-                    (event.tunnelConfig ?: tunnelsRepository.getDefaultTunnel())?.let {
-                        tunnelManager.startTunnel(it)
-                    }
+                }
+                
                 is AutoTunnelEvent.Stop -> tunnelManager.stopActiveTunnels()
+                
+                // Restart is handled by the delegation flow above
+                is AutoTunnelEvent.Restart -> { }
+                
                 AutoTunnelEvent.DoNothing -> Timber.i("Auto-tunneling: nothing to do")
             }
         }
     }
 
-    // restart network flow on debounce changes
+    // --- DYNAMIC DEBOUNCE LOGIC ---
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private val debouncedConnectivityStateFlow: Flow<ConnectivityState> by lazy {
-        autoTunnelRepository
-            .get()
-            .flow
-            .map { it.debounceDelaySeconds.toMillis() }
-            .distinctUntilChanged()
-            .flatMapLatest { debounceMillis ->
-                networkMonitor.connectivityStateFlow.debounce(debounceMillis)
+        // 1. Combine Network State + User Delay Settings
+        combine(
+            networkMonitor.connectivityStateFlow,
+            autoTunnelRepository.get().flow.map { it.debounceDelaySeconds.toMillis() }.distinctUntilChanged()
+        ) { networkState, delay ->
+            Pair(networkState, delay)
+        }
+        // 2. Scan to keep track of PREVIOUS state (to detect BSSID change)
+        .scan(Triple<ConnectivityState?, ConnectivityState?, Long>(null, null, 0L)) { previous, current ->
+             // Triple(OldState, NewState, UserDelay)
+             Triple(previous.second, current.first, current.second)
+        }
+        .drop(1) // Skip initial seed
+        // 3. Dynamic Debounce Operator
+        .debounce { (oldState, newState, userDelay) ->
+            if (oldState == null || newState == null) return@debounce 0L
+            
+            val oldNet = oldState.activeNetwork
+            val newNet = newState.activeNetwork
+            
+            // Check for Roaming (Same SSID, Different BSSID, Both Wifi)
+            val isRoaming = oldNet is ActiveNetwork.Wifi && 
+                            newNet is ActiveNetwork.Wifi && 
+                            oldNet.ssid == newNet.ssid && 
+                            oldNet.bssid != newNet.bssid &&
+                            !newNet.bssid.isNullOrBlank()
+
+            if (isRoaming) {
+                Timber.d("Dynamic Debounce: Roaming detected. Using FAST delay (250ms).")
+                250L // Fast roaming
+            } else {
+                // Standard change (4G / New Wifi / Loss) -> Use User Delay
+                userDelay 
             }
+        }
+        .mapNotNull { it.second } // Extract the new ConnectivityState
+        .distinctUntilChanged()
     }
 
     companion object {

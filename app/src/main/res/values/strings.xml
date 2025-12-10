@@ -438,4 +438,16 @@
     <string name="donation_prompt_suffix">to keep it free and improving.</string>
     <string name="cookie_packet_junk_size">Cookie packet junk size</string>
     <string name="transport_packet_junk_size">Transport packet junk size</string>
+    <string name="roaming_bssid">Roaming (BSSID)</string>
+    <string name="restart_on_bssid_change">Restart on BSSID change</string>
+    <string name="restart_on_bssid_change_description">Restart tunnel when switching access points on the same SSID</string>
+    <string name="auto_detect_networks">Auto-detect networks</string>
+    <string name="auto_detect_networks_description">Automatically add the current network to the list below if roaming is detected.</string>
+    <string name="restrict_to_saved_networks">Restrict to saved networks</string>
+    <string name="restrict_to_saved_networks_description">If disabled, roaming restart will happen on ALL networks (Global Mode).</string>
+    <string name="roaming_wildcards">Use wildcards for roaming</string>
+    <string name="roaming_wildcards_description">Allow wildcard matching (* or ?) for the roaming list.</string>
+    <string name="roaming_ssids">Roaming SSIDs</string>
+    <string name="roaming_ssids_description">List of networks where roaming restart is allowed.</string>
+    <string name="add_roaming_ssid_hint">Add specific SSIDs</string>
 </resources>

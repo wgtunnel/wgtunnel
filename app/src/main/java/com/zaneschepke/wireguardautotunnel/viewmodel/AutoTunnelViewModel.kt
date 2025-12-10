@@ -197,4 +197,47 @@ constructor(
             )
         }
     }
+
+    // --- ROAMING FUNCTIONS ---
+
+    fun setBssidRoamingEnabled(to: Boolean) = intent {
+        autoTunnelRepository.upsert(state.autoTunnelSettings.copy(isBssidRoamingEnabled = to))
+    }
+
+    fun setBssidAutoSaveEnabled(to: Boolean) = intent {
+        autoTunnelRepository.upsert(state.autoTunnelSettings.copy(isBssidAutoSaveEnabled = to))
+    }
+
+    fun setBssidListEnabled(to: Boolean) = intent {
+        autoTunnelRepository.upsert(state.autoTunnelSettings.copy(isBssidListEnabled = to))
+    }
+
+    // --- NEW WILDCARD SETTER ---
+    fun setBssidWildcardsEnabled(to: Boolean) = intent {
+        autoTunnelRepository.upsert(state.autoTunnelSettings.copy(isBssidWildcardsEnabled = to))
+    }
+    // ---------------------------
+
+    fun saveRoamingSSID(name: String) = intent {
+        if (name.isEmpty()) return@intent
+        val trimmed = name.trim()
+        if (state.autoTunnelSettings.roamingSSIDs.contains(trimmed)) {
+            return@intent postSideEffect(
+                GlobalSideEffect.Snackbar(StringValue.DynamicString("SSID already in roaming list"))
+            )
+        }
+        autoTunnelRepository.upsert(
+            state.autoTunnelSettings.copy(
+                roamingSSIDs = (state.autoTunnelSettings.roamingSSIDs + trimmed).toMutableSet()
+            )
+        )
+    }
+
+    fun removeRoamingSSID(name: String) = intent {
+        autoTunnelRepository.upsert(
+            state.autoTunnelSettings.copy(
+                roamingSSIDs = (state.autoTunnelSettings.roamingSSIDs - name).toMutableSet()
+            )
+        )
+    }
 }
