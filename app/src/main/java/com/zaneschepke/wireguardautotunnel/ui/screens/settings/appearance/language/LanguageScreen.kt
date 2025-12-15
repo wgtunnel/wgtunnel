@@ -14,13 +14,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
 import java.text.Collator
-import java.util.*
 
 @Composable
 fun LanguageScreen() {
@@ -28,11 +28,11 @@ fun LanguageScreen() {
     val sharedViewModel = LocalSharedVm.current
     val appState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
 
-    val collator = Collator.getInstance(Locale.getDefault())
+    val collator = Collator.getInstance(Locale.current.platformLocale)
     val locales =
         LocaleUtil.supportedLocales.map {
             val tag = it.replace("_", "-")
-            Locale.forLanguageTag(tag)
+            java.util.Locale.forLanguageTag(tag)
         }
 
     val sortedLocales =

@@ -11,6 +11,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
@@ -25,7 +26,6 @@ import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.PeerProxy
 import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigViewModel
-import java.util.Locale
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
@@ -36,7 +36,7 @@ fun ConfigScreen(viewModel: ConfigViewModel) {
 
     if (uiState.isLoading) return
 
-    val locale = remember { Locale.getDefault() }
+    val locale = Locale.current.platformLocale
 
     var configProxy by remember {
         mutableStateOf(uiState.tunnel?.let { ConfigProxy.from(it.toAmConfig()) } ?: ConfigProxy())

@@ -309,7 +309,7 @@ fun PackageManager.getFriendlyAppName(packageName: String, appInfo: ApplicationI
     val label =
         try {
             getApplicationLabel(appInfo).toString()
-        } catch (e: PackageManager.NameNotFoundException) {
+        } catch (_: PackageManager.NameNotFoundException) {
             packageName
         }
 

@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,7 +34,6 @@ import com.zaneschepke.wireguardautotunnel.ui.common.security.SecureScreenFromRe
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.viewmodel.ProxySettingsViewModel
-import java.util.Locale
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
@@ -44,7 +44,7 @@ fun ProxySettingsScreen(viewModel: ProxySettingsViewModel = hiltViewModel()) {
 
     if (uiState.isLoading) return
 
-    val locale = remember { Locale.getDefault() }
+    val locale = Locale.current.platformLocale
 
     val proxySettings by remember(uiState) { mutableStateOf(uiState.proxySettings) }
 
