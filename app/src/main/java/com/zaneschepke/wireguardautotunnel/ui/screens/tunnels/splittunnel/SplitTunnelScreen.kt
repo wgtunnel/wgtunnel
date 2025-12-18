@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
+import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.components.SelectTunnelModal
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.components.SplitTunnelContent
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.state.SplitOption
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
@@ -21,38 +22,57 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 fun SplitTunnelScreen(viewModel: SplitTunnelViewModel) {
     val sharedViewModel = LocalSharedVm.current
-    val splitTunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
-    if (splitTunnelState.isLoading) {
+    val sharedUiState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularWavyProgressIndicator(waveSpeed = 60.dp, modifier = Modifier.size(48.dp))
         }
         return
     }
-    val tunnel = splitTunnelState.tunnel ?: return
+    val tunnel = uiState.tunnel ?: return
 
-    val conf by remember { derivedStateOf { tunnel.toAmConfig() } }
+    var effectiveTunnel by remember { mutableStateOf(tunnel) }
 
-    var splitConfig by remember {
-        mutableStateOf(
-            when {
-                conf.`interface`.excludedApplications.isNotEmpty() ->
-                    Pair(SplitOption.EXCLUDE, conf.`interface`.excludedApplications.toSet())
-                conf.`interface`.includedApplications.isNotEmpty() ->
-                    Pair(SplitOption.INCLUDE, conf.`interface`.includedApplications.toSet())
-                else -> Pair(SplitOption.ALL, emptySet<String>())
-            }
-        )
-    }
+    val conf by remember(effectiveTunnel) { derivedStateOf { effectiveTunnel.toAmConfig() } }
+
+    var splitConfig by
+        remember(conf) {
+            mutableStateOf(
+                when {
+                    conf.`interface`.excludedApplications.isNotEmpty() ->
+                        Pair(SplitOption.EXCLUDE, conf.`interface`.excludedApplications.toSet())
+                    conf.`interface`.includedApplications.isNotEmpty() ->
+                        Pair(SplitOption.INCLUDE, conf.`interface`.includedApplications.toSet())
+                    else -> Pair(SplitOption.ALL, emptySet<String>())
+                }
+            )
+        }
 
     sharedViewModel.collectSideEffect { sideEffect ->
         if (sideEffect is LocalSideEffect.SaveChanges)
             viewModel.saveSplitTunnelSelection(splitConfig)
+        if (sideEffect is LocalSideEffect.Modal.SelectTunnel) showDialog = true
     }
+
+    SelectTunnelModal(
+        showDialog,
+        sharedUiState.tunnels,
+        onAttest = { conf ->
+            if (conf == null) return@SelectTunnelModal
+            effectiveTunnel = conf
+            showDialog = false
+        },
+        onDismiss = { showDialog = false },
+    )
 
     SplitTunnelContent(
         splitConfig = splitConfig,
-        installedPackages = splitTunnelState.installedPackages,
+        installedPackages = uiState.installedPackages,
         onSplitOptionChange = { splitConfig = Pair(it, splitConfig.second) },
         onAppSelectionToggle = { appPackage, enabled ->
             val updated =

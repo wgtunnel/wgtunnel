@@ -456,4 +456,7 @@
     <string name="i3" translatable="false">I3</string>
     <string name="i4" translatable="false">I4</string>
     <string name="i5" translatable="false">I5</string>
+    <string name="copy_from">Copy from</string>
+    <string name="mode">Mode</string>
+    <string name="app_selection">App selection</string>
 </resources>

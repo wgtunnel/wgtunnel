@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import com.wireguard.android.backend.WgQuickBackend
+import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
@@ -166,7 +167,9 @@ constructor(
                 postSideEffect(GlobalSideEffect.Snackbar(message))
                 if (!accepted) return@intent
                 if (WgQuickBackend.hasKernelSupport())
-                    Timber.i("Device supports kernel backend. WireGuard module is built in, switching to kernel backend.")
+                    Timber.i(
+                        "Device supports kernel backend. WireGuard module is built in, switching to kernel backend."
+                    )
                 else {
                     Timber.e("Device does not support kernel backend!")
                     intent {

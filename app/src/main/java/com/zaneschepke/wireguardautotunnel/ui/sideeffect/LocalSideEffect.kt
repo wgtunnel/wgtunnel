@@ -19,7 +19,7 @@ sealed class LocalSideEffect {
 
         data object DeleteTunnels : Modal()
 
-        data object AddCustomApp : Modal()
+        data object SelectTunnel : Modal()
     }
 
     sealed class SelectedTunnels : LocalSideEffect() {

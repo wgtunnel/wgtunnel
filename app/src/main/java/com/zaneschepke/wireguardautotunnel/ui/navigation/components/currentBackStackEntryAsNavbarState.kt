@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Sort
+import androidx.compose.material.icons.outlined.ContentPasteGo
 import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.Icon
@@ -279,12 +280,26 @@ fun currentRouteAsNavbarState(
                         },
                         topTitle = tunnelName ?: "",
                         topTrailing = {
-                            IconButton(
-                                onClick = {
-                                    sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
+                            Row {
+                                IconButton(
+                                    onClick = {
+                                        sharedViewModel.postSideEffect(
+                                            LocalSideEffect.Modal.SelectTunnel
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        Icons.Outlined.ContentPasteGo,
+                                        stringResource(R.string.copy_from),
+                                    )
                                 }
-                            ) {
-                                Icon(Icons.Rounded.Save, stringResource(R.string.save))
+                                IconButton(
+                                    onClick = {
+                                        sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
+                                    }
+                                ) {
+                                    Icon(Icons.Rounded.Save, stringResource(R.string.save))
+                                }
                             }
                         },
                         showBottomItems = true,
