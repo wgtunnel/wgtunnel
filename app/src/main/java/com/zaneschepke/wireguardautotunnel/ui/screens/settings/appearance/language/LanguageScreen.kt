@@ -46,7 +46,7 @@ fun LanguageScreen() {
         remember(appState.locale, sortedLocales) {
             if (appState.locale == LocaleUtil.OPTION_PHONE_LANGUAGE) 0
             else {
-                val selectedLocale = Locale.forLanguageTag(appState.locale)
+                val selectedLocale = java.util.Locale.forLanguageTag(appState.locale)
                 sortedLocales.indexOfFirst {
                     it.toLanguageTag() == selectedLocale.toLanguageTag()
                 } + 1
