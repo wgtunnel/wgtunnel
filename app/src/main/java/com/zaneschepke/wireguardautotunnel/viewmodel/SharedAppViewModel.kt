@@ -1,7 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import android.net.Uri
-import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import com.wireguard.android.backend.WgQuickBackend
 import com.zaneschepke.wireguardautotunnel.R
@@ -24,9 +23,11 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.TunnelName
 import com.zaneschepke.wireguardautotunnel.util.extensions.asStringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.saveTunnelsUniquely
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.ktor.client.HttpClient
+import io.ktor.client.request.prepareGet
+import io.ktor.client.statement.bodyAsText
 import java.io.File
 import java.io.IOException
-import java.net.URL
 import java.time.Instant
 import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
@@ -50,6 +51,7 @@ constructor(
     private val settingsRepository: GeneralSettingRepository,
     private val monitoringSettingsRepository: MonitoringSettingsRepository,
     private val rootShellUtils: RootShellUtils,
+    private val httpClient: HttpClient,
     private val fileUtils: FileUtils,
 ) : ContainerHost<SharedAppUiState, LocalSideEffect>, ViewModel() {
 
@@ -239,18 +241,23 @@ constructor(
     fun importFromQr(conf: String) = intent { importFromClipboard(conf) }
 
     fun importFromUrl(url: String) = intent {
-        runCatching {
-                val url = URL(url)
-                val uri = url.toURI().toString().toUri()
-                importFromUri(uri)
-            }
-            .onFailure {
-                postSideEffect(
-                    GlobalSideEffect.Toast(
-                        StringValue.StringResource(R.string.error_download_failed)
+        try {
+            httpClient.prepareGet(url).execute { response ->
+                if (response.status.value in 200..299) {
+                    val body = response.bodyAsText()
+                    importFromClipboard(body)
+                } else {
+                    throw IOException(
+                        "Failed to download file with error status: ${response.status.value}"
                     )
-                )
+                }
             }
+        } catch (e: Exception) {
+            Timber.e(e)
+            postSideEffect(
+                GlobalSideEffect.Toast(StringValue.StringResource(R.string.error_download_failed))
+            )
+        }
     }
 
     fun importFromUri(uri: Uri) = intent {

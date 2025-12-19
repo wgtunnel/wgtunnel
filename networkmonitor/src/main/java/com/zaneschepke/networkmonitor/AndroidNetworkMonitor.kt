@@ -15,8 +15,6 @@ import com.wireguard.android.util.RootShell
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor.WifiDetectionMethod.*
 import com.zaneschepke.networkmonitor.shizuku.ShizukuShell
 import com.zaneschepke.networkmonitor.util.*
-import kotlin.concurrent.atomics.AtomicReference
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -24,6 +22,8 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 class AndroidNetworkMonitor(
     private val appContext: Context,
@@ -211,6 +211,8 @@ class AndroidNetworkMonitor(
                 .build()
 
         connectivityManager?.registerNetworkCallback(request, wifiCallback!!)
+
+        trySend(TransportEvent.Unknown)
 
         awaitClose {
             runCatching { connectivityManager?.unregisterNetworkCallback(wifiCallback!!) }
