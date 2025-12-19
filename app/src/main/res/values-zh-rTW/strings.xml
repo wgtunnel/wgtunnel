@@ -7,7 +7,7 @@
     <string name="app_name">WG Tunnel</string>
     <string name="name">名稱</string>
     <string name="public_key">公鑰</string>
-    <string name="privacy_policy">查看隱私政策</string>
+    <string name="privacy_policy">隱私政策</string>
     <string name="tunnels">隧道清單</string>
     <string name="thank_you">感謝您使用 WG Tunnel！</string>
     <string name="mtu">MTU</string>
@@ -42,14 +42,14 @@
     <string name="pin_created">成功建立 PIN</string>
     <string name="incorrect_pin">PIN 不正確</string>
     <string name="enable_app_lock">啟用應用程式鎖定</string>
-    <string name="set_primary_tunnel">設為主要隧道</string>
+    <string name="set_primary_tunnel">沒有配置首選隧道時使用的隧道</string>
     <string name="edit_tunnel">編輯隧道</string>
     <string name="kernel">核心</string>
     <string name="vpn_settings">系統 VPN 設定</string>
     <string name="support">支援</string>
     <string name="getting_started_guide">取得入門指南</string>
     <string name="settings">設定</string>
-    <string name="restart_at_boot">開機時重新啟動</string>
+    <string name="restart_at_boot">開機時啟動</string>
     <string name="junk_packet_count">垃圾封包數</string>
     <string name="logs">日誌</string>
     <string name="dark">灰色</string>
@@ -57,13 +57,13 @@
     <string name="donate">捐款給此專案</string>
     <string name="appearance">外觀</string>
     <string name="display_theme">主題</string>
-    <string name="primary_tunnel">主要隧道</string>
+    <string name="primary_tunnel">預設隧道</string>
     <string name="learn_more">了解更多</string>
     <string name="notifications">通知</string>
     <string name="dynamic">動態</string>
     <string name="never">從不</string>
     <string name="automatic">自動</string>
-    <string name="add_wifi_name">新增 WiFi SSID</string>
+    <string name="add_wifi_name">新增 WiFi 名稱</string>
     <string name="allow_lan_traffic">允許 LAN 流量</string>
     <string name="stop_on_no_internet">沒有連上網路時停止</string>
     <string name="stop_on_internet_loss">網路斷線時停止隧道</string>
@@ -82,7 +82,7 @@
     <string name="error_no_file_explorer">未安裝任何檔案管理器</string>
     <string name="unsure_how">如果您不確定如何進行</string>
     <string name="see_the">請參閱</string>
-    <string name="local_logging">日誌</string>
+    <string name="local_logging">本機日誌監視器</string>
     <string name="email_description">給作者寄電子郵件</string>
     <string name="always_on_vpn_support">允許永久連線的 VPN</string>
     <string name="vpn_on">VPN 已開啟</string>
@@ -120,7 +120,7 @@
     <string name="export_tunnels_amnezia">將隧道匯出為 Amnezia</string>
     <string name="export_tunnels_wireguard">將隧道匯出為 WireGuard</string>
     <string name="inactive">未使用</string>
-    <string name="trusted_wifi_names">信任的 WiFi SSID</string>
+    <string name="trusted_wifi_names">信任的 WiFi 名稱</string>
     <string name="auto_tunnel">自動隧道管理</string>
     <string name="auto_tunnel_title">自動隧道管理服務</string>
     <string name="select_all">全選</string>
@@ -131,7 +131,7 @@
     <string name="tunnel_control">隧道控制</string>
     <string name="export_logs">匯出已儲存的日誌</string>
     <string name="delete_logs">刪除並清理日誌</string>
-    <string name="monitoring_state_changes">監控狀態變化</string>
+    <string name="monitoring_state_changes">監測狀態變化</string>
     <string name="use_root_shell_for_wifi">透過 root 權限取得 Wi-Fi 資訊，避免需要位置存取權</string>
     <string name="splt_tunneling">隧道拆分</string>
     <string name="use_wildcards">SSID 使用萬用字元</string>
@@ -209,12 +209,12 @@
     <string name="packets_sent_template">已發送封包: %1$s</string>
     <string name="packet_loss_template">丟失封包: %.2f%%</string>
     <string name="restore_application">從備份還原</string>
-    <string name="restore_success">復原成功。 %1$s</string>
+    <string name="restore_success">還原成功。 %1$s</string>
     <string name="backup_success">備份成功。%1$s</string>
     <string name="backup_application">備份應用程式資料</string>
     <string name="restore_failed">還原備份失敗。</string>
     <string name="backup_failed">建立備份失敗。</string>
-    <string name="set_custom_ping_target">自訂 ping 目標 (可選)</string>
+    <string name="set_custom_ping_target">自訂 ping 目標</string>
     <string name="ping_success_template">上次 ping 成功: %1$s</string>
     <string name="display_detailed_ping_stats">顯示詳細的 ping 統計資訊</string>
     <string name="fix">修復</string>
@@ -229,7 +229,7 @@
     <string name="_false">False</string>
     <string name="ping_target_template">Ping 目標: %1$s</string>
     <string name="reachable_template">可抵達: %1$s</string>
-    <string name="tunnel_monitoring">隧道監控</string>
+    <string name="tunnel_monitoring">隧道監測</string>
     <string name="ping_timeout">隧道 ping 逾時</string>
     <string name="tunnel_ping_interval">隧道 ping 間隔</string>
     <string name="attempts_per_interval">每一間隔的 ping 嘗試次數</string>
@@ -239,13 +239,191 @@
     <string name="move_down">向下移動</string>
     <string name="trusted_ssid_value_description">提交 SSID</string>
     <string name="timeout_all_attempts">所有嘗試的總逾時值</string>
-    <string name="ping_target_description">如果內部 IP 不可用才會使用 (例如: full-tunnel 組態)。留空預設為 Cloudflare。</string>
+    <string name="ping_target_description">拆分組態預設使用內部隧道 IP，非拆分組態預設使用 Cloudflare。</string>
     <string name="drag_handle">拖曳操作</string>
     <string name="tunnel_mobile_data">行動數據上的隧道</string>
     <string name="tunnel_on_ethernet">乙太網路上的隧道</string>
     <string name="prominent_background_location_title">背景定位披露</string>
-    <string name="tunnel_on_wifi">不受信任 Wi-Fi 上的隧道</string>
+    <string name="tunnel_on_wifi">Wi-Fi 上的隧道</string>
     <string name="mobile_tunnel">行動數據隧道</string>
     <string name="skip">略過</string>
     <string name="ethernet_tunnel">乙太網路隧道</string>
+    <string name="dual_stack">雙堆疊</string>
+    <string name="missing_attribute">缺少屬性</string>
+    <string name="kernel_name_dots">Tunnel name cannot be \'.\' or \'..\' in kernel mode</string>
+    <string name="github_sponsors">GitHub Sponsors</string>
+    <string name="save_changes">儲存變更</string>
+    <string name="dual_stack_description">隧道必須支援 IPv4 和 IPv6</string>
+    <string name="password">密碼</string>
+    <string name="remote_key">遠端金鑰</string>
+    <string name="mobile_data">行動數據</string>
+    <string name="vpn">VPN</string>
+    <string name="tunnel_boot_description">開機時啟動預設隧道</string>
+    <string name="prefer_ipv6_resolution">偏好 IPv6 端點解析</string>
+    <string name="quick_actions">快速操作</string>
+    <string name="google_donation_message">不幸的是，由於 Google 的政策，此應用程式的 Play Store 版本不被允許出現捐款連結。請至此專案的網站尋找捐款方式。</string>
+    <string name="http_bind_address">HTTP 綁定位址</string>
+    <string name="tunnel_mapping_description">Map tunnels as preferred by Wi-Fi name</string>
+    <string name="tunnel_name_taken">隧道名稱已經被使用。</string>
+    <string name="mimic_dns">模仿 DNS</string>
+    <string name="unknown_attribute">未知屬性</string>
+    <string name="donation_prompt_prefix">感謝使用 WG Tunnel！如果您可以，請考慮</string>
+    <string name="hint_template">(%1$s)</string>
+    <string name="socks_5_bind_address">SOCKS5 綁定位址</string>
+    <string name="root_required_template">%1$s (需要 root)</string>
+    <string name="website">官方網站</string>
+    <string name="mimic_quic">模仿 QUIC</string>
+    <string name="wifi_settings">Wi-Fi 設定</string>
+    <string name="invalid_value">無效值</string>
+    <string name="info">資訊</string>
+    <string name="pinger_bounce_successful">Tunnel restarted successfully by pinger.</string>
+    <string name="unknown_section">未知部份</string>
+    <string name="unknown">未知</string>
+    <string name="tunnel_error_template">Tunnel failed with: %1$s</string>
+    <string name="syntax_error">句法錯誤</string>
+    <string name="all_services_disabled">執行此操作必須停用自動隧道管理及所有隧道。</string>
+    <string name="pinger_bounce_recovery">Pinger restart failed. Tunnel recovered with old addresses.</string>
+    <string name="defaults_to_template">(預設為 %1$s)</string>
+    <string name="ddns_auto_update_description">DDNS 變更時自動更新 IP</string>
+    <string name="no_network">沒有連上網路</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="ping_target">Ping 目標</string>
+    <string name="dns_provider">DNS 提供者</string>
+    <string name="recommended_template">%1$s (推薦)</string>
+    <string name="missing_section">缺少部份</string>
+    <string name="config_error_template">錯誤組態。%2$s 的 %1$s。</string>
+    <string name="locked_down">鎖定</string>
+    <string name="username">使用者名稱</string>
+    <string name="password_no_spaces">密碼不能含有空格。</string>
+    <string name="resources">資源</string>
+    <string name="invalid_number">無效數字</string>
+    <string name="back">返回</string>
+    <string name="liberapay">Liberapay</string>
+    <string name="donate_title">捐款</string>
+    <string name="active_tunnel_update_failed">使用中的隧道更新失敗</string>
+    <string name="mode_disabled_template">此功能在 %1$s 模式下不可用。</string>
+    <string name="already_donated">已捐款</string>
+    <string name="kofi">Ko-fi</string>
+    <string name="donation_signoff">感激地，</string>
+    <string name="selected">已選擇的</string>
+    <string name="global_split_tunneling">全域隧道拆分</string>
+    <string name="active_network">正在使用的網路:</string>
+    <string name="range_hint">(%1$d–%2$d)</string>
+    <string name="delete_active_message">無法刪除正在使用的隧道。</string>
+    <string name="native_kill_switch">Native kill switch</string>
+    <string name="help_translate">協助翻譯此應用程式</string>
+    <string name="ethernet">乙太網路</string>
+    <string name="socks_5_proxy">SOCKS5 代理</string>
+    <string name="other">其他</string>
+    <string name="new_tunnel">新隧道</string>
+    <string name="kill_switch">kill switch</string>
+    <string name="configuration">組態</string>
+    <string name="global_dns_servers">全域 DNS 伺服器</string>
+    <string name="contact">聯絡</string>
+    <string name="ports_must_differ">失敗。代理必須具有不同連接埠。</string>
+    <string name="backup_and_restore">備份和還原</string>
+    <string name="proxy_settings">代理設定</string>
+    <string name="show_password">顯示密碼</string>
+    <string name="proxy_credentials">代理身份驗證資訊</string>
+    <string name="ping">Ping</string>
+    <string name="about">關於</string>
+    <string name="donation_prompt_link">支援本專案</string>
+    <string name="donation_prompt_suffix">使其維持免費和持續完善。</string>
+    <string name="text_too_large_for_qr">文字大小過大無法顯示 QR code。</string>
+    <string name="options">選項</string>
+    <string name="bypass_lan_for_kill_switch">Bypass LAN for kill switch</string>
+    <string name="security_type">安全性:</string>
+    <string name="bounce_failed_template">Pinger failed to recovery tunnel with error: %1$s</string>
+    <string name="ddns_success_message">動態 DNS 終端點已更新成功。</string>
+    <string name="http_proxy">HTTP 代理</string>
+    <string name="translation">翻譯</string>
+    <string name="doh">DNS over HTTPS (DoH)</string>
+    <string name="location_justification">In order to read Wi-Fi names in the background with your current detection method, Android requires apps to be given \'Allow all the time\' and \'Precise\' (Background Location on older devices) permission. Please enable these permissions in your Android app settings.</string>
+    <string name="reliability">可靠性</string>
+    <string name="monitoring">監測</string>
+    <string name="app_permission_title">WG Tunnel Control Bridge</string>
+    <string name="aovpn_description">允許 Android 系統啟動隧道</string>
+    <string name="dropdown">下拉</string>
+    <string name="set_ping_target">設定 ping 目標</string>
+    <string name="donation_thanks_intro">感謝您考慮向本專案捐款！</string>
+    <string name="comma_separated">以逗號分隔</string>
+    <string name="general">一般</string>
+    <string name="donation_dev_message">作為唯一的開發者，我不知疲倦地使 WG Tunnel 成為 Android 最好的自由開源 WireGuard 用戶端，但沒有您的支援這無法實現。</string>
+    <string name="review">評分此應用程式</string>
+    <string name="disabled">已停用</string>
+    <string name="ddns_auto_update">動態 DNS 自動更新</string>
+    <string name="backend_mode">運作模式</string>
+    <string name="auth_error">Unauthorized</string>
+    <string name="kernel_name_special_characters">Tunnel name in kernel mode cannot have spaces or certain special characters (allowed: alphanumeric, _, =, +, ., -)</string>
+    <string name="_continue">繼續</string>
+    <string name="mimic_sip">模仿 SIP</string>
+    <string name="expiremental_template">%1$s (實驗性)</string>
+    <string name="unavailable_in_mode">當前模式下不可用</string>
+    <string name="server_port">伺服器:連接埠</string>
+    <string name="debounce_description">快速網路變化間的延遲</string>
+    <string name="dns_protocol">DNS 協定</string>
+    <string name="enabled_app_shortcuts">啟用應用程式捷徑</string>
+    <string name="preferred_tunnel">首選隧道</string>
+    <string name="tunnel_running_name_message">隧道正在使用時無法變更名稱。</string>
+    <string name="donation_closing">為您全職開發本專案是我的夢想。</string>
+    <string name="network_name">網路:</string>
+    <string name="mapped">Mapped</string>
+    <string name="tunnel_mapping">Tunnel mapping</string>
+    <string name="android_integrations">Android 整合</string>
+    <string name="preferred_tunnel_label">首選隧道:</string>
+    <string name="dns_settings">DNS 設定</string>
+    <string name="ping_monitor">Ping 監測</string>
+    <string name="read_failed">讀取資料失敗。</string>
+    <string name="crypto">加密貨幣地址</string>
+    <string name="system">系統</string>
+    <string name="restart_message_template">儲存變更會導致 %1$s 重新啟動，您希望要繼續嗎？</string>
+    <string name="already_donated_description">停用未來的捐款提示</string>
+    <string name="metered_tunnel">Metered tunnel</string>
+    <string name="lockdown_settings">鎖定設定</string>
+    <string name="networks">網路</string>
+    <string name="lockdown">鎖定</string>
+    <string name="proxy">代理</string>
+    <string name="invalid_key">無效金鑰</string>
+    <string name="auto_tunnel_channel_id" translatable="false">Auto-tunnel Channel</string>
+    <string name="kofi_url" translatable="false">https://ko-fi.com/zaneschepke</string>
+    <string name="bitcoin_cash_address" translatable="false">bitcoincash:qp6xacvswha2tjfp2rscguq3gd4eecxeuvcgtyjv58</string>
+    <string name="solana" translatable="false">Solana (SOL)</string>
+    <string name="docs_wildcards" translatable="false">https://wgtunnel.com/docs/auto-tunneling/#use-name-wildcards</string>
+    <string name="litecoin" translatable="false">Litecoin (LTC)</string>
+    <string name="liberapay_url" translatable="false">https://liberapay.com/zaneschepke</string>
+    <string name="tron_address" translatable="false">TCbR2SqstTLxCA9zp52iC7G2DfHUGD9ak2</string>
+    <string name="vpn_channel_id" translatable="false">VPN Channel</string>
+    <string name="telegram_url" translatable="false">https://t.me/wgtunnel</string>
+    <string name="monero" translatable="false">Monero (XMR)</string>
+    <string name="bitcoin" translatable="false">Bitcoin (BTC)</string>
+    <string name="polygon" translatable="false">Polygon (POL)</string>
+    <string name="privacy_policy_url" translatable="false">https://wgtunnel.com/privacy-policy/</string>
+    <string name="avalanche_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
+    <string name="stellar_address" translatable="false">GAOHREIPAOKSTD4ELXCMM7LDZPRGKJ2DNHEIXLU752PJS6CDPBAEM75B</string>
+    <string name="db_name" translatable="false">wg-tunnel-db</string>
+    <string name="ethereum" translatable="false">Ethereum (ETH)</string>
+    <string name="bitcoin_address" translatable="false">bc1qu6dwlwhav7cwp5gv3kyv3cpwrjrra80p75js6u</string>
+    <string name="translation_url" translatable="false">https://hosted.weblate.org/engage/wg-tunnel/</string>
+    <string name="zcash_address" translatable="false">u1fkx80l0mr7cgzmj5xusnf4fa0hlvttaedlqjzl657dyyfqq4tzq49v4ru53u8re0kfnlah7s363msewcva43v8a2rn8zqs56jeeu6m7snrfljs343kfkgv7gsa76xg005wz95855uwlrvgan0er8n3sp75mmmj44n3fnjar5y7jy0pd2k5yw33lgwpuectuknkwstdkkfyqvxh9xq6c</string>
+    <string name="docs_url" translatable="false">https://wgtunnel.com/docs/getting-started</string>
+    <string name="ecash" translatable="false">eCash (XEC)</string>
+    <string name="my_email" translatable="false">support@zaneschepke.com</string>
+    <string name="ethereum_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
+    <string name="litecoin_address" translatable="false">ltc1q983jnz3n2zshp2xyme8ant45aah5hv337k8nm7</string>
+    <string name="dev_name" translatable="false">Zane</string>
+    <string name="ecash_address" translatable="false">ecash:qrnnvzhezgm9unazue2mw7np5qhdk2874g996nd2zw</string>
+    <string name="tron" translatable="false">Tron (TRX)</string>
+    <string name="polygon_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
+    <string name="stellar" translatable="false">Stellar (XLM)</string>
+    <string name="monero_address" translatable="false">44D1vWL4CqmEGiRhwtUy6MT2SgaCYpk5o3Nh6YxBFyoCXLZ5eZMLiDGj9uoo51mGjeiLxHWyV28MxDPUzQZN4PoqML16ZB9</string>
+    <string name="zcash" translatable="false">Zcash (ZEC)</string>
+    <string name="solana_address" translatable="false">5qPMZa2Y2R6D6AUzrofS4o2M1nzNpbMiAkcRcBkjsmwQ</string>
+    <string name="github_url" translatable="false">https://github.com/wgtunnel/wgtunnel/issues</string>
+    <string name="avalanche" translatable="false">Avalanche (AVAX)</string>
+    <string name="website_url" translatable="false">https://wgtunnel.com</string>
+    <string name="matrix_url" translatable="false">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
+    <string name="bitcoin_cash" translatable="false">Bitcoin Cash (BCH)</string>
+    <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
+    <string name="transport_packet_junk_size">Transport packet junk size</string>
+    <string name="cookie_packet_junk_size">Cookie packet junk size</string>
 </resources>

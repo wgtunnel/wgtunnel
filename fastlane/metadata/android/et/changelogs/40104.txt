@@ -1,0 +1,3 @@
+Mida on meil uut:
+- Veaparandus, kus automaatne tunneldus ei tuvastanud võrgu olemasolu
+- Veaparandus, kus tunneli teavitus ei käivitunud

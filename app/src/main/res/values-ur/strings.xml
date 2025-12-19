@@ -324,4 +324,106 @@
     <string name="donation_signoff">شکر گزار،</string>
     <string name="google_donation_message">بدقسمتی سے، گوگل کی پالیسیوں کی وجہ سے، اس ایپ کے پلے اسٹور ورژن میں عطیہ کے لنکس کی اجازت نہیں ہے۔ عطیہ کہاں کرنا ہے تلاش کرنے کے لیے براہ کرم پروجیکٹ کے ویب پیجز کو براؤز کریں۔</string>
     <string name="delete_active_message">فعال ٹنل کو حذف نہیں کیا جا سکتا۔</string>
+    <string name="dual_stack">Dual-stack</string>
+    <string name="kernel_name_dots">Tunnel name cannot be \'.\' or \'..\' in kernel mode</string>
+    <string name="save_changes">Save changes</string>
+    <string name="dual_stack_description">Tunnels must support IPv4 and IPv6</string>
+    <string name="remote_key">Remote key</string>
+    <string name="mobile_data">Mobile data</string>
+    <string name="tunnel_boot_description">Start the default tunnel on boot</string>
+    <string name="tunnel_mapping_description">Map tunnels as preferred by Wi-Fi name</string>
+    <string name="donation_prompt_prefix">Thanks for using WG Tunnel! If you can, please consider</string>
+    <string name="website">App website</string>
+    <string name="wifi_settings">Wi-Fi settings</string>
+    <string name="info">Info</string>
+    <string name="unknown">Unknown</string>
+    <string name="all_services_disabled">Auto-tunnel and tunnels must be disabled to perform this action.</string>
+    <string name="no_network">No network connected</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="ping_target">Ping target</string>
+    <string name="resources">Resources</string>
+    <string name="back">Back</string>
+    <string name="already_donated">Already donated</string>
+    <string name="global_split_tunneling">Global split tunneling</string>
+    <string name="active_network">Active Network:</string>
+    <string name="help_translate">Help translate the app</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="other">Other</string>
+    <string name="kill_switch">kill switch</string>
+    <string name="configuration">Configuration</string>
+    <string name="global_dns_servers">Global DNS servers</string>
+    <string name="contact">Contact</string>
+    <string name="backup_and_restore">Backup and restore</string>
+    <string name="ping">Ping</string>
+    <string name="about">About</string>
+    <string name="donation_prompt_link">supporting the project</string>
+    <string name="donation_prompt_suffix">to keep it free and improving.</string>
+    <string name="text_too_large_for_qr">Text is too large to display QR.</string>
+    <string name="options">Options</string>
+    <string name="security_type">Security:</string>
+    <string name="ddns_success_message">Dynamic DNS endpoint successfully updated.</string>
+    <string name="translation">Translation</string>
+    <string name="reliability">Reliability</string>
+    <string name="monitoring">Monitoring</string>
+    <string name="aovpn_description">Allows Android to start tunnels</string>
+    <string name="set_ping_target">Set ping target</string>
+    <string name="general">General</string>
+    <string name="review">Rate app</string>
+    <string name="kernel_name_special_characters">Tunnel name in kernel mode cannot have spaces or certain special characters (allowed: alphanumeric, _, =, +, ., -)</string>
+    <string name="_continue">Continue</string>
+    <string name="unavailable_in_mode">Unavailable in current mode</string>
+    <string name="debounce_description">Delay between rapid network changes</string>
+    <string name="preferred_tunnel">Preferred tunnel</string>
+    <string name="tunnel_running_name_message">Name unchangeable while tunnel is active.</string>
+    <string name="network_name">Network:</string>
+    <string name="mapped">Mapped</string>
+    <string name="tunnel_mapping">Tunnel mapping</string>
+    <string name="preferred_tunnel_label">Preferred tunnel:</string>
+    <string name="ping_monitor">Ping monitor</string>
+    <string name="restart_message_template">Saving changes will cause the %1$s to restart, do you wish to continue?</string>
+    <string name="already_donated_description">Disables future donation prompts</string>
+    <string name="metered_tunnel">Metered tunnel</string>
+    <string name="lockdown_settings">Lockdown settings</string>
+    <string name="networks">Networks</string>
+    <string name="auto_tunnel_channel_id" translatable="false">Auto-tunnel Channel</string>
+    <string name="kofi_url" translatable="false">https://ko-fi.com/zaneschepke</string>
+    <string name="bitcoin_cash_address" translatable="false">bitcoincash:qp6xacvswha2tjfp2rscguq3gd4eecxeuvcgtyjv58</string>
+    <string name="solana" translatable="false">Solana (SOL)</string>
+    <string name="docs_wildcards" translatable="false">https://wgtunnel.com/docs/auto-tunneling/#use-name-wildcards</string>
+    <string name="litecoin" translatable="false">Litecoin (LTC)</string>
+    <string name="liberapay_url" translatable="false">https://liberapay.com/zaneschepke</string>
+    <string name="tron_address" translatable="false">TCbR2SqstTLxCA9zp52iC7G2DfHUGD9ak2</string>
+    <string name="vpn_channel_id" translatable="false">VPN Channel</string>
+    <string name="telegram_url" translatable="false">https://t.me/wgtunnel</string>
+    <string name="monero" translatable="false">Monero (XMR)</string>
+    <string name="bitcoin" translatable="false">Bitcoin (BTC)</string>
+    <string name="polygon" translatable="false">Polygon (POL)</string>
+    <string name="privacy_policy_url" translatable="false">https://wgtunnel.com/privacy-policy/</string>
+    <string name="avalanche_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
+    <string name="stellar_address" translatable="false">GAOHREIPAOKSTD4ELXCMM7LDZPRGKJ2DNHEIXLU752PJS6CDPBAEM75B</string>
+    <string name="db_name" translatable="false">wg-tunnel-db</string>
+    <string name="ethereum" translatable="false">Ethereum (ETH)</string>
+    <string name="bitcoin_address" translatable="false">bc1qu6dwlwhav7cwp5gv3kyv3cpwrjrra80p75js6u</string>
+    <string name="translation_url" translatable="false">https://hosted.weblate.org/engage/wg-tunnel/</string>
+    <string name="zcash_address" translatable="false">u1fkx80l0mr7cgzmj5xusnf4fa0hlvttaedlqjzl657dyyfqq4tzq49v4ru53u8re0kfnlah7s363msewcva43v8a2rn8zqs56jeeu6m7snrfljs343kfkgv7gsa76xg005wz95855uwlrvgan0er8n3sp75mmmj44n3fnjar5y7jy0pd2k5yw33lgwpuectuknkwstdkkfyqvxh9xq6c</string>
+    <string name="docs_url" translatable="false">https://wgtunnel.com/docs/getting-started</string>
+    <string name="ecash" translatable="false">eCash (XEC)</string>
+    <string name="my_email" translatable="false">support@zaneschepke.com</string>
+    <string name="ethereum_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
+    <string name="litecoin_address" translatable="false">ltc1q983jnz3n2zshp2xyme8ant45aah5hv337k8nm7</string>
+    <string name="dev_name" translatable="false">Zane</string>
+    <string name="ecash_address" translatable="false">ecash:qrnnvzhezgm9unazue2mw7np5qhdk2874g996nd2zw</string>
+    <string name="tron" translatable="false">Tron (TRX)</string>
+    <string name="polygon_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
+    <string name="stellar" translatable="false">Stellar (XLM)</string>
+    <string name="monero_address" translatable="false">44D1vWL4CqmEGiRhwtUy6MT2SgaCYpk5o3Nh6YxBFyoCXLZ5eZMLiDGj9uoo51mGjeiLxHWyV28MxDPUzQZN4PoqML16ZB9</string>
+    <string name="zcash" translatable="false">Zcash (ZEC)</string>
+    <string name="solana_address" translatable="false">5qPMZa2Y2R6D6AUzrofS4o2M1nzNpbMiAkcRcBkjsmwQ</string>
+    <string name="github_url" translatable="false">https://github.com/wgtunnel/wgtunnel/issues</string>
+    <string name="avalanche" translatable="false">Avalanche (AVAX)</string>
+    <string name="website_url" translatable="false">https://wgtunnel.com</string>
+    <string name="bitcoin_cash" translatable="false">Bitcoin Cash (BCH)</string>
+    <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
+    <string name="transport_packet_junk_size">Transport packet junk size</string>
+    <string name="cookie_packet_junk_size">Cookie packet junk size</string>
 </resources>

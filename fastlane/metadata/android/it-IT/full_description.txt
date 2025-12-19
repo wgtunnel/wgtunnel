@@ -1,14 +1,13 @@
-Caratteristiche
+WG Tunnel è un client VPN WireGuard che offre il giusto equilibrio tra semplicità e robustezza, rendendolo il client ideale sia per gli utenti occasionali che per quelli esperti.
+Sia che tu voglia semplicemente automatizzare la connessione alla tua VPN o che tu sia un utente esperto con esigenze avanzate in materia di privacy, WG Tunnel fa al caso tuo.
 
-- Aggiunge tunnel tramite file .conf, zip, inserimento manuale o QR code
-- Connessione automatica alla VPN basata su SSID Wi-Fi, ethernet o dati mobili
-- Tunneling separato per applicazione con ricerca
-- Supporto WireGuard per modalità userspace e kernel
-- Supporto Amnezia in modalità userspace per protezione da DPI/censura
-- Supporto VPN sempre attiva
-- Esporta Amnezia e tunnel WireGuard in zip
-- Supporto tile rapide per commutazione VPN
-- Supporto scorciatoia statica del tunnel primario per integrazione dell'automazione
-- Supporto automazione tramite intent per tutti i tunnel
-- Riavvio automatico servizio dopo il riavvio
-- Misure di preservazione batteria
+- **Tunneling automatico:** attiva automaticamente i tunnel in base all'SSID Wi-Fi, alle connessioni Ethernet o alle reti dati mobili.
+- **Split Tunneling:** supporto flessibile per il routing di app o traffico specifici attraverso la VPN.
+- **Modalità app:** supporto per più modalità tunnel, tra cui VPN standard, kernel, lockdown (kill switch personalizzato) e modalità proxy.
+- **Integrazione AmneziaWG:** supporto completo per AmneziaWG, che fornisce una solida elusione della censura.
+- **Opzioni di proxy:** supporto proxy HTTP e SOCKS5 integrato che consente alle app di terze parti di instradare il loro traffico.
+- **Controlli rapidi:** riquadro Impostazioni rapide e scorciatoie sulla schermata iniziale per azioni di attivazione/disattivazione facili.
+- **Supporto dell'automazione:** automazione basata sull'intento per il controllo dei tunnel e il tunneling automatico.
+- **Gestione DNS dinamica:** rileva e aggiorna le modifiche DNS senza riavviare il tunnel.
+- **Strumenti di monitoraggio:** funzionalità avanzate di monitoraggio del tunnel per il controllo delle prestazioni del tunnel.
+- **Supporto Android TV:** supporto Android TV per quasi tutte le funzionalità dell'app.

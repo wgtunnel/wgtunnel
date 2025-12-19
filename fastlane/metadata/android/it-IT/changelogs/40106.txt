@@ -1,0 +1,3 @@
+Novità:
+- Correzione bug regressione tunnel automatico
+- Correzione bug utilizzo risorse per modalità kill switch

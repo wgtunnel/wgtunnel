@@ -3,11 +3,11 @@
     <string name="app_name">WG Tunnel</string>
     <string name="error_file_extension">See pole .conf või .zip fail</string>
     <string name="vpn_channel_name">VPN-i teavituskanal</string>
-    <string name="prominent_background_location_message">See funktsionaalsus eeldab, et rakendusel on õigus asukoha ja WiFi SSID tuvastamiseks taustal, seda ka siis, kui rakendus on suletud. Lisateavet leiad Privaatsusreeglite lehelt, mille leiad Kasutajatoe vaatest.</string>
+    <string name="prominent_background_location_message">See funktsionaalsus eeldab, et rakendusel on õigus asukoha ja WiFi SSID taustal tuvastamiseks, seda ka siis, kui rakendus on suletud. Lisateavet leiad Privaatsusreeglite lehelt, leitav Kasutajatoe vaatest.</string>
     <string name="no_tunnels">Ühtegi tunnelit pole veel lisatud!</string>
     <string name="tunnels">Tunnelid</string>
     <string name="tunnel_mobile_data">Loo tunnel mobiilse andmesidega</string>
-    <string name="privacy_policy">Vaata privaatsusreegleid</string>
+    <string name="privacy_policy">Andmekaitsepõhimõtted</string>
     <string name="okay">Sobib</string>
     <string name="tunnel_on_ethernet">Loo tunnel kohtvõrgus</string>
     <string name="add_tunnels_text">Lisa conf- või zip-failist</string>
@@ -21,16 +21,16 @@
     <string name="dns_servers">Nimeserverid</string>
     <string name="mtu">MTU</string>
     <string name="app_permission_description">Halda tunneleid ja tunnelite automaatse käivitamise seadistusi.</string>
-    <string name="thank_you">Tänud, et kasutad rakendust WG Tunnel!</string>
+    <string name="thank_you">Aitäh, et kasutad WG Tunnel rakendust!</string>
     <string name="allowed_ips">Lubatud IP-aadressid</string>
     <string name="endpoint">Otspunkt</string>
     <string name="name">Nimi</string>
-    <string name="always_on_vpn_support">Luba, et VPN on alati sisse lülitatud</string>
-    <string name="location_services_not_detected">Asukohateenused pole tuvastatavad</string>
+    <string name="always_on_vpn_support">Luba alaliselt sisse lülitatud VPN</string>
+    <string name="location_services_not_detected">Asukohateenuseid ei tuvastatud</string>
     <string name="auto_tunneling">Automaatne tunneldus</string>
     <string name="vpn_on">VPN on kasutusel</string>
     <string name="vpn_off">VPN pole kasutusel</string>
-    <string name="create_import">Loo nullist</string>
+    <string name="create_import">Loo algusest</string>
     <string name="licenses">Litsentsid</string>
     <string name="update_check_unsupported">Selle rakenduse versiooni puhul pole uuenduste kontrollimine toetatud.</string>
     <string name="darker">Tumedam kujundus</string>
@@ -80,10 +80,10 @@
     <string name="hide_scripts">Peida skriptid</string>
     <string name="enable_amnezia_compatibility">Lisa ühilduvus Amnezia teenustega</string>
     <string name="remove_amnezia_compatibility">Eemalda ühilduvus Amnezia teenustega</string>
-    <string name="show_amnezia_properties">Näita Amnezia seadistusi</string>
+    <string name="show_amnezia_properties">Näita Amnezia omadusi</string>
     <string name="hide_amnezia_properties">Peida Amnezia seadistused</string>
     <string name="donate">Toeta projekti rahaliselt</string>
-    <string name="local_logging">Kohalik logimine</string>
+    <string name="local_logging">Kohalike logide jälgija</string>
     <string name="add_from_clipboard">Lisa lõikelaualt</string>
     <string name="appearance">Välimus</string>
     <string name="notifications">Teavitused</string>
@@ -102,7 +102,7 @@
     <string name="optional">(valikuline)</string>
     <string name="preshared_key">Eeljagatud võti</string>
     <string name="seconds">Sekundit</string>
-    <string name="persistent_keepalive">Pidev elumärksõnum</string>
+    <string name="persistent_keepalive">Pidevad elumärgisignaalid</string>
     <string name="cancel">Katkesta</string>
     <string name="exclude_lan">Välista kohtvõrgud</string>
     <string name="include_lan">Kaasa kohtvõrgud</string>
@@ -111,12 +111,12 @@
     <string name="add_peer">Lisa partner</string>
     <string name="rotate_keys">Vaheta võtmeid</string>
     <string name="delete_tunnel">Kustuta tunnel</string>
-    <string name="delete_tunnel_message">Kas sa oled kindel, et soovid valitud tunnelid kustutada?</string>
+    <string name="delete_tunnel_message">Kindel, et valitud tunnelid kustutada?</string>
     <string name="yes">Jah</string>
     <string name="all">Kõik</string>
     <string name="no_email_detected">E-posti rakendust ei õnnestu tuvastada</string>
     <string name="no_browser_detected">Veebibrauserit ei õnnestu tuvastada</string>
-    <string name="open_issue">Alusta veateate koostamist</string>
+    <string name="open_issue">Alusta vearaporti koostamist</string>
     <string name="auto">(automaatne)</string>
     <string name="incorrect_pin">PIN-kood pole õige</string>
     <string name="pin_created">PIN-koodi loomine õnnestus</string>
@@ -126,7 +126,7 @@
     <string name="settings">Seadistused</string>
     <string name="support">Kasutajatugi</string>
     <string name="unknown_error">Tekkis tundmatu viga</string>
-    <string name="tunnel_on_wifi">Loo tunnel ebausaldusväärses WiFi võrgus</string>
+    <string name="tunnel_on_wifi">Loo tunnel WiFi võrgus</string>
     <string name="email_subject">WG Tunneli kasutajatugi</string>
     <string name="email_chooser">Saada e-kiri…</string>
     <string name="docs_description">Loe dokumentatsiooni</string>
@@ -134,7 +134,7 @@
     <string name="error_ssid_exists">SSID on juba olemas</string>
     <string name="error_root_denied">Juurkasutaja õigustes kest on keelatud</string>
     <string name="error_no_file_explorer">Failihaldurit pole paigaldatud</string>
-    <string name="set_primary_tunnel">Määra põhiliseks tunneliks</string>
+    <string name="set_primary_tunnel">Tunnel, mida kasutatakse siis, kui ühtegi eelistatud tunnelit pole seadistatud</string>
     <string name="skip">Jäta vahele</string>
     <string name="export_failed">Eksportimine ei õnnestunud</string>
     <string name="tunnel_error_template">Viga tunneli töös: %1$s</string>
@@ -145,17 +145,17 @@
     <string name="kernel_name_error">Viga kerneli mooduli nimes</string>
     <string name="auth_error">Pole lubatud</string>
     <string name="service_running_error">Teenus ei tööta</string>
-    <string name="unsure_how">kui sa ei tea, mida järgmiseks teha</string>
+    <string name="unsure_how">kui ei oska otsustada, mida järgmiseks teha</string>
     <string name="see_the">Vaata</string>
-    <string name="getting_started_guide">esimeste toimingute juhendit</string>
-    <string name="restart_at_boot">Käivita alglaadimisel uuesti</string>
-    <string name="vpn_denied_dialog_title">Õigused on puudu</string>
+    <string name="getting_started_guide">esmaste toimingute juhendit</string>
+    <string name="restart_at_boot">Käivita alglaadimisel</string>
+    <string name="vpn_denied_dialog_title">Õigusi napib</string>
     <string name="never">Mitte kunagi</string>
-    <string name="handshake">Kätlus</string>
+    <string name="handshake">Viimane kätlus</string>
     <string name="logs">Logid</string>
     <string name="trusted_wifi_names">Usaldusväärsete WiFi-võrkude nimed</string>
     <string name="add_wifi_name">Lisa WiFi võrgunimi</string>
-    <string name="primary_tunnel">Põhiline tunnel</string>
+    <string name="primary_tunnel">Vaikimisi tunnel</string>
     <string name="root_accepted">Juurkasutaja kest on lubatud</string>
     <string name="learn_more">Lisateave</string>
     <string name="monitoring_state_changes">Jälgin oleku muudatusi</string>
@@ -172,7 +172,7 @@
     <string name="stop">Peata</string>
     <string name="stop_on_no_internet">Peata internetiühenduse puudumisel</string>
     <string name="stop_on_internet_loss">Peata tunnel internetiühenduse kadumisel</string>
-    <string name="enable_app_lock">Kasuta rakenduse lukustust</string>
+    <string name="enable_app_lock">Luba rakenduse lukustamine</string>
     <string name="kernel">Tuum/Kernel</string>
     <string name="mobile_tunnel">Mobiilside andmetunnel</string>
     <string name="launch_app_settings">Käivita rakenduse seadistused</string>
@@ -204,7 +204,7 @@
     <string name="wifi_detection_method">WiFi tuvastamise meetod</string>
     <string name="current_template">Praegune: %1$s</string>
     <string name="multiple">Mitmikvalik</string>
-    <string name="enabled_app_shortcuts">Kasuta rakenduse otseteid</string>
+    <string name="enabled_app_shortcuts">Luba rakenduse otseteed</string>
     <string name="auto_tunnel_title">Tunneli automaatne loomine</string>
     <string name="auto_tunnel_not_running">Tunneli automaatne käivitamine pole kasutusel</string>
     <string name="auto_tunnel_running">Tunneli automaatne käivitamine on kasutusel</string>
@@ -295,8 +295,8 @@
     <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">Täname ette, kui plaanid meie projekti toetada!</string>
     <string name="donate_title">Toeta rahaliselt</string>
-    <string name="always_on_message">Puudub luba VPN-ühenduse kasutamiseks. Palun vaata siia</string>
-    <string name="always_on_message2">ja kontrolli, et alati sisselülitatud VPN poleks ühegi muu rakenduse jaoks kasutusel ja proovi siis uuesti</string>
+    <string name="always_on_message">Puudub õigus VPN-ühenduse aktiveerimiseks. Palun vaata siia</string>
+    <string name="always_on_message2">ja kontrolli, et alati sisselülitatud VPN poleks ühegi muu rakenduse jaoks kasutusel ning proovi siis uuesti</string>
     <string name="prominent_background_location_title">Teave taustal asukoha tuvastamise kohta</string>
     <string name="use_root_shell_for_wifi">WiFi teabe tuvastamiseks võid kasutada ka juurkasutaja õigustes kesta - siis puudub vajadus asukoha tuvastamise õiguse kasutamiseks</string>
     <string name="auto_tunnel_channel_name">Automaatse tunnelduse teavituskanal</string>
@@ -308,8 +308,8 @@
     <string name="ethernet_tunnel">Etherneti tunnel</string>
     <string name="pinger_bounce_recovery">Pingija uuesti käivitamine ei õnnestunud. Tunnel on taastatud vanade aadressidega.</string>
     <string name="bounce_failed_template">Pingija ei suutnud tunnelit taastada järgneva vea tõttu: %1$s</string>
-    <string name="set_custom_ping_target">Eraldi valitud host pingimiseks (valikuline)</string>
-    <string name="ping_target_description">Kasuta siis, kui sisemine IP-aadress pole saadaval (nt. täistunneli seadistustes). Kui jätad tühjaks, siis on kasutusel mõni Cloudfare\'i aadressidiest.</string>
+    <string name="set_custom_ping_target">Eraldi valitud hostid pingimiseks</string>
+    <string name="ping_target_description">Jagatud seadistustes on vaikimisi kasutusel sisemise tunneli IP-aadress või täistunneli seadistuses mõni Cloudfare\'i aadressidiest.</string>
     <string name="server_port">Server:Port</string>
     <string name="prefer_ipv6_resolution">Eelista otspunkti tuvastusel IPv6-protokolli</string>
     <string name="disabled">Pole kasutusel</string>
@@ -323,4 +323,107 @@
     <string name="lockdown">Lukusta rakendus</string>
     <string name="debounce_delay">Rahunemisviivitus (debounce delay)</string>
     <string name="app_permission_title">WG tunneli juhtsild</string>
+    <string name="dual_stack">Kahepinuline</string>
+    <string name="kernel_name_dots">Kernelirežiimis ei tohi tunneli nimi olla „.“ või „..“</string>
+    <string name="save_changes">Salvesta muudatused</string>
+    <string name="dual_stack_description">Tunnelid peavad toetama IPv4 ja IPv6 protokolle</string>
+    <string name="remote_key">Kaugseadme võti</string>
+    <string name="mobile_data">Mobiilne andmeside</string>
+    <string name="tunnel_boot_description">Seadme käivitamisel käivita ka vaikimisi tunnel</string>
+    <string name="tunnel_mapping_description">Vastenda tunneleid eelistatuks WiFi nime alusel</string>
+    <string name="donation_prompt_prefix">Suur tänu, et toetad rakendust WG Tunnel! Kui sul on võimalik, siis</string>
+    <string name="website">Rakenduse veebisait</string>
+    <string name="wifi_settings">WiFi seadistused</string>
+    <string name="info">Teave</string>
+    <string name="unknown">Pole teada</string>
+    <string name="all_services_disabled">Selle tegevuse jaoks peab automaatne tunneldus ja tunnelid olema lülitatud välja.</string>
+    <string name="no_network">Võrguühendus puudub</string>
+    <string name="wifi">WiFi</string>
+    <string name="ping_target">Pingitav host</string>
+    <string name="resources">Ressursid</string>
+    <string name="back">Tagasi</string>
+    <string name="already_donated">Juba annetasin</string>
+    <string name="global_split_tunneling">Üldine jagatud tunneldus</string>
+    <string name="active_network">Aktiivne võrk:</string>
+    <string name="help_translate">Aita seda rakendust tõlkida</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="other">Muu</string>
+    <string name="kill_switch">kiirpeatamine</string>
+    <string name="configuration">Seadistused</string>
+    <string name="global_dns_servers">Üldised nimeserverid</string>
+    <string name="contact">Kontakt</string>
+    <string name="backup_and_restore">Varundus ja taastamine</string>
+    <string name="ping">Ping</string>
+    <string name="about">Rakenduse teave</string>
+    <string name="donation_prompt_link">palun toeta projekti</string>
+    <string name="donation_prompt_suffix">ja nii tagad, et ta jääb vabaks ning pidevalt areneb.</string>
+    <string name="text_too_large_for_qr">Tekst on liiga mahukas QR-koodi kuvamiseks.</string>
+    <string name="options">Valikud</string>
+    <string name="security_type">Turvalisus:</string>
+    <string name="ddns_success_message">Dünaamilise nimelahenduse otspunkti uuendamine õnnestus.</string>
+    <string name="translation">Tõlked</string>
+    <string name="reliability">Töökindlus</string>
+    <string name="monitoring">Monitooring</string>
+    <string name="aovpn_description">Luba Androidil käivitada tunneleid</string>
+    <string name="set_ping_target">Lisa pingitav host</string>
+    <string name="general">Üldist</string>
+    <string name="review">Hinda rakendust</string>
+    <string name="kernel_name_special_characters">Kernelirežiimis ei tohi tunneli nimes olla tühikuid ja erimärke (lubatud on tähe, numbrid, _, =, +, ., -)</string>
+    <string name="_continue">Jätka</string>
+    <string name="unavailable_in_mode">Pole saadaval praeguses režiimis</string>
+    <string name="debounce_description">Viivitus kiirete võrguvahetuste puhul</string>
+    <string name="preferred_tunnel">Eelistatud tunnel</string>
+    <string name="tunnel_running_name_message">Kui tunnel on aktiivne, siis nime ei saa muuta.</string>
+    <string name="network_name">Võrk:</string>
+    <string name="mapped">Vastendatud</string>
+    <string name="tunnel_mapping">Tunnelite vastendus</string>
+    <string name="preferred_tunnel_label">Eelistatud tunnel:</string>
+    <string name="ping_monitor">Pingimisega monitooring</string>
+    <string name="restart_message_template">Muudatuste salvestamine käivitab „%1$s“ tunneli uuesti. Kas sa soovid jätkata?</string>
+    <string name="already_donated_description">Lülitab tulevased annetuspalved välja</string>
+    <string name="metered_tunnel">Mahupõhise ühenduse tunnel</string>
+    <string name="lockdown_settings">Rakenduse lukustuse seadistused</string>
+    <string name="networks">Võrguühendused</string>
+    <string name="auto_tunnel_channel_id" translatable="false">Auto-tunnel Channel</string>
+    <string name="kofi_url" translatable="false">https://ko-fi.com/zaneschepke</string>
+    <string name="bitcoin_cash_address" translatable="false">bitcoincash:qp6xacvswha2tjfp2rscguq3gd4eecxeuvcgtyjv58</string>
+    <string name="solana" translatable="false">Solana (SOL)</string>
+    <string name="docs_wildcards" translatable="false">https://wgtunnel.com/docs/auto-tunneling/#use-name-wildcards</string>
+    <string name="litecoin" translatable="false">Litecoin (LTC)</string>
+    <string name="liberapay_url" translatable="false">https://liberapay.com/zaneschepke</string>
+    <string name="tron_address" translatable="false">TCbR2SqstTLxCA9zp52iC7G2DfHUGD9ak2</string>
+    <string name="vpn_channel_id" translatable="false">VPN Channel</string>
+    <string name="telegram_url" translatable="false">https://t.me/wgtunnel</string>
+    <string name="monero" translatable="false">Monero (XMR)</string>
+    <string name="bitcoin" translatable="false">Bitcoin (BTC)</string>
+    <string name="polygon" translatable="false">Polygon (POL)</string>
+    <string name="privacy_policy_url" translatable="false">https://wgtunnel.com/privacy-policy/</string>
+    <string name="avalanche_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
+    <string name="stellar_address" translatable="false">GAOHREIPAOKSTD4ELXCMM7LDZPRGKJ2DNHEIXLU752PJS6CDPBAEM75B</string>
+    <string name="db_name" translatable="false">wg-tunnel-db</string>
+    <string name="ethereum" translatable="false">Ethereum (ETH)</string>
+    <string name="bitcoin_address" translatable="false">bc1qu6dwlwhav7cwp5gv3kyv3cpwrjrra80p75js6u</string>
+    <string name="translation_url" translatable="false">https://hosted.weblate.org/engage/wg-tunnel/</string>
+    <string name="zcash_address" translatable="false">u1fkx80l0mr7cgzmj5xusnf4fa0hlvttaedlqjzl657dyyfqq4tzq49v4ru53u8re0kfnlah7s363msewcva43v8a2rn8zqs56jeeu6m7snrfljs343kfkgv7gsa76xg005wz95855uwlrvgan0er8n3sp75mmmj44n3fnjar5y7jy0pd2k5yw33lgwpuectuknkwstdkkfyqvxh9xq6c</string>
+    <string name="docs_url" translatable="false">https://wgtunnel.com/docs/getting-started</string>
+    <string name="ecash" translatable="false">eCash (XEC)</string>
+    <string name="my_email" translatable="false">support@zaneschepke.com</string>
+    <string name="ethereum_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
+    <string name="litecoin_address" translatable="false">ltc1q983jnz3n2zshp2xyme8ant45aah5hv337k8nm7</string>
+    <string name="dev_name" translatable="false">Zane</string>
+    <string name="ecash_address" translatable="false">ecash:qrnnvzhezgm9unazue2mw7np5qhdk2874g996nd2zw</string>
+    <string name="tron" translatable="false">Tron (TRX)</string>
+    <string name="polygon_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
+    <string name="stellar" translatable="false">Stellar (XLM)</string>
+    <string name="monero_address" translatable="false">44D1vWL4CqmEGiRhwtUy6MT2SgaCYpk5o3Nh6YxBFyoCXLZ5eZMLiDGj9uoo51mGjeiLxHWyV28MxDPUzQZN4PoqML16ZB9</string>
+    <string name="zcash" translatable="false">Zcash (ZEC)</string>
+    <string name="solana_address" translatable="false">5qPMZa2Y2R6D6AUzrofS4o2M1nzNpbMiAkcRcBkjsmwQ</string>
+    <string name="github_url" translatable="false">https://github.com/wgtunnel/wgtunnel/issues</string>
+    <string name="avalanche" translatable="false">Avalanche (AVAX)</string>
+    <string name="website_url" translatable="false">https://wgtunnel.com</string>
+    <string name="matrix_url" translatable="false">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
+    <string name="bitcoin_cash" translatable="false">Bitcoin Cash (BCH)</string>
+    <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
+    <string name="transport_packet_junk_size">Transpordipaketi rämpsuosa suurus</string>
+    <string name="cookie_packet_junk_size">Küpsisepaketi rämpsuosa suurus</string>
 </resources>

@@ -1,0 +1,3 @@
+Mida on meil uut:
+- Automaatse-tunnelduse regressiooni veaparandus
+- Ressursikasutuse veaparandus avariinupu režiimis

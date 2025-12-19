@@ -1,0 +1,3 @@
+Novedades:
+- Corrección: regresión en auto-túnel
+- Corrección: uso de recursos en modo kill switch

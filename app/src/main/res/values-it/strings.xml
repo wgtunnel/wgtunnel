@@ -27,7 +27,7 @@
     <string name="preshared_key">Chiave pre-condivisa</string>
     <string name="tunnels">Tunnel</string>
     <string name="tunnel_mobile_data">Tunnel su dati mobili</string>
-    <string name="privacy_policy">Leggi l\'informativa sulla privacy</string>
+    <string name="privacy_policy">Informativa sulla privacy</string>
     <string name="okay">Okay</string>
     <string name="tunnel_on_ethernet">Tunnel su ethernet</string>
     <string name="name">Nome</string>
@@ -43,7 +43,7 @@
     <string name="persistent_keepalive">Keepalive persistente</string>
     <string name="cancel">Annulla</string>
     <string name="unknown_error">Errore sconosciuto</string>
-    <string name="tunnel_on_wifi">Tunnel su reti WiFi non affidabili</string>
+    <string name="tunnel_on_wifi">Tunnel su reti WiFi</string>
     <string name="error_ssid_exists">L\'SSID esiste già</string>
     <string name="error_root_denied">Shell di root negata</string>
     <string name="prominent_background_location_title">Permesso localizzazione in background</string>
@@ -69,7 +69,7 @@
     <string name="incorrect_pin">Il PIN non è corretto</string>
     <string name="pin_created">PIN correttamente creato</string>
     <string name="enable_app_lock">Abilita blocco app</string>
-    <string name="set_primary_tunnel">Imposta come tunnel principale</string>
+    <string name="set_primary_tunnel">Tunnel utilizzato quando non è configurato alcun tunnel preferito</string>
     <string name="edit_tunnel">Modifica tunnel</string>
     <string name="settings">Impostazioni</string>
     <string name="support">Supporto</string>
@@ -81,7 +81,7 @@
     <string name="response_packet_magic_header">Magic header pacchetto risposta</string>
     <string name="getting_started_guide">guida di avvio rapido</string>
     <string name="see_the">Vedi la</string>
-    <string name="restart_at_boot">Riattiva all\'avvio del sistema</string>
+    <string name="restart_at_boot">Avvia all\'avvio</string>
     <string name="vpn_denied_dialog_title">Permesso Negato</string>
     <string name="root_accepted">Accesso alla shell root accettata</string>
     <string name="show_amnezia_properties">Mostra proprietà Amnezia</string>
@@ -123,9 +123,9 @@
     <string name="never">Mai</string>
     <string name="use_wildcards">Abilita caratteri jolly</string>
     <string name="add_from_clipboard">Importa dagli appunti</string>
-    <string name="trusted_wifi_names">Elenco SSID reti affidabili</string>
+    <string name="trusted_wifi_names">Elenco reti Wi-Fi affidabili</string>
     <string name="add_wifi_name">Aggiungi il nome di una rete WiFi</string>
-    <string name="primary_tunnel">Tunnel primario</string>
+    <string name="primary_tunnel">Tunnel predefinito</string>
     <string name="post_down">Dopo essersi arrestato</string>
     <string name="pre_down">Prima di arrestarsi</string>
     <string name="light">Chiaro</string>
@@ -137,8 +137,8 @@
     <string name="save">Salva</string>
     <string name="active">Attivo</string>
     <string name="dropdown">A discesa</string>
-    <string name="local_logging">Logging locale</string>
-    <string name="handshake">Handshake</string>
+    <string name="local_logging">Monitor di log locali</string>
+    <string name="handshake">Ultimo handshake</string>
     <string name="logs">Logs</string>
     <string name="notifications">Notifiche</string>
     <string name="automatic">Automatico</string>
@@ -159,7 +159,7 @@
     <string name="add_from_url">Importa da URL</string>
     <string name="join_telegram">Unisciti alla comunità Telegram</string>
     <string name="join_matrix">Unisciti alla comunità Matrix</string>
-    <string name="app_permission_title">WG Tunnel Control Bridge</string>
+    <string name="app_permission_title">Ponte di controllo WG Tunnel</string>
     <string name="select">Seleziona</string>
     <string name="hide_scripts">Nascondi gli script</string>
     <string name="auto_tunnel">Tunnel automatico</string>
@@ -291,14 +291,139 @@
     <string name="mode_disabled_template">Opzione non disponibile nella modalità %1$s.</string>
     <string name="donate_title">Donazioni</string>
     <string name="tunnel_monitoring">Monitoraggio tunnel</string>
-    <string name="tunnel_ping_interval">Ripeti ping test ogni</string>
+    <string name="tunnel_ping_interval">Esegui ping test ogni (secondi)</string>
     <string name="attempts_per_interval">Richieste ping inviate per singolo test</string>
     <string name="ping_timeout">Ping test timeout</string>
     <string name="timeout_all_attempts">Durata massima per singolo test (comprensiva di tutte le richieste ping inviate)</string>
     <string name="display_detailed_ping_stats">Mostra statistiche dettagliate di ping</string>
     <string name="error_tunnel_name">Il nome del tunnel non deve superare i 15 caratteri in modalità kernel</string>
     <string name="location_justification">Per poter rilevare i nomi delle reti Wi-Fi in background nella modalità corrente, Android richiede che le app dispongano dell\'autorizzazione di accesso alla posizione con le opzioni \"Consenti sempre\" e \"Usa posizione esatta\" (accesso alla posizione in background nei dispositivi meno recenti). Concedi le autorizzazioni richieste all\'interno delle impostazioni dell\'app.</string>
-    <string name="ping_target_description">Utilizzato qualora nessun indirizzo IP di rete locale risulti disponibile (ad esempio in configurazioni full-tunnel). Se non indicato, viene utilizzato Cloudflare di default.</string>
+    <string name="ping_target_description">Impostazione predefinita su un tunnel IP interno per configurazioni split o Cloudflare per configurazioni tunnel complete.</string>
     <string name="ip_or_hostname">Indirizzo IP o nome host</string>
-    <string name="set_custom_ping_target">Bersaglio ping test (facoltativo)</string>
+    <string name="set_custom_ping_target">Destinazioni ping personalizzate</string>
+    <string name="use_android_recommended">Utilizza il metodo consigliato da Android per ottenere le informazioni Wi-Fi, in base alla versione di Android.</string>
+    <string name="dual_stack">Dual-stack</string>
+    <string name="kernel_name_dots">Il nome del tunnel non può essere \'.\' o \'.\' in modalità kernel</string>
+    <string name="github_sponsors">Sponsor GitHub</string>
+    <string name="save_changes">Salva modifiche</string>
+    <string name="dual_stack_description">I tunnel devono supportare IPv4 e IPv6</string>
+    <string name="remote_key">Chiave remota</string>
+    <string name="mobile_data">Dati mobili</string>
+    <string name="use_shell_via_shizuku">Utilizza la shell tramite Shizuku per recuperare le informazioni sulle reti Wi-Fi, evitando la necessità dei permessi di accesso alla posizione sui dispositivi privi dei permessi di root</string>
+    <string name="tunnel_boot_description">Avvia il tunnel predefinito all\'avvio</string>
+    <string name="prefer_ipv6_resolution">Preferisci la risoluzione peer IPv6</string>
+    <string name="google_donation_message">Purtroppo, a causa delle politiche di Google, i link per le donazioni non sono consentiti nella versione Play Store di questa app. Si prega di consultare le pagine web del progetto per trovare dove effettuare le donazioni.</string>
+    <string name="tunnel_mapping_description">Associa i tunnel preferiti in base al nome Wi-Fi</string>
+    <string name="mimic_dns">Mimic DNS</string>
+    <string name="donation_prompt_prefix">Grazie per aver usato WG Tunnel! Se siete in grado, si prega di considerare</string>
+    <string name="website">Sito web dell\'app</string>
+    <string name="mimic_quic">Mimic QUIC</string>
+    <string name="wifi_settings">Impostazioni Wi-Fi</string>
+    <string name="info">Info</string>
+    <string name="pinger_bounce_successful">Il tunnel è stato riavviato con successo dal pinger.</string>
+    <string name="unknown">Sconosciuto</string>
+    <string name="all_services_disabled">Per eseguire questa operazione è necessario disattivare Auto-tunnel e tunnel.</string>
+    <string name="pinger_bounce_recovery">Riavvio di Pinger non riuscito. Tunnel ripristinato con indirizzi precedenti.</string>
+    <string name="ddns_auto_update_description">Aggiornamenti automatici dell\'IP in caso di modifiche DDNS</string>
+    <string name="no_network">Nessuna rete collegata</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="ping_target">Ping target</string>
+    <string name="locked_down">Bloccato</string>
+    <string name="resources">Risorse</string>
+    <string name="back">Indietro</string>
+    <string name="active_tunnel_update_failed">Aggiornamento tunnel attivo non riuscito</string>
+    <string name="already_donated">Già donato</string>
+    <string name="global_split_tunneling">Tunneling diviso globale</string>
+    <string name="active_network">Rete attiva:</string>
+    <string name="help_translate">Aiuta a tradurre l\'app</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="other">Altro</string>
+    <string name="kill_switch">kill switch</string>
+    <string name="configuration">Configurazione</string>
+    <string name="drag_handle">Drag Handle</string>
+    <string name="global_dns_servers">Server DNS globali</string>
+    <string name="contact">Contatti</string>
+    <string name="backup_and_restore">Backup e ripristino</string>
+    <string name="ping">Ping</string>
+    <string name="about">Informazioni</string>
+    <string name="donation_prompt_link">sostenere il progetto</string>
+    <string name="donation_prompt_suffix">per mantenerlo gratuito e migliorarlo.</string>
+    <string name="text_too_large_for_qr">Il testo è troppo grande per visualizzare il QR.</string>
+    <string name="options">Opzioni</string>
+    <string name="legacy_api_description">Utilizza un metodo deprecato di Android 12 per ottenere informazioni sul Wi-Fi che limita le richieste di localizzazione, ma potrebbe non funzionare in modo affidabile sui dispositivi più recenti.</string>
+    <string name="security_type">Sicurezza:</string>
+    <string name="bounce_failed_template">Pinger non è riuscito a ripristinare il tunnel con errore: %1$s</string>
+    <string name="ddns_success_message">Endpoint DNS dinamico aggiornato con successo.</string>
+    <string name="translation">Traduzione</string>
+    <string name="reliability">Affidabilità</string>
+    <string name="monitoring">Monitoraggio</string>
+    <string name="aovpn_description">Consente ad Android di avviare tunnel</string>
+    <string name="set_ping_target">Imposta destinazione ping</string>
+    <string name="general">Generale</string>
+    <string name="review">Valuta l\'app</string>
+    <string name="disabled">Disabilitato</string>
+    <string name="ddns_auto_update">Aggiornamento automatico DNS dinamico</string>
+    <string name="kernel_name_special_characters">Il nome del tunnel in modalità kernel non può avere spazi o determinati caratteri speciali (permesso: alfanumerico, _, =, +, ., -)</string>
+    <string name="_continue">Continua</string>
+    <string name="mimic_sip">Mimic SIP</string>
+    <string name="unavailable_in_mode">Non disponibile nella modalità corrente</string>
+    <string name="debounce_description">Ritardo tra rapidi cambiamenti di rete</string>
+    <string name="preferred_tunnel">Tunnel preferito</string>
+    <string name="tunnel_running_name_message">Il nome non può essere modificato mentre il tunnel è attivo.</string>
+    <string name="network_name">Rete:</string>
+    <string name="mapped">Mappato</string>
+    <string name="tunnel_mapping">Tunnel mapping</string>
+    <string name="preferred_tunnel_label">Tunnel preferito:</string>
+    <string name="ping_monitor">Monitoraggio ping</string>
+    <string name="crypto">Indirizzi di criptovaluta</string>
+    <string name="restart_message_template">Salvare le modifiche causerà il riavvio di %1$s. Desideri continuare?</string>
+    <string name="already_donated_description">Disattiva le richieste di donazioni future</string>
+    <string name="metered_tunnel">Tunnel a consumo</string>
+    <string name="lockdown_settings">Impostazioni di blocco</string>
+    <string name="networks">Reti</string>
+    <string name="auto_tunnel_not_running">Auto-tunnel non è in esecuzione</string>
+    <string name="lockdown">Lockdown</string>
+    <string name="auto_tunnel_running">Auto-tunnel attivo</string>
+    <string name="auto_tunnel_channel_id" translatable="false">Auto-tunnel Channel</string>
+    <string name="kofi_url" translatable="false">https://ko-fi.com/zaneschepke</string>
+    <string name="bitcoin_cash_address" translatable="false">bitcoincash:qp6xacvswha2tjfp2rscguq3gd4eecxeuvcgtyjv58</string>
+    <string name="solana" translatable="false">Solana (SOL)</string>
+    <string name="docs_wildcards" translatable="false">https://wgtunnel.com/docs/auto-tunneling/#use-name-wildcards</string>
+    <string name="litecoin" translatable="false">Litecoin (LTC)</string>
+    <string name="liberapay_url" translatable="false">https://liberapay.com/zaneschepke</string>
+    <string name="tron_address" translatable="false">TCbR2SqstTLxCA9zp52iC7G2DfHUGD9ak2</string>
+    <string name="vpn_channel_id" translatable="false">VPN Channel</string>
+    <string name="telegram_url" translatable="false">https://t.me/wgtunnel</string>
+    <string name="monero" translatable="false">Monero (XMR)</string>
+    <string name="bitcoin" translatable="false">Bitcoin (BTC)</string>
+    <string name="polygon" translatable="false">Polygon (POL)</string>
+    <string name="privacy_policy_url" translatable="false">https://wgtunnel.com/privacy-policy/</string>
+    <string name="avalanche_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
+    <string name="stellar_address" translatable="false">GAOHREIPAOKSTD4ELXCMM7LDZPRGKJ2DNHEIXLU752PJS6CDPBAEM75B</string>
+    <string name="db_name" translatable="false">wg-tunnel-db</string>
+    <string name="ethereum" translatable="false">Ethereum (ETH)</string>
+    <string name="bitcoin_address" translatable="false">bc1qu6dwlwhav7cwp5gv3kyv3cpwrjrra80p75js6u</string>
+    <string name="translation_url" translatable="false">https://hosted.weblate.org/engage/wg-tunnel/</string>
+    <string name="zcash_address" translatable="false">u1fkx80l0mr7cgzmj5xusnf4fa0hlvttaedlqjzl657dyyfqq4tzq49v4ru53u8re0kfnlah7s363msewcva43v8a2rn8zqs56jeeu6m7snrfljs343kfkgv7gsa76xg005wz95855uwlrvgan0er8n3sp75mmmj44n3fnjar5y7jy0pd2k5yw33lgwpuectuknkwstdkkfyqvxh9xq6c</string>
+    <string name="docs_url" translatable="false">https://wgtunnel.com/docs/getting-started</string>
+    <string name="ecash" translatable="false">eCash (XEC)</string>
+    <string name="my_email" translatable="false">support@zaneschepke.com</string>
+    <string name="ethereum_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
+    <string name="litecoin_address" translatable="false">ltc1q983jnz3n2zshp2xyme8ant45aah5hv337k8nm7</string>
+    <string name="dev_name" translatable="false">Zane</string>
+    <string name="ecash_address" translatable="false">ecash:qrnnvzhezgm9unazue2mw7np5qhdk2874g996nd2zw</string>
+    <string name="tron" translatable="false">Tron (TRX)</string>
+    <string name="polygon_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
+    <string name="stellar" translatable="false">Stellar (XLM)</string>
+    <string name="monero_address" translatable="false">44D1vWL4CqmEGiRhwtUy6MT2SgaCYpk5o3Nh6YxBFyoCXLZ5eZMLiDGj9uoo51mGjeiLxHWyV28MxDPUzQZN4PoqML16ZB9</string>
+    <string name="zcash" translatable="false">Zcash (ZEC)</string>
+    <string name="solana_address" translatable="false">5qPMZa2Y2R6D6AUzrofS4o2M1nzNpbMiAkcRcBkjsmwQ</string>
+    <string name="github_url" translatable="false">https://github.com/wgtunnel/wgtunnel/issues</string>
+    <string name="avalanche" translatable="false">Avalanche (AVAX)</string>
+    <string name="website_url" translatable="false">https://wgtunnel.com</string>
+    <string name="matrix_url" translatable="false">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
+    <string name="bitcoin_cash" translatable="false">Bitcoin Cash (BCH)</string>
+    <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
+    <string name="transport_packet_junk_size">Transport packet junk size</string>
+    <string name="cookie_packet_junk_size">Cookie packet junk size</string>
 </resources>

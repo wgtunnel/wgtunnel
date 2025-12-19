@@ -6,7 +6,7 @@
     <string name="add_peer">Añadir peer</string>
     <string name="copy_public_key">Copiar clave pública</string>
     <string name="base64_key">Clave Base64</string>
-    <string name="tunnel_on_wifi">Túnel en Wi-Fi no de confianza</string>
+    <string name="tunnel_on_wifi">Túnel en Wi-Fi</string>
     <string name="all">todas</string>
     <string name="support">Ayuda</string>
     <string name="private_key">Clave privada</string>
@@ -25,7 +25,7 @@
     <string name="no_tunnels">¡Ningún túnel añadido aún!</string>
     <string name="tunnels">Túneles</string>
     <string name="tunnel_mobile_data">Activar túnel en datos móviles</string>
-    <string name="privacy_policy">Ver política de privacidad</string>
+    <string name="privacy_policy">Política de privacidad</string>
     <string name="okay">OK</string>
     <string name="tunnel_on_ethernet">Túnel en ethernet</string>
     <string name="prominent_background_location_title">Divulgación de la ubicación en segundo plano</string>
@@ -75,8 +75,8 @@
     <string name="app_name">WG Tunnel</string>
     <string name="vpn_channel_name">Canal de notificación VPN</string>
     <string name="prominent_background_location_message">La monitorización SSID Wi-Fi necesita de permiso de ubicación en segundo plano incluso si la app está cerrada. Mira el enlace a la Política de Privacidad en la pantalla de ayuda para más detalles.</string>
-    <string name="junk_packet_count">Recuento de paquetes «basura»</string>
-    <string name="junk_packet_minimum_size">Tamaño mínimo de paquetes «basura»</string>
+    <string name="junk_packet_count">Recuento de paquetes «ruido»</string>
+    <string name="junk_packet_minimum_size">Tamaño mínimo de paquetes «ruido»</string>
     <string name="add_from_clipboard">Agregar desde el portapapeles</string>
     <string name="show_amnezia_properties">Mostrar propiedades de Amnezia</string>
     <string name="never">Nunca</string>
@@ -85,28 +85,28 @@
     <string name="always_on_message">Se ha denegado el permiso de conexión VPN. Por favor, compruebe el</string>
     <string name="always_on_message2">para asegurarse de que la VPN siempre activa esté desactivada para todas las demás aplicaciones e inténtelo de nuevo</string>
     <string name="response_packet_magic_header">Encabezado del paquete de respuesta</string>
-    <string name="junk_packet_maximum_size">Tamaño máximo de paquetes «basura»</string>
-    <string name="init_packet_junk_size">Tamaño de «datos basura» añadidos al paquete de inicialización</string>
+    <string name="junk_packet_maximum_size">Tamaño máximo de paquetes «ruido»</string>
+    <string name="init_packet_junk_size">Tamaño de «datos de ruido» añadidos al paquete de inicialización</string>
     <string name="unsure_how">Si no estás seguro de cómo proceder</string>
     <string name="see_the">Ver la</string>
     <string name="vpn_denied_dialog_title">Permiso denegado</string>
     <string name="vpn_settings">Configuraciones VPN del sistema</string>
-    <string name="response_packet_junk_size">Tamaño de «datos basura» del paquete de respuesta</string>
+    <string name="response_packet_junk_size">Tamaño de «datos ruido» del paquete de respuesta</string>
     <string name="init_packet_magic_header">Encabezado del paquete de inicialización</string>
     <string name="root_accepted">Shell root permitida</string>
-    <string name="restart_at_boot">Reiniciar al arrancar</string>
+    <string name="restart_at_boot">Iniciar al arrancar</string>
     <string name="underload_packet_magic_header">Encabezado del paquete baja carga</string>
-    <string name="handshake">Handshake</string>
+    <string name="handshake">Último intercambio</string>
     <string name="donate">Donar al proyecto</string>
     <string name="appearance">Apariencia</string>
     <string name="logs">Registros</string>
     <string name="trusted_wifi_names">Nombres de redes Wi-Fi confiables</string>
     <string name="use_wildcards">Usar comodines de nombre</string>
-    <string name="primary_tunnel">Túnel principal</string>
+    <string name="primary_tunnel">Túnel predeterminado</string>
     <string name="add_wifi_name">Añadir nombre de Wi-Fi</string>
     <string name="start_auto">Iniciar túnel automático</string>
     <string name="stop_auto">Detener túnel automático</string>
-    <string name="local_logging">Registro local</string>
+    <string name="local_logging">Registro de monitoreo local</string>
     <string name="exclude_lan">Excluir LAN</string>
     <string name="enable_amnezia_compatibility">Activar compatibilidad con Amnezia</string>
     <string name="include_lan">Incluir LAN</string>
@@ -187,7 +187,7 @@
     <string name="version_template">Versión: %1$s</string>
     <string name="check_for_update">Comprobar actualización</string>
     <string name="update_check_failed">Fallo al comprobar la actualización.</string>
-    <string name="flavor_template">Sabor: %1$s</string>
+    <string name="flavor_template">Variante: %1$s</string>
     <string name="tunnel_starting">Iniciando túnel</string>
     <string name="enable_remote_app_control">Activar control remoto de la app</string>
     <string name="export_success">Exportación completada</string>
@@ -237,9 +237,9 @@
     <string name="pinger_bounce_recovery">No se pudo reiniciar el «pinger». El túnel se ha recuperado con las direcciones antiguas.</string>
     <string name="bounce_failed_template">El «pinger» falló al recuperar el túnel con el error: %1$s</string>
     <string name="tunnel_monitoring">Monitoreo del túnel</string>
-    <string name="set_custom_ping_target">Objetivo de ping personalizado (opcional)</string>
+    <string name="set_custom_ping_target">Objetivo de ping personalizado</string>
     <string name="ip_or_hostname">IP o nombre de host</string>
-    <string name="ping_target_description">Se usa si no hay una IP Interna disponible (por ejemplo, en configuraciones de túnel completo). Dejarlo en blanco lo configura por defecto a Cloudflare.</string>
+    <string name="ping_target_description">Por defecto se usa una IP de túnel interna, o bien se puede usar Cloudflare para configuraciones de túnel completo.</string>
     <string name="tunnel_ping_interval">Intervalo de ping del túnel</string>
     <string name="attempts_per_interval">Intentos de ping por cada intervalo</string>
     <string name="ping_timeout">Tiempo de espera máximo de ping para el túnel</string>
@@ -323,4 +323,107 @@
     <string name="github_sponsors">GitHub Sponsors</string>
     <string name="liberapay">Liberapay</string>
     <string name="kofi">Ko-fi</string>
+    <string name="dual_stack">Dual-stack</string>
+    <string name="kernel_name_dots">El nombre del túnel no puede ser \'.\' o \'..\' en modo kernel</string>
+    <string name="save_changes">Guardar cambios</string>
+    <string name="dual_stack_description">Los túneles deben soportar IPv4 e IPv6</string>
+    <string name="remote_key">Clave remota</string>
+    <string name="mobile_data">Datos móviles</string>
+    <string name="tunnel_boot_description">Iniciar el túnel predeterminado al inicio</string>
+    <string name="tunnel_mapping_description">Mapear túneles según el nombre de la Wi‑Fi</string>
+    <string name="donation_prompt_prefix">¡Gracias por usar WG Tunnel! Si puedes, por favor considera</string>
+    <string name="website">Sitio web de la app</string>
+    <string name="wifi_settings">Ajustes de Wi-Fi</string>
+    <string name="info">Información</string>
+    <string name="unknown">Desconocido</string>
+    <string name="all_services_disabled">El túnel automático y el resto de túneles deben ser desactivados para realizar esta operación.</string>
+    <string name="no_network">No hay conexión de red</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="ping_target">Objetivo del ping</string>
+    <string name="resources">Recursos</string>
+    <string name="back">Atrás</string>
+    <string name="already_donated">Ya he donado</string>
+    <string name="global_split_tunneling">Túnel dividido global</string>
+    <string name="active_network">Red activa:</string>
+    <string name="help_translate">Ayuda a traducir la app</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="other">Otros</string>
+    <string name="kill_switch">kill switch</string>
+    <string name="configuration">Configuración</string>
+    <string name="global_dns_servers">Servidores DNS globales</string>
+    <string name="contact">Contacto</string>
+    <string name="backup_and_restore">Copia de seguridad/Restaurar</string>
+    <string name="ping">Ping</string>
+    <string name="about">Acerca de</string>
+    <string name="donation_prompt_link">apoyar el proyecto</string>
+    <string name="donation_prompt_suffix">para que siga siendo libre y siga mejorando.</string>
+    <string name="text_too_large_for_qr">El texto es demasiado grande para mostrar el QR.</string>
+    <string name="options">Opciones</string>
+    <string name="security_type">Seguridad:</string>
+    <string name="ddns_success_message">Endpoint del DNS dinámico actualizado correctamente.</string>
+    <string name="translation">Traducción</string>
+    <string name="reliability">Fiabilidad</string>
+    <string name="monitoring">Monitoreo</string>
+    <string name="aovpn_description">Permite a Android iniciar túneles</string>
+    <string name="set_ping_target">Establecer el objetivo del ping</string>
+    <string name="general">General</string>
+    <string name="review">Valorar la app</string>
+    <string name="kernel_name_special_characters">El nombre del túnel en modo kernel no puede contener espacios o algunos caracteres especiales (permitidos: alfanuméricos, _, =, +, ., -)</string>
+    <string name="_continue">Continuar</string>
+    <string name="unavailable_in_mode">No disponible en el modo actual</string>
+    <string name="debounce_description">Retraso entre cambios rápidos de red</string>
+    <string name="preferred_tunnel">Túnel preferido</string>
+    <string name="tunnel_running_name_message">El nombre del túnel no se puede cambiar mientras está activo.</string>
+    <string name="network_name">Red:</string>
+    <string name="mapped">Mapeado</string>
+    <string name="tunnel_mapping">Mapeo de túneles</string>
+    <string name="preferred_tunnel_label">Túnel preferido:</string>
+    <string name="ping_monitor">Monitoreo de ping</string>
+    <string name="restart_message_template">Guardar los cambios hara que el %1$s se reinicie, desea continuar?</string>
+    <string name="already_donated_description">Desactiva recordatorios de donación</string>
+    <string name="metered_tunnel">Túnel de uso medido</string>
+    <string name="lockdown_settings">Configuración de aislamiento</string>
+    <string name="networks">Redes</string>
+    <string name="auto_tunnel_channel_id" translatable="false">Auto-tunnel Channel</string>
+    <string name="kofi_url" translatable="false">https://ko-fi.com/zaneschepke</string>
+    <string name="bitcoin_cash_address" translatable="false">bitcoincash:qp6xacvswha2tjfp2rscguq3gd4eecxeuvcgtyjv58</string>
+    <string name="solana" translatable="false">Solana (SOL)</string>
+    <string name="docs_wildcards" translatable="false">https://wgtunnel.com/docs/auto-tunneling/#use-name-wildcards</string>
+    <string name="litecoin" translatable="false">Litecoin (LTC)</string>
+    <string name="liberapay_url" translatable="false">https://liberapay.com/zaneschepke</string>
+    <string name="tron_address" translatable="false">TCbR2SqstTLxCA9zp52iC7G2DfHUGD9ak2</string>
+    <string name="vpn_channel_id" translatable="false">VPN Channel</string>
+    <string name="telegram_url" translatable="false">https://t.me/wgtunnel</string>
+    <string name="monero" translatable="false">Monero (XMR)</string>
+    <string name="bitcoin" translatable="false">Bitcoin (BTC)</string>
+    <string name="polygon" translatable="false">Polygon (POL)</string>
+    <string name="privacy_policy_url" translatable="false">https://wgtunnel.com/privacy-policy/</string>
+    <string name="avalanche_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
+    <string name="stellar_address" translatable="false">GAOHREIPAOKSTD4ELXCMM7LDZPRGKJ2DNHEIXLU752PJS6CDPBAEM75B</string>
+    <string name="db_name" translatable="false">wg-tunnel-db</string>
+    <string name="ethereum" translatable="false">Ethereum (ETH)</string>
+    <string name="bitcoin_address" translatable="false">bc1qu6dwlwhav7cwp5gv3kyv3cpwrjrra80p75js6u</string>
+    <string name="translation_url" translatable="false">https://hosted.weblate.org/engage/wg-tunnel/</string>
+    <string name="zcash_address" translatable="false">u1fkx80l0mr7cgzmj5xusnf4fa0hlvttaedlqjzl657dyyfqq4tzq49v4ru53u8re0kfnlah7s363msewcva43v8a2rn8zqs56jeeu6m7snrfljs343kfkgv7gsa76xg005wz95855uwlrvgan0er8n3sp75mmmj44n3fnjar5y7jy0pd2k5yw33lgwpuectuknkwstdkkfyqvxh9xq6c</string>
+    <string name="docs_url" translatable="false">https://wgtunnel.com/docs/getting-started</string>
+    <string name="ecash" translatable="false">eCash (XEC)</string>
+    <string name="my_email" translatable="false">support@zaneschepke.com</string>
+    <string name="ethereum_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
+    <string name="litecoin_address" translatable="false">ltc1q983jnz3n2zshp2xyme8ant45aah5hv337k8nm7</string>
+    <string name="dev_name" translatable="false">Zane</string>
+    <string name="ecash_address" translatable="false">ecash:qrnnvzhezgm9unazue2mw7np5qhdk2874g996nd2zw</string>
+    <string name="tron" translatable="false">Tron (TRX)</string>
+    <string name="polygon_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
+    <string name="stellar" translatable="false">Stellar (XLM)</string>
+    <string name="monero_address" translatable="false">44D1vWL4CqmEGiRhwtUy6MT2SgaCYpk5o3Nh6YxBFyoCXLZ5eZMLiDGj9uoo51mGjeiLxHWyV28MxDPUzQZN4PoqML16ZB9</string>
+    <string name="zcash" translatable="false">Zcash (ZEC)</string>
+    <string name="solana_address" translatable="false">5qPMZa2Y2R6D6AUzrofS4o2M1nzNpbMiAkcRcBkjsmwQ</string>
+    <string name="github_url" translatable="false">https://github.com/wgtunnel/wgtunnel/issues</string>
+    <string name="avalanche" translatable="false">Avalanche (AVAX)</string>
+    <string name="website_url" translatable="false">https://wgtunnel.com</string>
+    <string name="matrix_url" translatable="false">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
+    <string name="bitcoin_cash" translatable="false">Bitcoin Cash (BCH)</string>
+    <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
+    <string name="transport_packet_junk_size">Tamaño de los datos «ruido» del paquete de transporte</string>
+    <string name="cookie_packet_junk_size">Tamaño de los datos «ruido» del paquete de cookies</string>
 </resources>
