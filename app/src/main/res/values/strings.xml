@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Control tunnels and auto-tunnel features.</string>
-    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
+    <string name="app_permission_description">https://hosted.weblate.org/translate/wg-tunnel/strings/en/?checksum=e52d7eb2e28a9a12Control tunnels and auto-tunnel features.</string>
     <string name="vpn_channel_id" translatable="false">VPN Channel</string>
     <string name="vpn_channel_name">VPN Notification Channel</string>
     <string name="github_url" translatable="false">https://github.com/wgtunnel/wgtunnel/issues</string>
