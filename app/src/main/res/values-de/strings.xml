@@ -158,7 +158,7 @@
     <string name="error_download_failed">Download der Konfiguration fehlgeschlagen</string>
     <string name="add_from_url">Von URL hinzufügen</string>
     <string name="export_logs">Gespeicherte Logs exportieren</string>
-    <string name="app_permission_title">WG Tunnel Control Bridge</string>
+    <string name="app_permission_title">Steuere Tunnel und Auto-Tunnel Funktionen.</string>
     <string name="active">Aktiv</string>
     <string name="delete_logs">Logs leeren und löschen</string>
     <string name="tunnel_error_template">Tunnel mit: %1$s fehlgeschlagen</string>
