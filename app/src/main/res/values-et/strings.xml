@@ -20,7 +20,7 @@
     <string name="addresses">Aadressid</string>
     <string name="dns_servers">Nimeserverid</string>
     <string name="mtu">MTU</string>
-    <string name="app_permission_description">Halda tunneleid ja tunnelite automaatse käivitamise seadistusi.</string>
+    <string name="app_permission_description">https://hosted.weblate.org/translate/wg-tunnel/strings/en/?checksum=e52d7eb2e28a9a12 Halda tunneleid ja tunnelite automaatse käivitamise seadistusi.</string>
     <string name="thank_you">Aitäh, et kasutad WG Tunnel rakendust!</string>
     <string name="allowed_ips">Lubatud IP-aadressid</string>
     <string name="endpoint">Otspunkt</string>
@@ -322,7 +322,7 @@
     <string name="locked_down">Rakendus on lukustatud</string>
     <string name="lockdown">Lukusta rakendus</string>
     <string name="debounce_delay">Rahunemisviivitus (debounce delay)</string>
-    <string name="app_permission_title">WG tunneli juhtsild</string>
+    <string name="app_permission_title">Halda tunneleid ja automaatset tunneldust.</string>
     <string name="dual_stack">Kahepinuline</string>
     <string name="kernel_name_dots">Kernelirežiimis ei tohi tunneli nimi olla „.“ või „..“</string>
     <string name="save_changes">Salvesta muudatused</string>
