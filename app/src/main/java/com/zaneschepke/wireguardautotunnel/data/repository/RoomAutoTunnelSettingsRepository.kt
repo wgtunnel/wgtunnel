@@ -4,7 +4,6 @@ import com.zaneschepke.wireguardautotunnel.data.dao.AutoTunnelSettingsDao
 import com.zaneschepke.wireguardautotunnel.data.entity.AutoTunnelSettings as Entity
 import com.zaneschepke.wireguardautotunnel.data.mapper.toDomain
 import com.zaneschepke.wireguardautotunnel.data.mapper.toEntity
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.model.AutoTunnelSettings as Domain
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -14,7 +13,7 @@ import kotlinx.coroutines.flow.map
 
 class RoomAutoTunnelSettingsRepository(
     private val autoTunnelSettingsDao: AutoTunnelSettingsDao,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val ioDispatcher: CoroutineDispatcher,
 ) : AutoTunnelSettingsRepository {
     override suspend fun upsert(autoTunnelSettings: Domain) {
         autoTunnelSettingsDao.upsert(autoTunnelSettings.toEntity())

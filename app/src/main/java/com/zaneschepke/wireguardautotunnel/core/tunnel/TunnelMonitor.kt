@@ -9,23 +9,39 @@ import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
-import com.zaneschepke.wireguardautotunnel.domain.state.*
+import com.zaneschepke.wireguardautotunnel.domain.state.FailureReason
+import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
+import com.zaneschepke.wireguardautotunnel.domain.state.PingState
+import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
+import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import inet.ipaddr.AddressValueException
 import inet.ipaddr.IPAddress
 import inet.ipaddr.IPAddressString
-import io.ktor.util.collections.*
-import javax.inject.Inject
-import javax.inject.Singleton
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import io.ktor.util.collections.ConcurrentMap
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
-@Singleton
-class TunnelMonitor
-@Inject
-constructor(
+class TunnelMonitor(
     private val settingsRepository: GeneralSettingRepository,
     private val tunnelsRepository: TunnelRepository,
     private val monitoringSettingsRepository: MonitoringSettingsRepository,

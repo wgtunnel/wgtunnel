@@ -9,17 +9,12 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsR
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.SettingUiState
-import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.*
-import javax.inject.Inject
+import java.util.UUID
 import kotlinx.coroutines.flow.combine
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 
-@HiltViewModel
-class SettingsViewModel
-@Inject
-constructor(
+class SettingsViewModel(
     private val settingsRepository: GeneralSettingRepository,
     private val shortcutManager: ShortcutManager,
     private val tunnelsRepository: TunnelRepository,

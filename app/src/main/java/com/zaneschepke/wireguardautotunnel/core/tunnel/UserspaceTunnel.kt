@@ -1,10 +1,12 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
-import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
-import com.zaneschepke.wireguardautotunnel.domain.events.*
+import com.zaneschepke.wireguardautotunnel.domain.events.DnsFailure
+import com.zaneschepke.wireguardautotunnel.domain.events.InvalidConfig
+import com.zaneschepke.wireguardautotunnel.domain.events.ServiceNotRunning
+import com.zaneschepke.wireguardautotunnel.domain.events.UnknownError
+import com.zaneschepke.wireguardautotunnel.domain.events.VpnUnauthorized
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.state.AmneziaStatistics
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
@@ -14,24 +16,25 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.asTunnelState
 import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendCoreException
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import org.amnezia.awg.backend.Backend
 import org.amnezia.awg.backend.BackendException
 import org.amnezia.awg.backend.Tunnel as AwgTunnel
 import timber.log.Timber
 
-class UserspaceTunnel
-@Inject
-constructor(
-    @ApplicationScope applicationScope: CoroutineScope,
-    @IoDispatcher ioDispatcher: CoroutineDispatcher,
+class UserspaceTunnel(
+    applicationScope: CoroutineScope,
+    ioDispatcher: CoroutineDispatcher,
     private val backend: Backend,
     private val runConfigHelper: RunConfigHelper,
 ) : BaseTunnel(applicationScope, ioDispatcher) {

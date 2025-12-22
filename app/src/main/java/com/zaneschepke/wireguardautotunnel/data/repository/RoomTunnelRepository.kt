@@ -3,7 +3,6 @@ package com.zaneschepke.wireguardautotunnel.data.repository
 import com.zaneschepke.wireguardautotunnel.data.dao.TunnelConfigDao
 import com.zaneschepke.wireguardautotunnel.data.mapper.toDomain
 import com.zaneschepke.wireguardautotunnel.data.mapper.toEntity
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig as Domain
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -14,7 +13,7 @@ import kotlinx.coroutines.withContext
 
 class RoomTunnelRepository(
     private val tunnelConfigDao: TunnelConfigDao,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val ioDispatcher: CoroutineDispatcher,
 ) : TunnelRepository {
 
     override val flow =

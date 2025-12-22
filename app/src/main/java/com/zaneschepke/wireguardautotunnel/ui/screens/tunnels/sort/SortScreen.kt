@@ -28,29 +28,29 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
-import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.ExpandingRowListItem
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.util.extensions.isSortedBy
+import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
+import org.koin.compose.viewmodel.koinActivityViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 import sh.calvin.reorderable.DragGestureDetector
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
-fun SortScreen() {
-    val viewModel = LocalSharedVm.current
-    val sharedState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+fun SortScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()) {
+    val sharedState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
     val hapticFeedback = LocalHapticFeedback.current
     val isTv = LocalIsAndroidTV.current
 
     var sortAscending by rememberSaveable { mutableStateOf<Boolean?>(null) }
     var editableTunnels by rememberSaveable { mutableStateOf(sharedState.tunnels) }
 
-    viewModel.collectSideEffect { sideEffect ->
+    sharedViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
             LocalSideEffect.SaveChanges -> {
-                viewModel.saveSortChanges(editableTunnels)
+                sharedViewModel.saveSortChanges(editableTunnels)
             }
             LocalSideEffect.Sort -> {
                 sortAscending =

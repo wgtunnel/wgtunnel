@@ -21,7 +21,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
@@ -34,9 +33,10 @@ import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.util.extensions.capitalize
 import com.zaneschepke.wireguardautotunnel.viewmodel.DnsViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun DnsSettingsScreen(viewModel: DnsViewModel = hiltViewModel()) {
+fun DnsSettingsScreen(viewModel: DnsViewModel = koinViewModel()) {
     val context = LocalContext.current
     val navController = LocalNavController.current
     val dnsUiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()

@@ -11,16 +11,13 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.DnsSettingsReposito
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
-import java.util.*
-import javax.inject.Inject
+import java.util.Optional
 import kotlinx.coroutines.flow.firstOrNull
 import org.amnezia.awg.config.Config
 import org.amnezia.awg.config.proxy.HttpProxy
 import org.amnezia.awg.config.proxy.Socks5Proxy
 
-class RunConfigHelper
-@Inject
-constructor(
+class RunConfigHelper(
     private val settingsRepository: GeneralSettingRepository,
     private val proxySettingsRepository: ProxySettingsRepository,
     private val dnsSettingsRepository: DnsSettingsRepository,

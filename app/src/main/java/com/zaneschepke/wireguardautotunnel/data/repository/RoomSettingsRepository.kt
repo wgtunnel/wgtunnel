@@ -4,7 +4,6 @@ import com.zaneschepke.wireguardautotunnel.data.dao.GeneralSettingsDao
 import com.zaneschepke.wireguardautotunnel.data.entity.GeneralSettings as Entity
 import com.zaneschepke.wireguardautotunnel.data.mapper.toDomain
 import com.zaneschepke.wireguardautotunnel.data.mapper.toEntity
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings as Domain
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -14,7 +13,7 @@ import kotlinx.coroutines.withContext
 
 class RoomSettingsRepository(
     private val settingsDoa: GeneralSettingsDao,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val ioDispatcher: CoroutineDispatcher,
 ) : GeneralSettingRepository {
 
     override suspend fun upsert(generalSettings: Domain) {

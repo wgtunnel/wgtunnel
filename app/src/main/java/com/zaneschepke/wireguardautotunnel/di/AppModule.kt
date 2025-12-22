@@ -7,69 +7,75 @@ import com.zaneschepke.logcatter.LogcatReader
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationMonitor
 import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotification
+import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.shortcut.DynamicShortcutManager
 import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
+import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
+import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.DnsViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.LicenseViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.LockdownViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.LoggerViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.MonitoringViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.ProxySettingsViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.SplitTunnelViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.SupportViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-class AppModule {
-
-    @Singleton
-    @ApplicationScope
-    @Provides
-    fun providesApplicationScope(
-        @DefaultDispatcher defaultDispatcher: CoroutineDispatcher
-    ): CoroutineScope = CoroutineScope(SupervisorJob() + defaultDispatcher)
-
-    @Singleton
-    @Provides
-    fun provideLogCollect(@ApplicationContext context: Context): LogReader {
-        return LogcatReader.init(storageDir = context.filesDir.absolutePath)
+val appModule = module {
+    single<CoroutineScope>(named(Scope.APPLICATION)) {
+        CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(named(Dispatcher.DEFAULT)))
     }
 
-    @Singleton
-    @Provides
-    fun provideNotificationService(@ApplicationContext context: Context): NotificationManager {
-        return WireGuardNotification(context)
+    single<LogReader> { LogcatReader.init(storageDir = androidContext().filesDir.absolutePath) }
+
+    single<PowerManager> {
+        androidContext().getSystemService(Context.POWER_SERVICE) as PowerManager
+    }
+    singleOf(::NotificationMonitor)
+    singleOf(::WireGuardNotification) bind NotificationManager::class
+    single {
+        ServiceManager(
+            androidContext(),
+            get(named(Dispatcher.IO)),
+            get(named(Scope.APPLICATION)),
+            get(named(Dispatcher.MAIN)),
+            get(),
+        )
     }
 
-    @Singleton
-    @Provides
-    fun provideShortcutManager(
-        @ApplicationContext context: Context,
-        @IoDispatcher ioDispatcher: CoroutineDispatcher,
-    ): ShortcutManager {
-        return DynamicShortcutManager(context, ioDispatcher)
-    }
+    single<ShortcutManager> { DynamicShortcutManager(androidContext(), get(named(Dispatcher.IO))) }
+    single { FileUtils(androidContext(), get(named(Dispatcher.IO))) }
+    single { NetworkUtils(get(named(Dispatcher.IO))) }
 
-    @Singleton
-    @Provides
-    fun provideNetworkUtils(@IoDispatcher ioDispatcher: CoroutineDispatcher): NetworkUtils {
-        return NetworkUtils(ioDispatcher)
-    }
+    singleOf(::GlobalEffectRepository)
 
-    @Singleton
-    @Provides
-    fun provideNotificationMonitor(
-        tunnelManager: TunnelManager,
-        notificationManager: NotificationManager,
-    ): NotificationMonitor {
-        return NotificationMonitor(tunnelManager, notificationManager)
-    }
-
-    @Provides
-    fun providePowerManager(@ApplicationContext context: Context): PowerManager {
-        return context.getSystemService(Context.POWER_SERVICE) as PowerManager
-    }
+    viewModelOf(::AutoTunnelViewModel)
+    viewModelOf(::ConfigViewModel)
+    viewModelOf(::DnsViewModel)
+    viewModelOf(::LicenseViewModel)
+    viewModelOf(::LockdownViewModel)
+    viewModelOf(::LoggerViewModel)
+    viewModelOf(::MonitoringViewModel)
+    viewModelOf(::ProxySettingsViewModel)
+    viewModelOf(::SettingsViewModel)
+    viewModelOf(::SharedAppViewModel)
+    viewModelOf(::SplitTunnelViewModel)
+    viewModel { SupportViewModel(get(), get(named(Dispatcher.MAIN)), get()) }
+    viewModelOf(::TunnelViewModel)
 }

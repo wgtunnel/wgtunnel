@@ -5,6 +5,7 @@ amneziawgAndroid = "2.3.2"
 androidx-junit = "1.3.0"
 icmp4a = "1.0.0"
 ipaddress = "5.5.1"
+koinBom = "4.2.0-beta2"
 leakcanaryAndroid = "3.0-alpha-8"
 orbitCompose = "11.0.0"
 roomdatabasebackup = "1.1.0"
@@ -14,9 +15,6 @@ coreKtx = "1.17.0"
 datastorePreferences = "1.2.0"
 desugar_jdk_libs = "2.1.5"
 espressoCore = "3.7.0"
-hiltAndroid = "2.57.2"
-hiltCompiler = "1.3.0"
-hiltNavigationCompose = "1.3.0"
 navigation3 = "1.0.0"
 junit = "4.13.2"
 kotlinx-serialization-json = "1.9.0"
@@ -73,9 +71,6 @@ accompanist = ["accompanist-permissions", "accompanist-drawablepainter"]
 androidx-room = ["androidx-room-runtime", "androidx-room-ktx"]
 androidx-datastore = ["androidx-datastore-preferences"]
 
-# Hilt DI and work
-hilt-android = ["hilt-android"]
-androidx-hilt = ["androidx-hilt-work", "androidx-hilt-hilt-navigation-compose"]
 androidx-work = ["androidx-work-runtime"]
 
 # Ktor networking
@@ -150,12 +145,15 @@ lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-com
 androidx-lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNavigation3" }
 
 # di
+koin-android = { module = "io.insert-koin:koin-android" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
+koin-androidx-navigation = { module = "io.insert-koin:koin-androidx-navigation" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-lazy = { module = "io.insert-koin:koin-core-coroutines" }
+koin-worker = { module = "io.insert-koin:koin-androidx-workmanager" }
 androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtxVersion" }
-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
-androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltCompiler" }
-androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltCompiler" }
-androidx-hilt-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
 # testing
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -199,7 +197,6 @@ shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizu
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 androidLibrary = { id = "com.android.library", version.ref = "androidGradlePlugin" }

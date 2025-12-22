@@ -17,15 +17,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
+import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import java.text.Collator
+import org.koin.compose.viewmodel.koinActivityViewModel
 
 @Composable
-fun LanguageScreen() {
+fun LanguageScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()) {
 
-    val sharedViewModel = LocalSharedVm.current
     val appState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     val collator = Collator.getInstance(Locale.current.platformLocale)

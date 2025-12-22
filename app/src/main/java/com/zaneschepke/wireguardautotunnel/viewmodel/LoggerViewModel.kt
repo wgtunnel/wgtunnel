@@ -11,17 +11,12 @@ import com.zaneschepke.wireguardautotunnel.ui.state.LoggerUiState
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import timber.log.Timber
 
-@HiltViewModel
-class LoggerViewModel
-@Inject
-constructor(
+class LoggerViewModel(
     private val logReader: LogReader,
     private val fileUtils: FileUtils,
     private val globalEffectRepository: GlobalEffectRepository,

@@ -1,7 +1,5 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
-import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
@@ -20,8 +18,8 @@ import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
 
 abstract class BaseTunnel(
-    @ApplicationScope protected val applicationScope: CoroutineScope,
-    @IoDispatcher protected val ioDispatcher: CoroutineDispatcher,
+    protected val applicationScope: CoroutineScope,
+    protected val ioDispatcher: CoroutineDispatcher,
 ) : TunnelProvider {
 
     protected val errors = MutableSharedFlow<Pair<String, BackendCoreException>>()
