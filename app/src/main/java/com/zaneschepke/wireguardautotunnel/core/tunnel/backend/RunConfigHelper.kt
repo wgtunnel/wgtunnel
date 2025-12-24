@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.core.tunnel
+package com.zaneschepke.wireguardautotunnel.core.tunnel.backend
 
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol

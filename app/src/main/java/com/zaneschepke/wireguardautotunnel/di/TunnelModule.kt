@@ -5,16 +5,14 @@ import com.wireguard.android.util.RootShell
 import com.wireguard.android.util.ToolsInstaller
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.networkmonitor.NetworkMonitor
-import com.zaneschepke.wireguardautotunnel.core.tunnel.KernelTunnel
-import com.zaneschepke.wireguardautotunnel.core.tunnel.RunConfigHelper
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
-import com.zaneschepke.wireguardautotunnel.core.tunnel.UserspaceTunnel
+import com.zaneschepke.wireguardautotunnel.core.tunnel.backend.KernelTunnel
+import com.zaneschepke.wireguardautotunnel.core.tunnel.backend.RunConfigHelper
+import com.zaneschepke.wireguardautotunnel.core.tunnel.backend.TunnelBackend
+import com.zaneschepke.wireguardautotunnel.core.tunnel.backend.UserspaceTunnel
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.util.RootShellUtils
 import com.zaneschepke.wireguardautotunnel.util.extensions.to
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.map
@@ -34,7 +32,6 @@ val tunnelModule = module {
     single { RootShellUtils(get(named(Shell.APP)), get(named(Dispatcher.IO))) }
 
     singleOf(::RunConfigHelper)
-    singleOf(::TunnelMonitor)
 
     single<Backend>(named(Core.USERSPACE)) {
         GoBackend(
@@ -61,31 +58,16 @@ val tunnelModule = module {
             .apply { setMultipleTunnels(true) }
     }
 
-    single<TunnelProvider>(named(Core.KERNEL)) {
-        KernelTunnel(
-            get<CoroutineScope>(named(Scope.APPLICATION)),
-            get<CoroutineDispatcher>(named(Dispatcher.IO)),
-            get<RunConfigHelper>(),
-            get<com.wireguard.android.backend.Backend>(),
-        )
+    single<TunnelBackend>(named(Core.KERNEL)) {
+        KernelTunnel(get(), get<com.wireguard.android.backend.Backend>())
     }
 
-    single<TunnelProvider>(qualifier = named(Core.USERSPACE)) {
-        UserspaceTunnel(
-            get(named(Scope.APPLICATION)),
-            get<CoroutineDispatcher>(named(Dispatcher.IO)),
-            get<Backend>(named(Core.USERSPACE)),
-            get<RunConfigHelper>(),
-        )
+    single<TunnelBackend>(qualifier = named(Core.USERSPACE)) {
+        UserspaceTunnel(get<Backend>(named(Core.USERSPACE)), get())
     }
 
-    single<TunnelProvider>(qualifier = named(Core.PROXY_USERSPACE)) {
-        UserspaceTunnel(
-            get<CoroutineScope>(named(Scope.APPLICATION)),
-            get<CoroutineDispatcher>(named(Dispatcher.IO)),
-            get<Backend>(named(Core.PROXY_USERSPACE)),
-            get<RunConfigHelper>(),
-        )
+    single<TunnelBackend>(qualifier = named(Core.PROXY_USERSPACE)) {
+        UserspaceTunnel(get<Backend>(named(Core.PROXY_USERSPACE)), get())
     }
 
     single<NetworkMonitor> {
@@ -109,6 +91,10 @@ val tunnelModule = module {
             get(named(Core.KERNEL)),
             get(named(Core.USERSPACE)),
             get(named(Core.PROXY_USERSPACE)),
+            get(),
+            get(),
+            get(),
+            get(),
             get(),
             get(),
             get(),

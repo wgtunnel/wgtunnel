@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.core.tunnel
+package com.zaneschepke.wireguardautotunnel.core.tunnel.backend
 
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
@@ -16,33 +16,25 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.asTunnelState
 import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendCoreException
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
 import org.amnezia.awg.backend.Backend
 import org.amnezia.awg.backend.BackendException
-import org.amnezia.awg.backend.Tunnel as AwgTunnel
+import org.amnezia.awg.backend.Tunnel
 import timber.log.Timber
 
-class UserspaceTunnel(
-    applicationScope: CoroutineScope,
-    ioDispatcher: CoroutineDispatcher,
-    private val backend: Backend,
-    private val runConfigHelper: RunConfigHelper,
-) : BaseTunnel(applicationScope, ioDispatcher) {
+class UserspaceTunnel(private val backend: Backend, private val runConfigHelper: RunConfigHelper) :
+    TunnelBackend {
 
-    private val runtimeTunnels = ConcurrentHashMap<Int, AwgTunnel>()
+    private val runtimeTunnels = ConcurrentHashMap<Int, Tunnel>()
 
     override fun tunnelStateFlow(tunnelConfig: TunnelConfig): Flow<TunnelStatus> = callbackFlow {
-        val stateChannel = Channel<AwgTunnel.State>()
+        val stateChannel = Channel<Tunnel.State>()
 
         val runtimeTunnel = RuntimeAwgTunnel(tunnelConfig, stateChannel)
         runtimeTunnels[tunnelConfig.id] = runtimeTunnel
@@ -52,36 +44,30 @@ class UserspaceTunnel(
         }
 
         try {
-            withTimeout(STARTUP_TIMEOUT_MS) {
-                updateTunnelStatus(tunnelConfig.id, TunnelStatus.Starting)
-                val runConfig = runConfigHelper.buildAmRunConfig(tunnelConfig)
-                backend.setState(runtimeTunnel, AwgTunnel.State.UP, runConfig)
-            }
+            val runConfig = runConfigHelper.buildAmRunConfig(tunnelConfig)
+            backend.setState(runtimeTunnel, Tunnel.State.UP, runConfig)
         } catch (_: TimeoutCancellationException) {
             Timber.e("Startup timed out for ${tunnelConfig.name} (likely DNS hang)")
-            errors.emit(tunnelConfig.name to DnsFailure())
-            forceStopTunnel(tunnelConfig.id)
-            close()
+            throw DnsFailure()
         } catch (e: BackendException) {
-            close(e.toBackendCoreException())
+            throw e.toBackendCoreException()
         } catch (_: IllegalArgumentException) {
-            close(InvalidConfig())
+            throw InvalidConfig()
         } catch (e: Exception) {
             Timber.e(e, "Error while setting tunnel state")
-            close(UnknownError())
+            throw UnknownError()
         }
 
         awaitClose {
             try {
-                backend.setState(runtimeTunnel, AwgTunnel.State.DOWN, null)
+                backend.setState(runtimeTunnel, Tunnel.State.DOWN, null)
             } catch (e: BackendException) {
-                errors.tryEmit(tunnelConfig.name to e.toBackendCoreException())
+                // Errors emitted by caller
             } finally {
                 consumerJob.cancel()
                 stateChannel.close()
                 runtimeTunnels.remove(tunnelConfig.id)
                 trySend(TunnelStatus.Down)
-                close()
             }
         }
     }
@@ -92,7 +78,6 @@ class UserspaceTunnel(
             backend.backendMode = backendMode.asAmBackendMode()
         } catch (e: BackendException) {
             throw e.toBackendCoreException()
-            // TODO this should be mapped to BackendException in the lib
         } catch (_: IOException) {
             throw VpnUnauthorized()
         }
@@ -124,15 +109,11 @@ class UserspaceTunnel(
     override suspend fun forceStopTunnel(tunnelId: Int) {
         val runtimeTunnel = runtimeTunnels[tunnelId] ?: return
         try {
-            backend.setState(runtimeTunnel, AwgTunnel.State.DOWN, null)
+            backend.setState(runtimeTunnel, Tunnel.State.DOWN, null)
         } catch (e: BackendException) {
             Timber.e(e, "Force stop failed for $tunnelId")
         } finally {
-            tunJobs[tunnelId]?.cancel()
             runtimeTunnels.remove(tunnelId)
-            tunJobs.remove(tunnelId)
-            activeTuns.update { it - tunnelId }
-            updateTunnelStatus(tunnelId, TunnelStatus.Down)
         }
     }
 }

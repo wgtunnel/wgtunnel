@@ -365,7 +365,10 @@ class AutoTunnelService : LifecycleService() {
             ) {
                 is AutoTunnelEvent.Start ->
                     (event.tunnelConfig ?: tunnelsRepository.getDefaultTunnel())?.let {
-                        tunnelManager.startTunnel(it)
+                        tunnelManager.startTunnel(it).onFailure { e ->
+                            Timber.e(e, "Auto-tunnel start failed for ${it.name}")
+                            // TODO notify or retry
+                        }
                     }
                 is AutoTunnelEvent.Stop -> tunnelManager.stopActiveTunnels()
                 AutoTunnelEvent.DoNothing -> Timber.i("Auto-tunneling: nothing to do")

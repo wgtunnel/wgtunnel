@@ -19,7 +19,7 @@ class ServiceWorker(
 ) : CoroutineWorker(context, params) {
 
     companion object {
-        private const val TAG = "service_worker"
+        private const val TAG = "auto_tunnel_service_monitor"
 
         fun stop(context: Context) {
             WorkManager.getInstance(context).cancelAllWorkByTag(TAG)

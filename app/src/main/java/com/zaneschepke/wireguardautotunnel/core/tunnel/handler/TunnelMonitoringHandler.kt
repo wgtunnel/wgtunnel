@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.core.tunnel
+package com.zaneschepke.wireguardautotunnel.core.tunnel.handler
 
 import android.os.PowerManager
 import com.zaneschepke.logcatter.LogReader
@@ -20,6 +20,9 @@ import inet.ipaddr.AddressValueException
 import inet.ipaddr.IPAddress
 import inet.ipaddr.IPAddressString
 import io.ktor.util.collections.ConcurrentMap
+import java.util.concurrent.ConcurrentHashMap
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
@@ -31,29 +34,82 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
-class TunnelMonitor(
-    private val settingsRepository: GeneralSettingRepository,
+class TunnelMonitorHandler(
+    private val activeTunnels: StateFlow<Map<Int, TunnelState>>,
     private val tunnelsRepository: TunnelRepository,
+    private val settingsRepository: GeneralSettingRepository,
     private val monitoringSettingsRepository: MonitoringSettingsRepository,
     private val networkMonitor: NetworkMonitor,
     private val networkUtils: NetworkUtils,
     private val logReader: LogReader,
     private val powerManager: PowerManager,
+    private val getStatistics: (Int) -> TunnelStatistics?,
+    private val updateTunnelStatus:
+        suspend (
+            Int, TunnelStatus?, TunnelStatistics?, Map<String, PingState>?, LogHealthState?,
+        ) -> Unit,
+    private val applicationScope: CoroutineScope,
+    private val ioDispatcher: CoroutineDispatcher,
 ) {
+    private val mutex = Mutex()
+    private val jobs = ConcurrentHashMap<Int, Job>()
+
+    init {
+        applicationScope.launch(ioDispatcher) {
+            activeTunnels.collect { activeTuns ->
+                mutex.withLock {
+                    val activeIds = activeTuns.keys.toSet()
+                    (jobs.keys - activeIds).forEach { id ->
+                        Timber.d("Shutting down tunnel monitoring job for tunnelId: $id")
+                        jobs.remove(id)?.cancel()
+                    }
+
+                    val tunnels = tunnelsRepository.flow.firstOrNull() ?: return@collect
+                    val tunnelsById = tunnels.associateBy { it.id }
+
+                    activeIds.forEach { id ->
+                        if (jobs.containsKey(id)) return@forEach
+                        val config = tunnelsById[id] ?: return@forEach
+                        val settings = settingsRepository.flow.filterNotNull().first()
+                        val tunStateFlow =
+                            activeTunnels.map { it[id] }.stateIn(applicationScope + ioDispatcher)
+                        jobs[id] =
+                            applicationScope.launch(ioDispatcher) {
+                                Timber.d("Starting tunnel monitoring job for tunnelId: $id")
+                                startMonitoring(
+                                    config = config,
+                                    withLogs = settings.appMode != AppMode.KERNEL,
+                                    tunStateFlow = tunStateFlow,
+                                    getStatistics = { tunnelId -> getStatistics(tunnelId) },
+                                    updateTunnelStatus = { tid, _, stats, pings, logHealth ->
+                                        updateTunnelStatus(tid, null, stats, pings, logHealth)
+                                    },
+                                )
+                            }
+                    }
+                }
+            }
+        }
+    }
 
     @OptIn(FlowPreview::class)
-    suspend fun startMonitoring(
-        tunnelId: Int,
+    private suspend fun startMonitoring(
+        config: TunnelConfig,
         withLogs: Boolean,
         tunStateFlow: StateFlow<TunnelState?>,
         getStatistics: suspend (Int) -> TunnelStatistics?,
@@ -61,13 +117,10 @@ class TunnelMonitor(
             suspend (
                 Int, TunnelStatus?, TunnelStatistics?, Map<String, PingState>?, LogHealthState?,
             ) -> Unit,
-    ): Job = coroutineScope {
-        launch {
-            val config = tunnelsRepository.getById(tunnelId) ?: return@launch
-            launch { startPingMonitor(config, tunStateFlow, updateTunnelStatus) }
-            launch { startWgStatsPoll(tunnelId, getStatistics, updateTunnelStatus) }
-            if (withLogs) launch { startLogsMonitor(config, updateTunnelStatus) }
-        }
+    ) = coroutineScope {
+        launch { startPingMonitor(config, tunStateFlow, updateTunnelStatus) }
+        launch { startWgStatsPoll(config.id, getStatistics, updateTunnelStatus) }
+        if (withLogs) launch { startLogsMonitor(config, updateTunnelStatus) }
     }
 
     private suspend fun startLogsMonitor(
@@ -266,7 +319,7 @@ class TunnelMonitor(
                 tunStateFlow.filter { state -> state?.status is TunnelStatus.Up }.first()
 
                 // small delay to make sure tunnel is fully up before we actively monitor
-                delay(3_000L)
+                delay(PING_MONITOR_START_DELAY)
 
                 while (isActive) {
                     ensureActive()
@@ -318,7 +371,6 @@ class TunnelMonitor(
     }
 
     companion object {
-
         private val successLogRegex =
             Regex("Received handshake response|Receiving keepalive packet", RegexOption.IGNORE_CASE)
 
@@ -333,5 +385,6 @@ class TunnelMonitor(
         const val CLOUDFLARE_IPV6_IP = "2606:4700:4700::1111"
         const val CLOUDFLARE_IPV4_IP = "1.1.1.1"
         const val STATS_DELAY = 1_000L
+        const val PING_MONITOR_START_DELAY = 5_000L
     }
 }
