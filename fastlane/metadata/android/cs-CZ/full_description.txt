@@ -1,14 +1,23 @@
-Funkce
+WG Tunnel je VPN klient WireGuard, který nabízí rovnováhu mezi jednoduchostí a robustností, což z něj činí ideálního klienta pro běžné i náročné uživatele.
 
-- Přidání tunelů pomocí .conf souboru, zipu, ručního zadávání nebo QR kódu
-- Automatické připojení k VPN dle Wi-Fi SSID, ethernetu či mobilních dat
-- Rozdělené tunelování dle aplikací s vyhledáváním
-- WireGuard podpora pro kernel a userspace módy
-- Amnezia podpora pro userspace mód pro ochranu před cenzurou
-- Always-On VPN podpora
-- Exportování Amnezia a WireGuard tunelů do zipu
-- Podpora pro přepínání VPN pomocí rychlých dlaždic
-- Podpora statických zkratek u hlavního tunelu pro automatickou integraci
-- Podpora Intent automatizace pro všechny tunely
-- Automatický restart služby po restartu systému
-- Opatření pro úsporu baterie
+Ať už chcete automatizovat připojení k VPN, nebo jste náročný uživatel s pokročilými požadavky na ochranu soukromí, WG Tunnel je pro vás.
+
+- **Automatické tunelování:** Automaticky aktivuje tunely na základě SSID Wi-Fi, ethernetových připojení nebo mobilních datových sítí.
+
+- **Rozdělené tunelování:** Flexibilní podpora pro směrování konkrétních aplikací nebo provozu přes VPN.
+
+- **Režimy aplikací:** Podpora více režimů tunelování, včetně standardní VPN, kernelu, uzamčení (vlastní kill switch) a režimů proxy.
+
+- **Integrace AmneziaWG:** Plná podpora pro AmneziaWG, která poskytuje robustní obcházení cenzury.
+
+- **Možnosti proxy:** Vestavěná podpora proxy HTTP a SOCKS5 umožňuje aplikacím třetích stran tunelovat jejich provoz.
+
+- **Rychlé ovládání:** Dlaždice Rychlého nastavení a zkratky na domovské obrazovce pro snadné přepínání akcí.
+
+ - **Podpora automatizace:** Automatizace založená na záměrech pro řízení tunelů a automatického tunelování.
+
+- **Dynamická manipulace s DNS:** Detekuje a aktualizuje změny DNS bez restartu tunelu.
+
+- **Monitorovací nástroje:** Pokročilé funkce monitorování tunelů pro sledování výkonu tunelů.
+
+- **Podpora Android TV:** Podpora Android TV pro téměř všechny funkce aplikací.

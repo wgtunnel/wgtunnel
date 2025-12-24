@@ -1,5 +1,5 @@
-What's new:
-- App lock crash bugfix
-- Fdroid publishing bugfix
-- Exporting logs bugfix
-- Auto-tunnel ethernet toggle bugfix
+Co je nového:
+- Oprava chyby pádu zámku aplikací
+- Oprava chyby publikování na Fdroid
+- Oprava chyby exportu protokolů
+- Oprava chyby přepínání automatického tunelování ethernetového připojení
