@@ -156,8 +156,8 @@
     <string name="config_error">Neplatná konfigurace</string>
     <string name="prominent_background_location_title">Zpřístupnění stávající polohy na pozadí</string>
     <string name="vpn_denied_dialog_title">Oprávnění zamítnuto</string>
-    <string name="app_permission_title">Řídicí most pro WG tunely</string>
-    <string name="app_permission_description">Ovládání funkcí tunelu a automatického tunelu.</string>
+    <string name="app_permission_title">Ovládání tunelů a funkcí automatického tunelování</string>
+    <string name="app_permission_description">https://hosted.weblate.org/translate/wg-tunnel/strings/en/?checksum=e52d7eb2e28a9a12 Ovládání funkcí tunelu a automatického tunelování.</string>
     <string name="enable_remote_app_control">Povolit vzdálené ovládání aplikace</string>
     <string name="tunnel_starting">Spuštění tunelu</string>
     <string name="nothing_here_yet">Zatím zde nic není!</string>
