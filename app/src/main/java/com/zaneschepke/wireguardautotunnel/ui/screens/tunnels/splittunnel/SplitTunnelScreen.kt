@@ -31,7 +31,7 @@ fun SplitTunnelScreen(
     sharedViewModel: SharedAppViewModel = koinActivityViewModel(),
 ) {
 
-    val sharedUiState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val tunnelsUiState by sharedViewModel.tunnelsUiState.collectAsStateWithLifecycle()
     val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     var showDialog by remember { mutableStateOf(false) }
@@ -69,7 +69,7 @@ fun SplitTunnelScreen(
 
     SelectTunnelModal(
         showDialog,
-        sharedUiState.tunnels,
+        tunnelsUiState.tunnels,
         onAttest = { conf ->
             if (conf == null) return@SelectTunnelModal
             effectiveTunnel = conf

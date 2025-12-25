@@ -69,7 +69,7 @@ fun AutoTunnelScreen(
     val navController = LocalNavController.current
     val clipboard = rememberClipboardHelper()
 
-    val sharedUiState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val globalUiState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
     val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     if (uiState.isLoading) return
@@ -123,9 +123,9 @@ fun AutoTunnelScreen(
                 }
 
             fun onAutoTunnelClick() {
-                if (!sharedUiState.isBatteryOptimizationShown)
+                if (!globalUiState.isBatteryOptimizationShown)
                     return requestDisableBatteryOptimizations()
-                viewModel.toggleAutoTunnel(sharedUiState.settings.appMode)
+                viewModel.toggleAutoTunnel(globalUiState.appMode)
             }
 
             SurfaceRow(

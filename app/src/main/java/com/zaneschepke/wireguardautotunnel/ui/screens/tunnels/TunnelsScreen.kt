@@ -37,7 +37,9 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
     val navController = LocalNavController.current
     val clipboard = rememberClipboardHelper()
 
-    val sharedState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val uiState by sharedViewModel.tunnelsUiState.collectAsStateWithLifecycle()
+
+    if (uiState.isLoading) return
 
     var showExportSheet by rememberSaveable { mutableStateOf(false) }
     var showImportSheet by rememberSaveable { mutableStateOf(false) }
@@ -148,5 +150,5 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
         )
     }
 
-    TunnelList(sharedState, Modifier.fillMaxSize(), sharedViewModel)
+    TunnelList(uiState, Modifier.fillMaxSize(), sharedViewModel)
 }

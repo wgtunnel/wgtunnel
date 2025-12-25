@@ -11,6 +11,7 @@ import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.shortcut.DynamicShortcutManager
 import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.SelectedTunnelsRepository
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
@@ -30,13 +31,17 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.annotation.KoinExperimentalAPI
+import org.koin.core.module.dsl.scopedOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.viewmodel.scope.viewModelScope
 
+@OptIn(KoinExperimentalAPI::class)
 val appModule = module {
     single<CoroutineScope>(named(Scope.APPLICATION)) {
         CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(named(Dispatcher.DEFAULT)))
@@ -59,11 +64,16 @@ val appModule = module {
         )
     }
 
-    single<ShortcutManager> { DynamicShortcutManager(androidContext(), get(named(Dispatcher.IO))) }
-    single { FileUtils(androidContext(), get(named(Dispatcher.IO))) }
-    single { NetworkUtils(get(named(Dispatcher.IO))) }
+    viewModelScope {
+        scoped { FileUtils(androidContext(), get(named(Dispatcher.IO))) }
+        scoped<ShortcutManager> {
+            DynamicShortcutManager(androidContext(), get(named(Dispatcher.IO)))
+        }
+        scopedOf(::GlobalEffectRepository)
+        scopedOf(::SelectedTunnelsRepository)
+    }
 
-    singleOf(::GlobalEffectRepository)
+    single { NetworkUtils(get(named(Dispatcher.IO))) }
 
     viewModelOf(::AutoTunnelViewModel)
     viewModelOf(::ConfigViewModel)

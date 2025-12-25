@@ -69,7 +69,7 @@ fun SettingsScreen(
 
     val locale = Locale.current.platformLocale
 
-    val sharedUiState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val globalUiState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
     val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     if (uiState.isLoading) return
@@ -86,7 +86,7 @@ fun SettingsScreen(
         }
 
     fun performBackupRestore(action: () -> Unit) {
-        if (sharedUiState.activeTunnels.isNotEmpty() || sharedUiState.isAutoTunnelActive)
+        if (uiState.tunnelActive || globalUiState.isAutoTunnelActive)
             return context.showToast(R.string.all_services_disabled)
         showBackupSheet = false
         action()
@@ -165,22 +165,22 @@ fun SettingsScreen(
                         Icons.AutoMirrored.Outlined.CallSplit,
                         contentDescription = null,
                         tint =
-                            if (sharedUiState.proxyEnabled) Disabled
+                            if (globalUiState.appMode == AppMode.PROXY) Disabled
                             else MaterialTheme.colorScheme.onSurface,
                     )
                 },
-                enabled = !sharedUiState.proxyEnabled,
+                enabled = globalUiState.appMode != AppMode.PROXY,
                 title = stringResource(R.string.global_split_tunneling),
                 trailing = { modifier ->
                     SwitchWithDivider(
                         checked = uiState.settings.isGlobalSplitTunnelEnabled,
                         onClick = { viewModel.setGlobalSplitTunneling(it) },
                         modifier = modifier,
-                        enabled = !sharedUiState.proxyEnabled,
+                        enabled = globalUiState.appMode != AppMode.PROXY,
                     )
                 },
                 description =
-                    if (sharedUiState.proxyEnabled) {
+                    if (globalUiState.appMode == AppMode.PROXY) {
                         {
                             DescriptionText(
                                 stringResource(R.string.unavailable_in_mode),
@@ -211,14 +211,15 @@ fun SettingsScreen(
                         Icons.Outlined.NetworkPing,
                         contentDescription = null,
                         tint =
-                            if (!sharedUiState.proxyEnabled) MaterialTheme.colorScheme.onSurface
+                            if (globalUiState.appMode != AppMode.PROXY)
+                                MaterialTheme.colorScheme.onSurface
                             else Disabled,
                     )
                 },
                 title = stringResource(R.string.ping_monitor),
-                enabled = !sharedUiState.proxyEnabled,
+                enabled = globalUiState.appMode != AppMode.PROXY,
                 description =
-                    if (sharedUiState.proxyEnabled) {
+                    if (globalUiState.appMode == AppMode.PROXY) {
                         {
                             DescriptionText(
                                 stringResource(R.string.unavailable_in_mode),
@@ -230,7 +231,7 @@ fun SettingsScreen(
                     SwitchWithDivider(
                         checked = uiState.monitoring.isPingEnabled,
                         onClick = { viewModel.setPingEnabled(it) },
-                        enabled = !sharedUiState.proxyEnabled,
+                        enabled = globalUiState.appMode != AppMode.PROXY,
                         modifier = modifier,
                     )
                 },

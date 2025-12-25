@@ -28,6 +28,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
@@ -102,14 +103,14 @@ fun TunnelSettingsScreen(
                         Icons.AutoMirrored.Outlined.CallSplit,
                         contentDescription = null,
                         tint =
-                            if (sharedUiState.proxyEnabled) Disabled
+                            if (sharedUiState.appMode == AppMode.PROXY) Disabled
                             else MaterialTheme.colorScheme.onSurface,
                     )
                 },
-                enabled = !sharedUiState.proxyEnabled,
+                enabled = sharedUiState.appMode != AppMode.PROXY,
                 title = stringResource(R.string.splt_tunneling),
                 description =
-                    if (sharedUiState.proxyEnabled) {
+                    if (sharedUiState.appMode == AppMode.PROXY) {
                         {
                             DescriptionText(
                                 stringResource(R.string.unavailable_in_mode),
@@ -159,14 +160,14 @@ fun TunnelSettingsScreen(
                             Icons.Outlined.DataUsage,
                             contentDescription = null,
                             tint =
-                                if (sharedUiState.proxyEnabled) Disabled
+                                if (sharedUiState.appMode == AppMode.PROXY) Disabled
                                 else MaterialTheme.colorScheme.onSurface,
                         )
                     },
                     title = stringResource(R.string.metered_tunnel),
-                    enabled = !sharedUiState.proxyEnabled,
+                    enabled = sharedUiState.appMode != AppMode.PROXY,
                     description =
-                        if (sharedUiState.proxyEnabled) {
+                        if (sharedUiState.appMode == AppMode.PROXY) {
                             {
                                 DescriptionText(
                                     stringResource(R.string.unavailable_in_mode),
@@ -178,7 +179,7 @@ fun TunnelSettingsScreen(
                         ThemedSwitch(
                             checked = tunnel.isMetered,
                             onClick = { viewModel.setMetered(it) },
-                            enabled = !sharedUiState.proxyEnabled,
+                            enabled = sharedUiState.appMode != AppMode.PROXY,
                         )
                     },
                     onClick = { viewModel.setMetered(!tunnel.isMetered) },

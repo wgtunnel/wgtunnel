@@ -29,6 +29,7 @@ import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.component.KoinComponent
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.lazyModules
+import org.koin.core.option.viewModelScopeFactory
 import org.koin.core.qualifier.named
 import timber.log.Timber
 
@@ -48,6 +49,7 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
             if (BuildConfig.DEBUG) androidLogger()
             workManagerFactory()
             modules(dispatchersModule, appModule, databaseModule, tunnelModule, workerModule)
+            options(viewModelScopeFactory())
             lazyModules(networkModule)
         }
         instance = this

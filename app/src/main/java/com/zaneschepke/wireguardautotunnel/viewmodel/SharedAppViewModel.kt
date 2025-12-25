@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.wireguard.android.backend.WgQuickBackend
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
@@ -13,10 +14,12 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.SelectedTunnelsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
-import com.zaneschepke.wireguardautotunnel.ui.state.SharedAppUiState
+import com.zaneschepke.wireguardautotunnel.ui.state.GlobalAppUiState
+import com.zaneschepke.wireguardautotunnel.ui.state.TunnelsUiState
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
@@ -32,9 +35,13 @@ import io.ktor.client.statement.bodyAsText
 import java.io.File
 import java.io.IOException
 import java.time.Instant
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.plus
 import org.amnezia.awg.config.BadConfigException
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
@@ -48,41 +55,64 @@ class SharedAppViewModel(
     private val globalEffectRepository: GlobalEffectRepository,
     private val tunnelRepository: TunnelRepository,
     private val settingsRepository: GeneralSettingRepository,
-    private val monitoringSettingsRepository: MonitoringSettingsRepository,
+    private val selectedTunnelsRepository: SelectedTunnelsRepository,
+    monitoringSettingsRepository: MonitoringSettingsRepository,
     private val rootShellUtils: RootShellUtils,
     private val httpClient: HttpClient,
     private val fileUtils: FileUtils,
-) : ContainerHost<SharedAppUiState, LocalSideEffect>, ViewModel() {
+) : ContainerHost<GlobalAppUiState, LocalSideEffect>, ViewModel() {
 
     val globalSideEffect = globalEffectRepository.flow
 
+    val tunnelsUiState =
+        combine(
+                tunnelRepository.userTunnelsFlow,
+                monitoringSettingsRepository.flow,
+                tunnelManager.activeTunnels,
+                selectedTunnelsRepository.flow,
+            ) { tunnels, monitoringSettings, activeTuns, selectedTuns ->
+                TunnelsUiState(
+                    tunnels = tunnels,
+                    isPingEnabled = monitoringSettings.isPingEnabled,
+                    showPingStats = monitoringSettings.showDetailedPingStats,
+                    activeTunnels = activeTuns,
+                    selectedTunnels = selectedTuns,
+                    isLoading = false,
+                )
+            }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), TunnelsUiState())
+
     override val container =
-        container<SharedAppUiState, LocalSideEffect>(
-            SharedAppUiState(),
-            buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
+        container<GlobalAppUiState, LocalSideEffect>(
+            GlobalAppUiState(),
+            buildSettings = { repeatOnSubscribedStopTimeout = 5_000L },
         ) {
             intent {
                 combine(
-                        tunnelRepository.userTunnelsFlow,
-                        serviceManager.autoTunnelService.map { it != null },
+                        tunnelRepository.userTunnelsFlow
+                            .map { tuns -> tuns.associate { it.id to it.name } }
+                            .distinctUntilChanged(),
+                        serviceManager.autoTunnelService.map { it != null }.distinctUntilChanged(),
                         settingsRepository.flow,
-                        tunnelManager.activeTunnels,
-                        monitoringSettingsRepository.flow,
-                    ) { tunnels, autoTunnelActive, settings, activeTunnels, monitoring ->
+                        tunnelsUiState
+                            .map { Pair(it.isLoading, it.selectedTunnels.size) }
+                            .distinctUntilChanged(),
+                        appStateRepository.flow,
+                    ) { tunNames, autoTunnelActive, settings, (loading, selectedTunCount), appState
+                        ->
                         state.copy(
                             theme = settings.theme,
+                            appMode = settings.appMode,
                             locale = settings.locale ?: LocaleUtil.OPTION_PHONE_LANGUAGE,
+                            tunnelNames = tunNames,
+                            alreadyDonated = settings.alreadyDonated,
+                            isLocationDisclosureShown = appState.isLocationDisclosureShown,
+                            isBatteryOptimizationShown = appState.isBatteryOptimizationDisableShown,
+                            shouldShowDonationSnackbar = appState.shouldShowDonationSnackbar,
+                            selectedTunnelCount = selectedTunCount,
                             pinLockEnabled = settings.isPinLockEnabled,
                             isAutoTunnelActive = autoTunnelActive,
-                            settings = settings,
-                            tunnels = tunnels,
-                            activeTunnels = activeTunnels,
-                            isPingEnabled = monitoring.isPingEnabled,
-                            showPingStats = monitoring.showDetailedPingStats,
-                            proxyEnabled =
-                                settings.appMode == AppMode.PROXY ||
-                                    settings.appMode == AppMode.LOCK_DOWN,
-                            isAppLoaded = true,
+                            isAppLoaded = !loading,
                         )
                     }
                     .collect { newState -> reduce { newState } }
@@ -95,18 +125,6 @@ class SharedAppViewModel(
             }
 
             intent {
-                appStateRepository.flow.collect {
-                    reduce {
-                        state.copy(
-                            isLocationDisclosureShown = it.isLocationDisclosureShown,
-                            isBatteryOptimizationShown = it.isBatteryOptimizationDisableShown,
-                            shouldShowDonationSnackbar = it.shouldShowDonationSnackbar,
-                        )
-                    }
-                }
-            }
-
-            intent {
                 tunnelManager.messageEvents.collect { (_, message) ->
                     postSideEffect(GlobalSideEffect.Snackbar(message.toStringValue()))
                 }
@@ -114,7 +132,7 @@ class SharedAppViewModel(
         }
 
     fun startTunnel(tunnelConfig: TunnelConfig) = intent {
-        if (state.settings.appMode == AppMode.VPN) {
+        if (state.appMode == AppMode.VPN) {
             if (!serviceManager.hasVpnPermission())
                 return@intent postSideEffect(
                     GlobalSideEffect.RequestVpnPermission(AppMode.VPN, tunnelConfig)
@@ -131,18 +149,16 @@ class SharedAppViewModel(
         appStateRepository.setLocationDisclosureShown(true)
     }
 
-    fun setTheme(theme: Theme) = intent {
-        settingsRepository.upsert(state.settings.copy(theme = theme))
-    }
+    fun setTheme(theme: Theme) = intent { settingsRepository.updateTheme(theme) }
 
     fun setLocale(locale: String) = intent {
-        settingsRepository.upsert(state.settings.copy(locale = locale))
+        settingsRepository.updateLocale(locale)
         postSideEffect(GlobalSideEffect.ConfigChanged)
     }
 
     fun setPinLockEnabled(enabled: Boolean) = intent {
         if (!enabled) PinManager.clearPin()
-        settingsRepository.upsert(state.settings.copy(isPinLockEnabled = enabled))
+        settingsRepository.updatePinLockEnabled(enabled)
     }
 
     fun stopTunnel(tunnelConfig: TunnelConfig) = intent {
@@ -184,7 +200,7 @@ class SharedAppViewModel(
                 }
             }
         }
-        settingsRepository.upsert(state.settings.copy(appMode = appMode))
+        settingsRepository.updateAppMode(appMode)
     }
 
     fun setShouldShowDonationSnackbar(to: Boolean) = intent {
@@ -223,7 +239,7 @@ class SharedAppViewModel(
         try {
             val tunnelConfigs =
                 configs.map { (config, name) -> TunnelConfig.tunnelConfFromQuick(config, name) }
-            tunnelRepository.saveTunnelsUniquely(tunnelConfigs, state.tunnels)
+            tunnelRepository.saveTunnelsUniquely(tunnelConfigs, state.tunnelNames.map { it.value })
         } catch (_: IOException) {
             postSideEffect(
                 GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.read_failed))
@@ -274,56 +290,58 @@ class SharedAppViewModel(
     }
 
     fun toggleSelectAllTunnels() = intent {
-        if (state.selectedTunnels.size != state.tunnels.size) {
-            return@intent reduce { state.copy(selectedTunnels = state.tunnels) }
+        if (state.selectedTunnelCount != state.tunnelNames.size) {
+            val tunnels = tunnelRepository.getAll()
+            selectedTunnelsRepository.set(tunnels)
+            return@intent
         }
-        reduce { state.copy(selectedTunnels = emptyList()) }
+        selectedTunnelsRepository.clear()
     }
 
-    fun clearSelectedTunnels() = intent { reduce { state.copy(selectedTunnels = emptyList()) } }
+    fun clearSelectedTunnels() = intent { selectedTunnelsRepository.clear() }
 
     fun toggleSelectedTunnel(tunnelId: Int) = intent {
-        reduce {
-            state.copy(
-                selectedTunnels =
-                    state.selectedTunnels.toMutableList().apply {
-                        val removed = removeIf { it.id == tunnelId }
-                        if (!removed) addAll(state.tunnels.filter { it.id == tunnelId })
-                    }
-            )
-        }
+        val (selectedTuns, tunnels) = tunnelsUiState.value.run { Pair(selectedTunnels, tunnels) }
+        val selected =
+            selectedTuns.toMutableList().apply {
+                val removed = removeIf { it.id == tunnelId }
+                if (!removed) addAll(tunnels.filter { it.id == tunnelId })
+            }
+        selectedTunnelsRepository.set(selected)
     }
 
     fun deleteSelectedTunnels() = intent {
         val activeTunIds = tunnelManager.activeTunnels.firstOrNull()?.map { it.key }
-        if (state.selectedTunnels.any { activeTunIds?.contains(it.id) == true })
+        val selectedTuns = tunnelsUiState.value.selectedTunnels
+        if (selectedTuns.any { activeTunIds?.contains(it.id) == true })
             return@intent postSideEffect(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.delete_active_message)
                 )
             )
-        tunnelRepository.delete(state.selectedTunnels)
+        tunnelRepository.delete(selectedTuns)
         clearSelectedTunnels()
     }
 
     fun copySelectedTunnel() = intent {
-        val selected = state.selectedTunnels.firstOrNull() ?: return@intent
+        val selected = tunnelsUiState.value.selectedTunnels.firstOrNull() ?: return@intent
         val copy = TunnelConfig.tunnelConfFromQuick(selected.amQuick, selected.name)
-        tunnelRepository.saveTunnelsUniquely(listOf(copy), state.tunnels)
+        tunnelRepository.saveTunnelsUniquely(listOf(copy), state.tunnelNames.map { it.value })
         clearSelectedTunnels()
     }
 
     fun exportSelectedTunnels(configType: ConfigType, uri: Uri?) = intent {
+        val selectedTunnels = tunnelsUiState.value.selectedTunnels
         val (files, shareFileName) =
             when (configType) {
                 ConfigType.AM ->
                     Pair(
-                        createAmFiles(state.selectedTunnels),
+                        createAmFiles(selectedTunnels),
                         "am-export_${Instant.now().epochSecond}.zip",
                     )
                 ConfigType.WG ->
                     Pair(
-                        createWgFiles(state.selectedTunnels),
+                        createWgFiles(selectedTunnels),
                         "wg-export_${Instant.now().epochSecond}.zip",
                     )
             }

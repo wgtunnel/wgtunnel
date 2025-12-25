@@ -40,12 +40,12 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
 fun SortScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()) {
-    val sharedState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val tunnelsUiState by sharedViewModel.tunnelsUiState.collectAsStateWithLifecycle()
     val hapticFeedback = LocalHapticFeedback.current
     val isTv = LocalIsAndroidTV.current
 
     var sortAscending by rememberSaveable { mutableStateOf<Boolean?>(null) }
-    var editableTunnels by rememberSaveable { mutableStateOf(sharedState.tunnels) }
+    var editableTunnels by rememberSaveable { mutableStateOf(tunnelsUiState.tunnels) }
 
     sharedViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
@@ -63,7 +63,7 @@ fun SortScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()) {
                     when (sortAscending) {
                         true -> editableTunnels.sortedBy { it.name }
                         false -> editableTunnels.sortedByDescending { it.name }
-                        null -> sharedState.tunnels
+                        null -> tunnelsUiState.tunnels
                     }
             }
             else -> Unit
@@ -86,7 +86,9 @@ fun SortScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()) {
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
         modifier =
-            Modifier.pointerInput(Unit) { if (sharedState.tunnels.isEmpty()) return@pointerInput }
+            Modifier.pointerInput(Unit) {
+                    if (tunnelsUiState.tunnels.isEmpty()) return@pointerInput
+                }
                 .overscroll(rememberOverscrollEffect()),
         state = lazyListState,
         userScrollEnabled = true,

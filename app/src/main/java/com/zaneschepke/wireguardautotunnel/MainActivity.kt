@@ -300,9 +300,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     LaunchedEffect(Unit) {
-                        if (
-                            uiState.shouldShowDonationSnackbar && !uiState.settings.alreadyDonated
-                        ) {
+                        if (uiState.shouldShowDonationSnackbar && !uiState.alreadyDonated) {
                             viewModel.setShouldShowDonationSnackbar(false)
                             snackbarState.showSnackbar(
                                 SnackbarInfo(
@@ -333,7 +331,7 @@ class MainActivity : AppCompatActivity() {
                             )
 
                         Box(modifier = Modifier.fillMaxSize()) {
-                            if (uiState.settings.appMode == AppMode.LOCK_DOWN) {
+                            if (uiState.appMode == AppMode.LOCK_DOWN) {
                                 AppAlertBanner(
                                     stringResource(R.string.locked_down)
                                         .uppercase(Locale.current.platformLocale),
