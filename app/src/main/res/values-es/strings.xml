@@ -174,7 +174,7 @@
     <string name="error_download_failed">Fallo al descargar configuración</string>
     <string name="enter_config_url">Introducir URL de configuración</string>
     <string name="delete_logs">Eliminar y limpiar registros</string>
-    <string name="app_permission_title">Puente de Control WG Tunnel</string>
+    <string name="app_permission_title">Control de túneles y funciones de túnel automatico</string>
     <string name="dropdown">Menú desplegable</string>
     <string name="delete">Eliminar</string>
     <string name="export_failed">Exportación fallida</string>
