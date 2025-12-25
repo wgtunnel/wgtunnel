@@ -45,18 +45,15 @@ import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalAtomicApi::class)
 class TunnelManager(
     kernelBackend: TunnelBackend,
     userspaceBackend: TunnelBackend,
@@ -77,6 +74,8 @@ class TunnelManager(
 
     private val _activeTunnels = MutableStateFlow<Map<Int, TunnelState>>(emptyMap())
     override val activeTunnels: StateFlow<Map<Int, TunnelState>> = _activeTunnels.asStateFlow()
+
+    @OptIn(ExperimentalAtomicApi::class) val currentAppMode = AtomicReference(AppMode.VPN)
 
     private val defaultManager =
         TunnelLifecycleManager(userspaceBackend, applicationScope, ioDispatcher, _activeTunnels)
@@ -108,57 +107,31 @@ class TunnelManager(
         )
 
     @OptIn(ExperimentalAtomicApi::class)
-    private val currentProvider: StateFlow<TunnelProvider> = run {
-        val currentAppMode = AtomicReference(AppMode.VPN)
-        val initialEmit = AtomicBoolean(true)
-
-        settingsRepository.flow
-            .filterNotNull()
-            .filterNot { it == GeneralSettings() }
-            .distinctUntilChangedBy { it.appMode }
-            .onEach { settings ->
-                val isInitialEmit = initialEmit.exchange(false)
-                val previousMode = currentAppMode.exchange(settings.appMode)
-
-                if (previousMode != settings.appMode && !isInitialEmit) {
-                    handleModeChangeCleanup(previousMode)
-                }
-                if (settings.appMode == AppMode.LOCK_DOWN) {
-                    handleLockDownModeInit()
-                }
-            }
-            .map { it.appMode }
-            .map { mode -> lifecycleManagers[mode] ?: defaultManager }
-            .stateIn(
-                scope = applicationScope.plus(ioDispatcher),
-                started = SharingStarted.Eagerly,
-                initialValue = defaultManager,
-            )
+    private fun getProvider(): TunnelProvider {
+        return lifecycleManagers[currentAppMode.load()] ?: defaultManager
     }
 
     override suspend fun startTunnel(tunnelConfig: TunnelConfig): Result<Unit> =
-        currentProvider.value.startTunnel(tunnelConfig)
+        getProvider().startTunnel(tunnelConfig)
 
-    override suspend fun stopTunnel(tunnelId: Int) = currentProvider.value.stopTunnel(tunnelId)
+    override suspend fun stopTunnel(tunnelId: Int) = getProvider().stopTunnel(tunnelId)
 
-    override suspend fun forceStopTunnel(tunnelId: Int) =
-        currentProvider.value.forceStopTunnel(tunnelId)
+    override suspend fun forceStopTunnel(tunnelId: Int) = getProvider().forceStopTunnel(tunnelId)
 
-    override suspend fun stopActiveTunnels() = currentProvider.value.stopActiveTunnels()
+    override suspend fun stopActiveTunnels() = getProvider().stopActiveTunnels()
 
     override fun setBackendMode(backendMode: BackendMode) =
-        currentProvider.value.setBackendMode(backendMode)
+        getProvider().setBackendMode(backendMode)
 
-    override fun getBackendMode(): BackendMode = currentProvider.value.getBackendMode()
+    override fun getBackendMode(): BackendMode = getProvider().getBackendMode()
 
-    override suspend fun runningTunnelNames(): Set<String> =
-        currentProvider.value.runningTunnelNames()
+    override suspend fun runningTunnelNames(): Set<String> = getProvider().runningTunnelNames()
 
     override fun handleDnsReresolve(tunnelConfig: TunnelConfig): Boolean =
-        currentProvider.value.handleDnsReresolve(tunnelConfig)
+        getProvider().handleDnsReresolve(tunnelConfig)
 
     override fun getStatistics(tunnelId: Int): TunnelStatistics? =
-        currentProvider.value.getStatistics(tunnelId)
+        getProvider().getStatistics(tunnelId)
 
     override suspend fun updateTunnelStatus(
         tunnelId: Int,
@@ -166,14 +139,7 @@ class TunnelManager(
         stats: TunnelStatistics?,
         pingStates: Map<String, PingState>?,
         logHealthState: LogHealthState?,
-    ) =
-        currentProvider.value.updateTunnelStatus(
-            tunnelId,
-            status,
-            stats,
-            pingStates,
-            logHealthState,
-        )
+    ) = getProvider().updateTunnelStatus(tunnelId, status, stats, pingStates, logHealthState)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val localErrorEvents = MutableSharedFlow<Pair<String?, BackendCoreException>>()
@@ -244,7 +210,28 @@ class TunnelManager(
         )
 
     init {
-        applicationScope.launch(ioDispatcher) { handleRestore() }
+        applicationScope.launch(ioDispatcher) {
+            val initialEmit = AtomicBoolean(true)
+            settingsRepository.flow
+                .filterNotNull()
+                .filterNot { it == GeneralSettings() }
+                .distinctUntilChangedBy { it.appMode }
+                .collect { settings ->
+                    val isInitialEmit = initialEmit.exchange(false)
+                    val previousMode = currentAppMode.exchange(settings.appMode)
+
+                    if (isInitialEmit) {
+                        return@collect handleRestore(settings)
+                    }
+
+                    if (previousMode != settings.appMode) {
+                        handleModeChangeCleanup(previousMode)
+                    }
+                    if (settings.appMode == AppMode.LOCK_DOWN) {
+                        handleLockDownModeInit()
+                    }
+                }
+        }
     }
 
     // TODO this can crash if we haven't started foreground service yet, especially for
@@ -272,21 +259,23 @@ class TunnelManager(
 
     private suspend fun handleModeChangeCleanup(previousAppMode: AppMode) {
         lifecycleManagers[previousAppMode]?.stopActiveTunnels()
-        if (previousAppMode == AppMode.LOCK_DOWN) setBackendMode(BackendMode.Inactive)
+        if (previousAppMode == AppMode.LOCK_DOWN) {
+            lifecycleManagers[previousAppMode]?.setBackendMode(BackendMode.Inactive)
+        }
     }
 
-    suspend fun handleRestore() =
+    suspend fun handleRestore(settings: GeneralSettings? = null) =
         withContext(ioDispatcher) {
-            val settings = settingsRepository.getGeneralSettings()
+            val currentSettings = settings ?: settingsRepository.getGeneralSettings()
             val autoTunnelSettings = autoTunnelSettingsRepository.getAutoTunnelSettings()
             val tunnels = tunnelsRepository.userTunnelsFlow.firstOrNull()
             if (autoTunnelSettings.isAutoTunnelEnabled)
                 return@withContext restoreAutoTunnel(autoTunnelSettings)
-            if (settings.appMode == AppMode.LOCK_DOWN) handleLockDownModeInit()
+            if (currentSettings.appMode == AppMode.LOCK_DOWN) handleLockDownModeInit()
             if (tunnels?.any { it.isActive } == true) {
-                if (settings.appMode == AppMode.VPN && !serviceManager.hasVpnPermission())
+                if (currentSettings.appMode == AppMode.VPN && !serviceManager.hasVpnPermission())
                     return@withContext localErrorEvents.emit(null to NotAuthorized())
-                when (settings.appMode) {
+                when (currentSettings.appMode) {
                     AppMode.VPN,
                     AppMode.PROXY,
                     AppMode.LOCK_DOWN -> {
