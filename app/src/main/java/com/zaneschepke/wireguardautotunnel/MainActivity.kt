@@ -123,6 +123,7 @@ import de.raphaelebner.roomdatabasebackup.core.RoomBackup
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import xyz.teamgravity.pin_lock_compose.PinManager
@@ -432,24 +433,24 @@ class MainActivity : AppCompatActivity() {
                                                 entry<Route.Tunnels> { TunnelsScreen() }
                                                 entry<Route.Sort> { SortScreen() }
                                                 entry<Route.TunnelSettings> { key ->
-                                                    val viewModel by
-                                                        viewModel<TunnelViewModel> {
-                                                            parametersOf(key.id)
-                                                        }
+                                                    val viewModel: TunnelViewModel =
+                                                        koinViewModel(
+                                                            parameters = { parametersOf(key.id) }
+                                                        )
                                                     TunnelSettingsScreen(viewModel)
                                                 }
                                                 entry<Route.SplitTunnel> { key ->
-                                                    val viewModel by
-                                                        viewModel<SplitTunnelViewModel> {
-                                                            parametersOf(key.id)
-                                                        }
+                                                    val viewModel: SplitTunnelViewModel =
+                                                        koinViewModel(
+                                                            parameters = { parametersOf(key.id) }
+                                                        )
                                                     SplitTunnelScreen(viewModel)
                                                 }
                                                 entry<Route.Config> { key ->
-                                                    val viewModel by
-                                                        viewModel<ConfigViewModel> {
-                                                            parametersOf(key.id)
-                                                        }
+                                                    val viewModel: ConfigViewModel =
+                                                        koinViewModel(
+                                                            parameters = { parametersOf(key.id) }
+                                                        )
                                                     ConfigScreen(viewModel)
                                                 }
                                                 entry<Route.LocationDisclosure> {
@@ -474,17 +475,17 @@ class MainActivity : AppCompatActivity() {
                                                 }
                                                 entry<Route.Dns> { DnsSettingsScreen() }
                                                 entry<Route.ConfigGlobal> { key ->
-                                                    val viewModel by
-                                                        viewModel<ConfigViewModel> {
-                                                            parametersOf(key.id)
-                                                        }
+                                                    val viewModel: ConfigViewModel =
+                                                        koinViewModel(
+                                                            parameters = { parametersOf(key.id) }
+                                                        )
                                                     ConfigScreen(viewModel)
                                                 }
                                                 entry<Route.SplitTunnelGlobal> { key ->
-                                                    val viewModel by
-                                                        viewModel<SplitTunnelViewModel> {
-                                                            parametersOf(key.id)
-                                                        }
+                                                    val viewModel: SplitTunnelViewModel =
+                                                        koinViewModel(
+                                                            parameters = { parametersOf(key.id) }
+                                                        )
                                                     SplitTunnelScreen(viewModel)
                                                 }
                                                 entry<Route.LockdownSettings> {
