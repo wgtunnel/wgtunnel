@@ -55,7 +55,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -185,10 +184,12 @@ class MainActivity : AppCompatActivity() {
             var previousRoute by remember { mutableStateOf<Route?>(null) }
 
             val navController =
-                rememberNavController<NavKey>(backStack, uiState.isLocationDisclosureShown) {
-                    previousKey ->
-                    previousRoute = previousKey as? Route
-                }
+                rememberNavController(
+                    backStack,
+                    uiState.isLocationDisclosureShown,
+                    onChange = { previousKey -> previousRoute = previousKey as? Route },
+                    onExitApp = { finish() },
+                )
 
             val vpnActivity =
                 rememberLauncherForActivityResult(
