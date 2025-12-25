@@ -461,4 +461,5 @@
     <string name="app_selection">App selection</string>
     <string name="example_import_url" translatable="false">https://123.com/tun.conf</string>
     <string name="import_url_description">The URL must be secure and serve a .conf file.</string>
+    <string name="only_template">%1$s only</string>
 </resources>
