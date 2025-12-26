@@ -191,7 +191,8 @@ fun SupportScreen(viewModel: SupportViewModel = koinViewModel()) {
                         return@SurfaceRow context.showToast(R.string.update_check_unsupported)
                     when (BuildConfig.FLAVOR) {
                         Constants.GOOGLE_PLAY_FLAVOR -> context.launchPlayStoreListing()
-                        Constants.FDROID_FLAVOR -> context.launchFDroidListing()
+                        Constants.FDROID_FLAVOR ->
+                            context.openWebUrl(context.getString(R.string.fdroid_url))
                         else -> viewModel.checkForStandaloneUpdate()
                     }
                 },

@@ -64,12 +64,13 @@ val appModule = module {
         )
     }
 
+    singleOf(::GlobalEffectRepository)
+
     viewModelScope {
         scoped { FileUtils(androidContext(), get(named(Dispatcher.IO))) }
         scoped<ShortcutManager> {
             DynamicShortcutManager(androidContext(), get(named(Dispatcher.IO)))
         }
-        scopedOf(::GlobalEffectRepository)
         scopedOf(::SelectedTunnelsRepository)
     }
 

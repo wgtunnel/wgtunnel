@@ -135,6 +135,7 @@ class MainActivity : AppCompatActivity() {
     private val appDatabase: AppDatabase by inject()
     private val networkMonitor: NetworkMonitor by inject()
 
+    val viewModel by viewModel<SharedAppViewModel>()
     private lateinit var roomBackup: RoomBackup
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -149,8 +150,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         roomBackup = RoomBackup(this)
-
-        val viewModel by viewModel<SharedAppViewModel>()
 
         installSplashScreen().apply {
             setKeepOnScreenCondition { !viewModel.container.stateFlow.value.isAppLoaded }
