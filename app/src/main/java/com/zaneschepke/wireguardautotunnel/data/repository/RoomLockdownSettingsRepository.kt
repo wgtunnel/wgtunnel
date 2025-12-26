@@ -6,28 +6,18 @@ import com.zaneschepke.wireguardautotunnel.data.mapper.toDomain
 import com.zaneschepke.wireguardautotunnel.data.mapper.toEntity
 import com.zaneschepke.wireguardautotunnel.domain.model.LockdownSettings as Domain
 import com.zaneschepke.wireguardautotunnel.domain.repository.LockdownSettingsRepository
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
-class RoomLockdownSettingsRepository(
-    private val lockdownSettingsDao: LockdownSettingsDao,
-    private val ioDispatcher: CoroutineDispatcher,
-) : LockdownSettingsRepository {
+class RoomLockdownSettingsRepository(private val lockdownSettingsDao: LockdownSettingsDao) :
+    LockdownSettingsRepository {
     override suspend fun upsert(lockdownSettings: Domain) {
-        withContext(ioDispatcher) { lockdownSettingsDao.upsert(lockdownSettings.toEntity()) }
+        lockdownSettingsDao.upsert(lockdownSettings.toEntity())
     }
 
     override val flow =
-        lockdownSettingsDao
-            .getLockdownSettingsFlow()
-            .map { (it ?: Entity()).toDomain() }
-            .flowOn(ioDispatcher)
+        lockdownSettingsDao.getLockdownSettingsFlow().map { (it ?: Entity()).toDomain() }
 
     override suspend fun getLockdownSettings(): Domain {
-        return withContext(ioDispatcher) {
-            (lockdownSettingsDao.getLockdownSettings() ?: Entity()).toDomain()
-        }
+        return (lockdownSettingsDao.getLockdownSettings() ?: Entity()).toDomain()
     }
 }

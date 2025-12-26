@@ -29,7 +29,9 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsR
 import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val databaseModule = module {
@@ -64,21 +66,13 @@ val databaseModule = module {
     single<AppStateRepository> {
         DataStoreAppStateRepository(get(), get(named(Scope.APPLICATION)), get(named(Dispatcher.IO)))
     }
-    single<AutoTunnelSettingsRepository> {
-        RoomAutoTunnelSettingsRepository(get(), get(named(Dispatcher.IO)))
-    }
-    single<DnsSettingsRepository> { RoomDnsSettingsRepository(get(), get(named(Dispatcher.IO))) }
-    single<LockdownSettingsRepository> {
-        RoomLockdownSettingsRepository(get(), get(named(Dispatcher.IO)))
-    }
-    single<MonitoringSettingsRepository> {
-        RoomMonitoringSettingsRepository(get(), get(named(Dispatcher.IO)))
-    }
-    single<ProxySettingsRepository> {
-        RoomProxySettingsRepository(get(), get(named(Dispatcher.IO)))
-    }
-    single<GeneralSettingRepository> { RoomSettingsRepository(get(), get(named(Dispatcher.IO))) }
-    single<TunnelRepository> { RoomTunnelRepository(get(), get(named(Dispatcher.IO))) }
+    singleOf(::RoomAutoTunnelSettingsRepository) bind AutoTunnelSettingsRepository::class
+    singleOf(::RoomDnsSettingsRepository) bind DnsSettingsRepository::class
+    singleOf(::RoomLockdownSettingsRepository) bind LockdownSettingsRepository::class
+    singleOf(::RoomMonitoringSettingsRepository) bind MonitoringSettingsRepository::class
+    singleOf(::RoomProxySettingsRepository) bind ProxySettingsRepository::class
+    singleOf(::RoomSettingsRepository) bind GeneralSettingRepository::class
+    singleOf(::RoomTunnelRepository) bind TunnelRepository::class
     single<InstalledPackageRepository> {
         InstalledAndroidPackageRepository(androidContext(), get(named(Dispatcher.IO)))
     }

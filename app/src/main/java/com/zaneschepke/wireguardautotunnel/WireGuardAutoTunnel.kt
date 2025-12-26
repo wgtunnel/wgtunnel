@@ -2,7 +2,6 @@ package com.zaneschepke.wireguardautotunnel
 
 import android.app.Application
 import android.os.StrictMode
-import android.os.StrictMode.ThreadPolicy
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationMonitor
 import com.zaneschepke.wireguardautotunnel.di.Dispatcher
@@ -56,13 +55,13 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
             StrictMode.setThreadPolicy(
-                ThreadPolicy.Builder()
-                    .detectDiskReads()
-                    .detectDiskWrites()
-                    .detectNetwork()
+                StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
                     .penaltyLog()
+                    .penaltyFlashScreen()
                     .build()
             )
+            StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build())
         } else {
             Timber.plant(ReleaseTree())
         }
