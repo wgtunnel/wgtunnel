@@ -1,10 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WG Tunnel</string>
-	<string name="app_permission_title">WG Tunnel Control Bridge</string>
-	<string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
+    <string name="app_permission_title">Control tunnels and auto-tunnel features.</string>
+    <string name="app_permission_description">https://hosted.weblate.org/translate/wg-tunnel/strings/en/?checksum=e52d7eb2e28a9a12Control tunnels and auto-tunnel features.</string>
     <string name="vpn_channel_id" translatable="false">VPN Channel</string>
     <string name="vpn_channel_name">VPN Notification Channel</string>
-	<string name="github_url" translatable="false">https://github.com/wgtunnel/wgtunnel/issues</string>
+    <string name="github_url" translatable="false">https://github.com/wgtunnel/wgtunnel/issues</string>
     <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
     <string name="kofi_url" translatable="false">https://ko-fi.com/zaneschepke</string>
     <string name="liberapay_url" translatable="false">https://liberapay.com/zaneschepke</string>
@@ -12,14 +13,14 @@
     <string name="website_url" translatable="false">https://wgtunnel.com</string>
     <string name="translation_url" translatable="false">https://hosted.weblate.org/engage/wg-tunnel/</string>
     <string name="privacy_policy_url" translatable="false">https://wgtunnel.com/privacy-policy/</string>
-	<string name="docs_wildcards" translatable="false" >https://wgtunnel.com/docs/auto-tunneling/#use-name-wildcards</string>
+    <string name="docs_wildcards" translatable="false">https://wgtunnel.com/docs/auto-tunneling/#use-name-wildcards</string>
     <string name="matrix_url" translatable="false">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
     <string name="telegram_url" translatable="false">https://t.me/wgtunnel</string>
     <string name="error_file_extension">File is not a .conf or .zip</string>
     <string name="no_tunnels">No tunnels added yet!</string>
     <string name="tunnels">Tunnels</string>
     <string name="tunnel_mobile_data">Tunnel on mobile data</string>
-	<string name="privacy_policy">Privacy policy</string>
+    <string name="privacy_policy">Privacy policy</string>
     <string name="okay">Okay</string>
     <string name="tunnel_on_ethernet">Tunnel on ethernet</string>
     <string name="prominent_background_location_message">This feature requires background location permission to enable Wi-Fi SSID monitoring even while the application is closed. For more details, please see the Privacy Policy linked on the Support screen.</string>
@@ -31,8 +32,8 @@
     <string name="tunnel_name">Tunnel Name</string>
     <string name="exclude">Exclude</string>
     <string name="include">Include</string>
-	<string name="config_changes_saved">Configuration changes saved.</string>
-	<string name="public_key">Public key</string>
+    <string name="config_changes_saved">Configuration changes saved.</string>
+    <string name="public_key">Public key</string>
     <string name="addresses">Addresses</string>
     <string name="dns_servers">DNS servers</string>
     <string name="mtu">MTU</string>
@@ -48,7 +49,7 @@
     <string name="vpn_off">VPN off</string>
     <string name="create_import">Create from scratch</string>
     <string name="add_peer">Add peer</string>
-	<string name="interface_">Interface</string>
+    <string name="interface_">Interface</string>
     <string name="rotate_keys">Rotate keys</string>
     <string name="private_key">Private key</string>
     <string name="copy_public_key">Copy public key</string>
@@ -67,7 +68,7 @@
     <string name="email_subject">WG Tunnel Support</string>
     <string name="email_chooser">Send an email…</string>
     <string name="docs_description">Read the docs</string>
-	<string name="email_description">Send me an email</string>
+    <string name="email_description">Send me an email</string>
     <string name="error_ssid_exists">SSID already exists</string>
     <string name="error_root_denied">Root shell denied</string>
     <string name="error_no_file_explorer">No file explorer installed</string>
@@ -104,88 +105,88 @@
     <string name="getting_started_guide">getting started guide</string>
     <string name="restart_at_boot">Start on boot</string>
     <string name="vpn_denied_dialog_title">Permission Denied</string>
-	<string name="vpn_settings">VPN system settings</string>
-	<string name="always_on_message">VPN connection permission has been denied. Please check the</string>
-	<string name="always_on_message2">to make sure Always-on VPN is turned off for all other apps and try again</string>
+    <string name="vpn_settings">VPN system settings</string>
+    <string name="always_on_message">VPN connection permission has been denied. Please check the</string>
+    <string name="always_on_message2">to make sure Always-on VPN is turned off for all other apps and try again</string>
     <string name="root_accepted">Root shell accepted</string>
     <string name="show_amnezia_properties">Show Amnezia properties</string>
-	<string name="never">Never</string>
+    <string name="never">Never</string>
     <string name="handshake">Last handshake</string>
     <string name="logs">Logs</string>
     <string name="appearance">Appearance</string>
-	<string name="notifications">Notifications</string>
-	<string name="automatic">Automatic</string>
-	<string name="light">Light</string>
-	<string name="dark">Dark</string>
-	<string name="dynamic">Dynamic</string>
-	<string name="language">Language</string>
-	<string name="display_theme">Display theme</string>
-	<string name="trusted_wifi_names">Trusted Wi-Fi names</string>
-	<string name="add_wifi_name">Add Wi-Fi name</string>
+    <string name="notifications">Notifications</string>
+    <string name="automatic">Automatic</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="dynamic">Dynamic</string>
+    <string name="language">Language</string>
+    <string name="display_theme">Display theme</string>
+    <string name="trusted_wifi_names">Trusted Wi-Fi names</string>
+    <string name="add_wifi_name">Add Wi-Fi name</string>
     <string name="primary_tunnel">Default tunnel</string>
-	<string name="mobile_tunnel">Mobile data tunnel</string>
-	<string name="skip">Skip</string>
-	<string name="launch_app_settings">Launch app settings</string>
-	<string name="use_wildcards">Use name wildcards</string>
-	<string name="learn_more">Learn more</string>
-	<string name="wildcards_active">Wildcards active</string>
+    <string name="mobile_tunnel">Mobile data tunnel</string>
+    <string name="skip">Skip</string>
+    <string name="launch_app_settings">Launch app settings</string>
+    <string name="use_wildcards">Use name wildcards</string>
+    <string name="learn_more">Learn more</string>
+    <string name="wildcards_active">Wildcards active</string>
     <string name="use_root_shell_for_wifi">Use a root shell to get Wi-Fi information, preventing the need for location permissions</string>
     <string name="start_auto">Start auto-tunnel</string>
-	<string name="stop_auto">Stop auto-tunnel</string>
+    <string name="stop_auto">Stop auto-tunnel</string>
     <string name="tunnel_running">Tunnel running</string>
-	<string name="monitoring_state_changes">Monitoring state changes</string>
-	<string name="donate">Donate to project</string>
-	<string name="local_logging">Local logs monitor</string>
+    <string name="monitoring_state_changes">Monitoring state changes</string>
+    <string name="donate">Donate to project</string>
+    <string name="local_logging">Local logs monitor</string>
     <string name="add_from_clipboard">Add from clipboard</string>
-	<string name="stop_on_no_internet">Stop on no internet</string>
-	<string name="stop_on_internet_loss">Stop tunnel on internet loss</string>
-	<string name="ethernet_tunnel">Ethernet tunnel</string>
-	<string name="native_kill_switch">Native kill switch</string>
+    <string name="stop_on_no_internet">Stop on no internet</string>
+    <string name="stop_on_internet_loss">Stop tunnel on internet loss</string>
+    <string name="ethernet_tunnel">Ethernet tunnel</string>
+    <string name="native_kill_switch">Native kill switch</string>
     <string name="allow_lan_traffic">Allow LAN traffic</string>
-	<string name="bypass_lan_for_kill_switch">Bypass LAN for kill switch</string>
-	<string name="vpn_channel_description">A channel for VPN state notifications</string>
-	<string name="auto_tunnel_channel_id" translatable="false">Auto-tunnel Channel</string>
-	<string name="auto_tunnel_channel_name">Auto-tunnel Notification Channel</string>
-	<string name="auto_tunnel_channel_description">A channel for auto-tunnel state notifications</string>
-	<string name="stop">Stop</string>
-	<string name="splt_tunneling">Split tunneling</string>
-	<string name="show_scripts">Show scripts</string>
-	<string name="pre_up">Pre up</string>
-	<string name="post_up">Post up</string>
-	<string name="pre_down">Pre down</string>
-	<string name="post_down">Post down</string>
+    <string name="bypass_lan_for_kill_switch">Bypass LAN for kill switch</string>
+    <string name="vpn_channel_description">A channel for VPN state notifications</string>
+    <string name="auto_tunnel_channel_id" translatable="false">Auto-tunnel Channel</string>
+    <string name="auto_tunnel_channel_name">Auto-tunnel Notification Channel</string>
+    <string name="auto_tunnel_channel_description">A channel for auto-tunnel state notifications</string>
+    <string name="stop">Stop</string>
+    <string name="splt_tunneling">Split tunneling</string>
+    <string name="show_scripts">Show scripts</string>
+    <string name="pre_up">Pre up</string>
+    <string name="post_up">Post up</string>
+    <string name="pre_down">Pre down</string>
+    <string name="post_down">Post down</string>
     <string name="quick_actions">Quick actions</string>
     <string name="advanced_settings">Advanced settings</string>
-	<string name="debounce_delay">Debounce delay</string>
-	<string name="hide_amnezia_properties">Hide Amnezia properties</string>
-	<string name="hide_scripts">Hide scripts</string>
-	<string name="enable_amnezia_compatibility">Enable Amnezia compatibility</string>
-	<string name="remove_amnezia_compatibility">Remove Amnezia compatibility</string>
-	<string name="exclude_lan">Exclude LAN</string>
-	<string name="include_lan">Include LAN</string>
+    <string name="debounce_delay">Debounce delay</string>
+    <string name="hide_amnezia_properties">Hide Amnezia properties</string>
+    <string name="hide_scripts">Hide scripts</string>
+    <string name="enable_amnezia_compatibility">Enable Amnezia compatibility</string>
+    <string name="remove_amnezia_compatibility">Remove Amnezia compatibility</string>
+    <string name="exclude_lan">Exclude LAN</string>
+    <string name="include_lan">Include LAN</string>
     <string name="tunnel_control">Tunnel control</string>
-	<string name="auto_tunnel">Auto-tunnel</string>
+    <string name="auto_tunnel">Auto-tunnel</string>
     <string name="multiple">Multiple</string>
     <string name="add_from_url">Add from URL</string>
     <string name="enter_config_url">Enter config URL</string>
     <string name="error_download_failed">Failed to download config</string>
     <string name="save">Save</string>
-	<string name="search">Search</string>
-	<string name="select">Select</string>
+    <string name="search">Search</string>
+    <string name="select">Select</string>
     <string name="join_telegram">Join Telegram community</string>
-	<string name="join_matrix">Join Matrix community</string>
+    <string name="join_matrix">Join Matrix community</string>
     <string name="dropdown">Dropdown</string>
-	<string name="add_tunnel">Add tunnel</string>
+    <string name="add_tunnel">Add tunnel</string>
     <string name="export_logs">Export stored logs</string>
-	<string name="delete_logs">Delete and clear logs</string>
-	<string name="copy">Copy</string>
+    <string name="delete_logs">Delete and clear logs</string>
+    <string name="copy">Copy</string>
     <string name="export_tunnels_amnezia">Export tunnels as Amnezia</string>
-	<string name="export_tunnels_wireguard">Export tunnels as WireGuard</string>
-	<string name="delete">Delete</string>
+    <string name="export_tunnels_wireguard">Export tunnels as WireGuard</string>
+    <string name="delete">Delete</string>
     <string name="camera_permission_required">Camera permission required</string>
-	<string name="export_failed">Export failed</string>
-	<string name="tunnel_error_template">Tunnel failed with: %1$s</string>
-	<string name="remote_key_template">Key: %1$s</string>
+    <string name="export_failed">Export failed</string>
+    <string name="tunnel_error_template">Tunnel failed with: %1$s</string>
+    <string name="remote_key_template">Key: %1$s</string>
     <string name="version_template">Version: %1$s</string>
     <string name="current_template">Current: %1$s</string>
     <string name="flavor_template">Flavor: %1$s</string>
@@ -193,15 +194,15 @@
     <string name="root_required_template">%1$s (root required)</string>
     <string name="recommended_template">%1$s  (recommended)</string>
     <string name="hint_template">(%1$s)</string>
-	<string name="config_error">Invalid config</string>
-	<string name="dns_resolve_error">DNS resolution failed</string>
+    <string name="config_error">Invalid config</string>
+    <string name="dns_resolve_error">DNS resolution failed</string>
     <string name="kernel_name_error">Kernel module name error</string>
-	<string name="auth_error">Unauthorized</string>
-	<string name="service_running_error">Service not running</string>
+    <string name="auth_error">Unauthorized</string>
+    <string name="service_running_error">Service not running</string>
     <string name="inactive">Inactive</string>
-	<string name="active">Active</string>
+    <string name="active">Active</string>
     <string name="tunnel_starting">Tunnel starting</string>
-	<string name="enable_remote_app_control">Enable remote app control</string>
+    <string name="enable_remote_app_control">Enable remote app control</string>
     <string name="nothing_here_yet">Nothing here yet!</string>
     <string name="select_all">Select all</string>
     <string name="export_success">Export success</string>
@@ -387,7 +388,7 @@
     <string name="options">Options</string>
     <string name="general">General</string>
     <string name="networks">Networks</string>
-    <string name="preferred_tunnel_label">Preferred tunnel:&#160;</string>
+    <string name="preferred_tunnel_label">Preferred tunnel: </string>
     <string name="preferred_tunnel">Preferred tunnel</string>
     <string name="mapped">Mapped</string>
     <string name="tunnel_mapping">Tunnel mapping</string>
@@ -401,9 +402,9 @@
     <string name="ethernet">Ethernet</string>
     <string name="unknown">Unknown</string>
     <string name="no_network">No network connected</string>
-    <string name="active_network">Active Network:&#160;</string>
-    <string name="security_type">Security:&#160;</string>
-    <string name="network_name">Network:&#160;</string>
+    <string name="active_network">Active Network: </string>
+    <string name="security_type">Security: </string>
+    <string name="network_name">Network: </string>
     <string name="wifi">Wi-Fi</string>
     <string name="text_too_large_for_qr">Text is too large to display QR.</string>
     <string name="all_services_disabled">Auto-tunnel and tunnels must be disabled to perform this action.</string>

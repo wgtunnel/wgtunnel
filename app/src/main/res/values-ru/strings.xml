@@ -154,7 +154,7 @@
     <string name="active">Активно</string>
     <string name="export_logs">Экспорт журналов</string>
     <string name="delete_logs">Удалить журналы</string>
-    <string name="app_permission_title">Центр управления WG Tunnel</string>
+    <string name="app_permission_title">Управление туннелями и функцией автоматического туннелирования.</string>
     <string name="search">Поиск</string>
     <string name="add_from_url">Добавить из URL</string>
     <string name="join_matrix">Сообщество в Matrix</string>

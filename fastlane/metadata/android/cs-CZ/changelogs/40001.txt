@@ -1,4 +1,4 @@
-What's new:
-- Search domain tunnels fail to start bugfix
-- DNS fallback to IPv4 on IPv4 only networks bugfix
-- Ping target not editable bugfix
+Co je nového:
+- Oprava chyby nespouštění vyhledávání doménových tunelů
+- Oprava chyby přepnutí DNS na IPv4 v sítích pouze pro IPv4
+- Oprava chyby neupravovatelnosti cíle příkazu ping

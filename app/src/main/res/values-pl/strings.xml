@@ -152,7 +152,7 @@
     <string name="auto_tunnel">Autotunel</string>
     <string name="multiple">Wiele</string>
     <string name="active">Aktywny</string>
-    <string name="app_permission_description">Sterowanie tunelami i funkcjami autotunelowania.</string>
+    <string name="app_permission_description">Sterowanie tunelami i funkcjami autotunelowania.</string>
     <string name="kernel_name_error">Błąd nazwy modułu jądra</string>
     <string name="add_from_url">Dodaj z adresu URL</string>
     <string name="export_failed">Eksport nie powiódł się</string>

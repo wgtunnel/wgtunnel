@@ -179,7 +179,7 @@
     <string name="enable_remote_app_control">开启远程应用控制</string>
     <string name="join_matrix">加入 Matrix 社区</string>
     <string name="app_permission_description">控制隧道和自动隧道功能.</string>
-    <string name="app_permission_title">WG 隧道控制桥</string>
+    <string name="app_permission_title">控制隧道和自动隧道功能。</string>
     <string name="inactive">不活跃</string>
     <string name="export_logs">导出已保存的日志</string>
     <string name="nothing_here_yet">此处还什么都没有！</string>
