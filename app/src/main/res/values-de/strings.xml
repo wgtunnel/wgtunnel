@@ -177,7 +177,7 @@
     <string name="enable_remote_app_control">App-Fernsteuerung aktivieren</string>
     <string name="export_tunnels_amnezia">Tunnel als Amnezia exportieren</string>
     <string name="export_failed">Export fehlgeschlagen</string>
-    <string name="app_permission_description">Steuere Tunnel und Auto-Tunnel Funktionen.</string>
+    <string name="app_permission_description">https://hosted.weblate.org/translate/wg-tunnel/strings/en/?checksum=e52d7eb2e28a9a12Steuere Tunnel und Auto-Tunnel Funktionen.</string>
     <string name="dns_resolve_error">DNS-Auflösung fehlgeschlagen</string>
     <string name="export_tunnels_wireguard">Tunnel als WireGuard exportieren</string>
     <string name="camera_permission_required">Kameraberechtigung erforderlich</string>
