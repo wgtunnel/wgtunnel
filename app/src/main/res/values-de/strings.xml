@@ -424,6 +424,6 @@
     <string name="website_url" translatable="false">https://wgtunnel.com</string>
     <string name="bitcoin_cash" translatable="false">Bitcoin Cash (BCH)</string>
     <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
-    <string name="transport_packet_junk_size">Transport packet junk size</string>
-    <string name="cookie_packet_junk_size">Cookie packet junk size</string>
+    <string name="transport_packet_junk_size">Transport-Paket Junk Größe</string>
+    <string name="cookie_packet_junk_size">Cookie-Paket Junk Größe</string>
 </resources>
