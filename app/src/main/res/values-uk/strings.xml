@@ -298,7 +298,7 @@
     <string name="location_justification">In order to read Wi-Fi names in the background with your current detection method, Android requires apps to be given \'Allow all the time\' and \'Precise\' (Background Location on older devices) permission. Please enable these permissions in your Android app settings.</string>
     <string name="reliability">Reliability</string>
     <string name="monitoring">Monitoring</string>
-    <string name="app_permission_title">WG Tunnel Control Bridge</string>
+    <string name="app_permission_title">Керування тунелями та функції автоматичного тунелювання.</string>
     <string name="wireguard">WireGuard</string>
     <string name="aovpn_description">Allows Android to start tunnels</string>
     <string name="move_up">Move Up</string>
