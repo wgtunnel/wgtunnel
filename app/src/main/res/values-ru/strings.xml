@@ -259,8 +259,8 @@
     <string name="ping_target_template">Цель опроса: %1$s</string>
     <string name="bounce_failed_template">Невозможно восстановить туннель после опроса из-за ошибки: %1$s</string>
     <string name="jitter_template">Джиттер: %1$s</string>
-    <string name="_true">Верно</string>
-    <string name="_false">Неверно</string>
+    <string name="_true">Да</string>
+    <string name="_false">Нет</string>
     <string name="expiremental_template">%1$s (экспериментально)</string>
     <string name="root_required_template">%1$s (требуется root)</string>
     <string name="recommended_template">%1$s (рекомендуется)</string>
