@@ -11,7 +11,7 @@
     <string name="private_key">Chave privada</string>
     <string name="base64_key">Chave base64</string>
     <string name="preshared_key">Chave pré-partilhada</string>
-    <string name="seconds">segundos</string>
+    <string name="seconds">Segundos</string>
     <string name="error_no_file_explorer">Nenhum explorador de ficheiros instalado</string>
     <string name="auto_tunnel_title">Serviço de Auto-túnel</string>
     <string name="all">todos</string>
@@ -27,7 +27,7 @@
     <string name="prominent_background_location_message">Este recurso precisa de permissões de localização em segundo plano para ativar o monitoramento do SSID da rede Wi-Fi mesmo quando a aplicação está fechado. Para mais pormenores, por favor veja a Política de Privacidade no ecrã de Suporte.</string>
     <string name="enabled_app_shortcuts">Ativar atalhos de aplicações</string>
     <string name="tunnels">Túneis</string>
-    <string name="privacy_policy">Ver a Política de Privacidade</string>
+    <string name="privacy_policy">Política de Privacidade</string>
     <string name="okay">OK</string>
     <string name="tunnel_mobile_data">Túnel em dados móveis</string>
     <string name="prominent_background_location_title">Revelar a localização em segundo plano</string>
