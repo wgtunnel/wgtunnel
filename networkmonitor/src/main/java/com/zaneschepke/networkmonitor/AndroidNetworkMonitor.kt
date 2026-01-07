@@ -162,6 +162,20 @@ class AndroidNetworkMonitor(
             }
             .flatMapLatest { detectionMethod -> createWifiNetworkCallbackFlow(detectionMethod) }
 
+    private fun getWifiBssid(caps: NetworkCapabilities?): String? {
+        return try {
+            val wifiInfo = caps?.transportInfo as? android.net.wifi.WifiInfo
+            val bssid =
+                wifiInfo?.bssid?.takeIf { it != "02:00:00:00:00:00" && it != "00:00:00:00:00:00" }
+            bssid
+                ?: wifiManager?.connectionInfo?.bssid?.takeIf {
+                    it != "02:00:00:00:00:00" && it != "00:00:00:00:00:00"
+                }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     private fun createWifiNetworkCallbackFlow(
         detectionMethod: WifiDetectionMethod
     ): Flow<TransportEvent> = callbackFlow {
@@ -466,6 +480,7 @@ class AndroidNetworkMonitor(
                                             ssid,
                                             wifiManager?.getCurrentSecurityType(),
                                             defaultNetwork.toString(),
+                                            getWifiBssid(defaultCaps),
                                         )
                                     }
                                     defaultCaps.hasTransport(
@@ -488,6 +503,7 @@ class AndroidNetworkMonitor(
                                                 ssid,
                                                 wifiManager?.getCurrentSecurityType(),
                                                 wifiEvent.network.toString(),
+                                                getWifiBssid(wifiEvent.networkCapabilities),
                                             )
                                         }
                                         cellularCaps != null && !isAirplaneOn ->
