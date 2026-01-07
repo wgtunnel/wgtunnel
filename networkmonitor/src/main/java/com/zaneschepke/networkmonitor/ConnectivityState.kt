@@ -17,11 +17,8 @@ data class ConnectivityState(
                 is ActiveNetwork.Ethernet -> "Ethernet"
                 is ActiveNetwork.Cellular -> "Cellular"
                 is ActiveNetwork.Wifi -> {
-                    val ssidDisplay =
-                        if (activeNetwork.ssid == AndroidNetworkMonitor.ANDROID_UNKNOWN_SSID)
-                            activeNetwork.ssid
-                        else activeNetwork.ssid.first() + "..."
-                    "Wifi(ssid=$ssidDisplay, securityType=${activeNetwork.securityType})"
+                    // Log the full SSID and BSSID for debugging
+                    "Wifi(ssid=${activeNetwork.ssid}, bssid=${activeNetwork.bssid}, securityType=${activeNetwork.securityType})"
                 }
             }
         return "activeNetwork=$networkInfo, locationPermissionsGranted=$locationPermissionsGranted, locationServicesEnabled=$locationServicesEnabled"
@@ -33,8 +30,12 @@ data class Permissions(val locationServicesEnabled: Boolean, val locationPermiss
 sealed class ActiveNetwork {
     data object Disconnected : ActiveNetwork()
 
-    data class Wifi(val ssid: String, val securityType: WifiSecurityType?, val networkId: String) :
-        ActiveNetwork()
+    data class Wifi(
+        val ssid: String,
+        val securityType: WifiSecurityType?,
+        val networkId: String,
+        val bssid: String? = null, // For roaming
+    ) : ActiveNetwork()
 
     data object Cellular : ActiveNetwork()
 

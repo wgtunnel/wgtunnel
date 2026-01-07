@@ -10,7 +10,10 @@ import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotificati
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.shortcut.DynamicShortcutManager
 import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
+import com.zaneschepke.wireguardautotunnel.data.AppDatabase
+import com.zaneschepke.wireguardautotunnel.data.repository.RoomLockdownSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.LockdownSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.SelectedTunnelsRepository
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
@@ -52,8 +55,10 @@ val appModule = module {
     single<PowerManager> {
         androidContext().getSystemService(Context.POWER_SERVICE) as PowerManager
     }
+
     singleOf(::NotificationMonitor)
     singleOf(::WireGuardNotification) bind NotificationManager::class
+
     single {
         ServiceManager(
             androidContext(),
@@ -76,6 +81,22 @@ val appModule = module {
 
     single { NetworkUtils(get(named(Dispatcher.IO))) }
 
+    // --- REPOSITORIES ADDITIONNELS ---
+    single { get<AppDatabase>().lockdownSettingsDao() }
+    single<LockdownSettingsRepository> { RoomLockdownSettingsRepository(get()) }
+
+    single {
+        com.zaneschepke.wireguardautotunnel.core.service.autotunnel.handler
+            .AutoTunnelRoamingHandler(
+                context = androidContext(),
+                ioDispatcher = get(named(Dispatcher.IO)),
+                tunnelManager = get(),
+                networkMonitor = get(),
+                settingsRepository = get(),
+            )
+    }
+
+    // --- VIEWMODELS ---
     viewModelOf(::AutoTunnelViewModel)
     viewModel { (id: Int) -> ConfigViewModel(get(), get(), get(), id) }
     viewModelOf(::DnsViewModel)
@@ -85,7 +106,25 @@ val appModule = module {
     viewModelOf(::MonitoringViewModel)
     viewModelOf(::ProxySettingsViewModel)
     viewModelOf(::SettingsViewModel)
-    viewModelOf(::SharedAppViewModel)
+
+    // SharedAppViewModel with Context to track manual actions
+    viewModel {
+        SharedAppViewModel(
+            appContext = androidContext(),
+            appStateRepository = get(),
+            serviceManager = get(),
+            tunnelManager = get(),
+            globalEffectRepository = get(),
+            tunnelRepository = get(),
+            settingsRepository = get(),
+            selectedTunnelsRepository = get(),
+            monitoringSettingsRepository = get(),
+            rootShellUtils = get(),
+            httpClient = get(),
+            fileUtils = get(),
+        )
+    }
+
     viewModel { (id: Int) -> SplitTunnelViewModel(get(), get(), get(), id) }
     viewModel { SupportViewModel(get(), get(named(Dispatcher.MAIN)), get()) }
     viewModel { (id: Int) -> TunnelViewModel(get(), get(), id) }
