@@ -52,6 +52,7 @@ class AutoTunnelRoamingHandler(
         val targetBssid: String,
         val startTime: Long,
     )
+
     private var currentRoamingContext: RoamingContext? = null
 
     private val wakeLock: PowerManager.WakeLock by lazy {
@@ -215,8 +216,7 @@ class AutoTunnelRoamingHandler(
 
                     val activeId = state.activeTunnels.keys.firstOrNull()
                     val originalConfig =
-                        activeId?.let { id -> state.tunnels.find { it.id == id } }
-                            ?: return@launch
+                        activeId?.let { id -> state.tunnels.find { it.id == id } } ?: return@launch
 
                     val amConfig = originalConfig.toAmConfig()
                     val blockConfig = Config.Builder().setInterface(amConfig.`interface`).build()
