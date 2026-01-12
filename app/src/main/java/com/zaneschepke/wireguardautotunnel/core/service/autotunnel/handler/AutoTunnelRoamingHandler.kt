@@ -93,6 +93,7 @@ class AutoTunnelRoamingHandler(
             is ActiveNetwork.Wifi -> {
                 val currentBssid = activeNetwork.bssid
                 val currentSsid = activeNetwork.ssid
+                val previousBssid = lastBssid // Capture once at the beginning
 
                 // CHECK 1: If roaming active, verify we're still on the same SSID
                 if (_isRoamingActive.get()) {
@@ -119,7 +120,9 @@ class AutoTunnelRoamingHandler(
                 }
 
                 // CHECK 2: Detect new roaming
-                if (currentBssid != null && lastBssid != null && currentBssid != lastBssid) {
+                if (
+                    currentBssid != null && previousBssid != null && currentBssid != previousBssid
+                ) {
                     val hasActiveTunnel = currentState.activeTunnels.isNotEmpty()
 
                     if (hasActiveTunnel) {
@@ -138,7 +141,7 @@ class AutoTunnelRoamingHandler(
 
                         if (lastRoaming == 0L) {
                             Timber.i(
-                                "ROAMING: First WiFi switch detected ($lastBssid → $currentBssid)"
+                                "ROAMING: First WiFi switch detected ($previousBssid → $currentBssid)"
                             )
                             lastRoamingTriggerTime.set(now)
 
@@ -146,7 +149,7 @@ class AutoTunnelRoamingHandler(
                             currentRoamingContext =
                                 RoamingContext(
                                     ssid = currentSsid,
-                                    startBssid = lastBssid,
+                                    startBssid = previousBssid,
                                     targetBssid = currentBssid,
                                     startTime = now,
                                 )
@@ -156,7 +159,7 @@ class AutoTunnelRoamingHandler(
                             val elapsed = now - lastRoaming
                             if (elapsed >= debounceMs) {
                                 Timber.i(
-                                    "ROAMING: WiFi switch detected ($lastBssid → $currentBssid)"
+                                    "ROAMING: WiFi switch detected ($previousBssid → $currentBssid)"
                                 )
                                 lastRoamingTriggerTime.set(now)
 
@@ -164,7 +167,7 @@ class AutoTunnelRoamingHandler(
                                 currentRoamingContext =
                                     RoamingContext(
                                         ssid = currentSsid,
-                                        startBssid = lastBssid,
+                                        startBssid = previousBssid,
                                         targetBssid = currentBssid,
                                         startTime = now,
                                     )
