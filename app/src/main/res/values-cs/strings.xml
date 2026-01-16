@@ -127,10 +127,10 @@
     <string name="peer">Peer</string>
     <string name="vpn_settings">Systémové nastavení VPN</string>
     <string name="never">Nikdy</string>
-    <string name="handshake">Handshake</string>
+    <string name="handshake">Poslední handshake</string>
     <string name="start_auto">Spustit auto-tunel</string>
     <string name="stop_auto">Zastavit auto-tunel</string>
-    <string name="local_logging">Monitoro lokálních protokolů</string>
+    <string name="local_logging">Monitor lokálních protokolů</string>
     <string name="learn_more">Zjistit více</string>
     <string name="stop">Stop</string>
     <string name="always_on_message2">ujistěte se, že je pro všechny ostatní aplikace vypnutá funkce trvalé připojení VPN, a zkuste to znovu</string>
@@ -319,7 +319,7 @@
     <string name="tunnel_boot_description">Spustit výchozí tunel při startu systému</string>
     <string name="http_bind_address">HTTP bind adresa</string>
     <string name="tunnel_mapping_description">Přiřazovat tunely jako preferované podle názvu Wi-Fi</string>
-    <string name="donation_prompt_prefix">Děkujeme, že používáte WG Tunnel! Pokud můžete, zvažte prosím</string>
+    <string name="donation_prompt_prefix">Děkujeme, že používáte WG Tunnel! Pokud je to možné, zvažte prosím</string>
     <string name="socks_5_bind_address">SOCKS5 bind adresa</string>
     <string name="website">Webová stránka aplikace</string>
     <string name="wifi_settings">Nastavení Wi-Fi</string>
@@ -330,7 +330,7 @@
     <string name="restore_success">Úspěšně obnoveno. %1$s</string>
     <string name="wifi">Wi-Fi</string>
     <string name="ping_target">Cíl pingu</string>
-    <string name="locked_down">Locked down</string>
+    <string name="locked_down">Uzamknuto</string>
     <string name="resources">Odkazy</string>
     <string name="back">Zpět</string>
     <string name="already_donated">Již darováno</string>
@@ -379,11 +379,11 @@
     <string name="restart_message_template">Uložení změn způsobí restart %1$s, chcete pokračovat?</string>
     <string name="already_donated_description">Zakáže budoucí výzvy k darování</string>
     <string name="metered_tunnel">Měřený tunel</string>
-    <string name="lockdown_settings">Lockdown nastavení</string>
+    <string name="lockdown_settings">Nastavení uzamčení</string>
     <string name="networks">Sítě</string>
     <string name="jitter_template">Jitter: %1$s</string>
     <string name="ping_target_description">Výchozí nastavení je interní IP tunelu pro dělené konfigurace nebo Cloudflare pro konfigurace s plným tunelováním.</string>
-    <string name="lockdown">Lockdown</string>
+    <string name="lockdown">Uzamčení</string>
     <string name="auto_tunnel_channel_id" translatable="false">Auto-tunnel Channel</string>
     <string name="kofi_url" translatable="false">https://ko-fi.com/zaneschepke</string>
     <string name="bitcoin_cash_address" translatable="false">bitcoincash:qp6xacvswha2tjfp2rscguq3gd4eecxeuvcgtyjv58</string>
@@ -424,6 +424,6 @@
     <string name="matrix_url" translatable="false">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
     <string name="bitcoin_cash" translatable="false">Bitcoin Cash (BCH)</string>
     <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
-    <string name="transport_packet_junk_size">Transport packet junk size</string>
-    <string name="cookie_packet_junk_size">Cookie packet junk size</string>
+    <string name="transport_packet_junk_size">Transport packet junk velikost</string>
+    <string name="cookie_packet_junk_size">Cookie packet junk velikost</string>
 </resources>
