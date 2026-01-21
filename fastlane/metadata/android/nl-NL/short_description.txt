@@ -1,1 +1,1 @@
-Een alternatieve VPN client app voor Wireguard met extra functies
+Een alternatieve vpn-clientapp voor Wireguard met extra functies
