@@ -36,6 +36,7 @@ class AutoTunnelRoamingHandler(
     private val networkMonitor: NetworkMonitor,
     private val settingsRepository: AutoTunnelSettingsRepository,
 ) {
+    private var isPostRebootState = true
     private var roamingJob: Job? = null
     private var roamingProcedureJob: Job? = null
     private var lastBssid: String? = null
@@ -68,6 +69,13 @@ class AutoTunnelRoamingHandler(
             scope.launch(ioDispatcher) {
                 try {
                     Timber.i("ROAMING: Handler started, monitoring network changes")
+
+                    // For REBOOT
+                    if (isPostRebootState) {
+                        Timber.d("ROAMING: Waiting for network...")
+                        waitForNetworkValidation(10000L) // Wait for DNS
+                        isPostRebootState = false
+                    }
 
                     val initialNetwork =
                         networkMonitor.connectivityStateFlow.first().toDomain().activeNetwork
