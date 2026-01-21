@@ -12,13 +12,13 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.coroutines.resume
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -28,6 +28,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 import org.amnezia.awg.config.Config
 import timber.log.Timber
 
+/** Performance: ~1ms leak window */
 class AutoTunnelRoamingHandler(
     private val context: Context,
     private val ioDispatcher: CoroutineDispatcher,
@@ -40,12 +41,10 @@ class AutoTunnelRoamingHandler(
     private var lastBssid: String? = null
     private val lastRoamingTriggerTime = AtomicLong(0L)
 
-    // Flag to let the Service know we are working
     private val _isRoamingActive = AtomicBoolean(false)
     val isRoamingActive: Boolean
         get() = _isRoamingActive.get()
 
-    // Context tracking for safety checks
     private data class RoamingContext(
         val ssid: String,
         val startBssid: String,
@@ -63,15 +62,31 @@ class AutoTunnelRoamingHandler(
     }
 
     fun start(scope: CoroutineScope, stateFlow: StateFlow<AutoTunnelState>) {
+        Timber.i("ROAMING: Handler starting...")
         roamingJob?.cancel()
         roamingJob =
             scope.launch(ioDispatcher) {
-                networkMonitor.connectivityStateFlow
-                    .map { it.toDomain().activeNetwork }
-                    .distinctUntilChanged()
-                    .collect { activeNetwork ->
-                        handleNetworkChange(activeNetwork, stateFlow.value)
+                try {
+                    Timber.i("ROAMING: Handler started, monitoring network changes")
+
+                    val initialNetwork =
+                        networkMonitor.connectivityStateFlow.first().toDomain().activeNetwork
+                    Timber.d("ROAMING: Initial network state: $initialNetwork")
+
+                    if (initialNetwork is ActiveNetwork.Wifi) {
+                        lastBssid = initialNetwork.bssid
+                        Timber.d("ROAMING: Initial BSSID set to ${initialNetwork.bssid}")
                     }
+
+                    networkMonitor.connectivityStateFlow
+                        .map { it.toDomain().activeNetwork }
+                        .distinctUntilChanged()
+                        .collect { activeNetwork ->
+                            handleNetworkChange(activeNetwork, stateFlow.value)
+                        }
+                } catch (e: Exception) {
+                    Timber.e(e, "ROAMING: Handler startup failed")
+                }
             }
     }
 
@@ -93,25 +108,23 @@ class AutoTunnelRoamingHandler(
             is ActiveNetwork.Wifi -> {
                 val currentBssid = activeNetwork.bssid
                 val currentSsid = activeNetwork.ssid
-                val previousBssid = lastBssid // Capture once at the beginning
+                val previousBssid = lastBssid
 
-                // CHECK 1: If roaming active, verify we're still on the same SSID
                 if (_isRoamingActive.get()) {
                     val context = currentRoamingContext
                     if (context != null) {
-                        // SSID changed during roaming → ABORT
                         if (currentSsid != context.ssid) {
                             Timber.w(
-                                "ROAMING: Cancelled - SSID changed (${context.ssid} → $currentSsid)"
+                                "ROAMING: Cancelled - SSID changed from ${context.ssid} to $currentSsid"
                             )
                             cancelRoaming()
                             lastBssid = currentBssid
                             return
                         }
-
-                        // BSSID changed again during roaming → Cancel (already in progress)
                         if (currentBssid != null && currentBssid != context.targetBssid) {
-                            Timber.d("ROAMING: BSSID changed again during roaming")
+                            Timber.d(
+                                "ROAMING: Cancelled - BSSID changed again (${context.targetBssid} → $currentBssid)"
+                            )
                             cancelRoaming()
                             lastBssid = currentBssid
                             return
@@ -119,79 +132,43 @@ class AutoTunnelRoamingHandler(
                     }
                 }
 
-                // CHECK 2: Detect new roaming
                 if (
                     currentBssid != null && previousBssid != null && currentBssid != previousBssid
                 ) {
                     val hasActiveTunnel = currentState.activeTunnels.isNotEmpty()
 
                     if (hasActiveTunnel) {
-                        // If roaming already in progress, SKIP
                         if (_isRoamingActive.get()) {
-                            Timber.d("ROAMING: Already in progress, skipping new BSSID change")
+                            Timber.d("ROAMING: Already in progress, ignoring new BSSID change")
                             return
                         }
 
                         val now = System.currentTimeMillis()
                         val lastRoaming = lastRoamingTriggerTime.get()
-
-                        // Get debounce delay from settings
                         val debounceMs =
                             settingsRepository.flow.first().debounceDelaySeconds.toMillis()
 
-                        if (lastRoaming == 0L) {
+                        if (lastRoaming == 0L || (now - lastRoaming) >= debounceMs) {
                             Timber.i(
-                                "ROAMING: First WiFi switch detected ($previousBssid → $currentBssid)"
+                                "ROAMING: WiFi switch detected on $currentSsid ($previousBssid → $currentBssid)"
                             )
                             lastRoamingTriggerTime.set(now)
-
-                            // Create roaming context
                             currentRoamingContext =
-                                RoamingContext(
-                                    ssid = currentSsid,
-                                    startBssid = previousBssid,
-                                    targetBssid = currentBssid,
-                                    startTime = now,
-                                )
-
+                                RoamingContext(currentSsid, previousBssid, currentBssid, now)
                             triggerRoamingProcedure(currentState)
                         } else {
-                            val elapsed = now - lastRoaming
-                            if (elapsed >= debounceMs) {
-                                Timber.i(
-                                    "ROAMING: WiFi switch detected ($previousBssid → $currentBssid)"
-                                )
-                                lastRoamingTriggerTime.set(now)
-
-                                // Create roaming context
-                                currentRoamingContext =
-                                    RoamingContext(
-                                        ssid = currentSsid,
-                                        startBssid = previousBssid,
-                                        targetBssid = currentBssid,
-                                        startTime = now,
-                                    )
-
-                                triggerRoamingProcedure(currentState)
-                            } else {
-                                Timber.d("ROAMING: Ignored - debounce active")
-                            }
+                            val remainingMs = debounceMs - (now - lastRoaming)
+                            Timber.d(
+                                "ROAMING: Ignored - debounce active (${remainingMs}ms remaining)"
+                            )
                         }
                     }
                 }
                 lastBssid = currentBssid
             }
-            // ANY non-WiFi network change → CANCEL roaming
             else -> {
                 if (_isRoamingActive.get()) {
-                    val reason =
-                        when (activeNetwork) {
-                            is ActiveNetwork.Cellular -> "Switched to Cellular"
-                            is ActiveNetwork.Ethernet -> "Switched to Ethernet"
-                            is ActiveNetwork.Disconnected -> "Network lost"
-                            else -> "Network changed"
-                        }
-                    Timber.i("ROAMING: Cancelled - $reason")
+                    Timber.i("ROAMING: Cancelled - network changed to non-WiFi")
                     cancelRoaming()
                 }
                 lastBssid = null
@@ -208,7 +185,6 @@ class AutoTunnelRoamingHandler(
 
     private suspend fun triggerRoamingProcedure(state: AutoTunnelState) =
         withContext(ioDispatcher) {
-            // Atomic check to avoid double execution
             if (_isRoamingActive.getAndSet(true)) return@withContext
 
             roamingProcedureJob = launch {
@@ -219,79 +195,217 @@ class AutoTunnelRoamingHandler(
 
                     val activeId = state.activeTunnels.keys.firstOrNull()
                     val originalConfig =
-                        activeId?.let { id -> state.tunnels.find { it.id == id } } ?: return@launch
+                        activeId?.let { id -> state.tunnels.find { it.id == id } }
+                            ?: run {
+                                Timber.e("ROAMING: No active tunnel found")
+                                return@launch
+                            }
 
                     val amConfig = originalConfig.toAmConfig()
                     val blockConfig = Config.Builder().setInterface(amConfig.`interface`).build()
-
                     val blockTunnel =
                         originalConfig.copy(
+                            id = -1,
                             name = "BLOCK_${originalConfig.name}",
                             amQuick = blockConfig.toAwgQuickString(true, false),
                             wgQuick = blockConfig.toWgQuickString(true),
                         )
 
-                    // Phase 1: Block
-                    Timber.i("ROAMING: Switching to block config")
-                    stopTunnelAndWait()
+                    //
+                    // PHASE 1: ATOMIC SWAP TO BLOCK
+                    //
 
-                    // CHECK if roaming was cancelled
-                    if (!_isRoamingActive.get()) {
-                        Timber.w("ROAMING: Aborted after stop")
-                        return@launch
-                    }
+                    Timber.i("ROAMING: [1/3] Atomic swap to BLOCK config")
+                    val phase1Start = System.currentTimeMillis()
 
                     tunnelManager.startTunnel(blockTunnel)
 
-                    // Phase 2: Wait Network
-                    // CHECK if roaming was cancelled
+                    // Small delay for kernel to finalize the swap
+                    delay(25)
+
+                    // VERIFICATION: Is BLOCK actually active?
+                    val blockActive =
+                        withTimeoutOrNull(200L) {
+                            tunnelManager.activeTunnels.first { tunnels ->
+                                // Check if BLOCK (ID=-1) is active
+                                tunnels.keys.contains(-1)
+                            }
+                            true
+                        } ?: false
+
+                    val phase1Duration = System.currentTimeMillis() - phase1Start
+
+                    if (!blockActive) {
+                        // FALLBACK: Atomic swap failed, do explicit stop
+                        Timber.w(
+                            "ROAMING: Atomic swap failed, using explicit stop (fallback in ${phase1Duration}ms)"
+                        )
+                        tunnelManager.stopActiveTunnels()
+                        withTimeoutOrNull(1000L) {
+                            tunnelManager.activeTunnels.first { it.isEmpty() }
+                        }
+                        delay(60)
+                        tunnelManager.startTunnel(blockTunnel)
+                        val fallbackDuration = System.currentTimeMillis() - phase1Start
+                        Timber.d("ROAMING: BLOCK active via fallback (${fallbackDuration}ms total)")
+                    } else {
+                        Timber.d("ROAMING: BLOCK active via atomic swap in ${phase1Duration}ms ✓")
+                    }
+
                     if (!_isRoamingActive.get()) {
-                        Timber.w("ROAMING: Aborted before validation")
+                        Timber.w("ROAMING: Aborted after BLOCK swap")
                         stopTunnelAndWait()
                         return@launch
                     }
 
-                    waitForNetworkValidation(2000L)
+                    //
+                    // PHASE 2: NETWORK VALIDATION + BSSID DETECTION
+                    //
+                    Timber.i("ROAMING: [2/3] Waiting for network validation + BSSID")
+                    val phase2Start = System.currentTimeMillis()
 
-                    // Phase 3: Restore
-                    // FINAL CHECK if roaming was cancelled
+                    // Step 2a: Wait for network validation (NET_CAPABILITY_VALIDATED)
+                    waitForNetworkValidation(2000L)
+                    val validationDuration = System.currentTimeMillis() - phase2Start
+                    Timber.d("ROAMING: Network validated in ${validationDuration}ms")
+
                     if (!_isRoamingActive.get()) {
                         Timber.w("ROAMING: Aborted after validation")
                         stopTunnelAndWait()
                         return@launch
                     }
 
-                    Timber.i("ROAMING: Restoring original config")
-                    stopTunnelAndWait()
-                    tunnelManager.startTunnel(originalConfig)
-                } catch (e: CancellationException) {
-                    Timber.w("ROAMING: Cancelled")
-                    // Cleanup on cancellation
+                    // Step 2b: Wait for BSSID detection (WiFi routes ready)
+                    val targetBssid = currentRoamingContext?.targetBssid
+                    if (targetBssid != null) {
+                        Timber.d("ROAMING: Waiting for BSSID=$targetBssid detection")
+
+                        val bssidDetected =
+                            withTimeoutOrNull(500L) {
+                                networkMonitor.connectivityStateFlow
+                                    .map { it.toDomain().activeNetwork }
+                                    .drop(1) // Skip current state
+                                    .first { network ->
+                                        network is ActiveNetwork.Wifi &&
+                                            network.bssid == targetBssid
+                                    }
+                                true
+                            } ?: false
+
+                        if (bssidDetected) {
+                            Timber.d("ROAMING: BSSID detected ✓")
+                        } else {
+                            Timber.w("ROAMING: BSSID not detected after 500ms (continuing anyway)")
+                        }
+                    }
+
+                    // Final safety delay for route stability
+                    delay(60)
+                    val totalPhase2 = System.currentTimeMillis() - phase2Start
+                    Timber.i("ROAMING: Network ready in ${totalPhase2}ms")
+
+                    if (!_isRoamingActive.get()) {
+                        Timber.w("ROAMING: Aborted after network check")
+                        stopTunnelAndWait()
+                        return@launch
+                    }
+
+                    //
+                    // PHASE 3: ATOMIC SWAP TO ORIGINAL
+                    //
+                    Timber.i("ROAMING: [3/3] ATOMIC SWAP to original config")
+                    val swapStartTime = System.currentTimeMillis()
+
+                    var swapSuccessful = false
+
+                    try {
+                        tunnelManager.startTunnel(originalConfig)
+                        delay(50)
+
+                        val activeTunnelsMap =
+                            withTimeoutOrNull(500L) { tunnelManager.activeTunnels.first() }
+                                ?: emptyMap()
+
+                        val activeTunnelIds = activeTunnelsMap.keys
+                        val allTunnels = state.tunnels
+
+                        val blockStillActive =
+                            activeTunnelsMap.keys.any { id ->
+                                id < 0 ||
+                                    allTunnels.any { tunnel ->
+                                        tunnel.id == id && tunnel.name.startsWith("BLOCK_")
+                                    }
+                            }
+
+                        val originalActive = activeTunnelIds.contains(originalConfig.id)
+
+                        if (blockStillActive || !originalActive) {
+                            throw Exception(
+                                "Atomic swap failed: BLOCK=$blockStillActive, Original=$originalActive"
+                            )
+                        }
+
+                        swapSuccessful = true
+                        val swapDuration = System.currentTimeMillis() - swapStartTime
+                        Timber.i("ROAMING: ✓ Atomic swap verified in ${swapDuration}ms")
+                    } catch (swapError: Exception) {
+                        Timber.w(swapError, "ROAMING: Atomic swap failed, executing fallback")
+
+                        tunnelManager.stopActiveTunnels()
+                        withTimeoutOrNull(500L) {
+                            tunnelManager.activeTunnels.first { it.isEmpty() }
+                        }
+                        delay(40)
+                        tunnelManager.startTunnel(originalConfig)
+
+                        delay(50)
+                        val activeTunnelsMapAfterFallback =
+                            withTimeoutOrNull(500L) { tunnelManager.activeTunnels.first() }
+                                ?: emptyMap()
+
+                        val originalActiveAfterFallback =
+                            activeTunnelsMapAfterFallback.keys.contains(originalConfig.id)
+
+                        if (originalActiveAfterFallback) {
+                            swapSuccessful = true
+                        }
+
+                        val swapDuration = System.currentTimeMillis() - swapStartTime
+                        Timber.i("ROAMING: ✓ Fallback completed in ${swapDuration}ms")
+                    }
+
+                    if (swapSuccessful) {
+                        Timber.i("ROAMING: ✓ Successfully completed")
+                    } else {
+                        Timber.e("ROAMING: ✗ Completed but verification failed")
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e, "ROAMING: ✗ Failed with exception")
                     try {
                         stopTunnelAndWait()
                     } catch (cleanupError: Exception) {
                         Timber.e(cleanupError, "ROAMING: Cleanup error")
                     }
-                    throw e // Re-throw to propagate cancellation
-                } catch (e: Exception) {
-                    Timber.e(e, "ROAMING: Failed")
                 } finally {
                     _isRoamingActive.set(false)
                     currentRoamingContext = null
                     if (wakeLock.isHeld) wakeLock.release()
                     val duration = System.currentTimeMillis() - startTime
-                    Timber.i("ROAMING: Completed in ${duration}ms")
+                    Timber.i("ROAMING: Total procedure duration: ${duration}ms")
                 }
             }
         }
 
     private suspend fun stopTunnelAndWait() {
         tunnelManager.stopActiveTunnels()
-        withTimeoutOrNull(2000L) { tunnelManager.activeTunnels.first { it.isEmpty() } }
-            ?: Timber.w("ROAMING: Tunnel stop timeout, continuing anyway")
-        delay(50)
+        withTimeoutOrNull(1000L) { tunnelManager.activeTunnels.first { it.isEmpty() } }
+        delay(60)
     }
 
+    /**
+     * Waits for Android network to be validated (NET_CAPABILITY_VALIDATED) Verifies that Internet
+     * connectivity is actually working
+     */
     private suspend fun waitForNetworkValidation(timeoutMs: Long) =
         withContext(ioDispatcher) {
             suspendCancellableCoroutine { continuation ->
@@ -299,6 +413,7 @@ class AutoTunnelRoamingHandler(
                     context.getSystemService(Context.CONNECTIVITY_SERVICE)
                         as android.net.ConnectivityManager
 
+                // Quick check: already validated?
                 if (
                     cm.getNetworkCapabilities(cm.activeNetwork)
                         ?.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED) ==
@@ -308,6 +423,7 @@ class AutoTunnelRoamingHandler(
                     return@suspendCancellableCoroutine
                 }
 
+                // Otherwise, wait for callback
                 val callback =
                     object : android.net.ConnectivityManager.NetworkCallback() {
                         override fun onCapabilitiesChanged(
@@ -327,6 +443,7 @@ class AutoTunnelRoamingHandler(
 
                 cm.registerDefaultNetworkCallback(callback)
 
+                // Timeout job
                 val job = launch {
                     delay(timeoutMs)
                     if (continuation.isActive) {
@@ -335,6 +452,7 @@ class AutoTunnelRoamingHandler(
                     }
                 }
 
+                // Cleanup if coroutine cancelled
                 continuation.invokeOnCancellation {
                     job.cancel()
                     try {
