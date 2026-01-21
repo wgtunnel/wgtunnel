@@ -187,7 +187,7 @@
     <string name="download_and_install">Download en installeer</string>
     <string name="permission_required">Toestemming vereist</string>
     <string name="install_updated_permission">Deze app heeft toestemming nodig om updates te installeren.</string>
-    <string name="app_permission_title">WG Tunnel Control Bridge</string>
+    <string name="app_permission_title">Beheert tunnels en autotunnelfuncties.</string>
     <string name="display_theme">Scherm thema</string>
     <string name="debounce_delay">Debounce vertraging</string>
     <string name="exclude_lan">Sluit LAN uit</string>
