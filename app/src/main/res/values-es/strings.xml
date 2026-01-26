@@ -178,7 +178,7 @@
     <string name="dropdown">Menú desplegable</string>
     <string name="delete">Eliminar</string>
     <string name="export_failed">Exportación fallida</string>
-    <string name="app_permission_description">Controlar túneles y funcionalidades de auto-túnel.</string>
+    <string name="app_permission_description">Controlar los túneles y las funciones de auto‑túnel.</string>
     <string name="tunnel_error_template">Túnel fallido con: %1$s</string>
     <string name="remote_key_template">Clave: %1$s</string>
     <string name="config_error">Configuración no válida</string>
