@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,12 +25,18 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.ExpandingRowListItem
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
+import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
+import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
+import com.zaneschepke.wireguardautotunnel.ui.theme.Straw
 import com.zaneschepke.wireguardautotunnel.util.extensions.isSortedBy
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import org.koin.compose.viewmodel.koinActivityViewModel
@@ -46,6 +53,7 @@ fun SortScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()) {
 
     var sortAscending by rememberSaveable { mutableStateOf<Boolean?>(null) }
     var editableTunnels by rememberSaveable { mutableStateOf(tunnelsUiState.tunnels) }
+    var latencies by rememberSaveable { mutableStateOf<Map<Int, Double>>(emptyMap()) }
 
     sharedViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
@@ -65,6 +73,13 @@ fun SortScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()) {
                         false -> editableTunnels.sortedByDescending { it.name }
                         null -> tunnelsUiState.tunnels
                     }
+            }
+            LocalSideEffect.SortByLatency -> {
+                sharedViewModel.sortByLatency(editableTunnels)
+            }
+            is LocalSideEffect.LatencySortFinished -> {
+                editableTunnels = sideEffect.tunnels
+                latencies = sideEffect.latencies
             }
             else -> Unit
         }
@@ -97,9 +112,25 @@ fun SortScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()) {
     ) {
         itemsIndexed(editableTunnels, key = { _, tunnel -> tunnel.id }) { index, tunnel ->
             ReorderableItem(reorderableLazyListState, tunnel.id) { isDragging ->
+                val latency = latencies[tunnel.id]
+                val text = buildAnnotatedString {
+                    append(tunnel.name)
+                    if (latency != null && latency != Double.MAX_VALUE) {
+                        append(" - ")
+                        val color =
+                            when (latency) {
+                                in 0.0..50.0 -> SilverTree
+                                in 50.0..150.0 -> Straw
+                                else -> AlertRed
+                            }
+                        withStyle(style = SpanStyle(color = color)) {
+                            append("${latency.toInt()}ms")
+                        }
+                    }
+                }
                 ExpandingRowListItem(
                     leading = {},
-                    text = tunnel.name,
+                    text = text,
                     trailing = {
                         if (!isTv)
                             Icon(Icons.Default.DragHandle, stringResource(R.string.drag_handle))

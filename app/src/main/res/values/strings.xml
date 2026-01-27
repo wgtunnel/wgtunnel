@@ -242,6 +242,8 @@
     <string name="release_notes">Release notes</string>
     <string name="shizuku_not_detected">Shizuku not detected</string>
     <string name="sort">Sort</string>
+    <string name="sort_by_latency">Sort by latency</string>
+    <string name="pinging_servers">Pinging servers…</string>
     <string name="drag_handle">Drag Handle</string>
     <string name="move_up">Move Up</string>
     <string name="move_down">Move Down</string>
