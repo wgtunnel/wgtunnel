@@ -29,12 +29,16 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.QuickConfig
 import com.zaneschepke.wireguardautotunnel.util.extensions.TunnelName
 import com.zaneschepke.wireguardautotunnel.util.extensions.asStringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.saveTunnelsUniquely
+import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import io.ktor.client.HttpClient
 import io.ktor.client.request.prepareGet
 import io.ktor.client.statement.bodyAsText
 import java.io.File
 import java.io.IOException
 import java.time.Instant
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -42,6 +46,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.withContext
 import org.amnezia.awg.config.BadConfigException
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
@@ -60,6 +65,7 @@ class SharedAppViewModel(
     private val rootShellUtils: RootShellUtils,
     private val httpClient: HttpClient,
     private val fileUtils: FileUtils,
+    private val networkUtils: NetworkUtils,
 ) : ContainerHost<GlobalAppUiState, LocalSideEffect>, ViewModel() {
 
     val globalSideEffect = globalEffectRepository.flow
@@ -233,6 +239,45 @@ class SharedAppViewModel(
             GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.config_changes_saved))
         )
         postSideEffect(GlobalSideEffect.PopBackStack)
+    }
+
+    fun sortByLatency(tunnels: List<TunnelConfig>) = intent {
+        postSideEffect(
+            GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.pinging_servers))
+        )
+        val sortedResult =
+            withContext(Dispatchers.IO) {
+                tunnels
+                    .map { tunnel ->
+                        async {
+                            val config =
+                                try {
+                                    tunnel.toAmConfig()
+                                } catch (e: Exception) {
+                                    null
+                                }
+                            val endpoint =
+                                config?.peers?.firstOrNull()?.endpoint?.orElse(null)?.host
+                            if (endpoint != null) {
+                                val latency =
+                                    try {
+                                        val stats = networkUtils.pingWithStats(endpoint, 3)
+                                        if (stats.isReachable) stats.rttAvg else Double.MAX_VALUE
+                                    } catch (_: Exception) {
+                                        Double.MAX_VALUE
+                                    }
+                                tunnel to latency
+                            } else {
+                                tunnel to Double.MAX_VALUE
+                            }
+                        }
+                    }
+                    .awaitAll()
+                    .sortedBy { it.second }
+            }
+        val sortedTunnels = sortedResult.map { it.first }
+        val latencies = sortedResult.associate { it.first.id to it.second }
+        postSideEffect(LocalSideEffect.LatencySortFinished(sortedTunnels, latencies))
     }
 
     fun importTunnelConfigs(configs: Map<QuickConfig, TunnelName>) = intent {
