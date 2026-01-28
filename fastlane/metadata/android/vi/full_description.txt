@@ -1,14 +1,13 @@
-Features
+WG Tunnel là một ứng dụng client VPN WireGuard cân bằng hoàn hảo giữa sự đơn giản và độ mạnh mẽ, khiến nó trở thành lựa chọn lý tưởng cho cả người dùng thông thường lẫn người dùng nâng cao.
+Dù bạn chỉ muốn tự động hóa việc kết nối VPN khi cần, hay là người dùng chuyên sâu với các nhu cầu bảo mật nâng cao, WG Tunnel đều đáp ứng được đầy đủ.
 
-- Add tunnels via .conf file, zip, manual entry, or QR code
-- Auto connect to VPN based on Wi-Fi SSID, ethernet, or mobile data
-- Split tunneling by application with search
-- WireGuard support for kernel and userspace modes
-- Amnezia support for userspace mode for DPI/censorship protection
-- Always-On VPN support
-- Export Amnezia and WireGuard tunnels to zip
-- Quick tile support for VPN toggling
-- Static shortcuts support for primary tunnel for automation integration
-- Intent automation support for all tunnels
-- Automatic service restart after reboot
-- Battery preservation measures
+- **Auto-Tunneling:** Tự động kích hoạt tunnel dựa trên SSID Wi-Fi, kết nối Ethernet, hoặc mạng dữ liệu di động.
+- **Split Tunneling:** Hỗ trợ linh hoạt định tuyến chỉ một số ứng dụng hoặc lưu lượng cụ thể đi qua VPN.
+- **App Modes:** Hỗ trợ nhiều chế độ tunnel khác nhau, bao gồm VPN tiêu chuẩn, kernel, lockdown (kill switch tùy chỉnh), và chế độ proxy.
+- **AmneziaWG Integration:** Hỗ trợ đầy đủ AmneziaWG, mang lại khả năng chống kiểm duyệt mạnh mẽ.
+- **Proxying Options:** Tích hợp sẵn proxy HTTP và SOCKS5, cho phép các ứng dụng bên thứ ba định tuyến lưu lượng qua tunnel.
+- **Quick Controls:** Ô Quick Settings và phím tắt trên màn hình chính để bật/tắt nhanh chóng.
+- **Automation Support:** Hỗ trợ tự động hóa dựa trên Intent để điều khiển tunnel và auto-tunneling.
+- **Dynamic DNS Handling:** Phát hiện và cập nhật thay đổi DNS mà không cần khởi động lại tunnel.
+- **Monitoring Tools:** Các tính năng giám sát tunnel nâng cao để theo dõi hiệu suất tunnel.
+- **Android TV Support:** Hỗ trợ gần như toàn bộ tính năng của ứng dụng trên Android TV.

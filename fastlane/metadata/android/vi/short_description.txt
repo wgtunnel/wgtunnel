@@ -1,1 +1,1 @@
-An alternative VPN client app for WireGuard with additional features
+Một ứng dụng client VPN WireGuard & AmneziaWG với tính năng auto-tunneling, lockdown và proxying.
