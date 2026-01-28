@@ -13,18 +13,18 @@
     <string name="auto_tunnel_channel_name">Auto-tunnel Notification Channel</string>
     <string name="always_on_message">VPN connection permission has been denied. Please check the</string>
     <string name="github_sponsors">GitHub Sponsors</string>
-    <string name="tunnel_on_ethernet">Tunnel on ethernet</string>
+    <string name="tunnel_on_ethernet">Tunnel trên ethernet</string>
     <string name="current_template">Current: %1$s</string>
     <string name="email_chooser">Send an email…</string>
     <string name="root_accepted">Root shell accepted</string>
     <string name="save_changes">Save changes</string>
     <string name="save">Save</string>
     <string name="delete_tunnel">Delete tunnel</string>
-    <string name="tunnel_mobile_data">Tunnel on mobile data</string>
+    <string name="tunnel_mobile_data">Tunnel trên dữ liệu di động</string>
     <string name="logs">Logs</string>
     <string name="enable_app_lock">Enable app lock</string>
     <string name="ethernet_tunnel">Ethernet tunnel</string>
-    <string name="config_changes_saved">Configuration changes saved.</string>
+    <string name="config_changes_saved">Các thay đổi cấu hình đã được lưu.</string>
     <string name="join_telegram">Join Telegram community</string>
     <string name="pin_created">Pin successfully created</string>
     <string name="post_up">Post up</string>
@@ -81,11 +81,11 @@
     <string name="persistent_keepalive">Persistent keepalive</string>
     <string name="info">Info</string>
     <string name="pinger_bounce_successful">Tunnel restarted successfully by pinger.</string>
-    <string name="exclude">Exclude</string>
+    <string name="exclude">Loại trừ</string>
     <string name="backup_failed">Failed to create backup.</string>
     <string name="unknown_section">Unknown section</string>
     <string name="junk_packet_minimum_size">Junk packet minimum size</string>
-    <string name="location_services_not_detected">Location services not detected</string>
+    <string name="location_services_not_detected">Dịch vụ định vị không khả dụng</string>
     <string name="all">All</string>
     <string name="location_permissions">Location Permissions</string>
     <string name="unknown">Unknown</string>
@@ -99,7 +99,7 @@
     <string name="pinger_bounce_recovery">Pinger restart failed. Tunnel recovered with old addresses.</string>
     <string name="interface_">Interface</string>
     <string name="defaults_to_template">(defaults to %1$s)</string>
-    <string name="prominent_background_location_message">This feature requires background location permission to enable Wi-Fi SSID monitoring even while the application is closed. For more details, please see the Privacy Policy linked on the Support screen.</string>
+    <string name="prominent_background_location_message">Tính năng này yêu cầu quyền truy cập vị trí nền (background location permission) để có thể giám sát SSID Wi-Fi ngay cả khi ứng dụng đang đóng. Để biết thêm chi tiết, vui lòng xem Chính sách quyền riêng tư được liên kết trên màn hình Hỗ trợ.</string>
     <string name="delete_logs">Delete and clear logs</string>
     <string name="launch_app_settings">Launch app settings</string>
     <string name="ddns_auto_update_description">Auto-updates IP on DDNS changes</string>
@@ -107,7 +107,7 @@
     <string name="show_amnezia_properties">Show Amnezia properties</string>
     <string name="legacy">Legacy</string>
     <string name="preshared_key">Pre-shared key</string>
-    <string name="include">Include</string>
+    <string name="include">Bao gồm</string>
     <string name="no_network">No network connected</string>
     <string name="checking_for_update">Checking for updates</string>
     <string name="restore_success">Restore success. %1$s</string>
@@ -120,10 +120,10 @@
     <string name="dns_resolve_error">DNS resolution failed</string>
     <string name="ping_target">Ping target</string>
     <string name="update_available">Update Available!</string>
-    <string name="vpn_on">VPN on</string>
+    <string name="vpn_on">VPN bật</string>
     <string name="appearance">Appearance</string>
-    <string name="vpn_channel_name">VPN Notification Channel</string>
-    <string name="name">Name</string>
+    <string name="vpn_channel_name">Kênh thông báo cho VPN</string>
+    <string name="name">Tên</string>
     <string name="dns_provider">DNS provider</string>
     <string name="recommended_template">%1$s (recommended)</string>
     <string name="missing_section">Missing section</string>
@@ -160,7 +160,7 @@
     <string name="enable_amnezia_compatibility">Enable Amnezia compatibility</string>
     <string name="nothing_here_yet">Nothing here yet!</string>
     <string name="mode_disabled_template">Feature unavailable in %1$s mode.</string>
-    <string name="dns_servers">DNS servers</string>
+    <string name="dns_servers">Máy chủ DNS</string>
     <string name="support">Support</string>
     <string name="already_donated">Already donated</string>
     <string name="kofi">Ko-fi</string>
@@ -174,8 +174,8 @@
     <string name="include_lan">Include LAN</string>
     <string name="docs_description">Read the docs</string>
     <string name="stop">Stop</string>
-    <string name="add_tunnels_text">Add from file or zip</string>
-    <string name="add_from_qr">Add from QR code</string>
+    <string name="add_tunnels_text">Thêm từ tệp hoặc tệp zip</string>
+    <string name="add_from_qr">Thêm từ mã QR</string>
     <string name="help_translate">Help translate the app</string>
     <string name="ethernet">Ethernet</string>
     <string name="socks_5_proxy">SOCKS5 proxy</string>
@@ -232,8 +232,8 @@
     <string name="export_tunnels_amnezia">Export tunnels as Amnezia</string>
     <string name="bounce_failed_template">Pinger failed to recovery tunnel with error: %1$s</string>
     <string name="ddns_success_message">Dynamic DNS endpoint successfully updated.</string>
-    <string name="addresses">Addresses</string>
-    <string name="privacy_policy">Privacy policy</string>
+    <string name="addresses">Địa chỉ IP</string>
+    <string name="privacy_policy">Chính sách quyền riêng tư</string>
     <string name="auto_tunnel">Auto-tunnel</string>
     <string name="trusted_wifi_names">Trusted Wi-Fi names</string>
     <string name="add_tunnel">Add tunnel</string>
@@ -244,12 +244,12 @@
     <string name="root">Root</string>
     <string name="doh">DNS over HTTPS (DoH)</string>
     <string name="location_justification">In order to read Wi-Fi names in the background with your current detection method, Android requires apps to be given \'Allow all the time\' and \'Precise\' (Background Location on older devices) permission. Please enable these permissions in your Android app settings.</string>
-    <string name="public_key">Public key</string>
+    <string name="public_key">Khóa công khai</string>
     <string name="show_scripts">Show scripts</string>
     <string name="allowed_ips">Allowed IPs</string>
     <string name="reliability">Reliability</string>
     <string name="monitoring">Monitoring</string>
-    <string name="app_permission_title">WG Tunnel Control Bridge</string>
+    <string name="app_permission_title">Kiểm soát tunnel và các tính năng auto-tunnel.</string>
     <string name="wireguard">WireGuard</string>
     <string name="rotate_keys">Rotate keys</string>
     <string name="aovpn_description">Allows Android to start tunnels</string>
@@ -266,7 +266,7 @@
     <string name="reachable_template">Reachable: %1$s</string>
     <string name="restore_failed">Failed to restore from backup.</string>
     <string name="auto_tunnel_title">Auto-tunnel service</string>
-    <string name="prominent_background_location_title">Background Location Disclosure</string>
+    <string name="prominent_background_location_title">Tiết lộ quyền truy cập vị trí nền</string>
     <string name="move_down">Move Down</string>
     <string name="remove_amnezia_compatibility">Remove Amnezia compatibility</string>
     <string name="open_issue">Open an issue</string>
@@ -278,7 +278,7 @@
     <string name="general">General</string>
     <string name="donation_dev_message">As the sole developer, I work tirelessly to make WG Tunnel the best free and open-source WireGuard client for Android, but this is only possible with your support.</string>
     <string name="review">Rate app</string>
-    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
+    <string name="app_permission_description">Kiểm soát tunnel &amp; các tính năng tự động kết nối tunnel.</string>
     <string name="install_updated_permission">This app needs permission to install updates.</string>
     <string name="use_root_shell_for_wifi">Use a root shell to get Wi-Fi information, preventing the need for location permissions</string>
     <string name="disabled">Disabled</string>
@@ -288,7 +288,7 @@
     <string name="attempts_per_interval">Ping attempts per interval</string>
     <string name="error_ssid_exists">SSID already exists</string>
     <string name="splt_tunneling">Split tunneling</string>
-    <string name="okay">Okay</string>
+    <string name="okay">Ok</string>
     <string name="search">Search</string>
     <string name="packets_sent_template">Packets sent: %1$s</string>
     <string name="see_the">See the</string>
@@ -306,7 +306,7 @@
     <string name="mimic_sip">Mimic SIP</string>
     <string name="update_check_unsupported">Update check is not supported for this build type.</string>
     <string name="optional">(optional)</string>
-    <string name="trusted_ssid_value_description">Submit SSID</string>
+    <string name="trusted_ssid_value_description">Gửi SSID</string>
     <string name="expiremental_template">%1$s (experimental)</string>
     <string name="display_detailed_ping_stats">Display detailed ping stats</string>
     <string name="donate">Donate to project</string>
@@ -344,7 +344,7 @@
     <string name="android_integrations">Android integrations</string>
     <string name="preferred_tunnel_label">Preferred tunnel:</string>
     <string name="dns_settings">DNS settings</string>
-    <string name="always_on_vpn_support">Allow Always-On VPN</string>
+    <string name="always_on_vpn_support">Cho phép VPN luôn bật</string>
     <string name="junk_packet_maximum_size">Junk packet maximum size</string>
     <string name="_default">Default</string>
     <string name="exclude_lan">Exclude LAN</string>
@@ -356,7 +356,7 @@
     <string name="crypto">Cryptocurrency addresses</string>
     <string name="hide_scripts">Hide scripts</string>
     <string name="system">System</string>
-    <string name="tunnel_name">Tunnel Name</string>
+    <string name="tunnel_name">Tên tunnel</string>
     <string name="error_tunnel_name">Tunnel name must be 15 characters or fewer in kernel mode</string>
     <string name="wildcards_active">Wildcards active</string>
     <string name="restart_message_template">Saving changes will cause the %1$s to restart, do you wish to continue?</string>
@@ -382,7 +382,7 @@
     <string name="proxy">Proxy</string>
     <string name="auto_tunnel_running">Auto-tunnel is running</string>
     <string name="done">Done</string>
-    <string name="thank_you">Thank you for using WG Tunnel!</string>
+    <string name="thank_you">Cảm ơn vì đã sử dụng WG Tunnel!</string>
     <string name="invalid_key">Invalid key</string>
     <string name="auto_tunnel_channel_id" translatable="false">Auto-tunnel Channel</string>
     <string name="kofi_url" translatable="false">https://ko-fi.com/zaneschepke</string>
