@@ -92,6 +92,20 @@ class UserspaceTunnel(private val backend: Backend, private val runConfigHelper:
         return backend.resolveDDNS(tunnelConfig.toAmConfig(), tunnel.isIpv4ResolutionPreferred)
     }
 
+    override suspend fun forceSocketRebind(tunnelConfig: TunnelConfig): Boolean {
+        val tunnel = runtimeTunnels[tunnelConfig.id] ?: throw ServiceNotRunning()
+        return try {
+            // Re-apply the config to force socket rebind
+            val runConfig = runConfigHelper.buildAmRunConfig(tunnelConfig)
+            backend.setState(tunnel, Tunnel.State.UP, runConfig)
+            Timber.d("Force socket rebind successful for ${tunnelConfig.name}")
+            true
+        } catch (e: Exception) {
+            Timber.w(e, "Force socket rebind failed for ${tunnelConfig.name}")
+            false
+        }
+    }
+
     override suspend fun runningTunnelNames(): Set<String> {
         return backend.runningTunnelNames
     }

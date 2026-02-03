@@ -111,6 +111,12 @@ class KernelTunnel(private val runConfigHelper: RunConfigHelper, private val bac
         throw NotImplementedError()
     }
 
+    override suspend fun forceSocketRebind(tunnelConfig: TunnelConfig): Boolean {
+        // Kernel mode handles socket rebinding natively
+        Timber.d("Kernel mode: socket rebind handled natively")
+        return true
+    }
+
     override suspend fun runningTunnelNames(): Set<String> {
         return backend.runningTunnelNames
     }
