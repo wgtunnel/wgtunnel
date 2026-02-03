@@ -13,7 +13,6 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotification
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.handler.AutoTunnelRoamingHandler
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.di.Dispatcher
@@ -34,6 +33,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -55,25 +55,32 @@ import timber.log.Timber
 class AutoTunnelService : LifecycleService() {
 
     private val networkMonitor: NetworkMonitor by inject()
+
     private val notificationManager: NotificationManager by inject()
+
     private val ioDispatcher: CoroutineDispatcher by inject(named(Dispatcher.IO))
+
     private val serviceManager: ServiceManager by inject()
+
     private val tunnelManager: TunnelManager by inject()
+
     private val autoTunnelRepository: AutoTunnelSettingsRepository by inject()
     private val settingsRepository: GeneralSettingRepository by inject()
     private val tunnelsRepository: TunnelRepository by inject()
 
-    // Inject the new handler
-    private val roamingHandler: AutoTunnelRoamingHandler by inject()
+    private val defaultState = AutoTunnelState()
 
     private val autoTunMutex = Mutex()
-    private val autoTunnelStateFlow = MutableStateFlow(AutoTunnelState())
+
+    private val autoTunnelStateFlow = MutableStateFlow(defaultState)
 
     private var autoTunnelJob: Job? = null
     private var permissionsJob: Job? = null
+    private var autoTunnelFailoverJob: Job? = null
 
     class LocalBinder(service: AutoTunnelService) : Binder() {
         private val serviceRef = WeakReference(service)
+
         val service: AutoTunnelService?
             get() = serviceRef.get()
     }
@@ -99,17 +106,10 @@ class AutoTunnelService : LifecycleService() {
 
     fun start() {
         launchWatcherNotification()
-
-        // Start Main Logic
         autoTunnelJob?.cancel()
         autoTunnelJob = startAutoTunnelStateJob()
-
-        // Start Permissions Logic (Part 1)
         permissionsJob?.cancel()
         permissionsJob = startLocationPermissionsNotificationJob()
-
-        // Start Roaming Handler (Delegated)
-        roamingHandler.start(lifecycleScope, autoTunnelStateFlow)
     }
 
     fun stop() {
@@ -118,7 +118,6 @@ class AutoTunnelService : LifecycleService() {
 
     override fun onDestroy() {
         serviceManager.handleAutoTunnelServiceDestroy()
-        roamingHandler.stop()
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         super.onDestroy()
     }
@@ -165,39 +164,58 @@ class AutoTunnelService : LifecycleService() {
 
             val tunnelsFlow = tunnelManager.activeTunnels.map(::ActiveTunnelsChange)
 
-            // Initial Sync
+            var reevaluationJob: Job? = null
+
+            // get everything in sync before we use merge
             combine(networkFlow, settingsFlow, tunnelsFlow) { network, settings, tunnels ->
                     autoTunnelStateFlow.update {
                         it.copy(
+                            activeTunnels = tunnels.activeTunnels,
                             networkState = network.networkState,
                             settings = settings.settings,
                             tunnels = settings.tunnels,
-                            activeTunnels = tunnels.activeTunnels,
                         )
                     }
                 }
                 .first()
 
+            val initialState = autoTunnelStateFlow.value
+            if (initialState != defaultState) {
+                handleAutoTunnelEvent(
+                    initialState.determineAutoTunnelEvent(NetworkChange(initialState.networkState))
+                )
+            }
+
             // use merge to limit the noise of a combine and also increase the scalability of auto
             // tunnel handling new states
             merge(networkFlow, settingsFlow, tunnelsFlow).collect { change ->
-                // Check if the handler is currently working on a roaming event
-                if (roamingHandler.isRoamingActive) {
-                    return@collect
-                }
-
                 if (change !is ActiveTunnelsChange) {
                     Timber.d("New state changed to ${change.javaClass.simpleName}")
                 }
 
+                val previousState = autoTunnelStateFlow.value
+
                 when (change) {
                     is NetworkChange -> {
                         Timber.d("Network change: ${change.networkState}")
+                        reevaluationJob?.cancel()
                         autoTunnelStateFlow.update { it.copy(networkState = change.networkState) }
+                        if (previousState.networkState == change.networkState) {
+                            Timber.d("Duplicate network state change detected, ignoring")
+                            return@collect
+                        }
                     }
                     is SettingsChange -> {
+                        reevaluationJob?.cancel()
                         autoTunnelStateFlow.update {
                             it.copy(settings = change.settings, tunnels = change.tunnels)
+                        }
+                        if (
+                            previousState.settings == change.settings &&
+                                previousState.tunnels == change.tunnels
+                        ) {
+                            Timber.d("Duplicate settings change detected, ignoring")
+                            return@collect
                         }
                     }
                     is ActiveTunnelsChange -> {
@@ -205,7 +223,25 @@ class AutoTunnelService : LifecycleService() {
                         return@collect
                     }
                 }
+
                 handleAutoTunnelEvent(autoTunnelStateFlow.value.determineAutoTunnelEvent(change))
+
+                // re-evaluate network state after a short duration to prevent missed state changes
+                reevaluationJob = launch {
+                    val snapshotNetwork = autoTunnelStateFlow.value.networkState
+                    delay(REEVALUATE_CHECK_DELAY)
+                    val currentState = autoTunnelStateFlow.value
+                    if (
+                        currentState != defaultState && currentState.networkState != snapshotNetwork
+                    ) {
+                        Timber.d(
+                            "Re-evaluating auto-tunnel state.. (network changed since snapshot)"
+                        )
+                        handleAutoTunnelEvent(currentState.determineAutoTunnelEvent(change))
+                    } else {
+                        Timber.d("Skipping re-eval: network unchanged or default state")
+                    }
+                }
             }
         }
 
@@ -349,5 +385,9 @@ class AutoTunnelService : LifecycleService() {
             .flatMapLatest { debounceMillis ->
                 networkMonitor.connectivityStateFlow.debounce(debounceMillis)
             }
+    }
+
+    companion object {
+        const val REEVALUATE_CHECK_DELAY = 3_000L
     }
 }

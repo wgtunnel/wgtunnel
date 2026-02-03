@@ -162,20 +162,6 @@ class AndroidNetworkMonitor(
             }
             .flatMapLatest { detectionMethod -> createWifiNetworkCallbackFlow(detectionMethod) }
 
-    private fun getWifiBssid(caps: NetworkCapabilities?): String? {
-        return try {
-            val wifiInfo = caps?.transportInfo as? android.net.wifi.WifiInfo
-            val bssid =
-                wifiInfo?.bssid?.takeIf { it != "02:00:00:00:00:00" && it != "00:00:00:00:00:00" }
-            bssid
-                ?: wifiManager?.connectionInfo?.bssid?.takeIf {
-                    it != "02:00:00:00:00:00" && it != "00:00:00:00:00:00"
-                }
-        } catch (e: Exception) {
-            null
-        }
-    }
-
     private fun createWifiNetworkCallbackFlow(
         detectionMethod: WifiDetectionMethod
     ): Flow<TransportEvent> = callbackFlow {
@@ -332,6 +318,24 @@ class AndroidNetworkMonitor(
             }
             .stateIn(applicationScope, SharingStarted.Eagerly, null)
 
+    private fun getBssidByDetectionMethod(
+        detectionMethod: WifiDetectionMethod?,
+        networkCapabilities: NetworkCapabilities?,
+    ): String? {
+        val method = detectionMethod ?: DEFAULT
+        return try {
+            when (method) {
+                DEFAULT -> networkCapabilities?.getWifiBssid() ?: wifiManager.getWifiBssid()
+                LEGACY,
+                ROOT,
+                SHIZUKU -> wifiManager.getWifiBssid()
+            }.also { Timber.d("Current BSSID via ${method.name}: $it") }
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to get BSSID with method: ${method.name}")
+            null
+        }
+    }
+
     private suspend fun getSsidByDetectionMethod(
         detectionMethod: WifiDetectionMethod?,
         networkCapabilities: NetworkCapabilities?,
@@ -476,11 +480,13 @@ class AndroidNetworkMonitor(
                                                 defaultCaps,
                                                 defaultNetwork,
                                             )
+                                        val bssid =
+                                            getBssidByDetectionMethod(detectionMethod, defaultCaps)
                                         ActiveNetwork.Wifi(
                                             ssid,
                                             wifiManager?.getCurrentSecurityType(),
                                             defaultNetwork.toString(),
-                                            getWifiBssid(defaultCaps),
+                                            bssid,
                                         )
                                     }
                                     defaultCaps.hasTransport(
@@ -499,11 +505,16 @@ class AndroidNetworkMonitor(
                                                     wifiEvent.networkCapabilities,
                                                     wifiEvent.network,
                                                 )
+                                            val bssid =
+                                                getBssidByDetectionMethod(
+                                                    detectionMethod,
+                                                    wifiEvent.networkCapabilities,
+                                                )
                                             ActiveNetwork.Wifi(
                                                 ssid,
                                                 wifiManager?.getCurrentSecurityType(),
                                                 wifiEvent.network.toString(),
-                                                getWifiBssid(wifiEvent.networkCapabilities),
+                                                bssid,
                                             )
                                         }
                                         cellularCaps != null && !isAirplaneOn ->

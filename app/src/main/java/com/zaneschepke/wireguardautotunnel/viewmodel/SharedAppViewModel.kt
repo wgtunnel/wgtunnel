@@ -1,6 +1,5 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
-import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -50,7 +49,6 @@ import timber.log.Timber
 import xyz.teamgravity.pin_lock_compose.PinManager
 
 class SharedAppViewModel(
-    private val appContext: Context,
     private val appStateRepository: AppStateRepository,
     private val serviceManager: ServiceManager,
     private val tunnelManager: TunnelManager,
