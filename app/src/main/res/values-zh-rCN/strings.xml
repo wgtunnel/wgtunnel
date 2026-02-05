@@ -113,7 +113,7 @@
     <string name="getting_started_guide">入门指南</string>
     <string name="skip">取消</string>
     <string name="launch_app_settings">打开应用设置</string>
-    <string name="use_wildcards">使用 SSID 通配符</string>
+    <string name="use_wildcards">使用名称通配符</string>
     <string name="wildcards_active">启用通配符</string>
     <string name="use_root_shell_for_wifi">使用 root 权限的 shell 来获取 WiFi 信息，以防需要位置权限</string>
     <string name="start_auto">开启自动隧道</string>
