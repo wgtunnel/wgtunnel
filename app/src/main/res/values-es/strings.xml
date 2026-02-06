@@ -26,7 +26,7 @@
     <string name="tunnels">Túneles</string>
     <string name="tunnel_mobile_data">Activar túnel en datos móviles</string>
     <string name="privacy_policy">Política de privacidad</string>
-    <string name="okay">OK</string>
+    <string name="okay">Aceptar</string>
     <string name="tunnel_on_ethernet">Túnel en ethernet</string>
     <string name="prominent_background_location_title">Divulgación de la ubicación en segundo plano</string>
     <string name="thank_you">¡Gracias por usar WG Tunnel!</string>
@@ -174,7 +174,7 @@
     <string name="error_download_failed">Fallo al descargar configuración</string>
     <string name="enter_config_url">Introducir URL de configuración</string>
     <string name="delete_logs">Eliminar y limpiar registros</string>
-    <string name="app_permission_title">Control de túneles y funciones de túnel automatico</string>
+    <string name="app_permission_title">Control de túneles y funciones de túnel automatico.</string>
     <string name="dropdown">Menú desplegable</string>
     <string name="delete">Eliminar</string>
     <string name="export_failed">Exportación fallida</string>
