@@ -119,7 +119,7 @@
     <string name="launch_app_settings">Настройки запуска приложения</string>
     <string name="use_root_shell_for_wifi">Использовать root-доступ для получения информации о Wi-Fi без необходимости разрешения на определение местоположения</string>
     <string name="start_auto">Запустить автотуннель</string>
-    <string name="tunnel_running">Работающий туннель</string>
+    <string name="tunnel_running">Туннель работает</string>
     <string name="monitoring_state_changes">Отслеживание изменений состояния</string>
     <string name="add_from_clipboard">Добавить из буфера обмена</string>
     <string name="auto_tunnel_channel_name">Канал уведомлений автотуннеля</string>
@@ -133,7 +133,7 @@
     <string name="bypass_lan_for_kill_switch">Разрешать трафик LAN при экстренном отключении</string>
     <string name="vpn_channel_description">Канал уведомлений о состоянии VPN</string>
     <string name="auto_tunnel_channel_description">Канал уведомлений о состоянии автотуннеля</string>
-    <string name="stop">Стоп</string>
+    <string name="stop">Отключиться</string>
     <string name="splt_tunneling">Раздельное туннелирование</string>
     <string name="pre_up">До активации</string>
     <string name="post_up">После активации</string>
