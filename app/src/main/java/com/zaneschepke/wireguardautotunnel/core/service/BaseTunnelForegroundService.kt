@@ -182,28 +182,29 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
 		consumedTraffic: Pair<Long, Long>?,
 	): Notification {
 		
-		val description = consumedTraffic?.let { traffic ->
-			val formattedRx = traffic.first.let { "↓ ${formatBytes(it)}" }
-			val formattedTx = traffic.second.let { "↑ ${formatBytes(it)}" }
+		val subText = consumedTraffic?.let { traffic ->
+			val formattedRx = "↓ ${formatBytes(traffic.first)}"
+			val formattedTx = "↑ ${formatBytes(traffic.second)}"
 			"$formattedRx $formattedTx"
-		} ?: ""
+		}
 		
 		return notificationManager.createNotification(
 			WireGuardNotification.NotificationChannels.VPN,
-			title = "${getString(R.string.tunnel_running)} - ${tunnelConfig.name}",
-			description = description,
-			actions =
-				listOf(
-					notificationManager.createNotificationAction(
-						NotificationAction.TUNNEL_OFF,
-						tunnelConfig.id,
-					)
-				),
+			title = tunnelConfig.name,
+			description = getString(R.string.tunnel_running),
+			subText = subText,
+			actions = listOf(
+				notificationManager.createNotificationAction(
+					NotificationAction.TUNNEL_OFF,
+					tunnelConfig.id,
+				)
+			),
 			onGoing = true,
 			groupKey = NotificationManager.VPN_GROUP_KEY,
 			isGroupSummary = true,
 		)
 	}
+	
 	
 	private fun createTunnelsNotification(): Notification {
 		return notificationManager.createNotification(

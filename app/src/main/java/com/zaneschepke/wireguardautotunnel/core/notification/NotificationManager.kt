@@ -14,6 +14,7 @@ interface NotificationManager {
     fun createNotification(
         channel: NotificationChannels,
         title: String = "",
+		subText: String? = null,
         actions: Collection<NotificationCompat.Action> = emptyList(),
         description: String = "",
         showTimestamp: Boolean = true,
@@ -27,6 +28,7 @@ interface NotificationManager {
     fun createNotification(
         channel: NotificationChannels,
         title: StringValue,
+		subText: String? = null,
         actions: Collection<NotificationCompat.Action> = emptyList(),
         description: StringValue,
         showTimestamp: Boolean = true,

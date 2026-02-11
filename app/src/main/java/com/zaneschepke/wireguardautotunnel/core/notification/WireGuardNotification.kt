@@ -29,6 +29,7 @@ class WireGuardNotification(override val context: Context) : NotificationManager
     override fun createNotification(
         channel: NotificationChannels,
         title: String,
+		subText: String?,   // ← добавить
         actions: Collection<NotificationCompat.Action>,
         description: String,
         showTimestamp: Boolean,
@@ -44,6 +45,7 @@ class WireGuardNotification(override val context: Context) : NotificationManager
             .apply {
                 actions.forEach { addAction(it) }
                 setContentTitle(title)
+				setSubText(subText)
                 setContentIntent(
                     PendingIntent.getActivity(
                         context,
@@ -72,6 +74,7 @@ class WireGuardNotification(override val context: Context) : NotificationManager
     override fun createNotification(
         channel: NotificationChannels,
         title: StringValue,
+		subText: String?,
         actions: Collection<NotificationCompat.Action>,
         description: StringValue,
         showTimestamp: Boolean,
@@ -84,6 +87,7 @@ class WireGuardNotification(override val context: Context) : NotificationManager
         return createNotification(
             channel,
             title.asString(context),
+			subText,
             actions,
             description.asString(context),
             showTimestamp,
