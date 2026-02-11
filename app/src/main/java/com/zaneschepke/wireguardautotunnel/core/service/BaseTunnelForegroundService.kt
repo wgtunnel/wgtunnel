@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel.core.service
 import android.app.Notification
 import android.content.Intent
 import android.os.IBinder
+import android.text.format.Formatter
 import androidx.core.app.ServiceCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
@@ -228,18 +229,5 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
 		)
 	}
 	
-	private fun formatBytes(bytes: Long): String {
-		val nf = NumberFormat.getNumberInstance(Locale.US).apply { maximumFractionDigits = 1 }
-		
-		val kb = 1024.0
-		val mb = kb * 1024.0
-		val gb = mb * 1024.0
-		
-		return when {
-			bytes >= gb -> nf.format(bytes / gb) + " GB"
-			bytes >= mb -> nf.format(bytes / mb) + " MB"
-			bytes >= kb -> nf.format(bytes / kb) + " KB"
-			else -> "$bytes B"
-		}
-	}
+	private fun formatBytes(bytes: Long) = Formatter.formatFileSize(this, bytes)
 }
