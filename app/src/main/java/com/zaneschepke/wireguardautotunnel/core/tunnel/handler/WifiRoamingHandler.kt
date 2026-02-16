@@ -39,7 +39,6 @@ class WifiRoamingHandler(
     private val networkMonitor: NetworkMonitor,
     private val powerManager: PowerManager,
     private val forceSocketRebind: suspend (TunnelConfig) -> Boolean,
-    private val restartTunnel: suspend (TunnelConfig) -> Unit,
     private val getTunnelConfig: suspend (Int) -> TunnelConfig?,
     private val applicationScope: CoroutineScope,
     private val ioDispatcher: CoroutineDispatcher,
@@ -172,20 +171,22 @@ class WifiRoamingHandler(
                 applicationScope.launch(ioDispatcher) {
                     val wakeLock = acquireWakeLock()
                     try {
-                        // Debounce only for rapid roaming (A→B→C)
-                        // First roaming: immediate (cache IP = no DNS needed)
                         if (wasAlreadyPending) {
                             Timber.d("Rapid roaming, debouncing %dms", DEBOUNCE_MS)
                             delay(DEBOUNCE_MS)
+                        } else {
+                            // Brief settle to distinguish real roaming from WiFi→4G
+                            // transition where BSSID changes as WiFi degrades
+                            delay(ROAMING_SETTLE_MS)
+                        }
 
-                            // Verify still on WiFi after debounce
-                            if (
-                                networkMonitor.connectivityStateFlow.first().activeNetwork
-                                    !is ActiveNetwork.Wifi
-                            ) {
-                                Timber.d("No longer on WiFi, skipping recovery")
-                                return@launch
-                            }
+                        // Verify still on WiFi (skips recovery during WiFi→4G)
+                        if (
+                            networkMonitor.connectivityStateFlow.first().activeNetwork
+                                !is ActiveNetwork.Wifi
+                        ) {
+                            Timber.d("No longer on WiFi, skipping recovery")
+                            return@launch
                         }
 
                         // Recover all active tunnels
@@ -206,30 +207,39 @@ class WifiRoamingHandler(
         Timber.d("Recovering tunnel: %s", config.name)
 
         // Use cached IPs to avoid DNS through broken tunnel
-        val rebindConfig =
+        val cachedConfig =
             endpointIpCache[id]?.let { cache ->
                 if (cache.isNotEmpty()) {
-                    Timber.d("Using cached IPs for rebind")
+                    Timber.d("Using cached IPs for config update")
                     applyIpCache(config, cache)
                 } else config
             } ?: config
 
-        // Phase 1: rebind socket (zero downtime)
-        val rebindOk = runCatching { forceSocketRebind(rebindConfig) }.getOrDefault(false)
-        if (rebindOk) {
-            Timber.i("Tunnel %s recovered via rebind", config.name)
-            cacheEndpointIps(id, config) // Refresh cache
+        // Phase 1: hot config update with cached IPs (zero downtime)
+        // setState(tunnel, UP, newConfig) updates endpoints without tearing down tun0
+        val cacheOk = runCatching { forceSocketRebind(cachedConfig) }.getOrDefault(false)
+        if (cacheOk) {
+            Timber.i("Tunnel %s recovered via cached config update", config.name)
+            cacheEndpointIps(id, config)
             return
         }
 
-        // Phase 2: restart tunnel (last resort)
-        Timber.w("Rebind failed, restarting tunnel %s", config.name)
-        runCatching { restartTunnel(config) }
-            .onSuccess {
-                Timber.i("Tunnel %s restarted", config.name)
-                cacheEndpointIps(id, config)
-            }
-            .onFailure { Timber.e(it, "Restart failed for %s", config.name) }
+        // Phase 2: fresh DNS resolution + hot config update (zero downtime)
+        // DNS resolves through system resolver (WiFi), not the broken tunnel
+        Timber.w("Cached config update failed, trying fresh DNS resolution")
+        cacheEndpointIps(id, config)
+        val freshConfig =
+            endpointIpCache[id]?.let { cache ->
+                if (cache.isNotEmpty()) applyIpCache(config, cache) else config
+            } ?: config
+
+        val freshOk = runCatching { forceSocketRebind(freshConfig) }.getOrDefault(false)
+        if (freshOk) {
+            Timber.i("Tunnel %s recovered via fresh DNS config update", config.name)
+            return
+        }
+
+        Timber.e("All recovery attempts failed for tunnel %s", config.name)
     }
 
     private fun applyIpCache(config: TunnelConfig, cache: Map<String, String>): TunnelConfig {
@@ -274,6 +284,7 @@ class WifiRoamingHandler(
             setOf("02:00:00:00:00:00", "00:00:00:00:00:00", "ff:ff:ff:ff:ff:ff")
         private val BSSID_REGEX = Regex("^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$")
         private const val WAKELOCK_TIMEOUT_MS = 15_000L
+        private const val ROAMING_SETTLE_MS = 500L // Settle to filter WiFi→4G false positives
         private const val DEBOUNCE_MS = 2_000L // Rapid roaming: wait for BSSID to settle
     }
 }

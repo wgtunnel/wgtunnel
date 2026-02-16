@@ -220,7 +220,6 @@ class TunnelManager(
             networkMonitor = networkMonitor,
             powerManager = powerManager,
             forceSocketRebind = { config -> forceSocketRebind(config) },
-            restartTunnel = { config -> restartTunnel(config) },
             getTunnelConfig = { id -> tunnelsRepository.getById(id) },
             applicationScope = applicationScope,
             ioDispatcher = ioDispatcher,

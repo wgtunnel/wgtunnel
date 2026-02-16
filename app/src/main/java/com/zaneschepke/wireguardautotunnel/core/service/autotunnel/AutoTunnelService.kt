@@ -162,7 +162,8 @@ class AutoTunnelService : LifecycleService() {
                     SettingsChange(appMode, settings, tunnels)
                 }
 
-            val tunnelsFlow = tunnelManager.activeTunnels.map(::ActiveTunnelsChange)
+            val tunnelsFlow =
+                tunnelManager.activeTunnels.map(::ActiveTunnelsChange).distinctUntilChanged()
 
             var reevaluationJob: Job? = null
 
@@ -220,11 +221,30 @@ class AutoTunnelService : LifecycleService() {
                     }
                     is ActiveTunnelsChange -> {
                         autoTunnelStateFlow.update { it.copy(activeTunnels = change.activeTunnels) }
+                        // ActiveTunnelsChange only keeps state in sync for future decisions.
+                        // Stats/ping updates emit frequently (~1/s) but never require tunnel
+                        // action,
+                        // so skip event handling and re-evaluation to avoid a hot loop.
                         return@collect
                     }
                 }
 
-                handleAutoTunnelEvent(autoTunnelStateFlow.value.determineAutoTunnelEvent(change))
+                val event = autoTunnelStateFlow.value.determineAutoTunnelEvent(change)
+                handleAutoTunnelEvent(event)
+
+                // When the network type changes (WiFi ↔ 4G / Ethernet) but the same
+                // tunnel stays active, clear stale health states so the monitoring
+                // shows UNKNOWN (gray) instead of a false UNHEALTHY (red) from
+                // pings that failed during the brief network transition.
+                if (
+                    change is NetworkChange &&
+                        event is AutoTunnelEvent.DoNothing &&
+                        change.networkState.hasInternet() &&
+                        previousState.networkState.activeNetwork::class !=
+                            change.networkState.activeNetwork::class
+                ) {
+                    clearStaleHealthStates()
+                }
 
                 // re-evaluate network state after a short duration to prevent missed state changes
                 reevaluationJob = launch {
@@ -354,6 +374,14 @@ class AutoTunnelService : LifecycleService() {
                     }
                 }
         }
+
+    private suspend fun clearStaleHealthStates() {
+        for ((id, state) in autoTunnelStateFlow.value.activeTunnels) {
+            if (!state.status.isUp()) continue
+            Timber.i("Network type changed, clearing stale ping states for tunnel %d", id)
+            tunnelManager.updateTunnelStatus(id, null, null, emptyMap(), null)
+        }
+    }
 
     private suspend fun handleAutoTunnelEvent(autoTunnelEvent: AutoTunnelEvent) {
         autoTunMutex.withLock {
