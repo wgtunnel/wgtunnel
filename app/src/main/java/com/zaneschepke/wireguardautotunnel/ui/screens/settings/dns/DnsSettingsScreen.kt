@@ -51,7 +51,7 @@ fun DnsSettingsScreen(viewModel: DnsViewModel = koinViewModel()) {
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
     ) {
         Column {
-            GroupLabel(stringResource(R.string.endpoint_resolution), Modifier.padding(horizontal = 16.dp))
+            GroupLabel(stringResource(R.string.endpoint), Modifier.padding(horizontal = 16.dp))
             LabelledDropdown(
                 title = stringResource(R.string.dns_protocol),
                 description = { DescriptionText(stringResource(R.string.dns_endpoint_section_description)) },
