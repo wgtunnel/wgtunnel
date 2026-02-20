@@ -73,9 +73,8 @@ class WifiRoamingHandler(
             .distinctUntilChanged()
             .collect { wifi ->
                 if (wifi == null) {
-                    // Not on WiFi: reset and cancel
-                    lastBssid = null
-                    lastSsid = null
+                    // Not on WiFi: cancel pending recovery but keep lastBssid/lastSsid
+                    // so we detect roaming when WiFi reconnects to a different AP
                     cancelRecovery()
                     return@collect
                 }
@@ -174,19 +173,15 @@ class WifiRoamingHandler(
                         if (wasAlreadyPending) {
                             Timber.d("Rapid roaming, debouncing %dms", DEBOUNCE_MS)
                             delay(DEBOUNCE_MS)
-                        } else {
-                            // Brief settle to distinguish real roaming from WiFi→4G
-                            // transition where BSSID changes as WiFi degrades
-                            delay(ROAMING_SETTLE_MS)
-                        }
 
-                        // Verify still on WiFi (skips recovery during WiFi→4G)
-                        if (
-                            networkMonitor.connectivityStateFlow.first().activeNetwork
-                                !is ActiveNetwork.Wifi
-                        ) {
-                            Timber.d("No longer on WiFi, skipping recovery")
-                            return@launch
+                            // Verify still on WiFi after debounce
+                            if (
+                                networkMonitor.connectivityStateFlow.first().activeNetwork
+                                    !is ActiveNetwork.Wifi
+                            ) {
+                                Timber.d("No longer on WiFi, skipping recovery")
+                                return@launch
+                            }
                         }
 
                         // Recover all active tunnels
@@ -284,7 +279,6 @@ class WifiRoamingHandler(
             setOf("02:00:00:00:00:00", "00:00:00:00:00:00", "ff:ff:ff:ff:ff:ff")
         private val BSSID_REGEX = Regex("^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$")
         private const val WAKELOCK_TIMEOUT_MS = 15_000L
-        private const val ROAMING_SETTLE_MS = 500L // Settle to filter WiFi→4G false positives
         private const val DEBOUNCE_MS = 2_000L // Rapid roaming: wait for BSSID to settle
     }
 }

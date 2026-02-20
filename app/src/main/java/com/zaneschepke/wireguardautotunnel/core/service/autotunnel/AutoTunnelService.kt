@@ -78,6 +78,10 @@ class AutoTunnelService : LifecycleService() {
     private var permissionsJob: Job? = null
     private var autoTunnelFailoverJob: Job? = null
 
+    // Tracks when auto-tunnel itself requests a stop, so ActiveTunnelsChange
+    // doesn't re-trigger event handling for its own stop request.
+    @Volatile private var autoTunnelStopInProgress = false
+
     class LocalBinder(service: AutoTunnelService) : Binder() {
         private val serviceRef = WeakReference(service)
 
@@ -106,6 +110,7 @@ class AutoTunnelService : LifecycleService() {
 
     fun start() {
         launchWatcherNotification()
+        autoTunnelStopInProgress = false
         autoTunnelJob?.cancel()
         autoTunnelJob = startAutoTunnelStateJob()
         permissionsJob?.cancel()
@@ -221,6 +226,7 @@ class AutoTunnelService : LifecycleService() {
                     }
                     is ActiveTunnelsChange -> {
                         autoTunnelStateFlow.update { it.copy(activeTunnels = change.activeTunnels) }
+                        autoTunnelStopInProgress = false
                         // ActiveTunnelsChange only keeps state in sync for future decisions.
                         // Stats/ping updates emit frequently (~1/s) but never require tunnel
                         // action,
@@ -391,14 +397,18 @@ class AutoTunnelService : LifecycleService() {
                         Timber.i("Auto tunnel event: ${it.javaClass.simpleName}")
                     }
             ) {
-                is AutoTunnelEvent.Start ->
+                is AutoTunnelEvent.Start -> {
                     (event.tunnelConfig ?: tunnelsRepository.getDefaultTunnel())?.let {
                         tunnelManager.startTunnel(it).onFailure { e ->
                             Timber.e(e, "Auto-tunnel start failed for ${it.name}")
                             // TODO notify or retry
                         }
                     }
-                is AutoTunnelEvent.Stop -> tunnelManager.stopActiveTunnels()
+                }
+                is AutoTunnelEvent.Stop -> {
+                    autoTunnelStopInProgress = true
+                    tunnelManager.stopActiveTunnels()
+                }
                 AutoTunnelEvent.DoNothing -> Timber.i("Auto-tunneling: nothing to do")
             }
         }

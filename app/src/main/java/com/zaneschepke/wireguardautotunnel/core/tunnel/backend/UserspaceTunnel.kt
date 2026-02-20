@@ -33,6 +33,28 @@ class UserspaceTunnel(private val backend: Backend, private val runConfigHelper:
 
     private val runtimeTunnels = ConcurrentHashMap<Int, Tunnel>()
 
+    init {
+        val staleNames = backend.runningTunnelNames
+        for (name in staleNames) {
+            try {
+                val stub =
+                    object : Tunnel {
+                        override fun getName() = name
+
+                        override fun onStateChange(newState: Tunnel.State) {}
+
+                        override fun isIpv4ResolutionPreferred() = true
+
+                        override fun isMetered() = false
+                    }
+                backend.setState(stub, Tunnel.State.DOWN, null)
+                Timber.i("Released stale tunnel socket: %s", name)
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to release stale tunnel: %s", name)
+            }
+        }
+    }
+
     override fun tunnelStateFlow(tunnelConfig: TunnelConfig): Flow<TunnelStatus> = callbackFlow {
         val stateChannel = Channel<Tunnel.State>()
 
