@@ -1,17 +1,18 @@
 WG Tunnel to klient VPN WireGuard, który łączy w sobie prostotę i solidność, dzięki czemu jest idealnym klientem zarówno dla okazjonalnych, jak i zaawansowanych użytkowników.
 Niezależnie od tego, czy chcesz po prostu zautomatyzować działanie po połączeniu z VPN, czy jesteś zaawansowanym użytkownikiem z rozbudowanymi przypadkami wykorzystania prywatności, WG Tunnel może Ci pomóc.
 
-Features:
+Funkcje:
 
 - **Autotunelowanie:** automatyczna aktywacja tuneli na podstawie identyfikatora SSID Wi-Fi, połączeń Ethernet lub sieci komórkowych.
-- **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
-- **Handshake Monitoring:** Real-time handshake monitoring for instant tunnel health feedback.
-- **Integracja z AmneziaWG:** pełna obsługa AmneziaWG, zapewniająca skuteczne omijanie cenzury.
+- **Opóźnione uruchamianie punktów końcowych:** bezpiecznie rozwiązuje punkty końcowe i aktualizuje elementy równorzędne po uruchomieniu tunelu, zapewniając większą niezawodność i ochronę przed wyciekami podczas uruchamiania.
+- **Monitorowanie uzgadniania:** monitorowanie uzgadniania w czasie rzeczywistym w celu uzyskania natychmiastowej informacji o stanie tunelu.
+- **Obsługa AmneziaWG:** pełne wsparcie dla AmneziaWG w wersji 2.0 do 3.1, zapewniające solidną ochronę przed cenzurą.
 - **Tunelowanie dzielone:** elastyczna obsługa routingu określonych aplikacji lub ruchu przez VPN.
+- **Podzielony i szyfrowany DNS:** rozwiąż DNS przez tunel, używając zwykłego DNS, DoT lub DoH, opcjonalnie dzieląc według sufiksu domeny (tunel lub system).
 - **Opcje proxy:** wbudowana obsługa proxy HTTP i SOCKS5, umożliwiająca aplikacjom innych dostawców tunelowanie ich ruchu.
-- **Lockdown Mode:** Advanced in-app kill switch that blocks all traffic while the tunnel is down.
+- **Tryb blokady:** zaawansowany wyłącznik awaryjny w aplikacji, który blokuje cały ruch, gdy tunel jest wyłączony.
 - **Szybkie sterowanie:** kafelek szybkich ustawień i skróty na ekranie głównym ułatwiające przełączanie akcji.
 - **Obsługa automatyzacji:** automatyzacja oparta na intencjach do kontrolowania tuneli i autotunelowania.
 - **Dynamiczne zarządzanie DNS:** wykrywa i aktualizuje zmiany DNS bez ponownego uruchamiania tunelu.
-- **IPv6 Endpoints:** Automatically upgrade to IPv6 endpoints or fall back to IPv4 based on network conditions without requiring a restart.
+- **Punkty końcowe IPv6:** automatyczne uaktualnianie do punktów końcowych IPv6 lub powrót do IPv4 na podstawie warunków sieciowych bez konieczności ponownego uruchamiania.
 - **Obsługa Android TV:** obsługa Android TV dla niemal wszystkich funkcji aplikacji.
