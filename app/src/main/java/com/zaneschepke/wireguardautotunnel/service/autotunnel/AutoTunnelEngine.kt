@@ -43,7 +43,9 @@ class AutoTunnelEngine {
                     ssid = wifi?.ssid.orEmpty(),
                     bssid = wifi?.bssid.orEmpty(),
                     hasUsableNetwork = networkState.hasUsableNetwork,
-                    captivePortal = wifi?.requiresCaptivePortalLogin == true,
+                    // Debounced. Reacts to detected immediately but only cleared once false has
+                    // held stable for a duration
+                    captivePortal = wifi != null && confirmedCaptivePortal,
                 ),
             policy =
                 AutoTunnelPolicy(

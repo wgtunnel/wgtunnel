@@ -11,4 +11,8 @@ data class AutoTunnelState(
     val settings: AutoTunnelSettings = AutoTunnelSettings(),
     val tunnelMode: TunnelMode = TunnelMode.VPN,
     val tunnels: List<TunnelConfig> = emptyList(),
+    // Debounced separately from networkState.activeNetwork's raw captive-portal capability.
+    // Android's captive portal can flap on flaky networks, so this only reports
+    // false once the raw signal has held false for a certain duration.
+    val confirmedCaptivePortal: Boolean = false,
 )

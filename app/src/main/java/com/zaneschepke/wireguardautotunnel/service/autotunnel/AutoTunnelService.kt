@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.core.app.ServiceCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import com.zaneschepke.networkmonitor.ActiveNetwork
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.networkmonitor.StableNetworkEngine
 import com.zaneschepke.wireguardautotunnel.R
@@ -24,6 +25,7 @@ import com.zaneschepke.wireguardautotunnel.notification.AndroidNotificationServi
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService
 import com.zaneschepke.wireguardautotunnel.service.tile.AutoTunnelTileRefresher
 import com.zaneschepke.wireguardautotunnel.util.Constants
+import com.zaneschepke.wireguardautotunnel.util.extensions.debounceFalling
 import com.zaneschepke.wireguardautotunnel.util.extensions.to
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineDispatcher
@@ -91,13 +93,29 @@ class AutoTunnelService : LifecycleService() {
                 }
                 .debounce(300L.milliseconds)
 
-        combine(networkFlow, settingsFlow, backendFlow) { network, settings, backend ->
+        // Detected captive portal state is trusted immediately, but cleared state
+        // is only trusted once it's held for CAPTIVE_PORTAL_CLEAR_CONFIRM_MS without a change
+        // to prevent flapping on flaky networks.
+        val confirmedCaptivePortalFlow =
+            networkFlow
+                .map {
+                    (it.activeNetwork as? ActiveNetwork.Wifi)?.requiresCaptivePortalLogin == true
+                }
+                .distinctUntilChanged()
+                .debounceFalling(CAPTIVE_PORTAL_CLEAR_CONFIRM_MS.milliseconds)
+
+        combine(networkFlow, settingsFlow, backendFlow, confirmedCaptivePortalFlow) {
+                network,
+                settings,
+                backend,
+                confirmedCaptivePortal ->
                 AutoTunnelState(
                     networkState = network,
                     settings = settings.second,
                     tunnelMode = settings.first,
                     tunnels = settings.third,
                     backendStatus = backend,
+                    confirmedCaptivePortal = confirmedCaptivePortal,
                 )
             }
             .distinctUntilChanged()
@@ -368,5 +386,6 @@ class AutoTunnelService : LifecycleService() {
 
     companion object {
         private const val NO_INTERNET_GRACE_PERIOD_MS = 10_000L
+        private const val CAPTIVE_PORTAL_CLEAR_CONFIRM_MS = 8_000L
     }
 }
