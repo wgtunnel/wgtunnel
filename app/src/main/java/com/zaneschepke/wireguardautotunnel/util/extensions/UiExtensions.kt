@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import com.wgtunnel.backend.model.dns.DnsValidationError
 import com.wgtunnel.backend.state.ActiveTunnel
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
@@ -23,7 +24,6 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.WifiDetectionMethod
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.ui.state.DisplayTunnelState
-import com.zaneschepke.wireguardautotunnel.util.DnsError
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import java.time.Instant
 import java.util.Locale
@@ -128,14 +128,14 @@ fun Long.toUptimeDisplay(currentTimeMillis: Long = System.currentTimeMillis()): 
 }
 
 @StringRes
-fun DnsError.labelRes(): Int {
+fun DnsValidationError.labelRes(): Int {
     return when (this) {
-        DnsError.Empty -> R.string.dns_error_empty
-        DnsError.InvalidUrl -> R.string.dns_error_invalid_url
-        DnsError.InvalidScheme -> R.string.dns_error_invalid_scheme
-        DnsError.InvalidHost -> R.string.dns_error_invalid_host
-        DnsError.InvalidPort -> R.string.dns_error_invalid_port
-        DnsError.InvalidIpOrHost -> R.string.dns_error_invalid_ip_or_host
+        DnsValidationError.Empty -> R.string.dns_error_empty
+        DnsValidationError.InvalidUrl -> R.string.dns_error_invalid_url
+        DnsValidationError.InvalidScheme -> R.string.dns_error_invalid_scheme
+        DnsValidationError.InvalidHost -> R.string.dns_error_invalid_host
+        DnsValidationError.InvalidPort -> R.string.dns_error_invalid_port
+        DnsValidationError.InvalidIpOrHost -> R.string.dns_error_invalid_ip_or_host
     }
 }
 

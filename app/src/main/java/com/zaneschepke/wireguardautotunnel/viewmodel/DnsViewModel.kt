@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.dokar.sonner.ToastType
+import com.wgtunnel.backend.model.dns.DnsValidator
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.DnsSettingsCoordinator
@@ -16,7 +17,6 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectReposit
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.DnsUiState
-import com.zaneschepke.wireguardautotunnel.util.DnsValidator
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.labelRes
 import kotlinx.coroutines.flow.combine
@@ -85,7 +85,10 @@ class DnsViewModel(
 
         when (
             val r =
-                DnsValidator.validate(settings.bootstrapDnsProtocol, settings.bootstrapDnsEndpoint)
+                DnsValidator.validateEndpoint(
+                    settings.bootstrapDnsProtocol.toCore(),
+                    settings.bootstrapDnsEndpoint,
+                )
         ) {
             is DnsValidator.Result.Invalid -> {
                 reduce { state.copy(bootstrapEndpointError = r.error) }
@@ -112,8 +115,8 @@ class DnsViewModel(
             if (!usesTunnelDns) {
                 when (
                     val r =
-                        DnsValidator.validateTunnelEndpoint(
-                            settings.tunnelDnsProtocol,
+                        DnsValidator.validateEndpoint(
+                            settings.tunnelDnsProtocol.toCore(),
                             settings.tunnelDnsEndpoint,
                         )
                 ) {
@@ -136,8 +139,8 @@ class DnsViewModel(
             when (
                 val r =
                     DnsValidator.validateLocalSuffixes(
-                        settings.tunnelDnsMode,
-                        settings.localSuffixes,
+                        requiresSuffixes = true,
+                        input = settings.localSuffixes,
                     )
             ) {
                 is DnsValidator.Result.Invalid -> {
@@ -157,8 +160,8 @@ class DnsViewModel(
         val updated =
             settings.copy(
                 bootstrapDnsEndpoint =
-                    DnsValidator.normalize(
-                            settings.bootstrapDnsProtocol,
+                    DnsValidator.normalizeEndpoint(
+                            settings.bootstrapDnsProtocol.toCore(),
                             settings.bootstrapDnsEndpoint,
                         )
                         .ifEmpty { null },
@@ -167,8 +170,8 @@ class DnsViewModel(
                         TunnelDnsMode.Encrypted,
                         TunnelDnsMode.Split ->
                             if (!usesTunnelDns) {
-                                DnsValidator.normalizeTunnelEndpoint(
-                                    settings.tunnelDnsProtocol,
+                                DnsValidator.normalizeEndpoint(
+                                    settings.tunnelDnsProtocol.toCore(),
                                     settings.tunnelDnsEndpoint,
                                 )
                             } else {
