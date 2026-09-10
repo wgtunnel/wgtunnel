@@ -25,10 +25,16 @@ rootProject.name = "WG Tunnel"
 // Local dev
 //includeBuild("../core") {
 //	dependencySubstitution {
-//		substitute(module("com.wgtunnel.tunnel:backend"))
+//		substitute(module("com.wgtunnel:backend"))
 //			.using(project(":backend"))
-//		substitute(module("com.wgtunnel.tunnel:backend-android-jni"))
+//		substitute(module("com.wgtunnel:backend-android"))
+//			.using(project(":backend"))
+//		substitute(module("com.wgtunnel:backend-android-jni"))
 //			.using(project(":backend-android-jni"))
+//		substitute(module("com.wgtunnel:hevtunnel"))
+//			.using(project(":hevtunnel"))
+//		substitute(module("com.wgtunnel:parser"))
+//			.using(project(":parser"))
 //	}
 //}
 

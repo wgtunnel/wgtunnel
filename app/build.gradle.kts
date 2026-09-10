@@ -258,10 +258,6 @@ dependencies {
     // Lifecycle Compose
     implementation(libs.lifecycle.runtime.compose)
 
-    // Local dev
-//    implementation("com.wgtunnel.tunnel:backend")
-//    implementation("com.wgtunnel.tunnel:backend-android-jni")
-
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.androidx.junit)
